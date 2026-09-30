@@ -28,7 +28,7 @@ notes: >
 | Phase 2 | [03-data-quality.md](03-data-quality.md) | ✅ CLOSED | كيانات متعددة التعريف، كيانات يتيمة (944)، مرشحو RD-* غير معرَّفين (90→6 فئات حقيقية) |
 | Phase 3 | bc01–bc08 (أدناه) | ✅ CLOSED (كل الثمانية) | دراسة هندسية كاملة لكل Bounded Context |
 | Phase 4 | [04-cross-cutting.md](04-cross-cutting.md) | ✅ CLOSED | الأنماط العابرة لكل الـBCs: أمن، بيانات، واجهات، جودة، تتبّعية |
-| Phase 5 | [05-conflicts.md](05-conflicts.md) | ✅ CLOSED (كسجل) | 4 تعارضات: 2 مُغلَقة (CR مرجعي)، 2 مفتوحة (تحتاج قرارًا بشريًا) |
+| Phase 5 | [05-conflicts.md](05-conflicts.md) | ✅ CLOSED (كسجل، مُحدَّث بعد Phase 3.5) | 5 تعارضات: 2 مُغلَقة (CR مرجعي)، 3 مفتوحة (تحتاج قرارًا بشريًا) |
 | Phase 6 | هذا الملف | ✅ CLOSED | الفهرس الأعلى |
 
 ## 2. الـBounded Contexts الثمانية
@@ -52,10 +52,10 @@ notes: >
 - **3999+** كيان فريد مفهرَس ([01-entity-index.md](01-entity-index.md))
 - **181** متطلبًا مُعتمَدًا (202 حساب مباشر عبر BCs بسبب تداخل مقصود — [04-cross-cutting.md §6.2](04-cross-cutting.md))
 - **89** aggregate عبر 8 BCs، **صفر استثناء** من نمط If-Match+Idempotency-Key+State/History/Outbox/AuditOutbox ([04-cross-cutting.md §3.1](04-cross-cutting.md))
-- **~121** تهديدًا موثَّقًا (STRIDE) بعد كل التصحيحات الرجعية ([04-cross-cutting.md §2.4](04-cross-cutting.md))
+- **114** تهديدًا موثَّقًا (STRIDE) بعد كل التصحيحات الرجعية، بما فيها إعادة العدّ الدقيقة في Phase 3.5 (كانت مُقدَّرة بـ"~121" قبل ذلك) ([04-cross-cutting.md §2.4](04-cross-cutting.md))
 - **14** Platform Baseline (PB-01..14)، صفر قابل للتجاوز من المستأجر عدا PB-06 ([04-cross-cutting.md §2.1](04-cross-cutting.md))
 - **65** تصحيحًا مُطبَّقًا (CR-01..CR-65، `spec/00-governance/registers/corrections.md`)
-- **4** تعارضات مُكتشَفة أثناء البناء: 2 مُغلَقة، 2 مفتوحة ([05-conflicts.md](05-conflicts.md))
+- **5** تعارضات مُكتشَفة أثناء البناء (آخرها CONFLICT-05 أثناء Phase 3.5): 2 مُغلَقة، 3 مفتوحة ([05-conflicts.md](05-conflicts.md))
 - **6** فئات بيانات مرجعية (RD-*) مُستشهَد بها وغير معرَّفة — فجوة مفتوحة ([05-conflicts.md §4](05-conflicts.md))
 
 ## 4. ما يحتاج قرارًا بشريًا الآن (كل البنود المفتوحة في مكان واحد)
@@ -65,8 +65,9 @@ notes: >
 | 1 | فجوة RD-* الست: استنباط من الاستخدام أم ورشة عمل مخصَّصة؟ | [05-conflicts.md §4](05-conflicts.md) | سياسة بيانات مرجعية |
 | 2 | نطاق AGG-ERASURE-REQUEST: هل يشمل BC05 (Qualification-Record) أم استبعاد متعمَّد؟ | [05-conflicts.md §5](05-conflicts.md) | مراجعة نطاق أمن/خصوصية |
 | 3 | CR-64/CR-65 (UC-089 + traces.satisfies الجديد): تأكيد بشري نهائي على التصنيف | `corrections.md` (CR-64 status: `APPLIED_IN_SPEC` معلَّق تأكيدًا) | اعتماد حوكمة |
+| 4 | CONFLICT-05: فجوات تغطية Requirement→Use Case حقيقية — BC04 (REQ-RCM-001..016، 16 متطلبًا)، BC05 (REQ-LOG-*/REQ-TRX-*، 29 من 45)، BC07 (REQ-AI-*/REQ-SRC-004 وaggregates حوكمة داخلية، 10 من 23) — لكل حالة: تسجيلها كـOQ رسمية تمهيدًا لكتابة UCs، أم تأكيد أنها عمل مؤجَّل لدورة إصدار لاحقة (BC05 تحديدًا R3)؟ | [05-conflicts.md §6](05-conflicts.md) | فتح OQ جديدة أو تأكيد تأجيل |
 
-**لا بنود أخرى معلَّقة في نطاق الدراسة الثمانية BCs** — كل تصحيح رجعي آخر (THR-S06، THR-S16-02، THR-S01-05/06) طُبِّق بالكامل ولا يحتاج مراجعة إضافية.
+**لا بنود أخرى معلَّقة في نطاق الدراسة الثمانية BCs** خلاف البنود الأربعة أعلاه — كل تصحيح رجعي آخر (THR-S06، THR-S16-02، THR-S01-05/06) طُبِّق بالكامل ولا يحتاج مراجعة إضافية.
 
 ## 5. ما هو خارج نطاق هذه الدراسة عمدًا
 

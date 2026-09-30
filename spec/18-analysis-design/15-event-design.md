@@ -17,10 +17,10 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القرار | المصدر |
 |---|---|---|
 | الوسيط | Apache Kafka (KRaft) لكل خلية، يديره Strimzi | TD-04 (`12-solution/technology-decisions.md`) |
-| النشر | Transactional outbox: الحدث يُكتب في جدول `outbox` في نفس معاملة تغيير الحالة، ثم ينقله CDC (Debezium) إلى Kafka | ADR-P02، FIT-04 |
+| النشر | Transactional outbox: الحدث يُكتب في جدول `outbox` في نفس معاملة تغيير الحالة (ADR-P02، FIT-04)، ثم ينقله CDC (Debezium) إلى Kafka (TD-04) | ADR-P02، TD-04 |
 | القنوات | قناة لكل مجال: `{cell}.<domain>.events` — 11 قناة، والمجال هو مقطع السياق في مسارات الواجهات | AsyncAPI `channels` |
-| قناة الأولوية | `{cell}.security.versions` مخصصة لـ`EVT-SEC-VERSION-INCREMENTED` بأولوية عالية، لأن إبطال الصلاحيات لا ينتظر | TD-04، CR-47 |
-| ملكية القناة | ينشر في قناة المجال السياق المالك لها فقط؛ BC07 ينشر في `ai` و`field` و`integration` و`discovery` | ADR-P18 |
+| قناة الأولوية | `{cell}.security.versions` مخصصة لـ`EVT-SEC-VERSION-INCREMENTED` بأولوية عالية، لأن إبطال الصلاحيات لا ينتظر | TD-04؛ `asyncapi-slc01.md` |
+| ملكية القناة | لكل قناة سياق منتِج واحد؛ BC07 ينشر في `ai` و`field` و`integration` و`discovery`، وBC01 في `foundation` و`security.versions` | كتالوجات الأحداث وملفات AsyncAPI |
 
 ## 2. الغلاف (EventEnvelope)
 
@@ -39,7 +39,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `correlation_id` | نعم | من `X-Correlation-Id` في الطلب الأصلي |
 | `causation_id` | لا | الحدث الذي تسبب في هذا الحدث (سلاسل العمليات) |
 | `security` | لا | علامات الـAggregate الأمنية؛ المستهلك يحترمها في الإسقاطات (ADR-P06) |
-| `payload` | نعم | في أحداث تغيّر الحالة: `aggregate_urn`، `from_state`، `to_state`، `actor`، `reason`، `changes` |
+| `payload` | نعم | حمولة عامة مشتركة بين أحداث المجال الـ584: `aggregate_urn`، `from_state`، `to_state` (إلزامية)، و`actor`، `reason`، `changes` (اختيارية؛ `changes` كائن غير مُنمَّط). حمولة `EVT-SEC-VERSION-INCREMENTED`: `subject_urn`، `security_version`، `cause_event_id` (كلها إلزامية) |
 
 ## 3. الترتيب والتقسيم
 
@@ -51,34 +51,35 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الجانب | الاصطلاح | المصدر |
 |---|---|---|
 | التسليم | **مرة واحدة على الأقل** (at-least-once) عبر outbox | ADR-P02؛ ترويسة كل ملف AsyncAPI |
-| عدم التكرار | كل مستهلك يسجل `event_id` في جدول `inbox` في نفس معاملة أثره؛ الحدث المكرر يُتجاهل | ADR-P02؛ `06-data/logical-model/slc-01.md` |
+| عدم التكرار | كل مستهلك يسجل `(tenant_id, consumer, event_id)` في جدول `inbox` في نفس معاملة أثره؛ الحدث المكرر يُتجاهل | `06-data/logical-model/slc-01.md`؛ ترويسة ملفات AsyncAPI |
 | موقع المستهلك في الكود | محوّل Kafka وارد ← معالج عملية (process handler) في حلقة التطبيق ← خط الأوامر إن كان الأثر أمرًا | ADR-P17؛ `11-hexagonal-reference.md` §4 |
-| التدقيق | سجل التدقيق يُكتب في `audit_outbox` مع الحالة، منفصلًا عن أحداث المجال | ADR-P02 |
+| التدقيق | سجل التدقيق يُكتب في `audit_outbox` (إدراج فقط) مع الحالة، منفصلًا عن أحداث المجال | `slc-01.md`؛ `08-security/audit-architecture.md` |
 
 ## 5. إعادة المحاولة والرسائل المسمومة
 
 | البند | الحالة |
 |---|---|
-| إعادة المحاولة عند فشل المستهلك | مذكورة في تحليل أنماط الفشل كـ«retry with backoff» دون أرقام (`09-reliability/fmea-slc*.md`) **[Missing — الأرقام]** |
+| إعادة المحاولة عند فشل المستهلك | المصدر الوحيد لفشل التسليم «outbox; retry / deliver on recovery» (`09-reliability/fmea-slc03.md`)، دون عدد محاولات أو تأخير **[Missing — الأرقام]** |
 | الرسائل المسمومة وقائمة الرسائل الميتة (DLQ) | **[Missing]** — لا تذكرها المواصفات. اقتراح للمرحلة 4 (`23-crosscutting.md`): محاولات محدودة بتأخير متزايد، ثم نقل الرسالة إلى `{cell}.<domain>.events.dlq` مع سبب الفشل، وتنبيه، وأداة إعادة تشغيل. الترتيب لكل Aggregate يفرض إيقاف معالجة ذلك الـAggregate فقط حتى تُعالج الرسالة **[Inferred]** |
 | الاحتفاظ في Kafka | **[Missing]** — يُحدد في `22-deployment-design.md`؛ الإسقاطات تُعاد بناؤها من مالكي البيانات لا من Kafka (FIT-11) |
 
 ## 6. تطور المخططات
 
-- إضافة حقل اختياري إلى الحمولة تغيير غير كاسر ويُبقي `event_version`.
-- التغيير الكاسر يرفع `event_version`، والمنتج ينشر الإصدارين طوال فترة دعم الإصدار السابق (6 أشهر على الأقل — QAS-EVO-001، FIT-14) **[Derived]** من قاعدة إصدارات العقود في ADR-P18.
+- الإصدار الرئيسي السابق لعقد API أو حدث يبقى مدعومًا 6 أشهر على الأقل (QAS-EVO-001)، والتغيير الكاسر بلا إصدار رئيسي جديد ممنوع (FIT-14).
+- إضافة حقل اختياري إلى الحمولة تغيير غير كاسر ويُبقي `event_version` **[Inferred]**.
+- التغيير الكاسر يرفع `event_version`، والمنتج ينشر الإصدارين طوال فترة الدعم **[Derived]** من القاعدتين أعلاه.
 
 ## 7. الأحداث المؤثرة أمنيًا
 
-55 حدثًا معلَّمة «يؤثر أمنياً» في الكتالوج: تغيّر صلاحية أو تصنيفًا أو عضوية، فترفع إصدار الأمن للموضوع المعني وتُبطل ذاكرة قرارات السياسة المخزنة (≤ 60 ثانية — `08-security/authorization-model.md` §5)، ويُبث `EVT-SEC-VERSION-INCREMENTED` على قناة الأولوية **[Derived]** من `authorization-model.md` §5 وTD-04.
+55 رسالة معلَّمة «يؤثر أمنياً»: 54 حدث مجال تغيّر صلاحية أو تصنيفًا أو عضوية، و`EVT-SEC-VERSION-INCREMENTED` نفسه. مستهلكو الأحداث الـ54 في الكتالوج خدمةُ إصدارات الأمن (التي تنشر `EVT-SEC-VERSION-INCREMENTED` على قناة الأولوية) وذواكرُ قرارات PEP. قرارات ALLOW تُخزَّن مؤقتًا ≤ 60 ثانية بمفتاح يتضمن `security_version`، ورفع الإصدار يبطلها **فورًا** (`08-security/authorization-model.md` §5؛ TD-04).
 
 ## 8. الكتالوج
 
-مرتب حسب القناة. «المستهلكون» من `x-consumers` في العقد؛ الإشارة `(R2)` أو `(R3)` تعني مستهلكًا يأتي في إصدار لاحق.
+مرتب حسب القناة. «ينتجه» و«المستهلكون» من كتالوجات الأحداث `03-domain/contexts/BC*/events-*.md` (تطابق `x-consumers` في AsyncAPI إلا في صياغة `EVT-SIM-EVALUATION-RECORDED`)؛ الإشارة `(R2)` أو `(R3)` تعني مستهلكًا يأتي في إصدار لاحق.
 
 <!-- BEGIN GENERATED: build_analysis_design.py -->
 
-## الكتالوج حسب القناة
+### ملخص القنوات
 
 | القناة | العنوان | عدد الأحداث |
 |---|---|---|
@@ -95,7 +96,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | readiness.events | `{cell}.readiness.events` | 78 |
 | security.versions | `{cell}.security.versions` | 1 |
 
-### ai.events — `{cell}.ai.events`
+#### ai.events — `{cell}.ai.events`
 
 | الحدث | Aggregate | ينتجه | يؤثر أمنيًا | المستهلكون |
 |---|---|---|---|---|
@@ -137,7 +138,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | EVT-TOL-REGISTERED | AGG-AI-TOOL | CMD-TOL-REGISTER | — | Tool gateway |
 | EVT-TOL-RETIRED | AGG-AI-TOOL | CMD-TOL-RETIRE | — | Tool gateway |
 
-### discovery.events — `{cell}.discovery.events`
+#### discovery.events — `{cell}.discovery.events`
 
 | الحدث | Aggregate | ينتجه | يؤثر أمنيًا | المستهلكون |
 |---|---|---|---|---|
@@ -149,7 +150,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | EVT-PRJ-RECOVERED | AGG-PROJECTION-VERSION | SYS:lag back within target | — | Query router (alias switch); Operations alerting |
 | EVT-PRJ-RETIRED | AGG-PROJECTION-VERSION | CMD-PRJ-RETIRE | — | Query router (alias switch); Operations alerting |
 
-### field.events — `{cell}.field.events`
+#### field.events — `{cell}.field.events`
 
 | الحدث | Aggregate | ينتجه | يؤثر أمنيًا | المستهلكون |
 |---|---|---|---|---|
@@ -171,7 +172,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | EVT-SYN-OPENED | AGG-SYNC-SESSION | CMD-SYN-OPEN | — | Owner contexts (commands applied via their APIs); Field telemetry |
 | EVT-SYN-REJECTED | AGG-SYNC-SESSION | SYS:device LOST or SUSPENDED at handshake | — | Owner contexts (commands applied via their APIs); Field telemetry |
 
-### foundation.events — `{cell}.foundation.events`
+#### foundation.events — `{cell}.foundation.events`
 
 | الحدث | Aggregate | ينتجه | يؤثر أمنيًا | المستهلكون |
 |---|---|---|---|---|
@@ -249,7 +250,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | EVT-USR-PROVISIONED | AGG-USER | CMD-USR-PROVISION | — | Search/Directory projection (BC01 read model) |
 | EVT-USR-UNLOCKED | AGG-USER | CMD-USR-UNLOCK | نعم | Security-version service (EVT-SEC-VERSION-INCREMENTED); PEP decision caches; Projection security-version table; Search/Directory projection (BC01 read model) |
 
-### governance.events — `{cell}.governance.events`
+#### governance.events — `{cell}.governance.events`
 
 | الحدث | Aggregate | ينتجه | يؤثر أمنيًا | المستهلكون |
 |---|---|---|---|---|
@@ -297,7 +298,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | EVT-RTS-EDITED | AGG-RETENTION-SCHEDULE | CMD-RTS-EDIT | — | Disposition planner; Key-bucket policy (class period sizing) |
 | EVT-RTS-SUPERSEDED | AGG-RETENTION-SCHEDULE | SYS:successor activated | — | Disposition planner; Key-bucket policy (class period sizing) |
 
-### information.events — `{cell}.information.events`
+#### information.events — `{cell}.information.events`
 
 | الحدث | Aggregate | ينتجه | يؤثر أمنيًا | المستهلكون |
 |---|---|---|---|---|
@@ -408,7 +409,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | EVT-SRC-RETIRED | AGG-SOURCE | CMD-SRC-RETIRE | — | Search/Graph projections (SLC-05) |
 | EVT-SRC-SUSPENDED | AGG-SOURCE | CMD-SRC-SUSPEND | — | Search/Graph projections (SLC-05) |
 
-### integration.events — `{cell}.integration.events`
+#### integration.events — `{cell}.integration.events`
 
 | الحدث | Aggregate | ينتجه | يؤثر أمنيًا | المستهلكون |
 |---|---|---|---|---|
@@ -434,7 +435,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | EVT-SNS-RETIRED | AGG-SENSOR-STREAM | CMD-SNS-RETIRE | — | Ingestion workers (SLC-02 batches); Operations alerting |
 | EVT-SNS-STALE | AGG-SENSOR-STREAM | SYS:no data beyond stale-after | — | Ingestion workers (SLC-02 batches); Operations alerting |
 
-### intelligence.events — `{cell}.intelligence.events`
+#### intelligence.events — `{cell}.intelligence.events`
 
 | الحدث | Aggregate | ينتجه | يؤثر أمنيًا | المستهلكون |
 |---|---|---|---|---|
@@ -498,7 +499,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | EVT-SIT-RECLASSIFIED | AGG-SITUATION | CMD-SIT-RECLASSIFY | نعم | Security-version service (EVT-SEC-VERSION-INCREMENTED); PEP decision caches; Projection security-version table; Membership evaluator (reload definition); Alert evaluator; Tile cache invalidation; Search projection (SLC-05) |
 | EVT-SIT-RESUMED | AGG-SITUATION | CMD-SIT-RESUME | — | Membership evaluator (reload definition); Alert evaluator; Tile cache invalidation; Search projection (SLC-05) |
 
-### knowledge.events — `{cell}.knowledge.events`
+#### knowledge.events — `{cell}.knowledge.events`
 
 | الحدث | Aggregate | ينتجه | يؤثر أمنيًا | المستهلكون |
 |---|---|---|---|---|
@@ -545,7 +546,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | EVT-REC-REQUESTED | AGG-RECONSTRUCTION | CMD-REC-REQUEST | — | Requester notification; Audit |
 | EVT-REC-STARTED | AGG-RECONSTRUCTION | SYS:worker started | — | Requester notification; Audit |
 
-### operations.events — `{cell}.operations.events`
+#### operations.events — `{cell}.operations.events`
 
 | الحدث | Aggregate | ينتجه | يؤثر أمنيًا | المستهلكون |
 |---|---|---|---|---|
@@ -651,7 +652,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | EVT-TTY-EDITED | AGG-TASK-TYPE | CMD-TTY-EDIT | — | Task command handler cache |
 | EVT-TTY-RETIRED | AGG-TASK-TYPE | CMD-TTY-RETIRE | — | Task command handler cache |
 
-### readiness.events — `{cell}.readiness.events`
+#### readiness.events — `{cell}.readiness.events`
 
 | الحدث | Aggregate | ينتجه | يؤثر أمنيًا | المستهلكون |
 |---|---|---|---|---|
@@ -734,7 +735,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | EVT-SIM-RESUMED | AGG-SIMULATION | CMD-SIM-RESUME | — | Search projection (SLC-05) |
 | EVT-SIM-STARTED | AGG-SIMULATION | CMD-SIM-START | — | Exercise (IN_PROGRESS trigger); Search projection (SLC-05) |
 
-### security.versions — `{cell}.security.versions`
+#### security.versions — `{cell}.security.versions`
 
 | الحدث | Aggregate | ينتجه | يؤثر أمنيًا | المستهلكون |
 |---|---|---|---|---|

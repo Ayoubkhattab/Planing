@@ -113,6 +113,15 @@ VERBS = {
     "WITHDRAW": "سحب {a}",
 }
 
+# Per-command phrases where the verb template would mislead or repeat the aggregate name.
+COMMAND_PHRASES = {
+    "CMD-LHD-REQUEST-RELEASE": "طلب رفع {a}", "CMD-LHD-APPROVE-RELEASE": "اعتماد رفع {a}",
+    "CMD-LHD-CANCEL-RELEASE": "إلغاء طلب رفع {a}", "CMD-RSV-HOLD": "إنشاء {a} مبدئيًا",
+    "CMD-ASG-RETURN": "إرجاع الأصل وإنهاء {a}", "CMD-SCF-DISCARD": "حسم {a} بإسقاط الأمر الميداني",
+    "CMD-ASG-ASSIGN": "تسجيل {a}", "CMD-AUT-GRANT": "إصدار {a}", "CMD-DST-DISTRIBUTE": "تنفيذ {a}",
+    "CMD-LGR-REQUEST": "تقديم {a}", "CMD-RAS-ASSIGN": "تسجيل {a}",
+}
+
 # Aggregates grouped by domain category (a second tag next to the lifecycle operation type).
 CATEGORIES = {
     "تحليل": {"AGG-ANALYSIS-CASE", "AGG-ANALYSIS-METHOD", "AGG-ANALYSIS-RUN", "AGG-ASSESSMENT", "AGG-FINDING",
@@ -126,5 +135,5 @@ CATEGORIES = {
     "حوكمة وأمن": {"AGG-CLASSIFICATION-SCHEME", "AGG-DISPOSITION-RUN", "AGG-ERASURE-REQUEST", "AGG-LEGAL-HOLD",
                    "AGG-POLICY-SET", "AGG-RETENTION-SCHEDULE", "AGG-SECURITY-EXCEPTION", "AGG-CLEARANCE", "AGG-ROLE",
                    "AGG-ROLE-ASSIGNMENT", "AGG-AUTHORITY-GRANT", "AGG-SERVICE-ACCOUNT", "AGG-AI-ROUTING", "AGG-AI-TOOL",
-                   "AGG-MODEL-VERSION", "AGG-EVAL-SUITE", "AGG-PROJECTION-VERSION"},
+                   "AGG-MODEL-VERSION", "AGG-EVAL-SUITE"},
 }

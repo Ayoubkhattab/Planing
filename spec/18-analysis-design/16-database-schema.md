@@ -27,7 +27,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 من `06-data/logical-model/slc-01.md`، وتنطبق على كل الشرائح:
 
-1. `tenant_id` **أول عمود** في كل مفتاح أساسي وكل فهرس (FIT-02، SR-02)، وسياسة RLS على كل جدول حاجزًا ثانيًا؛ خط الأوامر يضبط المستأجر في جلسة وحدة العمل (ADR-P04، ADR-P17).
+1. `tenant_id` **أول عمود** في كل مفتاح أساسي وكل فهرس (FIT-02، SR-02)، وسياسة RLS على كل جدول حاجزًا ثانيًا؛ خط الأوامر يضبط المستأجر في جلسة وحدة العمل (ADR-P04، ADR-P17). الاستثناءات: جداول على مستوى المنصة أو الخلية أو مؤقتة، مسرودة في ملخص §8.
 2. كل Aggregate: جدول حالة + جدول `<table>_history` (إصدار غير قابل للتعديل لكل تغيير) + عمود `version` للتزامن المتفائل.
 3. الأزمنة: `recorded_at` يعيّنه الخادم؛ لا `created_at` / `updated_at` زمنًا للعمل (FIT-09).
 4. الحقول الشخصية (`pii`) مشفرة بمفتاح صاحب البيانات (ADR-P08)؛ المحو = إتلاف المفتاح.
@@ -45,7 +45,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `audit_outbox` | سجلات التدقيق في نفس المعاملة، تنتقل إلى `governance.audit_records` | ADR-P02 |
 | `inbox` | `event_id` للأحداث المستهلكة؛ عدم التكرار | ADR-P02 |
 | `idempotency_keys` | `(tenant_id, key)` ← `command_id`، `request_hash`، `response`، `expires_at`؛ صلاحية 24 ساعة | `slc-01.md` |
-| `<table>_history` | إصدار لكل تغيير في كل جدول Aggregate | القاعدة 2 |
+| `<table>_history` | إصدار لكل تغيير في كل جدول Aggregate؛ حتى ما سماه النموذج صراحة (`tasks_history`، `qualification_records_history`، `incident_severity_history`) لا يُكرَّر في الكتالوج | القاعدة 2 |
+| `security_versions` | إصدار الأمن لكل موضوع — مصدر حقيقة الإلغاء لنقاط فرض السياسة (BC01)، تُنسخ إلى Valkey (TD-11) | `slc-01.md` |
 
 ## 4. اصطلاحات الأنواع (مستنتَجة)
 
@@ -59,6 +60,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `state`، `kind`، `status`، `severity`… | `enum` | `text` بقيد `CHECK` من قائمة الحالات (لا نوع enum لتسهيل expand/contract) |
 | `label`، `*_label` | `security_label` | `jsonb` (المستوى والتحفظات) |
 | `(json)` | `json` | `jsonb` |
+| `window`، `period` | `period` | `tstzrange` |
 | `[]` أو `(array)` | `array` | مصفوفة أو `jsonb` |
 | `geom`، `(4326)` | `geometry(4326)` | `geometry(…, 4326)` PostGIS |
 | `is_*`، `has_*`، `include_*`، `delegable`… | `boolean` | `boolean` |
@@ -71,7 +73,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 - لكل schema مخطط `erDiagram` يعرض المفاتيح والمفاتيح الأجنبية فقط، حتى يبقى مقروءًا؛ الأعمدة كاملة في جدول كل كيان.
 - المفتاح الأجنبي **[Derived]**: عمود `x_id` أو `x_ref` (أو `parent_x_id`) يشير إلى الجدول الذي آخر عمود في مفتاحه `x_id` **في نفس الـschema**.
 - **لا مفاتيح أجنبية عبر الـschemas.** الإشارة إلى كيان في سياق آخر URN يُتحقق منه عبر عقد ذلك السياق، لا قيد قاعدة بيانات (FIT-01).
-- `tenant_id` جزء من كل مفتاح أجنبي ضمنيًا (المفتاح المركب يبدأ به).
+- `tenant_id` جزء من كل مفتاح أجنبي ضمنيًا (المفتاح المركب يبدأ به)، عدا الجداول المستثناة من القاعدة 1.
+- أعمدة `*_ref` معرّفات URN قد تشير إلى أكثر من نوع أو إلى سياق آخر (مثل `plan_ref` في المهمة: خطة عمليات أو جمع أو طوارئ)، فلا تُرسم مفاتيح أجنبية.
+- لا يُرسم مفتاح أجنبي إلا إلى جدول مالك مفتاحه `(tenant_id, x_id)` واسمه جمع `x`.
 
 ## 6. الترحيل
 
@@ -81,7 +85,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 | البند | الحالة |
 |---|---|
-| اسم schema مخزن الإسقاطات في PostgreSQL (`projection_versions`، `projection_inbox`، جداول الرسم البياني) | **[Missing]** — `slc-05.md` يقول «BC07 store» فقط |
+| اسم schema مخزن الإسقاطات في PostgreSQL (`projection_versions`، `projection_inbox`، جداول الرسم البياني) | **[Missing]** — `slc-05.md` يقول «BC07 store» فقط؛ وثائق OpenSearch خارج هذه الفجوة |
+| اختلاف أسماء أعمدة ومفاتيح الجدول نفسه بين الشرائح | **[Needs Review]** — مسرود في ملخص §8؛ يُحسم في المصدر |
+| مخزن المفاتيح `key_store.*` لكل خلية | أُفرد schema `key_store` لأن المصدر يسميه خارج schema المستأجر؛ اسمه ومالكه الفعلي يُحسمان في `22-deployment-design.md` **[Needs Review]** |
 | الفهارس غير المذكورة في عمود القيود | تُشتق عند كتابة الترحيل من مسارات الاستعلام (`14-api-design.md`) |
 | أنواع الأعمدة | **[Derived]** بالقواعد في §4 |
 
@@ -89,24 +95,39 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 <!-- BEGIN GENERATED: build_analysis_design.py -->
 
-## الملخص
+### الملخص
 
 | الـschema | السياق المالك | الجداول |
 |---|---|---|
 | `ai` | BC07 | 10 |
 | `field` | BC07 | 5 |
 | `foundation` | BC01 | 18 |
-| `governance` | BC08 | 15 |
+| `governance` | BC08 | 13 |
 | `information` | BC02 | 34 |
 | `integration` | BC07 | 6 |
 | `intelligence` | BC03 | 20 |
+| `key_store` | BC08 (مخزن مفاتيح لكل خلية) | 2 |
 | `knowledge` | BC06 | 11 |
-| `operations` | BC04 | 26 |
-| `readiness` | BC05 | 24 |
-| مخزن الإسقاطات (الاسم [Missing]) | BC07 | 9 وثيقة/جدول |
+| `operations` | BC04 | 24 |
+| `readiness` | BC05 | 23 |
+| إسقاطات PostgreSQL (اسم الـschema **[Missing]**) | BC07 | 4 |
+| وثائق OpenSearch | BC07 | 5 |
+
+**جداول مفتاحها بلا `tenant_id`** (مستوى المنصة أو الخلية، أو مؤقتة): `ai.ai_tools`, `ai.eval_reports`, `ai.eval_suites`, `ai.model_versions`, `governance.audit_anchors`, `intelligence.tile_cache`, `key_store.destruction_log`, `operations.notification_templates`.
+
+**جداول لم تُدرج في الكتالوج:** `*_history` (slc-01)؛ `audit_outbox` (slc-01)؛ `idempotency_keys` (slc-01)؛ `inbox` (slc-01)؛ `incident_severity_history` (slc-17)؛ `outbox` (slc-01)؛ `qualification_records_history` (slc-03)؛ `security_versions` (slc-01)؛ `tasks_history` (slc-03) — الجداول القياسية وجداول التاريخ (§3)، ومخزن `security_versions` (BC01، مصدر حقيقة الإلغاء لنقاط فرض السياسة).
+
+**اختلاف تسمية بين الشرائح للجدول نفسه** (لم يُدمج كأعمدة جديدة؛ يُحسم في المصدر) **[Needs Review]**:
+
+| الجدول | الاختلاف |
+|---|---|
+| `readiness.allocations` | `target` (slc-09) / `target_ref` (slc-18) |
+| `readiness.qualification_records` | `evidence` (slc-03) / `evidence_ref` (slc-19) |
+| `knowledge.knowledge_objects` | `source` (slc-12) / `source_ref` (slc-19) |
+| `knowledge.knowledge_objects` | المفتاح `(tenant_id, knowledge_id, version)` (slc-12) / `(tenant_id, object_id, version)` (slc-19) |
 
 
-## schema `ai` — BC07
+### schema `ai` — BC07
 
 ```mermaid
 erDiagram
@@ -157,9 +178,9 @@ erDiagram
   ai_requests ||--o{ ai_statements : "request_id"
 ```
 
-العلاقات في المخطط مستنتَجة من أسماء الأعمدة (`x_id` / `x_ref` → مفتاح الجدول المقابل) **[Derived]**؛ الأنواع مستنتَجة من الاصطلاحات (§2) **[Derived]**.
+العلاقات مستنتَجة وفق §5 **[Derived]**؛ الأنواع وفق §4 **[Derived]**.
 
-### `ai.ai_context_items`
+#### `ai.ai_context_items`
 
 - **المفتاح:** `(tenant_id, request_id, seq)` · **المصدر:** `06-data/logical-model/slc-10.md`
 
@@ -173,7 +194,7 @@ erDiagram
 
 **القيود:** pinned
 
-### `ai.ai_requests`
+#### `ai.ai_requests`
 
 - **المفتاح:** `(tenant_id, request_id)` · **المصدر:** `06-data/logical-model/slc-10.md`
 
@@ -194,7 +215,7 @@ erDiagram
 
 **القيود:** prompts/outputs encrypted with tenant key; record class ai-logs
 
-### `ai.ai_results`
+#### `ai.ai_results`
 
 - **المفتاح:** `(tenant_id, result_id)` · **المصدر:** `06-data/logical-model/slc-10.md`
 
@@ -210,7 +231,7 @@ erDiagram
 
 **القيود:** —
 
-### `ai.ai_routings`
+#### `ai.ai_routings`
 
 - **المفتاح:** `(tenant_id, routing_version)` · **المصدر:** `06-data/logical-model/slc-10.md`
 
@@ -218,12 +239,12 @@ erDiagram
 |---|---|---|---|
 | `routes` | json | — | — |
 | `state` | enum | — | — |
-| `author` | text | — | — |
-| `approver` | text | — | — |
+| `author` | urn | — | — |
+| `approver` | urn | — | — |
 
 **القيود:** one ACTIVE per tenant
 
-### `ai.ai_statements`
+#### `ai.ai_statements`
 
 - **المفتاح:** `(tenant_id, request_id, seq)` · **المصدر:** `06-data/logical-model/slc-10.md`
 
@@ -235,7 +256,7 @@ erDiagram
 
 **القيود:** —
 
-### `ai.ai_tools`
+#### `ai.ai_tools`
 
 - **المفتاح:** `(tool_id)` · **المصدر:** `06-data/logical-model/slc-10.md`
 
@@ -251,7 +272,7 @@ erDiagram
 
 **القيود:** effect ∈ {read, propose} in R2
 
-### `ai.ai_usage`
+#### `ai.ai_usage`
 
 - **المفتاح:** `(tenant_id, day, operation)` · **المصدر:** `06-data/logical-model/slc-10.md`
 
@@ -264,7 +285,7 @@ erDiagram
 
 **القيود:** cost model input
 
-### `ai.eval_reports`
+#### `ai.eval_reports`
 
 - **المفتاح:** `(report_id)` · **المصدر:** `06-data/logical-model/slc-10.md`
 
@@ -277,7 +298,7 @@ erDiagram
 
 **القيود:** —
 
-### `ai.eval_suites`
+#### `ai.eval_suites`
 
 - **المفتاح:** `(suite_id, version)` · **المصدر:** `06-data/logical-model/slc-10.md`
 
@@ -288,7 +309,7 @@ erDiagram
 
 **القيود:** immutable once ACTIVE
 
-### `ai.model_versions`
+#### `ai.model_versions`
 
 - **المفتاح:** `(model_id, version)` · **المصدر:** `06-data/logical-model/slc-10.md`
 
@@ -308,14 +329,13 @@ erDiagram
 **القيود:** platform-level; never deleted
 
 
-## schema `field` — BC07
+### schema `field` — BC07
 
 ```mermaid
 erDiagram
   applied_commands {
     urn tenant_id PK
     urn client_command_id PK
-    urn device_id FK
   }
   device_cursors {
     urn tenant_id PK
@@ -324,7 +344,6 @@ erDiagram
   preload_packages {
     urn tenant_id PK
     urn package_id PK
-    urn device_id FK
   }
   sync_conflicts {
     urn tenant_id PK
@@ -333,16 +352,12 @@ erDiagram
   sync_sessions {
     urn tenant_id PK
     urn session_id PK
-    urn device_id FK
   }
-  device_cursors ||--o{ applied_commands : "device_id"
-  device_cursors ||--o{ preload_packages : "device_id"
-  device_cursors ||--o{ sync_sessions : "device_id"
 ```
 
-العلاقات في المخطط مستنتَجة من أسماء الأعمدة (`x_id` / `x_ref` → مفتاح الجدول المقابل) **[Derived]**؛ الأنواع مستنتَجة من الاصطلاحات (§2) **[Derived]**.
+العلاقات مستنتَجة وفق §5 **[Derived]**؛ الأنواع وفق §4 **[Derived]**.
 
-### `field.applied_commands`
+#### `field.applied_commands`
 
 - **المفتاح:** `(tenant_id, client_command_id)` · **المصدر:** `06-data/logical-model/slc-11.md`
 
@@ -356,7 +371,7 @@ erDiagram
 
 **القيود:** idempotency; retained ≥ 30 d
 
-### `field.device_cursors`
+#### `field.device_cursors`
 
 - **المفتاح:** `(tenant_id, device_id)` · **المصدر:** `06-data/logical-model/slc-11.md`
 
@@ -367,7 +382,7 @@ erDiagram
 
 **القيود:** resume point
 
-### `field.preload_packages`
+#### `field.preload_packages`
 
 - **المفتاح:** `(tenant_id, package_id)` · **المصدر:** `06-data/logical-model/slc-11.md`
 
@@ -377,7 +392,7 @@ erDiagram
 | `user_id` | urn | — | — |
 | `area` | json | — | — |
 | `layers` | array | — | — |
-| `window` | text | — | — |
+| `window` | period | — | — |
 | `level` | text | — | — |
 | `manifest` | json | — | — |
 | `security_version` | integer | — | — |
@@ -386,7 +401,7 @@ erDiagram
 
 **القيود:** —
 
-### `field.sync_conflicts`
+#### `field.sync_conflicts`
 
 - **المفتاح:** `(tenant_id, conflict_id)` · **المصدر:** `06-data/logical-model/slc-11.md`
 
@@ -401,7 +416,7 @@ erDiagram
 
 **القيود:** —
 
-### `field.sync_sessions`
+#### `field.sync_sessions`
 
 - **المفتاح:** `(tenant_id, session_id)` · **المصدر:** `06-data/logical-model/slc-11.md`
 
@@ -417,7 +432,7 @@ erDiagram
 **القيود:** —
 
 
-## schema `foundation` — BC01
+### schema `foundation` — BC01
 
 ```mermaid
 erDiagram
@@ -453,7 +468,6 @@ erDiagram
   org_units {
     urn tenant_id PK
     urn unit_id PK
-    urn org_id FK
     urn parent_unit_id FK
   }
   organizations {
@@ -483,7 +497,7 @@ erDiagram
   }
   service_account_credentials {
     urn tenant_id PK
-    urn sa_id PK, FK
+    urn sa_id PK
     urn credential_id PK
   }
   service_accounts {
@@ -500,7 +514,7 @@ erDiagram
   user_identities {
     urn tenant_id PK
     text issuer PK
-    text subject PK
+    urn subject PK
     urn user_id FK
   }
   users {
@@ -513,19 +527,17 @@ erDiagram
   devices ||--o{ device_keys : "device_id"
   users ||--o{ devices : "user_id"
   persons ||--o{ hr_sync_proposals : "person_id"
-  organizations ||--o{ org_units : "org_id"
   org_units ||--o{ org_units : "parent_unit_id"
   users ||--o{ role_assignments : "user_id"
   roles ||--o{ role_assignments : "role_id"
   roles ||--o{ role_permissions : "role_id"
-  service_accounts ||--o{ service_account_credentials : "sa_id"
   users ||--o{ user_identities : "user_id"
   persons ||--o{ users : "person_id"
 ```
 
-العلاقات في المخطط مستنتَجة من أسماء الأعمدة (`x_id` / `x_ref` → مفتاح الجدول المقابل) **[Derived]**؛ الأنواع مستنتَجة من الاصطلاحات (§2) **[Derived]**.
+العلاقات مستنتَجة وفق §5 **[Derived]**؛ الأنواع وفق §4 **[Derived]**.
 
-### `foundation.authority_grants`
+#### `foundation.authority_grants`
 
 - **المفتاح:** `(tenant_id, grant_id)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -546,7 +558,7 @@ erDiagram
 
 **القيود:** depth ≤ 2; CHECK(valid_from < valid_to); parent period ⊇ child (aggregate)
 
-### `foundation.clearances`
+#### `foundation.clearances`
 
 - **المفتاح:** `(tenant_id, clearance_id)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -558,13 +570,13 @@ erDiagram
 | `caveat_attributes` | json | — | — |
 | `valid_to` | timestamptz | — | — |
 | `state` | enum | — | — |
-| `requested_by` | text | — | — |
-| `approved_by` | text | — | — |
+| `requested_by` | urn | — | — |
+| `approved_by` | urn | — | — |
 | `version` | integer | — | — |
 
 **القيود:** at most one non-terminal per user (partial unique index)
 
-### `foundation.device_keys`
+#### `foundation.device_keys`
 
 - **المفتاح:** `(tenant_id, device_id, key_id)` · **المصدر:** `06-data/logical-model/slc-11.md`
 
@@ -576,7 +588,7 @@ erDiagram
 
 **القيود:** one current key
 
-### `foundation.devices`
+#### `foundation.devices`
 
 - **المفتاح:** `(tenant_id, device_id)` · **المصدر:** `06-data/logical-model/slc-11.md`
 
@@ -591,7 +603,7 @@ erDiagram
 
 **القيود:** ≤ 3 ACTIVE per user
 
-### `foundation.hr_role_mapping`
+#### `foundation.hr_role_mapping`
 
 - **المفتاح:** `(tenant_id, hr_position_code)` · **المصدر:** `06-data/logical-model/slc-16.md`
 
@@ -602,7 +614,7 @@ erDiagram
 
 **القيود:** tenant-maintained
 
-### `foundation.hr_sync_proposals`
+#### `foundation.hr_sync_proposals`
 
 - **المفتاح:** `(tenant_id, proposal_id)` · **المصدر:** `06-data/logical-model/slc-16.md`
 
@@ -613,11 +625,11 @@ erDiagram
 | `hr_payload` | bytes_encrypted | — | مشفر |
 | `proposed_changes` | json | — | — |
 | `state` | enum | — | — |
-| `decided_by` | text | نعم | — |
+| `decided_by` | urn | نعم | — |
 
 **القيود:** personal data encrypted with subject key
 
-### `foundation.org_units`
+#### `foundation.org_units`
 
 - **المفتاح:** `(tenant_id, unit_id)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -631,7 +643,7 @@ erDiagram
 
 **القيود:** one root per org; UNIQUE(tenant_id, parent_unit_id, name.normalized); path used for subtree scope checks
 
-### `foundation.organizations`
+#### `foundation.organizations`
 
 - **المفتاح:** `(tenant_id, org_id)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -643,7 +655,7 @@ erDiagram
 
 **القيود:** UNIQUE(tenant_id, name.normalized)
 
-### `foundation.persons`
+#### `foundation.persons`
 
 - **المفتاح:** `(tenant_id, person_id)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -658,7 +670,7 @@ erDiagram
 
 **القيود:** UNIQUE(tenant_id, hr_id) when not null
 
-### `foundation.role_assignments`
+#### `foundation.role_assignments`
 
 - **المفتاح:** `(tenant_id, assignment_id)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -675,7 +687,7 @@ erDiagram
 
 **القيود:** no two ACTIVE SoD-incompatible roles per user (checked in aggregate + deferred constraint)
 
-### `foundation.role_permissions`
+#### `foundation.role_permissions`
 
 - **المفتاح:** `(tenant_id, role_id, role_version, action, resource_type)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -685,7 +697,7 @@ erDiagram
 
 **القيود:** per role version
 
-### `foundation.roles`
+#### `foundation.roles`
 
 - **المفتاح:** `(tenant_id, role_id)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -699,7 +711,7 @@ erDiagram
 
 **القيود:** UNIQUE(tenant_id, code)
 
-### `foundation.service_account_credentials`
+#### `foundation.service_account_credentials`
 
 - **المفتاح:** `(tenant_id, sa_id, credential_id)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -710,7 +722,7 @@ erDiagram
 
 **القيود:** expires_at ≤ issued + 90 d
 
-### `foundation.service_accounts`
+#### `foundation.service_accounts`
 
 - **المفتاح:** `(tenant_id, sa_id)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -725,7 +737,7 @@ erDiagram
 
 **القيود:** owner NOT NULL
 
-### `foundation.tenant_provisioning_steps`
+#### `foundation.tenant_provisioning_steps`
 
 - **المفتاح:** `(tenant_id, step)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -738,7 +750,7 @@ erDiagram
 
 **القيود:** idempotent per step
 
-### `foundation.tenants`
+#### `foundation.tenants`
 
 - **المفتاح:** `(tenant_id)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -757,7 +769,7 @@ erDiagram
 
 **القيود:** namespace UNIQUE (platform) immutable; state ∈ SM
 
-### `foundation.user_identities`
+#### `foundation.user_identities`
 
 - **المفتاح:** `(tenant_id, issuer, subject)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -768,7 +780,7 @@ erDiagram
 
 **القيود:** UNIQUE(tenant_id, issuer, subject)
 
-### `foundation.users`
+#### `foundation.users`
 
 - **المفتاح:** `(tenant_id, user_id)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -783,7 +795,7 @@ erDiagram
 **القيود:** UNIQUE(tenant_id, username); UNIQUE(tenant_id, person_id)
 
 
-## schema `governance` — BC08
+### schema `governance` — BC08
 
 ```mermaid
 erDiagram
@@ -813,14 +825,6 @@ erDiagram
     text key PK
     urn hold_id FK
   }
-  key_store_deks {
-    urn tenant_id PK
-    urn key_id PK
-  }
-  key_store_destruction_log {
-    integer seq PK
-    urn key_id FK
-  }
   legal_holds {
     urn tenant_id PK
     urn hold_id PK
@@ -840,7 +844,7 @@ erDiagram
   security_exception_approvals {
     urn tenant_id PK
     urn exception_id PK, FK
-    text approver PK
+    urn approver PK
   }
   security_exceptions {
     urn tenant_id PK
@@ -853,30 +857,29 @@ erDiagram
     urn run_id FK
   }
   legal_holds ||--o{ hold_index : "hold_id"
-  key_store_deks ||--o{ key_store_destruction_log : "key_id"
   security_exceptions ||--o{ security_exception_approvals : "exception_id"
   disposition_runs ||--o{ tombstones : "run_id"
 ```
 
-العلاقات في المخطط مستنتَجة من أسماء الأعمدة (`x_id` / `x_ref` → مفتاح الجدول المقابل) **[Derived]**؛ الأنواع مستنتَجة من الاصطلاحات (§2) **[Derived]**.
+العلاقات مستنتَجة وفق §5 **[Derived]**؛ الأنواع وفق §4 **[Derived]**.
 
-### `governance.audit_anchors`
+#### `governance.audit_anchors`
 
 - **المفتاح:** `(anchor_id)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
 | العمود | النوع (مستنتَج) | اختياري | ملاحظة |
 |---|---|---|---|
 | `tenant_id` | urn | — | — |
-| `period` | text | — | — |
+| `period` | period | — | — |
 | `merkle_root` | text | — | — |
 | `shard_heads` | json | — | — |
 | `anchored_at` | timestamptz | — | — |
 
 **القيود:** write-once store
 
-### `governance.audit_records`
+#### `governance.audit_records`
 
-- **المفتاح:** `(tenant_id, shard, seq)` · **المصدر:** `06-data/logical-model/slc-01.md`
+- **المفتاح:** `(tenant_id, shard, seq)` · **المصدر:** `06-data/logical-model/slc-01.md` · **التقسيم:** partitioned by (tenant_id, month)
 
 | العمود | النوع (مستنتَج) | اختياري | ملاحظة |
 |---|---|---|---|
@@ -895,7 +898,7 @@ erDiagram
 
 **القيود:** insert-only; partitioned by (tenant_id, month)
 
-### `governance.classification_schemes`
+#### `governance.classification_schemes`
 
 - **المفتاح:** `(tenant_id, scheme_version)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -908,12 +911,12 @@ erDiagram
 | `audit_threshold` | text | — | — |
 | `default_level` | text | — | — |
 | `effective_from` | text | — | — |
-| `drafted_by` | text | — | — |
-| `activated_by` | text | — | — |
+| `drafted_by` | urn | — | — |
+| `activated_by` | urn | — | — |
 
 **القيود:** one ACTIVE per tenant; one DRAFT per tenant
 
-### `governance.disposition_runs`
+#### `governance.disposition_runs`
 
 - **المفتاح:** `(tenant_id, run_id)` · **المصدر:** `06-data/logical-model/slc-12a.md`
 
@@ -924,12 +927,12 @@ erDiagram
 | `exceptions` | json | — | — |
 | `certificate` | json | — | — |
 | `state` | enum | — | — |
-| `submitted_by` | text | — | — |
-| `approved_by` | text | — | — |
+| `submitted_by` | urn | — | — |
+| `approved_by` | urn | — | — |
 
 **القيود:** —
 
-### `governance.erasure_requests`
+#### `governance.erasure_requests`
 
 - **المفتاح:** `(tenant_id, request_id)` · **المصدر:** `06-data/logical-model/slc-12a.md`
 
@@ -940,12 +943,12 @@ erDiagram
 | `scope_counts` | json | — | — |
 | `confirmations` | json | — | — |
 | `state` | enum | — | — |
-| `registered_by` | text | — | — |
-| `approved_by` | text | — | — |
+| `registered_by` | urn | — | — |
+| `approved_by` | urn | — | — |
 
 **القيود:** no personal data stored
 
-### `governance.hold_index`
+#### `governance.hold_index`
 
 - **المفتاح:** `(tenant_id, kind, key)` · **المصدر:** `06-data/logical-model/slc-12a.md`
 
@@ -955,36 +958,7 @@ erDiagram
 
 **القيود:** fast HoldCheck (class, urn, subject, org, range)
 
-### `governance.key_store.deks`
-
-- **المفتاح:** `(tenant_id, key_id)` · **المصدر:** `06-data/logical-model/slc-12a.md`
-
-| العمود | النوع (مستنتَج) | اختياري | ملاحظة |
-|---|---|---|---|
-| `kind` | enum | — | class_bucket / subject / hold |
-| `scope_ref` | text | — | — |
-| `wrapped_key` | text | — | — |
-| `created_at` | timestamptz | — | — |
-| `destroyed_at` | timestamptz | نعم | — |
-
-**القيود:** wrapped by tenant KEK
-
-### `governance.key_store.destruction_log`
-
-- **المفتاح:** `(seq)` · **المصدر:** `06-data/logical-model/slc-12a.md`
-
-| العمود | النوع (مستنتَج) | اختياري | ملاحظة |
-|---|---|---|---|
-| `tenant_id` | urn | — | — |
-| `key_id` | urn | — | — |
-| `destroyed_at` | timestamptz | — | — |
-| `run_request_ref` | text | — | — |
-| `prev_hash` | text | — | — |
-| `hash` | text | — | — |
-
-**القيود:** append-only; replicated; replayed by restore gate
-
-### `governance.legal_holds`
+#### `governance.legal_holds`
 
 - **المفتاح:** `(tenant_id, hold_id)` · **المصدر:** `06-data/logical-model/slc-12a.md`
 
@@ -994,13 +968,13 @@ erDiagram
 | `legal_reference` | text | — | — |
 | `scope` | json | — | — |
 | `state` | enum | — | — |
-| `placed_by` | text | — | — |
-| `release_requested_by` | text | نعم | — |
-| `released_by` | text | نعم | — |
+| `placed_by` | urn | — | — |
+| `release_requested_by` | urn | نعم | — |
+| `released_by` | urn | نعم | — |
 
 **القيود:** —
 
-### `governance.policy_bundles`
+#### `governance.policy_bundles`
 
 - **المفتاح:** `(tenant_id, bundle_id)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -1013,7 +987,7 @@ erDiagram
 
 **القيود:** signed; distributed to evaluators
 
-### `governance.policy_sets`
+#### `governance.policy_sets`
 
 - **المفتاح:** `(tenant_id, policy_version)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -1023,12 +997,12 @@ erDiagram
 | `decision_tables` | json | — | — |
 | `tests` | json | — | — |
 | `effective_from` | text | — | — |
-| `author` | text | — | — |
-| `approver` | text | — | — |
+| `author` | urn | — | — |
+| `approver` | urn | — | — |
 
 **القيود:** one ACTIVE per tenant; approver ≠ author
 
-### `governance.retention_schedules`
+#### `governance.retention_schedules`
 
 - **المفتاح:** `(tenant_id, schedule_version)` · **المصدر:** `06-data/logical-model/slc-12a.md`
 
@@ -1036,14 +1010,14 @@ erDiagram
 |---|---|---|---|
 | `rules` | json | — | — |
 | `state` | enum | — | — |
-| `drafted_by` | text | — | — |
-| `approved_by` | text | — | — |
+| `drafted_by` | urn | — | — |
+| `approved_by` | urn | — | — |
 | `effective_from` | text | — | — |
 | `retroactive_classes` | array | — | — |
 
 **القيود:** one ACTIVE per tenant
 
-### `governance.security_exception_approvals`
+#### `governance.security_exception_approvals`
 
 - **المفتاح:** `(tenant_id, exception_id, approver)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -1053,7 +1027,7 @@ erDiagram
 
 **القيود:** distinct approvers; approver ≠ requester
 
-### `governance.security_exceptions`
+#### `governance.security_exceptions`
 
 - **المفتاح:** `(tenant_id, exception_id)` · **المصدر:** `06-data/logical-model/slc-01.md`
 
@@ -1065,12 +1039,12 @@ erDiagram
 | `starts_at` | timestamptz | — | — |
 | `ends_at` | timestamptz | — | — |
 | `state` | enum | — | — |
-| `requested_by` | text | — | — |
+| `requested_by` | urn | — | — |
 | `version` | integer | — | — |
 
 **القيود:** ends_at − starts_at ≤ 30 d
 
-### `governance.tombstones`
+#### `governance.tombstones`
 
 - **المفتاح:** `(tenant_id, record_class, bucket)` · **المصدر:** `06-data/logical-model/slc-12a.md`
 
@@ -1083,7 +1057,7 @@ erDiagram
 **القيود:** non-personal facts only
 
 
-## schema `information` — BC02
+### schema `information` — BC02
 
 ```mermaid
 erDiagram
@@ -1096,11 +1070,11 @@ erDiagram
     text entity_type PK
     text key_kind PK
     text key_value PK
-    urn entity_id PK
+    urn entity_id PK, FK
   }
   claim_assessments {
     urn tenant_id PK
-    urn claim_id PK, FK
+    urn claim_id PK
     integer version PK
   }
   claims {
@@ -1136,7 +1110,7 @@ erDiagram
   conflict_resolutions {
     urn tenant_id PK
     urn conflict_id PK, FK
-    text recorded_from PK
+    timestamptz recorded_from PK
   }
   conflicts {
     urn tenant_id PK
@@ -1169,7 +1143,6 @@ erDiagram
     urn tenant_id PK
     urn evidence_id PK
     urn attachment_id FK
-    urn observation_ref FK
     urn source_id FK
   }
   evidence_custody {
@@ -1180,7 +1153,6 @@ erDiagram
   evidence_links {
     urn tenant_id PK
     urn link_id PK
-    urn claim_id FK
     urn evidence_id FK
   }
   external_ids {
@@ -1192,12 +1164,11 @@ erDiagram
     urn requirement_id PK
     urn eei_id PK
     urn observation_id PK
-    urn lineage_ref FK
   }
   identity_clusters {
     urn tenant_id PK
     urn entity_id PK, FK
-    text recorded_from PK
+    timestamptz recorded_from PK
   }
   import_batches {
     urn tenant_id PK
@@ -1206,7 +1177,6 @@ erDiagram
   lineage_records {
     urn tenant_id PK
     urn lineage_id PK
-    urn activity_ref FK
   }
   match_rulesets {
     urn tenant_id PK
@@ -1214,17 +1184,17 @@ erDiagram
   }
   name_forms {
     urn tenant_id PK
-    urn claim_id PK, FK
+    urn claim_id PK
     text form PK
   }
   observation_attachments {
     urn tenant_id PK
-    urn observation_id PK, FK
-    urn attachment_id PK
+    urn observation_id PK
+    urn attachment_id PK, FK
   }
   observations {
     urn tenant_id PK
-    text observed_month PK
+    timestamptz observed_month PK
     urn observation_id PK
     urn source_id FK
   }
@@ -1250,36 +1220,31 @@ erDiagram
     urn tenant_id PK
     urn source_id PK, FK
     timestamptz valid_from PK
-    text recorded_from PK
+    timestamptz recorded_from PK
   }
   sources {
     urn tenant_id PK
     urn source_id PK
   }
-  conflict_members ||--o{ claim_assessments : "claim_id"
+  entities ||--o{ blocking_index : "entity_id"
   collection_plans ||--o{ collection_activities : "plan_id"
   conflicts ||--o{ conflict_members : "conflict_id"
   conflicts ||--o{ conflict_resolutions : "conflict_id"
-  observation_attachments ||--o{ evidence : "attachment_id"
-  observations ||--o{ evidence : "observation_ref"
+  attachments ||--o{ evidence : "attachment_id"
   sources ||--o{ evidence : "source_id"
   evidence ||--o{ evidence_custody : "evidence_id"
   evidence ||--o{ evidence_links : "evidence_id"
-  conflict_members ||--o{ evidence_links : "claim_id"
-  lineage_records ||--o{ fulfilment_links : "lineage_ref"
   entities ||--o{ identity_clusters : "entity_id"
-  collection_activities ||--o{ lineage_records : "activity_ref"
-  conflict_members ||--o{ name_forms : "claim_id"
-  observations ||--o{ observation_attachments : "observation_id"
+  attachments ||--o{ observation_attachments : "attachment_id"
   sources ||--o{ observations : "source_id"
   import_batches ||--o{ quarantine_records : "batch_id"
   er_cases ||--o{ same_as_links : "case_id"
   sources ||--o{ source_reliability : "source_id"
 ```
 
-العلاقات في المخطط مستنتَجة من أسماء الأعمدة (`x_id` / `x_ref` → مفتاح الجدول المقابل) **[Derived]**؛ الأنواع مستنتَجة من الاصطلاحات (§2) **[Derived]**.
+العلاقات مستنتَجة وفق §5 **[Derived]**؛ الأنواع وفق §4 **[Derived]**.
 
-### `information.attachments`
+#### `information.attachments`
 
 - **المفتاح:** `(tenant_id, attachment_id)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1296,7 +1261,7 @@ erDiagram
 
 **القيود:** partial unique (tenant, sha256) where state non-terminal
 
-### `information.blocking_index`
+#### `information.blocking_index`
 
 - **المفتاح:** `(tenant_id, entity_type, key_kind, key_value, entity_id)` · **المصدر:** `06-data/logical-model/slc-04.md`
 
@@ -1307,7 +1272,7 @@ erDiagram
 
 **القيود:** rebuilt on ruleset activation
 
-### `information.claim_assessments`
+#### `information.claim_assessments`
 
 - **المفتاح:** `(tenant_id, claim_id, version)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1316,12 +1281,12 @@ erDiagram
 | `information_confidence` | text | — | — |
 | `verification_status` | text | — | — |
 | `rationale` | text | — | — |
-| `assessed_by` | text | — | — |
+| `assessed_by` | urn | — | — |
 | `recorded_at` | timestamptz | — | — |
 
 **القيود:** versioned T2
 
-### `information.claims`
+#### `information.claims`
 
 - **المفتاح:** `(tenant_id, subject_hash_bucket, claim_id)` · **المصدر:** `06-data/logical-model/slc-02.md` · **التقسيم:** partition by (tenant, hash(subject))
 
@@ -1334,8 +1299,8 @@ erDiagram
 | `unit_canonical` | text | — | — |
 | `valid_from` | timestamptz | — | — |
 | `valid_to` | timestamptz | — | — |
-| `recorded_from` | text | — | — |
-| `recorded_to` | text | — | — |
+| `recorded_from` | timestamptz | — | — |
+| `recorded_to` | timestamptz | — | — |
 | `supersedes` | text | — | — |
 | `sources` | array | — | — |
 | `label` | security_label | — | — |
@@ -1344,7 +1309,7 @@ erDiagram
 
 **القيود:** index (tenant, subject_urn, predicate, valid_from, valid_to, recorded_from, recorded_to); `recorded_*` writable only by kernel (FIT-05)
 
-### `information.claims_current`
+#### `information.claims_current`
 
 - **المفتاح:** `(tenant_id, subject_urn, predicate, claim_id)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1357,7 +1322,7 @@ erDiagram
 
 **القيود:** maintained in the same transaction; = claims where recorded_to is null (P-26)
 
-### `information.collection_activities`
+#### `information.collection_activities`
 
 - **المفتاح:** `(tenant_id, plan_id, activity_id)` · **المصدر:** `06-data/logical-model/slc-14.md`
 
@@ -1366,7 +1331,7 @@ erDiagram
 | `method` | text | — | — |
 | `sources` | array | — | — |
 | `area` | text | — | — |
-| `window` | text | — | — |
+| `window` | period | — | — |
 | `unit` | text | — | — |
 | `task_type` | text | — | — |
 | `eei_refs` | array | — | — |
@@ -1374,7 +1339,7 @@ erDiagram
 
 **القيود:** area ⊆ requirement areas (checked in aggregate)
 
-### `information.collection_plans`
+#### `information.collection_plans`
 
 - **المفتاح:** `(tenant_id, plan_id)` · **المصدر:** `06-data/logical-model/slc-14.md`
 
@@ -1388,7 +1353,7 @@ erDiagram
 
 **القيود:** —
 
-### `information.collection_requirements`
+#### `information.collection_requirements`
 
 - **المفتاح:** `(tenant_id, requirement_id, version)` · **المصدر:** `06-data/logical-model/slc-14.md`
 
@@ -1401,13 +1366,13 @@ erDiagram
 | `due` | timestamptz | — | — |
 | `eeis` | json | — | — |
 | `requester` | urn | — | — |
-| `approver` | text | نعم | — |
+| `approver` | urn | نعم | — |
 | `label` | security_label | — | — |
 | `state` | enum | — | — |
 
 **القيود:** spatial index on area for APPROVED
 
-### `information.conflict_members`
+#### `information.conflict_members`
 
 - **المفتاح:** `(tenant_id, conflict_id, claim_id)` · **المصدر:** `06-data/logical-model/slc-04.md`
 
@@ -1417,7 +1382,7 @@ erDiagram
 
 **القيود:** —
 
-### `information.conflict_resolutions`
+#### `information.conflict_resolutions`
 
 - **المفتاح:** `(tenant_id, conflict_id, recorded_from)` · **المصدر:** `06-data/logical-model/slc-04.md`
 
@@ -1426,12 +1391,12 @@ erDiagram
 | `kind` | enum | — | RESOLVED/ACCEPTED |
 | `preferred_claim_id` | urn | نعم | — |
 | `rationale` | text | — | — |
-| `decided_by` | text | — | — |
-| `recorded_to` | text | — | — |
+| `decided_by` | urn | — | — |
+| `recorded_to` | timestamptz | — | — |
 
 **القيود:** bitemporal; one current per conflict
 
-### `information.conflicts`
+#### `information.conflicts`
 
 - **المفتاح:** `(tenant_id, conflict_id)` · **المصدر:** `06-data/logical-model/slc-04.md`
 
@@ -1441,14 +1406,14 @@ erDiagram
 | `predicate` | text | — | — |
 | `window_from` | timestamptz | — | — |
 | `window_to` | timestamptz | — | — |
-| `detected_by` | text | — | — |
+| `detected_by` | urn | — | — |
 | `label` | security_label | — | — |
 | `state` | enum | — | — |
 | `version` | integer | — | — |
 
 **القيود:** partial unique (tenant, cluster_id, predicate, window) where state non-terminal — enforced by engine + exclusion on window overlap
 
-### `information.correlation_buckets` — مؤقت (ephemeral)
+#### `information.correlation_buckets` — مؤقت (ephemeral)
 
 - **المفتاح:** `(tenant_id, geohash6, time_bucket, urn)` · **المصدر:** `06-data/logical-model/slc-15.md`
 
@@ -1458,7 +1423,7 @@ erDiagram
 
 **القيود:** TTL = rule window
 
-### `information.correlation_proposals`
+#### `information.correlation_proposals`
 
 - **المفتاح:** `(tenant_id, proposal_id)` · **المصدر:** `06-data/logical-model/slc-15.md`
 
@@ -1474,7 +1439,7 @@ erDiagram
 
 **القيود:** partial unique on (kind, sorted inputs) where non-terminal
 
-### `information.correlation_rules`
+#### `information.correlation_rules`
 
 - **المفتاح:** `(tenant_id, rule_id, version)` · **المصدر:** `06-data/logical-model/slc-15.md`
 
@@ -1487,7 +1452,7 @@ erDiagram
 
 **القيود:** —
 
-### `information.entities`
+#### `information.entities`
 
 - **المفتاح:** `(tenant_id, entity_id)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1501,7 +1466,7 @@ erDiagram
 
 **القيود:** —
 
-### `information.er_cases`
+#### `information.er_cases`
 
 - **المفتاح:** `(tenant_id, case_id)` · **المصدر:** `06-data/logical-model/slc-04.md`
 
@@ -1520,7 +1485,7 @@ erDiagram
 
 **القيود:** partial unique (tenant, pair) where state non-terminal
 
-### `information.evidence`
+#### `information.evidence`
 
 - **المفتاح:** `(tenant_id, evidence_id)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1539,20 +1504,20 @@ erDiagram
 
 **القيود:** —
 
-### `information.evidence_custody`
+#### `information.evidence_custody`
 
 - **المفتاح:** `(tenant_id, evidence_id, seq)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
 | العمود | النوع (مستنتَج) | اختياري | ملاحظة |
 |---|---|---|---|
-| `holder` | text | — | — |
+| `holder` | urn | — | — |
 | `from` | text | — | — |
 | `to` | text | — | — |
 | `action` | text | — | — |
 
 **القيود:** gapless seq
 
-### `information.evidence_links`
+#### `information.evidence_links`
 
 - **المفتاح:** `(tenant_id, link_id)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1561,14 +1526,14 @@ erDiagram
 | `evidence_id` | urn | — | — |
 | `claim_id` | urn | — | — |
 | `stance` | text | — | — |
-| `recorded_from` | text | — | — |
-| `recorded_to` | text | — | — |
+| `recorded_from` | timestamptz | — | — |
+| `recorded_to` | timestamptz | — | — |
 | `label` | security_label | — | — |
 | `state` | enum | — | — |
 
 **القيود:** partial unique (evidence, claim, stance) where state = ACTIVE
 
-### `information.external_ids`
+#### `information.external_ids`
 
 - **المفتاح:** `(tenant_id, mapping_id)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1583,7 +1548,7 @@ erDiagram
 
 **القيود:** exclusion: no overlapping ACTIVE validity for (tenant, system, external_id)
 
-### `information.fulfilment_links`
+#### `information.fulfilment_links`
 
 - **المفتاح:** `(tenant_id, requirement_id, eei_id, observation_id)` · **المصدر:** `06-data/logical-model/slc-14.md`
 
@@ -1595,7 +1560,7 @@ erDiagram
 
 **القيود:** observation VALIDATED
 
-### `information.identity_clusters`
+#### `information.identity_clusters`
 
 - **المفتاح:** `(tenant_id, entity_id, recorded_from)` · **المصدر:** `06-data/logical-model/slc-04.md`
 
@@ -1603,11 +1568,11 @@ erDiagram
 |---|---|---|---|
 | `cluster_id` | urn | — | — |
 | `canonical_entity` | text | — | — |
-| `recorded_to` | text | — | — |
+| `recorded_to` | timestamptz | — | — |
 
 **القيود:** one current row per entity; recomputed in decision transaction
 
-### `information.import_batches`
+#### `information.import_batches`
 
 - **المفتاح:** `(tenant_id, batch_id)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1625,7 +1590,7 @@ erDiagram
 
 **القيود:** UNIQUE (tenant, adapter_id, batch_key)
 
-### `information.lineage_records`
+#### `information.lineage_records`
 
 - **المفتاح:** `(tenant_id, lineage_id)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1642,7 +1607,7 @@ erDiagram
 
 **القيود:** append-only; index on inputs/outputs URNs
 
-### `information.match_rulesets`
+#### `information.match_rulesets`
 
 - **المفتاح:** `(tenant_id, ruleset_id)` · **المصدر:** `06-data/logical-model/slc-04.md`
 
@@ -1655,12 +1620,12 @@ erDiagram
 | `thresholds` | json | — | — |
 | `evaluation` | json | — | — |
 | `state` | enum | — | — |
-| `author` | text | — | — |
-| `approver` | text | — | — |
+| `author` | urn | — | — |
+| `approver` | urn | — | — |
 
 **القيود:** one ACTIVE per (tenant, entity_type)
 
-### `information.name_forms`
+#### `information.name_forms`
 
 - **المفتاح:** `(tenant_id, claim_id, form)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1675,7 +1640,7 @@ erDiagram
 
 **القيود:** index (tenant, normalized), (tenant, phonetic_key)
 
-### `information.observation_attachments`
+#### `information.observation_attachments`
 
 - **المفتاح:** `(tenant_id, observation_id, attachment_id)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1685,7 +1650,7 @@ erDiagram
 
 **القيود:** —
 
-### `information.observations`
+#### `information.observations`
 
 - **المفتاح:** `(tenant_id, observed_month, observation_id)` · **المصدر:** `06-data/logical-model/slc-02.md` · **التقسيم:** partition by (tenant, month)
 
@@ -1695,7 +1660,7 @@ erDiagram
 | `observer` | text | — | — |
 | `observed_at` | timestamptz | — | — |
 | `event_time` | json | — | — |
-| `recorded_from` | text | — | — |
+| `recorded_from` | timestamptz | — | — |
 | `geom` | geometry(4326) | — | 4326 |
 | `crs_original` | text | — | — |
 | `coords_original` | text | — | — |
@@ -1710,7 +1675,7 @@ erDiagram
 
 **القيود:** spatial index per partition; index (tenant, observed_at); list queries require time window ≤ 31 d
 
-### `information.quarantine_records`
+#### `information.quarantine_records`
 
 - **المفتاح:** `(tenant_id, batch_id, seq)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1721,7 +1686,7 @@ erDiagram
 
 **القيود:** excluded from all queries/projections
 
-### `information.realworld_events`
+#### `information.realworld_events`
 
 - **المفتاح:** `(tenant_id, event_id)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1735,7 +1700,7 @@ erDiagram
 
 **القيود:** —
 
-### `information.relationships`
+#### `information.relationships`
 
 - **المفتاح:** `(tenant_id, relationship_id)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1752,7 +1717,7 @@ erDiagram
 
 **القيود:** index (tenant, source_urn), (tenant, target_urn)
 
-### `information.same_as_links`
+#### `information.same_as_links`
 
 - **المفتاح:** `(tenant_id, link_id)` · **المصدر:** `06-data/logical-model/slc-04.md`
 
@@ -1762,13 +1727,13 @@ erDiagram
 | `right_entity` | text | — | — |
 | `kind` | enum | — | MATCH/NOT_A_MATCH |
 | `case_id` | urn | — | — |
-| `recorded_from` | text | — | — |
-| `recorded_to` | text | — | — |
-| `decided_by` | text | — | — |
+| `recorded_from` | timestamptz | — | — |
+| `recorded_to` | timestamptz | — | — |
+| `decided_by` | urn | — | — |
 
 **القيود:** index (tenant, left), (tenant, right)
 
-### `information.source_reliability`
+#### `information.source_reliability`
 
 - **المفتاح:** `(tenant_id, source_id, valid_from, recorded_from)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1776,13 +1741,13 @@ erDiagram
 |---|---|---|---|
 | `rating_A_F` | text | — | — |
 | `valid_to` | timestamptz | — | — |
-| `recorded_to` | text | — | — |
+| `recorded_to` | timestamptz | — | — |
 | `rationale` | text | — | — |
-| `rated_by` | text | — | — |
+| `rated_by` | urn | — | — |
 
 **القيود:** bitemporal; no overlapping current records
 
-### `information.sources`
+#### `information.sources`
 
 - **المفتاح:** `(tenant_id, source_id)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1799,7 +1764,7 @@ erDiagram
 **القيود:** —
 
 
-## schema `integration` — BC07
+### schema `integration` — BC07
 
 ```mermaid
 erDiagram
@@ -1835,9 +1800,9 @@ erDiagram
   integration_connections ||--o{ sensor_streams : "connection_id"
 ```
 
-العلاقات في المخطط مستنتَجة من أسماء الأعمدة (`x_id` / `x_ref` → مفتاح الجدول المقابل) **[Derived]**؛ الأنواع مستنتَجة من الاصطلاحات (§2) **[Derived]**.
+العلاقات مستنتَجة وفق §5 **[Derived]**؛ الأنواع وفق §4 **[Derived]**.
 
-### `integration.adapter_mappings`
+#### `integration.adapter_mappings`
 
 - **المفتاح:** `(tenant_id, adapter_id, mapping_version)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1845,12 +1810,12 @@ erDiagram
 |---|---|---|---|
 | `spec` | json | — | — |
 | `tests` | json | — | — |
-| `author` | text | — | — |
-| `approved_by` | text | — | — |
+| `author` | urn | — | — |
+| `approved_by` | urn | — | — |
 
 **القيود:** immutable
 
-### `integration.adapters`
+#### `integration.adapters`
 
 - **المفتاح:** `(tenant_id, adapter_id)` · **المصدر:** `06-data/logical-model/slc-02.md`
 
@@ -1864,7 +1829,7 @@ erDiagram
 
 **القيود:** one source per adapter
 
-### `integration.connection_cursors`
+#### `integration.connection_cursors`
 
 - **المفتاح:** `(tenant_id, connection_id, feed)` · **المصدر:** `06-data/logical-model/slc-16.md`
 
@@ -1875,7 +1840,7 @@ erDiagram
 
 **القيود:** replay point
 
-### `integration.dms_classification_map`
+#### `integration.dms_classification_map`
 
 - **المفتاح:** `(tenant_id, dms_code)` · **المصدر:** `06-data/logical-model/slc-16.md`
 
@@ -1886,7 +1851,7 @@ erDiagram
 
 **القيود:** unmapped → highest default
 
-### `integration.integration_connections`
+#### `integration.integration_connections`
 
 - **المفتاح:** `(tenant_id, connection_id)` · **المصدر:** `06-data/logical-model/slc-16.md`
 
@@ -1904,7 +1869,7 @@ erDiagram
 
 **القيود:** outbound only for cap_endpoint (R2)
 
-### `integration.sensor_streams`
+#### `integration.sensor_streams`
 
 - **المفتاح:** `(tenant_id, stream_id)` · **المصدر:** `06-data/logical-model/slc-16.md`
 
@@ -1924,7 +1889,7 @@ erDiagram
 **القيود:** —
 
 
-## schema `intelligence` — BC03
+### schema `intelligence` — BC03
 
 ```mermaid
 erDiagram
@@ -2041,16 +2006,16 @@ erDiagram
   analysis_cases ||--o{ case_scenarios : "case_id"
   analysis_cases ||--o{ case_selections : "case_id"
   analysis_cases ||--o{ findings : "case_id"
-  reproduction_reports ||--o{ run_artifacts : "run_id"
-  reproduction_reports ||--o{ run_steps : "run_id"
+  analysis_runs ||--o{ run_artifacts : "run_id"
+  analysis_runs ||--o{ run_steps : "run_id"
   situations ||--o{ situation_changes : "situation_id"
   situations ||--o{ situation_definitions : "situation_id"
   situations ||--o{ situation_members : "situation_id"
 ```
 
-العلاقات في المخطط مستنتَجة من أسماء الأعمدة (`x_id` / `x_ref` → مفتاح الجدول المقابل) **[Derived]**؛ الأنواع مستنتَجة من الاصطلاحات (§2) **[Derived]**.
+العلاقات مستنتَجة وفق §5 **[Derived]**؛ الأنواع وفق §4 **[Derived]**.
 
-### `intelligence.alert_rules`
+#### `intelligence.alert_rules`
 
 - **المفتاح:** `(tenant_id, rule_id, version)` · **المصدر:** `06-data/logical-model/slc-06.md`
 
@@ -2061,7 +2026,7 @@ erDiagram
 | `kind` | enum | — | — |
 | `parameters` | json | — | — |
 | `severity` | enum | — | — |
-| `dedupe_window` | text | — | — |
+| `dedupe_window` | period | — | — |
 | `escalation` | json | — | — |
 | `auto_resolve` | text | — | — |
 | `label` | security_label | — | — |
@@ -2069,7 +2034,7 @@ erDiagram
 
 **القيود:** ACTIVE versions immutable
 
-### `intelligence.alerts`
+#### `intelligence.alerts`
 
 - **المفتاح:** `(tenant_id, alert_id)` · **المصدر:** `06-data/logical-model/slc-06.md`
 
@@ -2088,7 +2053,7 @@ erDiagram
 
 **القيود:** partial unique (tenant, rule_id, subject_urn) where non-terminal and last_at within window
 
-### `intelligence.analysis_cases`
+#### `intelligence.analysis_cases`
 
 - **المفتاح:** `(tenant_id, case_id)` · **المصدر:** `06-data/logical-model/slc-07.md`
 
@@ -2106,7 +2071,7 @@ erDiagram
 
 **القيود:** —
 
-### `intelligence.analysis_methods`
+#### `intelligence.analysis_methods`
 
 - **المفتاح:** `(tenant_id, method_code, method_version)` · **المصدر:** `06-data/logical-model/slc-07.md`
 
@@ -2117,12 +2082,12 @@ erDiagram
 | `deterministic` | text | — | — |
 | `tolerance` | json | نعم | — |
 | `state` | enum | — | — |
-| `author` | text | — | — |
-| `approver` | text | — | — |
+| `author` | urn | — | — |
+| `approver` | urn | — | — |
 
 **القيود:** immutable content
 
-### `intelligence.analysis_runs`
+#### `intelligence.analysis_runs`
 
 - **المفتاح:** `(tenant_id, run_id)` · **المصدر:** `06-data/logical-model/slc-07.md`
 
@@ -2137,7 +2102,7 @@ erDiagram
 | `scenario` | text | نعم | — |
 | `seed` | text | نعم | — |
 | `label` | security_label | — | — |
-| `submitted_by` | text | — | — |
+| `submitted_by` | urn | — | — |
 | `submitted_at` | timestamptz | — | — |
 | `state` | enum | — | — |
 | `lease` | json | — | — |
@@ -2147,7 +2112,7 @@ erDiagram
 
 **القيود:** —
 
-### `intelligence.assessment_versions`
+#### `intelligence.assessment_versions`
 
 - **المفتاح:** `(tenant_id, assessment_id, version)` · **المصدر:** `06-data/logical-model/slc-07.md`
 
@@ -2163,14 +2128,14 @@ erDiagram
 | `methodology` | json | — | — |
 | `limitations` | json | — | — |
 | `label` | security_label | — | — |
-| `author` | text | — | — |
+| `author` | urn | — | — |
 | `reviewer` | urn | — | — |
 | `state` | enum | — | — |
 | `published_at` | timestamptz | — | — |
 
 **القيود:** one PUBLISHED per assessment_id (partial unique)
 
-### `intelligence.cap_messages`
+#### `intelligence.cap_messages`
 
 - **المفتاح:** `(tenant_id, message_id)` · **المصدر:** `06-data/logical-model/slc-16.md`
 
@@ -2187,7 +2152,7 @@ erDiagram
 
 **القيود:** payload validated against CAP 1.2
 
-### `intelligence.case_assumptions`
+#### `intelligence.case_assumptions`
 
 - **المفتاح:** `(tenant_id, case_id, assumption_id)` · **المصدر:** `06-data/logical-model/slc-07.md`
 
@@ -2200,7 +2165,7 @@ erDiagram
 
 **القيود:** never deleted
 
-### `intelligence.case_hypotheses`
+#### `intelligence.case_hypotheses`
 
 - **المفتاح:** `(tenant_id, case_id, hypothesis_id)` · **المصدر:** `06-data/logical-model/slc-07.md`
 
@@ -2213,7 +2178,7 @@ erDiagram
 
 **القيود:** history in cases_history
 
-### `intelligence.case_scenarios`
+#### `intelligence.case_scenarios`
 
 - **المفتاح:** `(tenant_id, case_id, scenario_id)` · **المصدر:** `06-data/logical-model/slc-07.md`
 
@@ -2225,7 +2190,7 @@ erDiagram
 
 **القيود:** —
 
-### `intelligence.case_selections`
+#### `intelligence.case_selections`
 
 - **المفتاح:** `(tenant_id, case_id, selection_id)` · **المصدر:** `06-data/logical-model/slc-07.md`
 
@@ -2233,14 +2198,14 @@ erDiagram
 |---|---|---|---|
 | `item_urn` | urn | — | — |
 | `known_at` | timestamptz | — | — |
-| `selected_by` | text | — | — |
+| `selected_by` | urn | — | — |
 | `selected_at` | timestamptz | — | — |
 | `closed_at` | timestamptz | نعم | — |
 | `close_reason` | text | — | — |
 
 **القيود:** item label ≤ case label
 
-### `intelligence.findings`
+#### `intelligence.findings`
 
 - **المفتاح:** `(tenant_id, finding_id, version)` · **المصدر:** `06-data/logical-model/slc-07.md`
 
@@ -2251,13 +2216,13 @@ erDiagram
 | `sources` | json | — | json pinned |
 | `uncertainty` | json | — | — |
 | `label` | security_label | — | — |
-| `author` | text | — | — |
+| `author` | urn | — | — |
 | `reviewer` | urn | — | — |
 | `state` | enum | — | — |
 
 **القيود:** ACCEPTED immutable
 
-### `intelligence.reproduction_reports`
+#### `intelligence.reproduction_reports`
 
 - **المفتاح:** `(tenant_id, run_id)` · **المصدر:** `06-data/logical-model/slc-07.md`
 
@@ -2269,7 +2234,7 @@ erDiagram
 
 **القيود:** —
 
-### `intelligence.run_artifacts`
+#### `intelligence.run_artifacts`
 
 - **المفتاح:** `(tenant_id, run_id, artifact_id)` · **المصدر:** `06-data/logical-model/slc-07.md`
 
@@ -2281,7 +2246,7 @@ erDiagram
 
 **القيود:** immutable
 
-### `intelligence.run_steps`
+#### `intelligence.run_steps`
 
 - **المفتاح:** `(tenant_id, run_id, seq)` · **المصدر:** `06-data/logical-model/slc-07.md`
 
@@ -2293,7 +2258,7 @@ erDiagram
 
 **القيود:** append-only
 
-### `intelligence.situation_changes`
+#### `intelligence.situation_changes`
 
 - **المفتاح:** `(tenant_id, situation_id, seq)` · **المصدر:** `06-data/logical-model/slc-06.md`
 
@@ -2306,7 +2271,7 @@ erDiagram
 
 **القيود:** append-only; cursor for QRY-SIT-CHANGES
 
-### `intelligence.situation_definitions`
+#### `intelligence.situation_definitions`
 
 - **المفتاح:** `(tenant_id, situation_id, def_version)` · **المصدر:** `06-data/logical-model/slc-06.md`
 
@@ -2320,7 +2285,7 @@ erDiagram
 
 **القيود:** immutable
 
-### `intelligence.situation_members`
+#### `intelligence.situation_members`
 
 - **المفتاح:** `(tenant_id, situation_id, member_urn, member_from)` · **المصدر:** `06-data/logical-model/slc-06.md`
 
@@ -2333,7 +2298,7 @@ erDiagram
 
 **القيود:** index (tenant, situation_id, member_to IS NULL)
 
-### `intelligence.situations`
+#### `intelligence.situations`
 
 - **المفتاح:** `(tenant_id, situation_id)` · **المصدر:** `06-data/logical-model/slc-06.md`
 
@@ -2349,7 +2314,7 @@ erDiagram
 
 **القيود:** —
 
-### `intelligence.tile_cache` — مؤقت (ephemeral)
+#### `intelligence.tile_cache` — مؤقت (ephemeral)
 
 - **المفتاح:** `(situation, layer, z, x, y, scope_hash, data_version)` · **المصدر:** `06-data/logical-model/slc-06.md`
 
@@ -2361,7 +2326,54 @@ erDiagram
 **القيود:** TTL ≤ 10 min; never shared across scope_hash
 
 
-## schema `knowledge` — BC06
+### schema `key_store` — BC08
+
+مخزن المفاتيح لكل خلية لا لكل مستأجر (`slc-12a.md`: «key store per cell»؛ TD-07)؛ أُفرد هنا لأن الاسم في المصدر `key_store.<table>` لا يقع في schema `governance` الخاص بالمستأجر.
+
+```mermaid
+erDiagram
+  deks {
+    urn tenant_id PK
+    urn key_id PK
+  }
+  destruction_log {
+    integer seq PK
+  }
+```
+
+العلاقات مستنتَجة وفق §5 **[Derived]**؛ الأنواع وفق §4 **[Derived]**.
+
+#### `key_store.deks`
+
+- **المفتاح:** `(tenant_id, key_id)` · **المصدر:** `06-data/logical-model/slc-12a.md`
+
+| العمود | النوع (مستنتَج) | اختياري | ملاحظة |
+|---|---|---|---|
+| `kind` | enum | — | class_bucket / subject / hold |
+| `scope_ref` | text | — | — |
+| `wrapped_key` | bytes_encrypted | — | — |
+| `created_at` | timestamptz | — | — |
+| `destroyed_at` | timestamptz | نعم | — |
+
+**القيود:** wrapped by tenant KEK
+
+#### `key_store.destruction_log`
+
+- **المفتاح:** `(seq)` · **المصدر:** `06-data/logical-model/slc-12a.md`
+
+| العمود | النوع (مستنتَج) | اختياري | ملاحظة |
+|---|---|---|---|
+| `tenant_id` | urn | — | — |
+| `key_id` | urn | — | — |
+| `destroyed_at` | timestamptz | — | — |
+| `run_request_ref` | text | — | — |
+| `prev_hash` | text | — | — |
+| `hash` | text | — | — |
+
+**القيود:** append-only; replicated; replayed by restore gate
+
+
+### schema `knowledge` — BC06
 
 ```mermaid
 erDiagram
@@ -2390,7 +2402,7 @@ erDiagram
   }
   knowledge_objects {
     urn tenant_id PK
-    urn knowledge_id PK, FK
+    urn knowledge_id PK
     integer version PK
   }
   knowledge_relations_index {
@@ -2422,12 +2434,11 @@ erDiagram
   archive_packages ||--o{ archive_access : "package_id"
   archive_packages ||--o{ archive_preservation_events : "package_id"
   distributions ||--o{ deliveries : "distribution_id"
-  knowledge_relations_index ||--o{ knowledge_objects : "knowledge_id"
 ```
 
-العلاقات في المخطط مستنتَجة من أسماء الأعمدة (`x_id` / `x_ref` → مفتاح الجدول المقابل) **[Derived]**؛ الأنواع مستنتَجة من الاصطلاحات (§2) **[Derived]**.
+العلاقات مستنتَجة وفق §5 **[Derived]**؛ الأنواع وفق §4 **[Derived]**.
 
-### `knowledge.archive_access`
+#### `knowledge.archive_access`
 
 - **المفتاح:** `(tenant_id, package_id, seq)` · **المصدر:** `06-data/logical-model/slc-12.md`
 
@@ -2439,7 +2450,7 @@ erDiagram
 
 **القيود:** append-only (REQ-ARC-003)
 
-### `knowledge.archive_packages`
+#### `knowledge.archive_packages`
 
 - **المفتاح:** `(tenant_id, package_id)` · **المصدر:** `06-data/logical-model/slc-12.md`
 
@@ -2456,7 +2467,7 @@ erDiagram
 
 **القيود:** —
 
-### `knowledge.archive_preservation_events`
+#### `knowledge.archive_preservation_events`
 
 - **المفتاح:** `(tenant_id, package_id, seq)` · **المصدر:** `06-data/logical-model/slc-12.md`
 
@@ -2469,7 +2480,7 @@ erDiagram
 
 **القيود:** append-only
 
-### `knowledge.deliveries`
+#### `knowledge.deliveries`
 
 - **المفتاح:** `(tenant_id, distribution_id, recipient)` · **المصدر:** `06-data/logical-model/slc-12.md`
 
@@ -2482,7 +2493,7 @@ erDiagram
 
 **القيود:** —
 
-### `knowledge.distributions`
+#### `knowledge.distributions`
 
 - **المفتاح:** `(tenant_id, distribution_id)` · **المصدر:** `06-data/logical-model/slc-12.md`
 
@@ -2496,7 +2507,7 @@ erDiagram
 
 **القيود:** —
 
-### `knowledge.knowledge_objects`
+#### `knowledge.knowledge_objects`
 
 - **المفتاح:** `(tenant_id, knowledge_id, version)` · **المصدر:** `06-data/logical-model/slc-12.md` · **امتدادات:** slc-19: source_ref (lesson type) may now reference a completed simulation in addition to a task/plan/incident; column type (urn) unchanged
 
@@ -2509,14 +2520,13 @@ erDiagram
 | `source` | text | نعم | — |
 | `label` | security_label | — | — |
 | `state` | enum | — | — |
-| `author` | text | — | — |
+| `author` | urn | — | — |
 | `reviewer` | urn | — | — |
 | `reuse_count` | integer | — | — |
-| `source_ref` | urn | — | — |
 
 **القيود:** one PUBLISHED per knowledge_id
 
-### `knowledge.knowledge_relations_index`
+#### `knowledge.knowledge_relations_index`
 
 - **المفتاح:** `(tenant_id, kind, ref, knowledge_id)` · **المصدر:** `06-data/logical-model/slc-12.md`
 
@@ -2526,7 +2536,7 @@ erDiagram
 
 **القيود:** for suggestions
 
-### `knowledge.product_exclusions`
+#### `knowledge.product_exclusions`
 
 - **المفتاح:** `(tenant_id, product_id, version, seq)` · **المصدر:** `06-data/logical-model/slc-12.md`
 
@@ -2537,7 +2547,7 @@ erDiagram
 
 **القيود:** internal audit only; never rendered
 
-### `knowledge.product_templates`
+#### `knowledge.product_templates`
 
 - **المفتاح:** `(tenant_id, template_id, version)` · **المصدر:** `06-data/logical-model/slc-12.md`
 
@@ -2550,7 +2560,7 @@ erDiagram
 
 **القيود:** —
 
-### `knowledge.products`
+#### `knowledge.products`
 
 - **المفتاح:** `(tenant_id, product_id, version)` · **المصدر:** `06-data/logical-model/slc-12.md`
 
@@ -2565,12 +2575,12 @@ erDiagram
 | `generated_known_at` | timestamptz | — | — |
 | `artifacts` | json | — | json: format, sha256, object_key |
 | `citations` | json | — | json pinned |
-| `author` | text | — | — |
+| `author` | urn | — | — |
 | `reviewer` | urn | — | — |
 
 **القيود:** APPROVED immutable; one APPROVED per product_id
 
-### `knowledge.reconstructions`
+#### `knowledge.reconstructions`
 
 - **المفتاح:** `(tenant_id, reconstruction_id)` · **المصدر:** `06-data/logical-model/slc-12.md`
 
@@ -2587,7 +2597,7 @@ erDiagram
 **القيود:** —
 
 
-## schema `operations` — BC04
+### schema `operations` — BC04
 
 ```mermaid
 erDiagram
@@ -2595,7 +2605,7 @@ erDiagram
     urn tenant_id PK
     urn plan_id PK, FK
     urn activity_id PK
-    urn task_id PK
+    urn task_id PK, FK
   }
   coordination_cases {
     urn tenant_id PK
@@ -2620,15 +2630,9 @@ erDiagram
     urn decision_id PK
     urn request_id FK
   }
-  incident_severity_history {
-    urn tenant_id PK
-    urn incident_id PK, FK
-    timestamptz changed_at PK
-  }
   incidents {
     urn tenant_id PK
     urn incident_id PK
-    urn risk_ref FK
   }
   notification_templates {
     text template_code PK
@@ -2642,9 +2646,9 @@ erDiagram
   outcome_measurements {
     urn tenant_id PK
     urn plan_id PK, FK
-    urn outcome_id PK, FK
+    urn outcome_id PK
     urn measurement_id PK
-    text recorded_from PK
+    timestamptz recorded_from PK
   }
   outcome_trackers {
     urn tenant_id PK
@@ -2674,7 +2678,6 @@ erDiagram
   risks {
     urn tenant_id PK
     urn risk_id PK
-    urn incident_ref FK
   }
   subscriptions {
     urn tenant_id PK
@@ -2715,40 +2718,27 @@ erDiagram
   tasks {
     urn tenant_id PK
     urn task_id PK
-    urn incident_ref FK
-    urn plan_ref FK
-  }
-  tasks_history {
-    urn tenant_id PK
-    urn task_id PK, FK
-    integer version PK
   }
   plans ||--o{ activity_task_map : "plan_id"
+  tasks ||--o{ activity_task_map : "task_id"
   coordination_cases ||--o{ coordination_participants : "case_id"
   coordination_cases ||--o{ coordination_responsibilities : "case_id"
   decision_requests ||--o{ decisions : "request_id"
-  incidents ||--o{ incident_severity_history : "incident_id"
-  risks ||--o{ incidents : "risk_ref"
   plans ||--o{ outcome_measurements : "plan_id"
-  outcome_trackers ||--o{ outcome_measurements : "outcome_id"
   plans ||--o{ outcome_trackers : "plan_id"
   plans ||--o{ plan_version_annotations : "plan_id"
   plans ||--o{ plan_versions : "plan_id"
   risks ||--o{ risk_treatment_actions : "risk_id"
-  incidents ||--o{ risks : "incident_ref"
   tasks ||--o{ task_criteria : "task_id"
   tasks ||--o{ task_dependencies : "task_id"
   tasks ||--o{ task_result_items : "task_id"
   plans ||--o{ task_sync_runs : "plan_id"
   tasks ||--o{ task_timers : "task_id"
-  plans ||--o{ tasks : "plan_ref"
-  incidents ||--o{ tasks : "incident_ref"
-  tasks ||--o{ tasks_history : "task_id"
 ```
 
-العلاقات في المخطط مستنتَجة من أسماء الأعمدة (`x_id` / `x_ref` → مفتاح الجدول المقابل) **[Derived]**؛ الأنواع مستنتَجة من الاصطلاحات (§2) **[Derived]**.
+العلاقات مستنتَجة وفق §5 **[Derived]**؛ الأنواع وفق §4 **[Derived]**.
 
-### `operations.activity_task_map`
+#### `operations.activity_task_map`
 
 - **المفتاح:** `(tenant_id, plan_id, activity_id, task_id)` · **المصدر:** `06-data/logical-model/slc-08.md`
 
@@ -2759,7 +2749,7 @@ erDiagram
 
 **القيود:** —
 
-### `operations.coordination_cases`
+#### `operations.coordination_cases`
 
 - **المفتاح:** `(tenant_id, case_id)` · **المصدر:** `06-data/logical-model/slc-15.md`
 
@@ -2775,7 +2765,7 @@ erDiagram
 
 **القيود:** —
 
-### `operations.coordination_participants`
+#### `operations.coordination_participants`
 
 - **المفتاح:** `(tenant_id, case_id, org_unit)` · **المصدر:** `06-data/logical-model/slc-15.md`
 
@@ -2786,7 +2776,7 @@ erDiagram
 
 **القيود:** lead cannot be removed
 
-### `operations.coordination_responsibilities`
+#### `operations.coordination_responsibilities`
 
 - **المفتاح:** `(tenant_id, case_id, responsibility_id)` · **المصدر:** `06-data/logical-model/slc-15.md`
 
@@ -2802,7 +2792,7 @@ erDiagram
 
 **القيود:** done requires decision when requires_authority
 
-### `operations.decision_requests`
+#### `operations.decision_requests`
 
 - **المفتاح:** `(tenant_id, request_id)` · **المصدر:** `06-data/logical-model/slc-08.md`
 
@@ -2820,7 +2810,7 @@ erDiagram
 
 **القيود:** —
 
-### `operations.decisions`
+#### `operations.decisions`
 
 - **المفتاح:** `(tenant_id, decision_id)` · **المصدر:** `06-data/logical-model/slc-08.md`
 
@@ -2840,20 +2830,7 @@ erDiagram
 
 **القيود:** immutable except state; CHECK(citations non-empty)
 
-### `operations.incident_severity_history`
-
-- **المفتاح:** `(tenant_id, incident_id, changed_at)` · **المصدر:** `06-data/logical-model/slc-17.md`
-
-| العمود | النوع (مستنتَج) | اختياري | ملاحظة |
-|---|---|---|---|
-| `from_severity` | text | — | — |
-| `to_severity` | text | — | — |
-| `reason` | text | — | — |
-| `actor` | urn | — | — |
-
-**القيود:** append-only
-
-### `operations.incidents`
+#### `operations.incidents`
 
 - **المفتاح:** `(tenant_id, incident_id)` · **المصدر:** `06-data/logical-model/slc-17.md`
 
@@ -2874,7 +2851,7 @@ erDiagram
 
 **القيود:** severity change history kept in incident_severity_history, not overwritten
 
-### `operations.notification_templates`
+#### `operations.notification_templates`
 
 - **المفتاح:** `(template_code, lang)` · **المصدر:** `06-data/logical-model/slc-06.md`
 
@@ -2884,9 +2861,9 @@ erDiagram
 
 **القيود:** classification-safe list (reviewed by Security Officer)
 
-### `operations.notifications`
+#### `operations.notifications`
 
-- **المفتاح:** `(tenant_id, recipient_id, notification_id)` · **المصدر:** `06-data/logical-model/slc-06.md`
+- **المفتاح:** `(tenant_id, recipient_id, notification_id)` · **المصدر:** `06-data/logical-model/slc-06.md` · **التقسيم:** partition by (tenant, month)
 
 | العمود | النوع (مستنتَج) | اختياري | ملاحظة |
 |---|---|---|---|
@@ -2894,14 +2871,14 @@ erDiagram
 | `template_code` | text | — | — |
 | `severity` | enum | — | — |
 | `state` | enum | — | — |
-| `attempts` | text | — | — |
+| `attempts` | integer | — | — |
 | `queued_at` | timestamptz | — | — |
 | `sent_at` | timestamptz | — | — |
 | `read_at` | timestamptz | — | — |
 
 **القيود:** partition by (tenant, month); TTL 30 d → EXPIRED
 
-### `operations.outcome_measurements`
+#### `operations.outcome_measurements`
 
 - **المفتاح:** `(tenant_id, plan_id, outcome_id, measurement_id, recorded_from)` · **المصدر:** `06-data/logical-model/slc-08.md`
 
@@ -2912,11 +2889,11 @@ erDiagram
 | `measured_at` | timestamptz | — | — |
 | `source` | text | — | — |
 | `source_ref` | urn | نعم | — |
-| `recorded_to` | text | نعم | — |
+| `recorded_to` | timestamptz | نعم | — |
 
 **القيود:** bitemporal; corrections close and add
 
-### `operations.outcome_trackers`
+#### `operations.outcome_trackers`
 
 - **المفتاح:** `(tenant_id, plan_id, outcome_id)` · **المصدر:** `06-data/logical-model/slc-08.md`
 
@@ -2929,7 +2906,7 @@ erDiagram
 
 **القيود:** one per (plan, outcome)
 
-### `operations.plan_version_annotations`
+#### `operations.plan_version_annotations`
 
 - **المفتاح:** `(tenant_id, plan_id, plan_version, seq)` · **المصدر:** `06-data/logical-model/slc-08.md`
 
@@ -2941,15 +2918,15 @@ erDiagram
 
 **القيود:** minor amendments
 
-### `operations.plan_versions`
+#### `operations.plan_versions`
 
 - **المفتاح:** `(tenant_id, plan_id, plan_version)` · **المصدر:** `06-data/logical-model/slc-08.md`
 
 | العمود | النوع (مستنتَج) | اختياري | ملاحظة |
 |---|---|---|---|
 | `content` | json | — | json: objectives, outcomes, constraints, assumptions, phases, activities, milestones, dependencies, resource_notes |
-| `author` | text | — | — |
-| `approver` | text | نعم | — |
+| `author` | urn | — | — |
+| `approver` | urn | نعم | — |
 | `change_class` | text | — | — |
 | `state` | enum | — | — |
 | `submitted_at` | timestamptz | — | — |
@@ -2957,7 +2934,7 @@ erDiagram
 
 **القيود:** content immutable from IN_REVIEW; partial unique one BASELINED per plan
 
-### `operations.plans`
+#### `operations.plans`
 
 - **المفتاح:** `(tenant_id, plan_id)` · **المصدر:** `06-data/logical-model/slc-08.md` · **امتدادات:** slc-17: triggered_by only set when plan_kind = CONTINGENCY (INV-PLN-04)
 
@@ -2967,17 +2944,17 @@ erDiagram
 | `owner` | urn | — | — |
 | `org_scope` | text | — | — |
 | `implements` | array | — | — |
-| `window` | text | — | — |
+| `window` | period | — | — |
 | `label` | security_label | — | — |
 | `state` | enum | — | — |
 | `baselined_version` | integer | نعم | — |
 | `version` | integer | — | — |
 | `plan_kind` | text | — | — |
-| `triggered_by` | text | نعم | — |
+| `triggered_by` | urn | نعم | — |
 
 **القيود:** —
 
-### `operations.risk_treatment_actions`
+#### `operations.risk_treatment_actions`
 
 - **المفتاح:** `(tenant_id, risk_id, treatment_task_ref)` · **المصدر:** `06-data/logical-model/slc-17.md`
 
@@ -2987,7 +2964,7 @@ erDiagram
 
 **القيود:** —
 
-### `operations.risks`
+#### `operations.risks`
 
 - **المفتاح:** `(tenant_id, risk_id)` · **المصدر:** `06-data/logical-model/slc-17.md`
 
@@ -3009,7 +2986,7 @@ erDiagram
 
 **القيود:** risk_score is a generated column, never written directly
 
-### `operations.subscriptions`
+#### `operations.subscriptions`
 
 - **المفتاح:** `(tenant_id, subscription_id)` · **المصدر:** `06-data/logical-model/slc-06.md`
 
@@ -3024,7 +3001,7 @@ erDiagram
 
 **القيود:** partial unique (tenant, user, target) where ACTIVE/PAUSED
 
-### `operations.task_criteria`
+#### `operations.task_criteria`
 
 - **المفتاح:** `(tenant_id, task_id, criterion_id)` · **المصدر:** `06-data/logical-model/slc-03.md`
 
@@ -3033,12 +3010,12 @@ erDiagram
 | `kind` | enum | — | — |
 | `spec` | json | — | — |
 | `satisfied` | text | — | — |
-| `satisfied_by` | text | — | — |
+| `satisfied_by` | urn | — | — |
 | `satisfied_at` | timestamptz | — | — |
 
 **القيود:** frozen after ASSIGNED (trigger/app)
 
-### `operations.task_dependencies`
+#### `operations.task_dependencies`
 
 - **المفتاح:** `(tenant_id, task_id, predecessor_id)` · **المصدر:** `06-data/logical-model/slc-03.md`
 
@@ -3048,7 +3025,7 @@ erDiagram
 
 **القيود:** acyclic (checked in aggregate)
 
-### `operations.task_result_items`
+#### `operations.task_result_items`
 
 - **المفتاح:** `(tenant_id, task_id, seq)` · **المصدر:** `06-data/logical-model/slc-03.md`
 
@@ -3058,12 +3035,12 @@ erDiagram
 | `ref` | text | نعم | — |
 | `note` | json | نعم | — |
 | `measurement` | json | نعم | — |
-| `added_by` | text | — | — |
+| `added_by` | urn | — | — |
 | `added_at` | timestamptz | — | — |
 
 **القيود:** append-only
 
-### `operations.task_sync_runs`
+#### `operations.task_sync_runs`
 
 - **المفتاح:** `(tenant_id, plan_id, from_version, to_version)` · **المصدر:** `06-data/logical-model/slc-08.md`
 
@@ -3077,9 +3054,9 @@ erDiagram
 
 **القيود:** unique run per transition (idempotency)
 
-### `operations.task_timers`
+#### `operations.task_timers`
 
-- **المفتاح:** `(tenant_id, due_bucket, task_id, kind)` · **المصدر:** `06-data/logical-model/slc-03.md`
+- **المفتاح:** `(tenant_id, due_bucket, task_id, kind)` · **المصدر:** `06-data/logical-model/slc-03.md` · **التقسيم:** partitioned by tenant
 
 | العمود | النوع (مستنتَج) | اختياري | ملاحظة |
 |---|---|---|---|
@@ -3089,7 +3066,7 @@ erDiagram
 
 **القيود:** partitioned by tenant; minute buckets
 
-### `operations.task_types`
+#### `operations.task_types`
 
 - **المفتاح:** `(tenant_id, task_type_id, version)` · **المصدر:** `06-data/logical-model/slc-03.md`
 
@@ -3106,7 +3083,7 @@ erDiagram
 
 **القيود:** UNIQUE(tenant, code, version)
 
-### `operations.tasks`
+#### `operations.tasks`
 
 - **المفتاح:** `(tenant_id, task_id)` · **المصدر:** `06-data/logical-model/slc-03.md` · **امتدادات:** slc-17: exactly one of plan_ref / incident_ref / ad_hoc_reason set at creation
 
@@ -3125,7 +3102,7 @@ erDiagram
 | `state` | enum | — | — |
 | `suspended` | boolean | — | — |
 | `due_at` | timestamptz | نعم | — |
-| `follow_up_of` | text | نعم | — |
+| `follow_up_of` | urn | نعم | — |
 | `label` | security_label | — | — |
 | `eligibility_snapshot` | json | — | — |
 | `version` | integer | — | — |
@@ -3133,22 +3110,8 @@ erDiagram
 
 **القيود:** CHECK(plan_ref IS NOT NULL OR (ad_hoc_reason IS NOT NULL AND owner IS NOT NULL)); index (tenant, assignee, state, due_at); index (tenant, plan_ref, state)
 
-### `operations.tasks_history`
 
-- **المفتاح:** `(tenant_id, task_id, version)` · **المصدر:** `06-data/logical-model/slc-03.md`
-
-| العمود | النوع (مستنتَج) | اختياري | ملاحظة |
-|---|---|---|---|
-| `snapshot` | text | — | — |
-| `command_id` | urn | — | — |
-| `actor` | urn | — | — |
-| `recorded_at` | timestamptz | — | — |
-| `correlation_id` | urn | — | — |
-
-**القيود:** insert-only; source for QRY-TASK-HISTORY
-
-
-## schema `readiness` — BC05
+### schema `readiness` — BC05
 
 ```mermaid
 erDiagram
@@ -3195,7 +3158,6 @@ erDiagram
   exercises {
     urn tenant_id PK
     urn exercise_id PK
-    urn scenario_ref FK
   }
   legacy_resource_notes_migration {
     urn tenant_id PK
@@ -3205,8 +3167,6 @@ erDiagram
   logistics_requests {
     urn tenant_id PK
     urn request_id PK
-    urn allocation_ref FK
-    urn shipment_ref FK
   }
   maintenance_orders {
     urn tenant_id PK
@@ -3217,16 +3177,11 @@ erDiagram
     urn tenant_id PK
     urn pool_id PK, FK
     timestamptz valid_from PK
-    text recorded_from PK
+    timestamptz recorded_from PK
   }
   qualification_records {
     urn tenant_id PK
     urn record_id PK
-  }
-  qualification_records_history {
-    urn tenant_id PK
-    urn record_id PK, FK
-    integer version PK
   }
   resource_pools {
     urn tenant_id PK
@@ -3264,13 +3219,10 @@ erDiagram
     urn tenant_id PK
     urn simulation_id PK, FK
     timestamptz delivered_at PK
-    urn inject_ref FK
   }
   simulations {
     urn tenant_id PK
     urn simulation_id PK
-    urn exercise_ref FK
-    urn scenario_ref FK
   }
   allocations ||--o{ allocation_consumption : "allocation_id"
   resource_pools ||--o{ allocations : "pool_id"
@@ -3279,24 +3231,17 @@ erDiagram
   assets ||--o{ asset_custody : "asset_id"
   assets ||--o{ asset_reservations : "asset_id"
   resource_pools ||--o{ capacity_ledger : "pool_id"
-  scenarios ||--o{ exercises : "scenario_ref"
-  allocations ||--o{ logistics_requests : "allocation_ref"
-  shipments ||--o{ logistics_requests : "shipment_ref"
   assets ||--o{ maintenance_orders : "asset_id"
   resource_pools ||--o{ pool_capacity_series : "pool_id"
-  qualification_records ||--o{ qualification_records_history : "record_id"
   scenarios ||--o{ scenario_injects : "scenario_id"
   shipments ||--o{ shipment_checkpoints : "shipment_id"
   simulations ||--o{ simulation_evaluations : "simulation_id"
   simulations ||--o{ simulation_inject_deliveries : "simulation_id"
-  scenario_injects ||--o{ simulation_inject_deliveries : "inject_ref"
-  exercises ||--o{ simulations : "exercise_ref"
-  scenarios ||--o{ simulations : "scenario_ref"
 ```
 
-العلاقات في المخطط مستنتَجة من أسماء الأعمدة (`x_id` / `x_ref` → مفتاح الجدول المقابل) **[Derived]**؛ الأنواع مستنتَجة من الاصطلاحات (§2) **[Derived]**.
+العلاقات مستنتَجة وفق §5 **[Derived]**؛ الأنواع وفق §4 **[Derived]**.
 
-### `readiness.allocation_consumption`
+#### `readiness.allocation_consumption`
 
 - **المفتاح:** `(tenant_id, allocation_id, seq)` · **المصدر:** `06-data/logical-model/slc-09.md`
 
@@ -3307,7 +3252,7 @@ erDiagram
 
 **القيود:** over-consumption flag
 
-### `readiness.allocations`
+#### `readiness.allocations`
 
 - **المفتاح:** `(tenant_id, allocation_id)` · **المصدر:** `06-data/logical-model/slc-09.md` · **امتدادات:** slc-18: target_ref may now reference a logistics_requests row in addition to a task/activity; column type (urn) unchanged
 
@@ -3315,19 +3260,18 @@ erDiagram
 |---|---|---|---|
 | `pool_id` | urn | — | — |
 | `quantity` | numeric | — | — |
-| `window` | text | — | — |
+| `window` | period | — | — |
 | `priority` | integer | — | — |
 | `target` | text | — | — |
 | `requester` | urn | — | — |
 | `state` | enum | — | — |
 | `reasons` | json | — | — |
-| `approver` | text | نعم | — |
-| `preempted_by` | text | نعم | — |
-| `target_ref` | urn | — | — |
+| `approver` | urn | نعم | — |
+| `preempted_by` | urn | نعم | — |
 
 **القيود:** —
 
-### `readiness.asset_assignments`
+#### `readiness.asset_assignments`
 
 - **المفتاح:** `(tenant_id, assignment_id)` · **المصدر:** `06-data/logical-model/slc-09.md`
 
@@ -3336,13 +3280,13 @@ erDiagram
 | `asset_id` | urn | — | — |
 | `task` | text | نعم | — |
 | `unit` | text | نعم | — |
-| `window` | text | — | — |
+| `window` | period | — | — |
 | `state` | enum | — | — |
 | `condition_report` | text | نعم | — |
 
 **القيود:** EXCLUDE (asset_id =, window &&) WHERE state = ACTIVE
 
-### `readiness.asset_certifications`
+#### `readiness.asset_certifications`
 
 - **المفتاح:** `(tenant_id, asset_id, code, valid_from)` · **المصدر:** `06-data/logical-model/slc-09.md`
 
@@ -3354,13 +3298,13 @@ erDiagram
 
 **القيود:** history kept
 
-### `readiness.asset_custody`
+#### `readiness.asset_custody`
 
 - **المفتاح:** `(tenant_id, asset_id, seq)` · **المصدر:** `06-data/logical-model/slc-09.md`
 
 | العمود | النوع (مستنتَج) | اختياري | ملاحظة |
 |---|---|---|---|
-| `holder` | text | — | — |
+| `holder` | urn | — | — |
 | `from` | text | — | — |
 | `to` | text | — | — |
 | `actor` | urn | — | — |
@@ -3368,7 +3312,7 @@ erDiagram
 
 **القيود:** gapless seq
 
-### `readiness.asset_reservations`
+#### `readiness.asset_reservations`
 
 - **المفتاح:** `(tenant_id, reservation_id)` · **المصدر:** `06-data/logical-model/slc-09.md`
 
@@ -3383,7 +3327,7 @@ erDiagram
 
 **القيود:** EXCLUDE (asset_id =, window &&) WHERE state IN (HELD, CONFIRMED)
 
-### `readiness.assets`
+#### `readiness.assets`
 
 - **المفتاح:** `(tenant_id, asset_id)` · **المصدر:** `06-data/logical-model/slc-09.md`
 
@@ -3402,7 +3346,7 @@ erDiagram
 
 **القيود:** —
 
-### `readiness.capacity_ledger`
+#### `readiness.capacity_ledger`
 
 - **المفتاح:** `(tenant_id, pool_id, hour)` · **المصدر:** `06-data/logical-model/slc-09.md`
 
@@ -3413,7 +3357,7 @@ erDiagram
 
 **القيود:** CHECK(committed ≤ capacity); writable only by allocation role
 
-### `readiness.exercises`
+#### `readiness.exercises`
 
 - **المفتاح:** `(tenant_id, exercise_id)` · **المصدر:** `06-data/logical-model/slc-19.md`
 
@@ -3433,7 +3377,7 @@ erDiagram
 
 **القيود:** scenario_ref must reference an ACTIVE scenario at CMD-EXR-PLAN time; scenario_version_frozen never changes after creation (INV-EXR-01)
 
-### `readiness.legacy_resource_notes_migration`
+#### `readiness.legacy_resource_notes_migration`
 
 - **المفتاح:** `(tenant_id, source_urn, note_seq)` · **المصدر:** `06-data/logical-model/slc-09.md`
 
@@ -3442,11 +3386,11 @@ erDiagram
 | `note` | text | — | — |
 | `proposed_ref` | urn | نعم | — |
 | `decision` | text | — | — |
-| `decided_by` | text | — | — |
+| `decided_by` | urn | — | — |
 
 **القيود:** DEBT-001 migration report
 
-### `readiness.logistics_requests`
+#### `readiness.logistics_requests`
 
 - **المفتاح:** `(tenant_id, request_id)` · **المصدر:** `06-data/logical-model/slc-18.md`
 
@@ -3468,7 +3412,7 @@ erDiagram
 
 **القيود:** exactly one allocation_ref, created in the same unit of work as the row (INV-LGR-01)
 
-### `readiness.maintenance_orders`
+#### `readiness.maintenance_orders`
 
 - **المفتاح:** `(tenant_id, order_id)` · **المصدر:** `06-data/logical-model/slc-09.md`
 
@@ -3483,7 +3427,7 @@ erDiagram
 
 **القيود:** EXCLUDE (asset_id WITH =, window WITH &&) WHERE state IN (PLANNED, IN_PROGRESS)
 
-### `readiness.pool_capacity_series`
+#### `readiness.pool_capacity_series`
 
 - **المفتاح:** `(tenant_id, pool_id, valid_from, recorded_from)` · **المصدر:** `06-data/logical-model/slc-09.md`
 
@@ -3491,12 +3435,12 @@ erDiagram
 |---|---|---|---|
 | `capacity` | text | — | — |
 | `valid_to` | timestamptz | — | — |
-| `recorded_to` | text | — | — |
+| `recorded_to` | timestamptz | — | — |
 | `reason` | text | — | — |
 
 **القيود:** bitemporal
 
-### `readiness.qualification_records`
+#### `readiness.qualification_records`
 
 - **المفتاح:** `(tenant_id, record_id)` · **المصدر:** `06-data/logical-model/slc-03.md` · **امتدادات:** slc-19: evidence_ref may now reference a completed simulation's URN; column type (urn) unchanged
 
@@ -3512,22 +3456,10 @@ erDiagram
 | `evidence` | text | نعم | — |
 | `state` | enum | — | — |
 | `version` | integer | — | — |
-| `evidence_ref` | urn | نعم | — |
 
 **القيود:** index (tenant, person_id, code)
 
-### `readiness.qualification_records_history`
-
-- **المفتاح:** `(tenant_id, record_id, version)` · **المصدر:** `06-data/logical-model/slc-03.md`
-
-| العمود | النوع (مستنتَج) | اختياري | ملاحظة |
-|---|---|---|---|
-| `snapshot` | text | — | — |
-| `recorded_at` | timestamptz | — | — |
-
-**القيود:** insert-only (as-of eligibility)
-
-### `readiness.resource_pools`
+#### `readiness.resource_pools`
 
 - **المفتاح:** `(tenant_id, pool_id)` · **المصدر:** `06-data/logical-model/slc-09.md` · **امتدادات:** slc-18: resource_type may now be a logistics item type (RD-LOGISTICS-ITEM-TYPES); no schema change
 
@@ -3542,7 +3474,7 @@ erDiagram
 
 **القيود:** —
 
-### `readiness.role_requirements`
+#### `readiness.role_requirements`
 
 - **المفتاح:** `(tenant_id, role_id, version)` · **المصدر:** `06-data/logical-model/slc-09.md`
 
@@ -3553,7 +3485,7 @@ erDiagram
 
 **القيود:** one ACTIVE per role
 
-### `readiness.scenario_injects`
+#### `readiness.scenario_injects`
 
 - **المفتاح:** `(tenant_id, scenario_id, inject_id)` · **المصدر:** `06-data/logical-model/slc-19.md`
 
@@ -3565,7 +3497,7 @@ erDiagram
 
 **القيود:** offset_minutes strictly increasing per scenario version (INV-SCN-01)
 
-### `readiness.scenarios`
+#### `readiness.scenarios`
 
 - **المفتاح:** `(tenant_id, scenario_id)` · **المصدر:** `06-data/logical-model/slc-19.md`
 
@@ -3581,7 +3513,7 @@ erDiagram
 
 **القيود:** injects ordered by strictly increasing offset_minutes (INV-SCN-01)
 
-### `readiness.shipment_checkpoints`
+#### `readiness.shipment_checkpoints`
 
 - **المفتاح:** `(tenant_id, shipment_id, recorded_at)` · **المصدر:** `06-data/logical-model/slc-18.md`
 
@@ -3593,7 +3525,7 @@ erDiagram
 
 **القيود:** append-only; recorded_at strictly increasing per shipment (INV-SHP-01)
 
-### `readiness.shipments`
+#### `readiness.shipments`
 
 - **المفتاح:** `(tenant_id, shipment_id)` · **المصدر:** `06-data/logical-model/slc-18.md`
 
@@ -3612,7 +3544,7 @@ erDiagram
 
 **القيود:** planned_quantity ≤ linked allocation's committed quantity at CMD-SHP-PLAN time (INV-SHP-03)
 
-### `readiness.simulation_evaluations`
+#### `readiness.simulation_evaluations`
 
 - **المفتاح:** `(tenant_id, simulation_id, evaluation_id)` · **المصدر:** `06-data/logical-model/slc-19.md`
 
@@ -3627,7 +3559,7 @@ erDiagram
 
 **القيود:** evaluator_ref ≠ participant_ref (INV-SIM-03); every exercise participant has ≥ 1 row before COMPLETED (INV-SIM-02)
 
-### `readiness.simulation_inject_deliveries`
+#### `readiness.simulation_inject_deliveries`
 
 - **المفتاح:** `(tenant_id, simulation_id, delivered_at)` · **المصدر:** `06-data/logical-model/slc-19.md`
 
@@ -3639,7 +3571,7 @@ erDiagram
 
 **القيود:** append-only; delivered_at strictly increasing per simulation (INV-SIM-01)
 
-### `readiness.simulations`
+#### `readiness.simulations`
 
 - **المفتاح:** `(tenant_id, simulation_id)` · **المصدر:** `06-data/logical-model/slc-19.md`
 
@@ -3656,23 +3588,30 @@ erDiagram
 **القيود:** exactly one simulation per exercise, created in the same unit of work as EVT-EXR-STARTED
 
 
-## مخزن الإسقاطات (BC07)
+### إسقاطات BC07 في PostgreSQL
 
-اسم الـschema غير محدد في `06-data/logical-model/slc-05.md` **[Missing]**. كل ما فيه قابل لإعادة البناء من المالكين (INV-PRJ-01، FIT-11)، ومنه إسقاط ميزات البلاطات الذي يقرأه DU-12 (`11-hexagonal-reference.md` §8).
+اسم الـschema غير محدد في `06-data/logical-model/slc-05.md` («BC07 store») **[Missing]**. جداول الرسم البياني بلا قاعدة رسم بياني (TD-03)؛ كل ما هنا قابل لإعادة البناء من المالكين (FIT-11).
 
-| الوثيقة / الجدول | المفتاح | الحقول | ملاحظات |
+| الجدول | المفتاح | الحقول | ملاحظات |
+|---|---|---|---|
+| GraphNode | `(…, urn)` | type, display name (per visible facts at query), labels | — |
+| GraphEdge | `(…, urn)` | type, source, target, valid, recorded, labels | from relationship + existence claim |
+| projection_versions | `(tenant_group, kind, version)` | state, schema_version, normalization_version, checkpoints(json), verification(json) | AGG-PROJECTION-VERSION |
+| projection_inbox | `(version, consumer, event_id)` | processed_at | dedupe |
+
+### وثائق OpenSearch (BC07)
+
+وثائق البحث والمتجهات في OpenSearch (TD-02، TD-19)، بفهارس مفصولة حسب إصدار الإسقاط؛ قابلة لإعادة البناء (FIT-11).
+
+| الوثيقة | المفتاح | الحقول | ملاحظات |
 |---|---|---|---|
 | EntityDoc | `(projection_version, tenant, urn)` | canonical_urn, type, labels, security_version, facts[] (nested), current_location_per_level? | facts: predicate, value_text_ar/en, value_norm, translit[], phonetic[], value_num, unit, geo, valid, labels, claim_urn |
 | RealWorldEventDoc | `(…, urn)` | type, event_time(fuzzy), facts[] | — |
 | ObservationDoc | `(…, month, urn)` | observed_at, geo, method, narrative forms, source_type, labels, state | VALIDATED only; monthly indices |
 | TaskDoc | `(…, urn)` | title forms, state, assignee, due_at, plan_ref, labels | from SLC-03 |
-| GraphNode | `(…, urn)` | type, display name (per visible facts at query), labels | — |
-| GraphEdge | `(…, urn)` | type, source, target, valid, recorded, labels | from relationship + existence claim |
-| projection_versions | `(tenant_group, kind, version)` | state, schema_version, normalization_version, checkpoints(json), verification(json) | AGG-PROJECTION-VERSION |
-| projection_inbox | `(version, consumer, event_id)` | processed_at | dedupe |
 | vector projection docs | `(projection_version, tenant, chunk_id)` | urn, labels, embedding, text_ref | same labels as search facts (ADR-P06) |
 
-## المخزن على الجهاز الميداني (مشفر)
+### المخزن على الجهاز الميداني (مشفر)
 
 | المخزن | المحتوى |
 |---|---|

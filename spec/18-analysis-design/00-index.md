@@ -53,7 +53,7 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 | 13 | [13-project-structure.md](13-project-structure.md) | هيكلية المستودع والحزم والوحدات، التسمية، العقود المولَّدة، الترحيل، الملكية | مكتوب | 1 | ✅ |
 | 14 | [14-api-design.md](14-api-design.md) | اصطلاحات الواجهات وكتالوج كامل لـ611 عملية | مولَّد + مكتوب | 2 | ✅ |
 | 15 | [15-event-design.md](15-event-design.md) | 584 حدث مجال (585 رسالة AsyncAPI مع الحدث المشتق `EVT-SEC-VERSION-INCREMENTED`): الـtopics، الغلاف، المستهلكون، الترتيب، إعادة المحاولة، DLQ | مولَّد + مكتوب | 2 | ✅ |
-| 16 | [16-database-schema.md](16-database-schema.md) | 10 schemas و169 جدولًا بأعمدتها ومفاتيحها وقيودها؛ ERD لكل schema؛ مخزن الإسقاطات والمخزن الميداني؛ الترحيل | مولَّد + مكتوب | 2 | ✅ |
+| 16 | [16-database-schema.md](16-database-schema.md) | 10 schemas للمستأجر + مخزن المفاتيح لكل خلية، و166 جدولًا بأعمدتها ومفاتيحها وقيودها؛ ERD لكل schema؛ مخزن الإسقاطات والمخزن الميداني؛ الترحيل | مولَّد + مكتوب | 2 | ✅ |
 | 17 | `17-security-design.md` | المصادقة، التخويل، مصفوفة الدور × العملية، التصنيف، المفاتيح، التدقيق | مولَّد + مكتوب | 4 | ⏳ |
 | 18 | `18-error-handling.md` | كتالوج الأخطاء، التحويل إلى HTTP، إعادة المحاولة | مولَّد + مكتوب | 4 | ⏳ |
 | 19 | `19-runtime-scenarios.md` | Sequence diagrams للمسارات الحرجة | مكتوب | 4 | ⏳ |
@@ -123,3 +123,22 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 | الحل التقني والنشر | `12-solution/` |
 | القبول والتحقق | `13-verification/` |
 | الفهرس والتحقق الآلي للمواصفات | `17-system-study/` |
+
+## 6. مشكلات في المصادر المعتمدة كشفتها المرحلة 2
+
+كشفتها المولِّدات والمراجعات المستقلة. لم تُصحَّح المصادر في هذه المرحلة؛ الملفات المولَّدة تعرضها كما هي وتعلّمها. كل بند يصبح CR في `00-governance/corrections.md` عند تصحيحه.
+
+| # | المشكلة | المصدر | أين تظهر |
+|---|---|---|---|
+| S-01 | مصفوفة الحالة × الأمر بلا صفوف للحالات النهائية؛ وقائمة `states` في AGG-INCIDENT لا تذكر CLOSED وCANCELLED | AGG-INCIDENT، AGG-SHIPMENT، AGG-LOGISTICS-REQUEST | `05-user-stories/` (أُضيفت الحالات النهائية **[Derived]**) |
+| S-02 | `TASK_SUSPENDED` مذكور لأوامر يستثنيها INV-TASK-06 (`CANCEL`، `UNSUSPEND`) أو لا ينطبق عليها (`CREATE`) | `03-domain/contexts/BC04/commands-slc03.md` | `us-bc04.md` |
+| S-03 | رموز `*_INVALID_STATE_TRANSITION` لأوامر لا تمنعها أي حالة (أوامر `RECLASSIFY` في BC02) | كتالوجات الأوامر والأخطاء | `us-bc02.md` |
+| S-04 | الجدول نفسه بأسماء أعمدة أو مفتاح مختلف بين الشرائح (`evidence`/`evidence_ref`، `source`/`source_ref`، `target`/`target_ref`، `knowledge_id`/`object_id`) | `06-data/logical-model/slc-03/09/12/18/19.md` | `16-database-schema.md` §8 |
+| S-05 | متطلبات حقل `source` فيها يسمّي قاعدة عمل لا تذكرها القاعدة في `enforced_by` (REQ-RES-003، RES-009، AI-005، CRD-002، INT-001) | `01-business/business-rules.md` | `09-business-rules.md` §1 |
+| S-06 | `RD-COLLECTION-METHODS` مذكور في شرط ولا يوجد في البيانات المرجعية | AGG-COLLECTION-PLAN؛ `04-information/reference-data.md` | `09-business-rules.md` |
+| S-07 | `403` في ترويسة كتالوجات الأخطاء ولا تعلنه أي عملية؛ ولا رمز لالتزام قبل التنفيذ غير مستوفى | `05-contracts/errors-*.md`، `openapi-*.md` | `14-api-design.md` §10 |
+| S-08 | `CMD-SIM-START` داخلي (`x-internal`) في عقد readiness العام | `05-contracts/openapi-readiness-slc19.md` | `14-api-design.md` §7 |
+| S-09 | 6 أوامر معلَّمة `x-offline-capable` بينما `CommandEnvelope` الميداني يقبل 12 | `openapi-*.md`، `openapi-field-slc11.md` | `14-api-design.md` §7 |
+| S-10 | `QRY-QUAL-LIST` يعد «as of t» في الكتالوج بلا معامل زمني في العقد | `queries-slc03.md`، `openapi-readiness-slc03.md` | `us-bc05.md` |
+| S-11 | اسم schema مخزن الإسقاطات في PostgreSQL غير محدد | `06-data/logical-model/slc-05.md` | `16-database-schema.md` |
+

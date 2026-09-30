@@ -86,7 +86,7 @@ stateDiagram-v2
   REVOKED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: MODIFY (ACTIVE)
+أوامر لا تغيّر الحالة: «MODIFY» في ACTIVE
 
 
 ### AGG-DEVICE
@@ -108,7 +108,7 @@ stateDiagram-v2
   RETIRED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: ROTATE-KEY (ACTIVE)
+أوامر لا تغيّر الحالة: «ROTATE-KEY» في ACTIVE
 
 
 ### AGG-HR-SYNC-PROPOSAL
@@ -140,7 +140,7 @@ stateDiagram-v2
   INACTIVE --> ACTIVE : REACTIVATE
 ```
 
-أوامر لا تغيّر الحالة: ADD-UNIT (ACTIVE)؛ DEACTIVATE-UNIT (ACTIVE)؛ MOVE-UNIT (ACTIVE)؛ RENAME (ACTIVE)؛ RENAME-UNIT (ACTIVE)
+أوامر لا تغيّر الحالة: «ADD-UNIT» في ACTIVE؛ «DEACTIVATE-UNIT» في ACTIVE؛ «MOVE-UNIT» في ACTIVE؛ «RENAME» في ACTIVE؛ «RENAME-UNIT» في ACTIVE
 
 
 ### AGG-PERSON
@@ -156,7 +156,7 @@ stateDiagram-v2
   ERASED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: UPDATE-DETAILS (ACTIVE)
+أوامر لا تغيّر الحالة: «UPDATE-DETAILS» في ACTIVE
 
 
 ### AGG-ROLE
@@ -171,7 +171,7 @@ stateDiagram-v2
   RETIRED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: SET-PERMISSIONS (ACTIVE, DRAFT)
+أوامر لا تغيّر الحالة: «SET-PERMISSIONS» في ACTIVE, DRAFT
 
 
 ### AGG-ROLE-ASSIGNMENT
@@ -201,7 +201,7 @@ stateDiagram-v2
   CLOSED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: ROTATE-CREDENTIAL (ACTIVE)
+أوامر لا تغيّر الحالة: «ROTATE-CREDENTIAL» في ACTIVE
 
 
 ### AGG-TENANT
@@ -224,7 +224,7 @@ stateDiagram-v2
   DECOMMISSIONED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: UPDATE-QUOTAS (ACTIVE, SUSPENDED)
+أوامر لا تغيّر الحالة: «UPDATE-QUOTAS» في ACTIVE, SUSPENDED
 
 
 ### AGG-USER
@@ -245,7 +245,7 @@ stateDiagram-v2
   CLOSED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: LINK-IDENTITY (ACTIVE, DISABLED, LOCKED, PENDING)؛ LINK-PERSON (ACTIVE, DISABLED, LOCKED, PENDING)؛ UNLINK-IDENTITY (ACTIVE, DISABLED, LOCKED, PENDING)
+أوامر لا تغيّر الحالة: «LINK-IDENTITY» في ACTIVE, DISABLED, LOCKED, PENDING؛ «LINK-PERSON» في ACTIVE, DISABLED, LOCKED, PENDING؛ «UNLINK-IDENTITY» في ACTIVE, DISABLED, LOCKED, PENDING
 
 
 ## BC02 — Information — نواة المعلومات
@@ -275,11 +275,11 @@ stateDiagram-v2
 ```mermaid
 stateDiagram-v2
   [*] --> CURRENT : ASSERT
-  CURRENT --> CLOSED : CORRECT, RECORD-CHANGE, RETRACT
+  CURRENT --> CLOSED : CORRECT / RECORD-CHANGE / RETRACT
   CLOSED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: ASSESS (CURRENT)؛ RECLASSIFY (CLOSED, CURRENT)
+أوامر لا تغيّر الحالة: «ASSESS» في CURRENT؛ «RECLASSIFY» في CLOSED, CURRENT
 
 
 ### AGG-COLLECTION-PLAN
@@ -290,14 +290,14 @@ stateDiagram-v2
 stateDiagram-v2
   [*] --> DRAFT : CREATE
   DRAFT --> ACTIVE : ACTIVATE
-  ACTIVE --> COMPLETED : SYS all activity tasks terminal, COMPLETE
+  ACTIVE --> COMPLETED : SYS all activity tasks terminal / COMPLETE
   DRAFT --> CANCELLED : CANCEL
   ACTIVE --> CANCELLED : CANCEL
   COMPLETED --> [*]
   CANCELLED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: ADD-ACTIVITY (ACTIVE, DRAFT)؛ REMOVE-ACTIVITY (DRAFT)
+أوامر لا تغيّر الحالة: «ADD-ACTIVITY» في ACTIVE, DRAFT؛ «REMOVE-ACTIVITY» في DRAFT
 
 
 ### AGG-COLLECTION-REQUIREMENT
@@ -320,7 +320,7 @@ stateDiagram-v2
   CANCELLED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: AMEND (APPROVED)؛ EDIT (DRAFT)؛ SYS validated observation matched (APPROVED)
+أوامر لا تغيّر الحالة: «AMEND» في APPROVED؛ «EDIT» في DRAFT؛ «SYS validated observation matched» في APPROVED
 
 
 ### AGG-CONFLICT
@@ -330,7 +330,7 @@ stateDiagram-v2
 ```mermaid
 stateDiagram-v2
   state "any non-terminal state" as ANY_NT
-  [*] --> OPEN : SYS conflict rule matched, RAISE
+  [*] --> OPEN : SYS conflict rule matched / RAISE
   OPEN --> UNDER_REVIEW : START-REVIEW
   UNDER_REVIEW --> RESOLVED : RESOLVE
   UNDER_REVIEW --> ACCEPTED_AS_CONFLICT : ACCEPT
@@ -340,7 +340,7 @@ stateDiagram-v2
   SUPERSEDED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: ASSIGN (OPEN, UNDER_REVIEW)؛ SYS incompatible claim joined (OPEN, UNDER_REVIEW)
+أوامر لا تغيّر الحالة: «ASSIGN» في OPEN, UNDER_REVIEW؛ «SYS incompatible claim joined» في OPEN, UNDER_REVIEW
 
 
 ### AGG-CORRELATION-PROPOSAL
@@ -349,7 +349,7 @@ stateDiagram-v2
 
 ```mermaid
 stateDiagram-v2
-  [*] --> PROPOSED : SYS correlation rule score ≥ threshold, PROPOSE
+  [*] --> PROPOSED : SYS correlation rule score ≥ threshold / PROPOSE
   PROPOSED --> UNDER_REVIEW : START-REVIEW
   UNDER_REVIEW --> ACCEPTED : ACCEPT
   UNDER_REVIEW --> REJECTED : REJECT
@@ -373,7 +373,7 @@ stateDiagram-v2
   RETIRED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT (ACTIVE, DRAFT)
+أوامر لا تغيّر الحالة: «EDIT» في ACTIVE, DRAFT
 
 
 ### AGG-ENTITY
@@ -387,7 +387,7 @@ stateDiagram-v2
   RETIRED --> ACTIVE : REINSTATE
 ```
 
-أوامر لا تغيّر الحالة: CHANGE-TYPE (ACTIVE)؛ RECLASSIFY (ACTIVE, RETIRED)
+أوامر لا تغيّر الحالة: «CHANGE-TYPE» في ACTIVE؛ «RECLASSIFY» في ACTIVE, RETIRED
 
 
 ### AGG-ER-CASE
@@ -396,7 +396,7 @@ stateDiagram-v2
 
 ```mermaid
 stateDiagram-v2
-  [*] --> CANDIDATE : SYS candidate generator score ≥ propose threshold, PROPOSE
+  [*] --> CANDIDATE : SYS candidate generator score ≥ propose threshold / PROPOSE
   CANDIDATE --> UNDER_REVIEW : START-REVIEW
   UNDER_REVIEW --> MATCHED : DECIDE-MATCH
   UNDER_REVIEW --> NOT_A_MATCH : DECIDE-NOT-MATCH
@@ -428,7 +428,7 @@ stateDiagram-v2
   WITHDRAWN --> [*]
 ```
 
-أوامر لا تغيّر الحالة: RECLASSIFY (REGISTERED, SEALED, WITHDRAWN)؛ TRANSFER-CUSTODY (REGISTERED, SEALED)؛ UPDATE-LOCATOR (REGISTERED)
+أوامر لا تغيّر الحالة: «RECLASSIFY» في REGISTERED, SEALED, WITHDRAWN؛ «TRANSFER-CUSTODY» في REGISTERED, SEALED؛ «UPDATE-LOCATOR» في REGISTERED
 
 
 ### AGG-EVIDENCE-LINK
@@ -487,7 +487,7 @@ stateDiagram-v2
   SUPERSEDED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT (DRAFT)
+أوامر لا تغيّر الحالة: «EDIT» في DRAFT
 
 
 ### AGG-OBSERVATION
@@ -503,7 +503,7 @@ stateDiagram-v2
   REJECTED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: AMEND (RECORDED)؛ ATTACH-EVIDENCE (RECORDED)؛ RECLASSIFY (RECORDED, REJECTED, VALIDATED)
+أوامر لا تغيّر الحالة: «AMEND» في RECORDED؛ «ATTACH-EVIDENCE» في RECORDED؛ «RECLASSIFY» في RECORDED, REJECTED, VALIDATED
 
 
 ### AGG-REALWORLD-EVENT
@@ -517,7 +517,7 @@ stateDiagram-v2
   RETIRED --> ACTIVE : REINSTATE
 ```
 
-أوامر لا تغيّر الحالة: CHANGE-TYPE (ACTIVE)؛ RECLASSIFY (ACTIVE, RETIRED)
+أوامر لا تغيّر الحالة: «CHANGE-TYPE» في ACTIVE؛ «RECLASSIFY» في ACTIVE, RETIRED
 
 
 ### AGG-RELATIONSHIP
@@ -531,7 +531,7 @@ stateDiagram-v2
   RETIRED --> ACTIVE : REINSTATE
 ```
 
-أوامر لا تغيّر الحالة: RECLASSIFY (ACTIVE, RETIRED)
+أوامر لا تغيّر الحالة: «RECLASSIFY» في ACTIVE, RETIRED
 
 
 ### AGG-SOURCE
@@ -548,7 +548,7 @@ stateDiagram-v2
   RETIRED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: RATE-RELIABILITY (ACTIVE, SUSPENDED)؛ RECLASSIFY (ACTIVE, SUSPENDED)؛ SET-PROTECTION (ACTIVE, SUSPENDED)؛ UPDATE-PROFILE (ACTIVE, SUSPENDED)
+أوامر لا تغيّر الحالة: «RATE-RELIABILITY» في ACTIVE, SUSPENDED؛ «RECLASSIFY» في ACTIVE, SUSPENDED؛ «SET-PROTECTION» في ACTIVE, SUSPENDED؛ «UPDATE-PROFILE» في ACTIVE, SUSPENDED
 
 
 ## BC03 — Intelligence — الوعي والتحليل
@@ -561,15 +561,15 @@ stateDiagram-v2
 stateDiagram-v2
   [*] --> RAISED : SYS rule condition met
   RAISED --> ACKNOWLEDGED : ACKNOWLEDGE
-  RAISED --> RESOLVED : RESOLVE, SYS condition cleared and rule auto_resolve
-  ACKNOWLEDGED --> RESOLVED : RESOLVE, SYS condition cleared and rule auto_resolve
+  RAISED --> RESOLVED : RESOLVE / SYS condition cleared and rule auto_resolve
+  ACKNOWLEDGED --> RESOLVED : RESOLVE / SYS condition cleared and rule auto_resolve
   RAISED --> DISMISSED : DISMISS
   ACKNOWLEDGED --> DISMISSED : DISMISS
   RESOLVED --> [*]
   DISMISSED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: SYS condition met again within dedupe window (ACKNOWLEDGED, RAISED)؛ SYS unacknowledged beyond escalation delay (RAISED)
+أوامر لا تغيّر الحالة: «SYS condition met again within dedupe window» في ACKNOWLEDGED, RAISED؛ «SYS unacknowledged beyond escalation delay» في RAISED
 
 
 ### AGG-ALERT-RULE
@@ -587,7 +587,7 @@ stateDiagram-v2
   RETIRED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT (DISABLED, DRAFT)
+أوامر لا تغيّر الحالة: «EDIT» في DISABLED, DRAFT
 
 
 ### AGG-ANALYSIS-CASE
@@ -605,7 +605,7 @@ stateDiagram-v2
   CANCELLED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: ADD-ASSUMPTION (OPEN)؛ ADD-HYPOTHESIS (OPEN)؛ DEFINE (DRAFT, OPEN)؛ DEFINE-SCENARIO (OPEN)؛ DESELECT-EVIDENCE (OPEN)؛ RECLASSIFY (CLOSED, DRAFT, OPEN)؛ RETIRE-ASSUMPTION (OPEN)؛ SELECT-EVIDENCE (OPEN)؛ UPDATE-HYPOTHESIS (OPEN)
+أوامر لا تغيّر الحالة: «ADD-ASSUMPTION» في OPEN؛ «ADD-HYPOTHESIS» في OPEN؛ «DEFINE» في DRAFT, OPEN؛ «DEFINE-SCENARIO» في OPEN؛ «DESELECT-EVIDENCE» في OPEN؛ «RECLASSIFY» في CLOSED, DRAFT, OPEN؛ «RETIRE-ASSUMPTION» في OPEN؛ «SELECT-EVIDENCE» في OPEN؛ «UPDATE-HYPOTHESIS» في OPEN
 
 
 ### AGG-ANALYSIS-METHOD
@@ -628,7 +628,7 @@ stateDiagram-v2
 
 ```mermaid
 stateDiagram-v2
-  [*] --> QUEUED : SUBMIT, REPRODUCE
+  [*] --> QUEUED : SUBMIT / REPRODUCE
   QUEUED --> RUNNING : SYS worker lease acquired
   RUNNING --> SUCCEEDED : SYS completed
   RUNNING --> FAILED : SYS error or timeout
@@ -658,7 +658,7 @@ stateDiagram-v2
   DISCARDED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT (DRAFT)
+أوامر لا تغيّر الحالة: «EDIT» في DRAFT
 
 
 ### AGG-CAP-MESSAGE
@@ -691,7 +691,7 @@ stateDiagram-v2
   WITHDRAWN --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT (DRAFT)
+أوامر لا تغيّر الحالة: «EDIT» في DRAFT
 
 
 ### AGG-SITUATION
@@ -709,7 +709,7 @@ stateDiagram-v2
   CLOSED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT-DEFINITION (ACTIVE, DRAFT, PAUSED)؛ RECLASSIFY (ACTIVE, DRAFT, PAUSED)
+أوامر لا تغيّر الحالة: «EDIT-DEFINITION» في ACTIVE, DRAFT, PAUSED؛ «RECLASSIFY» في ACTIVE, DRAFT, PAUSED
 
 
 ## BC04 — Operations — التخطيط والتنفيذ
@@ -729,7 +729,7 @@ stateDiagram-v2
   CANCELLED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: ADD-PARTICIPANT (ACTIVE, OPEN)؛ ASSIGN-RESPONSIBILITY (ACTIVE)؛ REMOVE-PARTICIPANT (ACTIVE, OPEN)؛ REQUEST-DECISION (ACTIVE)؛ SYS linked decision recorded (ACTIVE)؛ UPDATE-RESPONSIBILITY (ACTIVE)
+أوامر لا تغيّر الحالة: «ADD-PARTICIPANT» في ACTIVE, OPEN؛ «ASSIGN-RESPONSIBILITY» في ACTIVE؛ «REMOVE-PARTICIPANT» في ACTIVE, OPEN؛ «REQUEST-DECISION» في ACTIVE؛ «SYS linked decision recorded» في ACTIVE؛ «UPDATE-RESPONSIBILITY» في ACTIVE
 
 
 ### AGG-DECISION
@@ -761,7 +761,7 @@ stateDiagram-v2
   WITHDRAWN --> [*]
 ```
 
-أوامر لا تغيّر الحالة: ADD-OPTION (DRAFT, OPEN)؛ CITE (DRAFT, OPEN)؛ SYS deadline passed (OPEN)
+أوامر لا تغيّر الحالة: «ADD-OPTION» في DRAFT, OPEN؛ «CITE» في DRAFT, OPEN؛ «SYS deadline passed» في OPEN
 
 
 ### AGG-INCIDENT
@@ -781,7 +781,7 @@ stateDiagram-v2
   CANCELLED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: ACTIVATE-CONTINGENCY (ASSESSED, CONTAINED, REPORTED, RESOLVED, RESPONDING)؛ DE-ESCALATE (ASSESSED, CONTAINED, REPORTED, RESOLVED, RESPONDING)؛ ESCALATE (ASSESSED, CONTAINED, REPORTED, RESOLVED, RESPONDING)؛ SYS response SLA elapsed without dispatch (ASSESSED, REPORTED)
+أوامر لا تغيّر الحالة: «ACTIVATE-CONTINGENCY» في ASSESSED, CONTAINED, REPORTED, RESOLVED, RESPONDING؛ «DE-ESCALATE» في ASSESSED, CONTAINED, REPORTED, RESOLVED, RESPONDING؛ «ESCALATE» في ASSESSED, CONTAINED, REPORTED, RESOLVED, RESPONDING؛ «SYS response SLA elapsed without dispatch» في ASSESSED, REPORTED
 
 
 ### AGG-NOTIFICATION
@@ -815,7 +815,7 @@ stateDiagram-v2
   CLOSED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: CORRECT (ACTIVE)؛ RECORD (ACTIVE)؛ SYS target changed by new baseline (ACTIVE)
+أوامر لا تغيّر الحالة: «CORRECT» في ACTIVE؛ «RECORD» في ACTIVE؛ «SYS target changed by new baseline» في ACTIVE
 
 
 ### AGG-PLAN
@@ -837,7 +837,7 @@ stateDiagram-v2
   CANCELLED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: RECLASSIFY (ACTIVE, DRAFT, SUSPENDED)؛ SYS implemented decision annulled or superseded (ACTIVE, SUSPENDED)
+أوامر لا تغيّر الحالة: «RECLASSIFY» في ACTIVE, DRAFT, SUSPENDED؛ «SYS implemented decision annulled or superseded» في ACTIVE, SUSPENDED
 
 
 ### AGG-PLAN-VERSION
@@ -858,7 +858,7 @@ stateDiagram-v2
   DISCARDED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: AMEND-MINOR (BASELINED)؛ EDIT (DRAFT)
+أوامر لا تغيّر الحالة: «AMEND-MINOR» في BASELINED؛ «EDIT» في DRAFT
 
 
 ### AGG-RISK
@@ -877,7 +877,7 @@ stateDiagram-v2
   CLOSED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: SYS incident references this risk as risk_ref (ASSESSED, IDENTIFIED, TREATED)
+أوامر لا تغيّر الحالة: «SYS incident references this risk as risk_ref» في ASSESSED, IDENTIFIED, TREATED
 
 
 ### AGG-SUBSCRIPTION
@@ -889,12 +889,12 @@ stateDiagram-v2
   [*] --> ACTIVE : SUBSCRIBE
   ACTIVE --> PAUSED : PAUSE
   PAUSED --> ACTIVE : RESUME
-  ACTIVE --> ENDED : UNSUBSCRIBE, SYS subscriber lost visibility of target
-  PAUSED --> ENDED : UNSUBSCRIBE, SYS subscriber lost visibility of target
+  ACTIVE --> ENDED : UNSUBSCRIBE / SYS subscriber lost visibility of target
+  PAUSED --> ENDED : UNSUBSCRIBE / SYS subscriber lost visibility of target
   ENDED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: UPDATE-CHANNELS (ACTIVE, PAUSED)
+أوامر لا تغيّر الحالة: «UPDATE-CHANNELS» في ACTIVE, PAUSED
 
 
 ### AGG-TASK
@@ -920,8 +920,8 @@ stateDiagram-v2
   UNDER_REVIEW --> IN_PROGRESS : RETURN
   UNDER_REVIEW --> APPROVED : APPROVE
   UNDER_REVIEW --> REJECTED : REJECT
-  APPROVED --> COMPLETED : SYS all completion criteria satisfied, COMPLETE
-  COMPLETED --> CLOSED : CLOSE, SYS follow-up window (7 d) elapsed without open follow-ups
+  APPROVED --> COMPLETED : SYS all completion criteria satisfied / COMPLETE
+  COMPLETED --> CLOSED : CLOSE / SYS follow-up window (7 d) elapsed without open follow-ups
   G2 --> CANCELLED : CANCEL
   G3 --> EXPIRED : SYS due passed and task type expires_on_due
   G2 --> SUPERSEDED : SYS plan version baselined without this task
@@ -934,7 +934,7 @@ stateDiagram-v2
 
 مجموعات الحالات في المخطط: **G1** = ACCEPTED, ASSIGNED, BLOCKED, IN_PROGRESS؛ **G2** = ACCEPTED, APPROVED, ASSIGNED, BLOCKED, DRAFT, IN_PROGRESS, READY, SUBMITTED, UNDER_REVIEW؛ **G3** = ACCEPTED, ASSIGNED, BLOCKED, DRAFT, IN_PROGRESS, READY, SUBMITTED, UNDER_REVIEW
 
-أوامر لا تغيّر الحالة: ADD-RESULT-ITEM (BLOCKED, IN_PROGRESS)؛ EDIT (DRAFT, READY)؛ ESCALATE (ACCEPTED, APPROVED, ASSIGNED, BLOCKED, COMPLETED, DRAFT, IN_PROGRESS, READY, SUBMITTED, UNDER_REVIEW)؛ RECLASSIFY (ACCEPTED, APPROVED, ASSIGNED, BLOCKED, COMPLETED, DRAFT, IN_PROGRESS, READY, SUBMITTED, UNDER_REVIEW)؛ SET-DUE (ACCEPTED, ASSIGNED, BLOCKED, DRAFT, IN_PROGRESS, READY)؛ SUSPEND (ACCEPTED, APPROVED, ASSIGNED, BLOCKED, COMPLETED, DRAFT, IN_PROGRESS, READY, SUBMITTED, UNDER_REVIEW)؛ SYS due passed (escalation policy) (ACCEPTED, APPROVED, ASSIGNED, BLOCKED, COMPLETED, DRAFT, IN_PROGRESS, READY, SUBMITTED, UNDER_REVIEW)؛ UNSUSPEND (ACCEPTED, APPROVED, ASSIGNED, BLOCKED, COMPLETED, DRAFT, IN_PROGRESS, READY, SUBMITTED, UNDER_REVIEW)
+أوامر لا تغيّر الحالة: «ADD-RESULT-ITEM» في BLOCKED, IN_PROGRESS؛ «EDIT» في DRAFT, READY؛ «ESCALATE» في ACCEPTED, APPROVED, ASSIGNED, BLOCKED, COMPLETED, DRAFT, IN_PROGRESS, READY, SUBMITTED, UNDER_REVIEW؛ «RECLASSIFY» في ACCEPTED, APPROVED, ASSIGNED, BLOCKED, COMPLETED, DRAFT, IN_PROGRESS, READY, SUBMITTED, UNDER_REVIEW؛ «SET-DUE» في ACCEPTED, ASSIGNED, BLOCKED, DRAFT, IN_PROGRESS, READY؛ «SUSPEND» في ACCEPTED, APPROVED, ASSIGNED, BLOCKED, COMPLETED, DRAFT, IN_PROGRESS, READY, SUBMITTED, UNDER_REVIEW؛ «SYS due passed (escalation policy)» في ACCEPTED, APPROVED, ASSIGNED, BLOCKED, COMPLETED, DRAFT, IN_PROGRESS, READY, SUBMITTED, UNDER_REVIEW؛ «UNSUSPEND» في ACCEPTED, APPROVED, ASSIGNED, BLOCKED, COMPLETED, DRAFT, IN_PROGRESS, READY, SUBMITTED, UNDER_REVIEW
 
 
 ### AGG-TASK-TYPE
@@ -949,7 +949,7 @@ stateDiagram-v2
   RETIRED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT (ACTIVE, DRAFT)
+أوامر لا تغيّر الحالة: «EDIT» في ACTIVE, DRAFT
 
 
 ## BC05 — Readiness — الموارد والجاهزية
@@ -965,15 +965,15 @@ stateDiagram-v2
   REQUESTED --> PENDING_APPROVAL : SYS checks passed, policy requires approval
   REQUESTED --> REJECTED : SYS a check failed
   PENDING_APPROVAL --> COMMITTED : APPROVE
-  PENDING_APPROVAL --> REJECTED : REJECT, SYS provisional hold (1 h) elapsed
+  PENDING_APPROVAL --> REJECTED : REJECT / SYS provisional hold (1 h) elapsed
   COMMITTED --> PREEMPTED : PREEMPT
-  COMMITTED --> RELEASED : RELEASE, SYS linked task terminal
+  COMMITTED --> RELEASED : RELEASE / SYS linked task terminal
   REJECTED --> [*]
   PREEMPTED --> [*]
   RELEASED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: RECORD-CONSUMPTION (COMMITTED)
+أوامر لا تغيّر الحالة: «RECORD-CONSUMPTION» في COMMITTED
 
 
 ### AGG-ASSET
@@ -996,7 +996,7 @@ stateDiagram-v2
   DISPOSED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: RECLASSIFY (IN_SERVICE, LOST, UNDER_MAINTENANCE, UNSERVICEABLE)؛ SET-CERTIFICATION (IN_SERVICE, UNDER_MAINTENANCE, UNSERVICEABLE)؛ TRANSFER-CUSTODY (IN_SERVICE, UNDER_MAINTENANCE, UNSERVICEABLE)؛ UPDATE-CONDITION (IN_SERVICE, UNDER_MAINTENANCE, UNSERVICEABLE)
+أوامر لا تغيّر الحالة: «RECLASSIFY» في IN_SERVICE, LOST, UNDER_MAINTENANCE, UNSERVICEABLE؛ «SET-CERTIFICATION» في IN_SERVICE, UNDER_MAINTENANCE, UNSERVICEABLE؛ «TRANSFER-CUSTODY» في IN_SERVICE, UNDER_MAINTENANCE, UNSERVICEABLE؛ «UPDATE-CONDITION» في IN_SERVICE, UNDER_MAINTENANCE, UNSERVICEABLE
 
 
 ### AGG-ASSET-ASSIGNMENT
@@ -1006,7 +1006,7 @@ stateDiagram-v2
 ```mermaid
 stateDiagram-v2
   [*] --> ACTIVE : ASSIGN
-  ACTIVE --> RETURNED : RETURN, SYS linked task terminal
+  ACTIVE --> RETURNED : RETURN / SYS linked task terminal
   ACTIVE --> CANCELLED : CANCEL
   RETURNED --> [*]
   CANCELLED --> [*]
@@ -1022,7 +1022,7 @@ stateDiagram-v2
   [*] --> HELD : HOLD
   HELD --> CONFIRMED : CONFIRM
   HELD --> EXPIRED : SYS hold expiry (24 h) reached
-  CONFIRMED --> RELEASED : RELEASE, SYS linked task or plan terminal
+  CONFIRMED --> RELEASED : RELEASE / SYS linked task or plan terminal
   HELD --> CANCELLED : CANCEL
   CONFIRMED --> CANCELLED : CANCEL
   RELEASED --> [*]
@@ -1089,7 +1089,7 @@ stateDiagram-v2
   CANCELLED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: RESCHEDULE (PLANNED)
+أوامر لا تغيّر الحالة: «RESCHEDULE» في PLANNED
 
 
 ### AGG-QUALIFICATION-RECORD
@@ -1109,7 +1109,7 @@ stateDiagram-v2
   REVOKED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: RENEW (ACTIVE)
+أوامر لا تغيّر الحالة: «RENEW» في ACTIVE
 
 
 ### AGG-RESOURCE-POOL
@@ -1126,7 +1126,7 @@ stateDiagram-v2
   CLOSED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: ADJUST-CAPACITY (ACTIVE, SUSPENDED)
+أوامر لا تغيّر الحالة: «ADJUST-CAPACITY» في ACTIVE, SUSPENDED
 
 
 ### AGG-ROLE-REQUIREMENT
@@ -1141,7 +1141,7 @@ stateDiagram-v2
   RETIRED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT (ACTIVE, DRAFT)
+أوامر لا تغيّر الحالة: «EDIT» في ACTIVE, DRAFT
 
 
 ### AGG-SCENARIO
@@ -1156,7 +1156,7 @@ stateDiagram-v2
   RETIRED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT (ACTIVE, DRAFT)
+أوامر لا تغيّر الحالة: «EDIT» في ACTIVE, DRAFT
 
 
 ### AGG-SHIPMENT
@@ -1177,7 +1177,7 @@ stateDiagram-v2
   CANCELLED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: RECORD-CHECKPOINT (IN_TRANSIT)
+أوامر لا تغيّر الحالة: «RECORD-CHECKPOINT» في IN_TRANSIT
 
 
 ### AGG-SIMULATION
@@ -1197,7 +1197,7 @@ stateDiagram-v2
   ABORTED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: DELIVER-INJECT (IN_PROGRESS)؛ RECORD-EVALUATION (IN_PROGRESS, PAUSED)
+أوامر لا تغيّر الحالة: «DELIVER-INJECT» في IN_PROGRESS؛ «RECORD-EVALUATION» في IN_PROGRESS, PAUSED
 
 
 ## BC06 — Knowledge — المعرفة والمنتجات
@@ -1221,7 +1221,7 @@ stateDiagram-v2
   DISPOSED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: MIGRATE-FORMAT (ARCHIVED)
+أوامر لا تغيّر الحالة: «MIGRATE-FORMAT» في ARCHIVED
 
 
 ### AGG-DISTRIBUTION
@@ -1260,7 +1260,7 @@ stateDiagram-v2
   DISCARDED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT (DRAFT)؛ RECORD-REUSE (PUBLISHED)
+أوامر لا تغيّر الحالة: «EDIT» في DRAFT؛ «RECORD-REUSE» في PUBLISHED
 
 
 ### AGG-PRODUCT
@@ -1288,7 +1288,7 @@ stateDiagram-v2
   DISCARDED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT-NARRATIVE (GENERATED)
+أوامر لا تغيّر الحالة: «EDIT-NARRATIVE» في GENERATED
 
 
 ### AGG-PRODUCT-TEMPLATE
@@ -1303,7 +1303,7 @@ stateDiagram-v2
   RETIRED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT (ACTIVE, DRAFT)
+أوامر لا تغيّر الحالة: «EDIT» في ACTIVE, DRAFT
 
 
 ### AGG-RECONSTRUCTION
@@ -1341,7 +1341,7 @@ stateDiagram-v2
   RETIRED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: UPDATE-MAPPING (ACTIVE, DRAFT)
+أوامر لا تغيّر الحالة: «UPDATE-MAPPING» في ACTIVE, DRAFT
 
 
 ### AGG-AI-REQUEST
@@ -1401,7 +1401,7 @@ stateDiagram-v2
   DISCARDED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT (DRAFT)
+أوامر لا تغيّر الحالة: «EDIT» في DRAFT
 
 
 ### AGG-AI-TOOL
@@ -1432,7 +1432,7 @@ stateDiagram-v2
   SUPERSEDED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT (DRAFT)
+أوامر لا تغيّر الحالة: «EDIT» في DRAFT
 
 
 ### AGG-INTEGRATION-CONNECTION
@@ -1477,7 +1477,7 @@ stateDiagram-v2
   RETIRED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: SYS monitoring drift detected (PRODUCTION)
+أوامر لا تغيّر الحالة: «SYS monitoring drift detected» في PRODUCTION
 
 
 ### AGG-PRELOAD-PACKAGE
@@ -1493,7 +1493,7 @@ stateDiagram-v2
   READY --> DOWNLOADED : CONFIRM-DOWNLOAD
   READY --> EXPIRED : SYS expires_at reached
   DOWNLOADED --> EXPIRED : SYS expires_at reached
-  ANY_NT --> REVOKED : SYS user security_version changed or device not ACTIVE, REVOKE
+  ANY_NT --> REVOKED : SYS user security_version changed or device not ACTIVE / REVOKE
   EXPIRED --> [*]
   REVOKED --> [*]
 ```
@@ -1507,7 +1507,7 @@ stateDiagram-v2
 stateDiagram-v2
   [*] --> BUILDING : CREATE-VERSION
   BUILDING --> READY : SYS full rebuild reached live checkpoint
-  BUILDING --> FAILED : SYS build failed, CANCEL-BUILD
+  BUILDING --> FAILED : SYS build failed / CANCEL-BUILD
   READY --> ACTIVE : PROMOTE
   ACTIVE --> DEGRADED : SYS lag above threshold
   DEGRADED --> ACTIVE : SYS lag back within target
@@ -1534,7 +1534,7 @@ stateDiagram-v2
   RETIRED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: SET-QUALITY-RULES (ACTIVE, DRAFT, PAUSED)؛ SYS no data beyond stale-after (ACTIVE)
+أوامر لا تغيّر الحالة: «SET-QUALITY-RULES» في ACTIVE, DRAFT, PAUSED؛ «SYS no data beyond stale-after» في ACTIVE
 
 
 ### AGG-SYNC-CONFLICT
@@ -1552,7 +1552,7 @@ stateDiagram-v2
   RESOLVED_MANUAL --> [*]
 ```
 
-أوامر لا تغيّر الحالة: ASSIGN (OPEN)
+أوامر لا تغيّر الحالة: «ASSIGN» في OPEN
 
 
 ### AGG-SYNC-SESSION
@@ -1592,7 +1592,7 @@ stateDiagram-v2
   DISCARDED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT (DRAFT)
+أوامر لا تغيّر الحالة: «EDIT» في DRAFT
 
 
 ### AGG-DISPOSITION-RUN
@@ -1648,7 +1648,7 @@ stateDiagram-v2
   RELEASED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EXTEND (ACTIVE)
+أوامر لا تغيّر الحالة: «EXTEND» في ACTIVE
 
 
 ### AGG-POLICY-SET
@@ -1667,7 +1667,7 @@ stateDiagram-v2
   REJECTED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT (DRAFT)
+أوامر لا تغيّر الحالة: «EDIT» في DRAFT
 
 
 ### AGG-RETENTION-SCHEDULE
@@ -1684,7 +1684,7 @@ stateDiagram-v2
   DISCARDED --> [*]
 ```
 
-أوامر لا تغيّر الحالة: EDIT (DRAFT)
+أوامر لا تغيّر الحالة: «EDIT» في DRAFT
 
 
 ### AGG-SECURITY-EXCEPTION

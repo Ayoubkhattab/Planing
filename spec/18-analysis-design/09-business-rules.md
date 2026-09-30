@@ -20,9 +20,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | ثابت (Invariant) | `INV-*` في ملف الـAggregate | INV-TASK-07: المعتمِد ≠ المنفِّذ | **حلقة المجال**: تُفحص بعد كل انتقال، ولا يُحفظ Aggregate يخالفها | خطأ الشرط المرتبط، أو رفض الأمر |
 | شرط انتقال (Guard) | عمود «الشرط» في جدول الانتقالات | START: كل المهام السابقة مكتملة | **حلقة المجال** قبل الانتقال؛ ما يحتاج بيانات من سياق آخر يُجلب عبر منفذ عميل ذلك السياق قبل التنفيذ | عمود «خطأ فشل الشرط» (غالبًا 422) |
 | الحالة المسموحة | مصفوفة الحالة × الأمر | لا `ACCEPT` من `DRAFT` | **حلقة المجال** | `*_INVALID_STATE_TRANSITION` (409) |
-| فصل المهام (SoD) | `segregation_of_duties` في سياسة الأمر | اعتماد الخطة بغير مؤلفها | **منفذ التخويل** بعد تحميل المورد (ADR-P17، الخطوة 5) | `SEGREGATION_OF_DUTIES` (422) |
-| شروط السياق والالتزامات | `context_conditions`، `obligations` في السياسة | MFA، موافقة، تدقيق | **منفذ التخويل** وخط الأوامر (الخطوتان 6 و10) | `AUTHZ_DENIED` (403، أو 404 للمورد غير المرئي) |
-| البيانات المرجعية (`RD-*`) | `04-information/reference-data.md` | قيم مسموحة لنوع أو مستوى | منفذ البيانات المرجعية؛ القيمة تُقرأ بإصدارها وقت الأمر | `VALIDATION_FAILED` أو خطأ الشرط |
+| فصل المهام (SoD) | `segregation_of_duties` في سياسة الأمر، ويتكرر في شرط الانتقال أو الثابت (33 أمرًا، مثل INV-TASK-07) | اعتماد المهمة بغير منفّذها | **في الطبقتين عمدًا:** منفذ التخويل بعد تحميل المورد (ADR-P17، الخطوة 5) هو خط الدفاع الأول، والمجال يعيد الفحص عند الانتقال لأن الثابت يجب أن يصمد حتى لو تغيرت السياسة **[Derived]** | `SEGREGATION_OF_DUTIES` (422) |
+| شروط السياق والالتزامات | `context_conditions`، `obligations` في السياسة | MFA، موافقة، تدقيق | **منفذ التخويل** وخط الأوامر (الخطوتان 6 و10) | شروط السياق: `AUTHZ_DENIED` (403→404 وفق `errors-*.md`). التزام قبل التنفيذ غير مستوفى: لا رمز ولا مسار موحد بعد (`11-hexagonal-reference.md` §3) **[Needs Review]** |
+| البيانات المرجعية (`RD-*`) | `04-information/reference-data.md` | قيم مسموحة لنوع أو مستوى | لا منفذ مخصص في كتالوج المنافذ (`11-hexagonal-reference.md` §5): القيم تُقرأ عبر منفذ المستودع إن كانت في schema السياق، أو عبر منفذ عميل السياق المالك لها، بإصدارها وقت الأمر **[Derived]** | `VALIDATION_FAILED` أو خطأ الشرط |
 
 **قاعدة تنفيذ:** القاعدة تُكتب مرة واحدة في موقعها أعلاه. التحقق في الواجهة (العميل أو المحوّل) لتحسين التجربة فقط ولا يغني عن التحقق في المجال.
 
@@ -37,23 +37,25 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 ## 1. قواعد العمل العليا (BRL)
 
-| القاعدة | النص | يُنفِّذها | الـAggregates (Derived عبر المتطلب) |
-|---|---|---|---|
-| BRL-001 | Every T1 information item shall be traceable to at least one source and, where available, evidence. (T1 as defined in ADR-P03 / W1 Q12) | REQ-INF-021, REQ-INF-037 | AGG-CLAIM, AGG-ENTITY, AGG-EVIDENCE-LINK |
-| BRL-002 | A T1 claim shall never be overwritten or deleted to resolve a conflict; conflicts are resolved through a conflict case. | REQ-INF-024, REQ-INF-025 | AGG-CLAIM, AGG-CONFLICT |
-| BRL-003 | A business decision shall be recorded only if the decider holds, at decision time, an authority grant (directly or by delegation) for that decision type and scope, as held in BC01. | REQ-DEC-002 | AGG-DECISION |
-| BRL-004 | Approved Plan has Baseline. | REQ-OPS-003 | AGG-PLAN, AGG-PLAN-VERSION |
-| BRL-005 | A change to a baselined plan's objectives, outcomes, phases, milestone dates or resource commitments is a major change and creates a new plan version; changes to descriptions, notes or attachments are minor. | REQ-OPS-004 | AGG-PLAN-VERSION |
-| BRL-006 | Task completes only when completion requirements met. | REQ-OPS-008 | AGG-TASK |
-| BRL-007 | A task assignment requires eligibility when the task type declares required competencies, qualifications or authorizations; an asset assignment requires the asset's valid certification and custody authorization (R2). | REQ-OPS-007 | AGG-TASK, AGG-TASK-TYPE |
-| BRL-008 | AI never bypasses Authorization. | REQ-FND-010 | — |
-| BRL-009 | Every AI result used as input to a decision, assessment or product shall be traceable to its context package, model, model version and inputs. | — | — |
-| BRL-010 | Search cannot expose unauthorized data existence. | REQ-FND-010, REQ-ANL-008, REQ-SIT-006, REQ-SRC-002 | AGG-ALERT, AGG-ASSESSMENT |
-| BRL-011 | Archive ≠ Backup. | — | — |
-| BRL-012 | Historical Reconstruction distinguishes recorded / reconstructed / inferred. | — | — |
-| BRL-013 | External systems are not automatically Source of Truth. | — | — |
-| BRL-014 | Each Domain owns its state. | — | — |
-| BRL-015 | Every state-changing command, and every read of data at or above the tenant audit threshold, shall be audited. | REQ-FND-015 | — |
+«يُنفِّذها» من حقل `enforced_by` في القاعدة؛ «متطلبات تذكرها كمصدر» متطلبات حقل `source` فيها يسمّي القاعدة ولا يذكرها `enforced_by` (فجوة ربط في المصدر **[Needs Review]**)؛ الـAggregates **[Derived]**: ما يحقق أحد هذه المتطلبات، أو يذكر القاعدة نصًا.
+
+| القاعدة | النص | يُنفِّذها | متطلبات تذكرها كمصدر | الـAggregates |
+|---|---|---|---|---|
+| BRL-001 | Every T1 information item shall be traceable to at least one source and, where available, evidence. (T1 as defined in ADR-P03 / W1 Q12) | REQ-INF-021, REQ-INF-037 | — | AGG-CLAIM, AGG-ENTITY, AGG-EVIDENCE-LINK |
+| BRL-002 | A T1 claim shall never be overwritten or deleted to resolve a conflict; conflicts are resolved through a conflict case. | REQ-INF-024, REQ-INF-025 | — | AGG-CLAIM, AGG-CONFLICT |
+| BRL-003 | A business decision shall be recorded only if the decider holds, at decision time, an authority grant (directly or by delegation) for that decision type and scope, as held in BC01. | REQ-DEC-002 | REQ-CRD-002, REQ-RES-009 | AGG-ALLOCATION, AGG-COORDINATION-CASE, AGG-DECISION |
+| BRL-004 | Approved Plan has Baseline. | REQ-OPS-003 | — | AGG-PLAN, AGG-PLAN-VERSION |
+| BRL-005 | A change to a baselined plan's objectives, outcomes, phases, milestone dates or resource commitments is a major change and creates a new plan version; changes to descriptions, notes or attachments are minor. | REQ-OPS-004 | — | AGG-PLAN-VERSION |
+| BRL-006 | Task completes only when completion requirements met. | REQ-OPS-008 | — | AGG-TASK |
+| BRL-007 | A task assignment requires eligibility when the task type declares required competencies, qualifications or authorizations; an asset assignment requires the asset's valid certification and custody authorization (R2). | REQ-OPS-007 | REQ-RES-003 | AGG-ASSET, AGG-ASSET-ASSIGNMENT, AGG-TASK, AGG-TASK-TYPE |
+| BRL-008 | AI never bypasses Authorization. | REQ-FND-010 | REQ-AI-002 | AGG-AI-REQUEST |
+| BRL-009 | Every AI result used as input to a decision, assessment or product shall be traceable to its context package, model, model version and inputs. | — | REQ-AI-005 | AGG-AI-REQUEST, AGG-AI-RESULT |
+| BRL-010 | Search cannot expose unauthorized data existence. | REQ-FND-010, REQ-ANL-008, REQ-SIT-006, REQ-SRC-002 | — | AGG-ALERT, AGG-ASSESSMENT |
+| BRL-011 | Archive ≠ Backup. | — | — | AGG-ARCHIVE-PACKAGE |
+| BRL-012 | Historical Reconstruction distinguishes recorded / reconstructed / inferred. | — | — | — |
+| BRL-013 | External systems are not automatically Source of Truth. | — | REQ-INT-001 | AGG-IMPORT-BATCH, AGG-INTEGRATION-CONNECTION |
+| BRL-014 | Each Domain owns its state. | — | — | — |
+| BRL-015 | Every state-changing command, and every read of data at or above the tenant audit threshold, shall be audited. | REQ-FND-015 | — | — |
 
 ## 2. القواعد حسب الـAggregate (302 ثابتًا)
 
@@ -275,9 +277,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الأمر / المحفِّز | من | الشرط | خطأ الفشل |
 |---|---|---|---|
 | CMD-USR-PROVISION | ∅ | tenant ACTIVE; via SCIM or admin | TENANT_NOT_ACTIVE |
-| CMD-USR-LINK-IDENTITY | *NT | (issuer, subject) unique in tenant; issuer is a configured IdP | IDENTITY_ALREADY_LINKED |
-| CMD-USR-UNLINK-IDENTITY | *NT | if ACTIVE, at least one identity remains | LAST_IDENTITY |
-| CMD-USR-LINK-PERSON | *NT | person ACTIVE, not linked to another user | PERSON_ALREADY_LINKED |
+| CMD-USR-LINK-IDENTITY | أي حالة غير نهائية | (issuer, subject) unique in tenant; issuer is a configured IdP | IDENTITY_ALREADY_LINKED |
+| CMD-USR-UNLINK-IDENTITY | أي حالة غير نهائية | if ACTIVE, at least one identity remains | LAST_IDENTITY |
+| CMD-USR-LINK-PERSON | أي حالة غير نهائية | person ACTIVE, not linked to another user | PERSON_ALREADY_LINKED |
 | CMD-USR-RECORD-FIRST-SIGN-IN | PENDING | system; ≥ 1 identity; tenant ACTIVE | — |
 | CMD-USR-LOCK | ACTIVE | security officer or system anomaly rule; reason | REASON_REQUIRED |
 | CMD-USR-UNLOCK | LOCKED | security officer | — |
@@ -348,6 +350,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 | SYS:all activity tasks terminal | ACTIVE | SLC-03 events | — |
 | CMD-CPL-COMPLETE | ACTIVE | planner; open tasks cancelled with reason | REASON_REQUIRED |
 | CMD-CPL-CANCEL | DRAFT, ACTIVE | reason; open tasks cancelled | REASON_REQUIRED |
+
+**بيانات مرجعية مستخدمة:** غير معرَّفة في `reference-data.md` **[Missing]**: RD-COLLECTION-METHODS
 
 #### AGG-COLLECTION-REQUIREMENT — متطلب الجمع
 
@@ -947,9 +951,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | CMD-INC-RESOLVE | CONTAINED | كل مهام الاستجابة في حالة نهائية (INV-INC-02)؛ ملاحظة حل | RESPONSE_TASKS_OPEN |
 | CMD-INC-CLOSE | RESOLVED | ملاحظة إغلاق؛ after_action_ref اختياري (كائن معرفة، SLC-12 — R3-Q5) | REASON_REQUIRED |
 | CMD-INC-CANCEL | REPORTED | سبب (إنذار كاذب) | REASON_REQUIRED |
-| CMD-INC-ESCALATE | *NT | سبب؛ new_severity أعلى من الحالية فقط (INV-INC-01)؛ إشعار المستوى الأعلى | SEVERITY_MUST_INCREASE |
-| CMD-INC-DE-ESCALATE | *NT | سلطة؛ سبب؛ new_severity أدنى بمستوى واحد كحد أقصى (INV-INC-01) | REASON_REQUIRED |
-| CMD-INC-ACTIVATE-CONTINGENCY | *NT | سلطة؛ ينشئ/يربط Plan (SLC-08، plan_kind=CONTINGENCY، triggered_by=هذه الحادثة — CR-60)؛ أمر صريح دائماً، ليس أثراً تلقائياً للتصعيد (INV-INC-03) | PLAN_LINK_INVALID |
+| CMD-INC-ESCALATE | أي حالة غير نهائية | سبب؛ new_severity أعلى من الحالية فقط (INV-INC-01)؛ إشعار المستوى الأعلى | SEVERITY_MUST_INCREASE |
+| CMD-INC-DE-ESCALATE | أي حالة غير نهائية | سلطة؛ سبب؛ new_severity أدنى بمستوى واحد كحد أقصى (INV-INC-01) | REASON_REQUIRED |
+| CMD-INC-ACTIVATE-CONTINGENCY | أي حالة غير نهائية | سلطة؛ ينشئ/يربط Plan (SLC-08، plan_kind=CONTINGENCY، triggered_by=هذه الحادثة — CR-60)؛ أمر صريح دائماً، ليس أثراً تلقائياً للتصعيد (INV-INC-03) | PLAN_LINK_INVALID |
 | SYS:response SLA elapsed without dispatch | REPORTED, ASSESSED | المجدول؛ SLA حسب severity، موسوم 'تُعاد معايرته بعد Pilot R1/R2' (RSK-028) | — |
 
 **بيانات مرجعية مستخدمة:** RD-HAZARD-CATEGORIES (`04-information/reference-data.md`)
@@ -1058,7 +1062,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | CMD-RIS-PLAN-TREATMENT | ASSESSED | treatment_strategy ∈ {avoid,reduce,transfer,accept}؛ ≥ 1 إجراء معالجة إلا عند accept (INV-RIS-03)؛ موافق مخوَّل | TREATMENT_INVALID |
 | CMD-RIS-REASSESS | ASSESSED, TREATED | likelihood/impact جديدان؛ سبب؛ المقيّم ≠ المحدِّد عند سياسة فصل الواجبات | SEGREGATION_OF_DUTIES |
 | CMD-RIS-CLOSE | IDENTIFIED, ASSESSED, TREATED | rationale ∈ {retired,accepted_permanently,materialized}؛ إن كان materialized فـ incident_ref إلزامي (INV-RIS-04)؛ لا أمر لإعادة الفتح — الخطر المُعاد تحديده خطر جديد | RATIONALE_REQUIRED |
-| SYS:incident references this risk as risk_ref | *NT | رابط تلقائي عند تسجيل حادثة تحقَّق منها هذا الخطر؛ لا يغيّر حالة الخطر تلقائياً أبداً (INV-RIS-05) | — |
+| SYS:incident references this risk as risk_ref | أي حالة غير نهائية | رابط تلقائي عند تسجيل حادثة تحقَّق منها هذا الخطر؛ لا يغيّر حالة الخطر تلقائياً أبداً (INV-RIS-05) | — |
 
 **فصل المهام:** CMD-RIS-ASSESS: assessor ≠ identifier when tenant policy requires it (INV-RIS-01)؛ CMD-RIS-REASSESS: assessor ≠ identifier when tenant policy requires it (INV-RIS-01)
 
@@ -1122,12 +1126,12 @@ generator: 17-system-study/_build/build_analysis_design.py
 | CMD-TASK-CANCEL | DRAFT, READY, ASSIGNED, ACCEPTED, IN_PROGRESS, BLOCKED, SUBMITTED, UNDER_REVIEW, APPROVED | actor has cancel authority in scope; reason | REASON_REQUIRED |
 | SYS:due passed and task type expires_on_due | DRAFT, READY, ASSIGNED, ACCEPTED, IN_PROGRESS, BLOCKED, SUBMITTED, UNDER_REVIEW | scheduler; only when the task type declares expires_on_due = true (OQ-032) | — |
 | SYS:plan version baselined without this task | DRAFT, READY, ASSIGNED, ACCEPTED, IN_PROGRESS, BLOCKED, SUBMITTED, UNDER_REVIEW, APPROVED | SLC-08 trigger | — |
-| CMD-TASK-ESCALATE | *NT | reason; notifies next authority level (REQ-OPS-012) | REASON_REQUIRED |
-| SYS:due passed (escalation policy) | *NT | scheduler; at due and at due + grace from task type | — |
+| CMD-TASK-ESCALATE | أي حالة غير نهائية | reason; notifies next authority level (REQ-OPS-012) | REASON_REQUIRED |
+| SYS:due passed (escalation policy) | أي حالة غير نهائية | scheduler; at due and at due + grace from task type | — |
 | CMD-TASK-SET-DUE | DRAFT, READY, ASSIGNED, ACCEPTED, IN_PROGRESS, BLOCKED | Planner or owner; reason | REASON_REQUIRED |
-| CMD-TASK-SUSPEND | *NT | suspend authority; reason; sets suspended = true | REASON_REQUIRED |
-| CMD-TASK-UNSUSPEND | *NT | suspend authority; suspended = true | NOT_SUSPENDED |
-| CMD-TASK-RECLASSIFY | *NT | authority per tenant policy; assignee clearance ≥ new label, else reassignment required first | CLASSIFICATION_CHANGE_NOT_AUTHORIZED |
+| CMD-TASK-SUSPEND | أي حالة غير نهائية | suspend authority; reason; sets suspended = true | REASON_REQUIRED |
+| CMD-TASK-UNSUSPEND | أي حالة غير نهائية | suspend authority; suspended = true | NOT_SUSPENDED |
+| CMD-TASK-RECLASSIFY | أي حالة غير نهائية | authority per tenant policy; assignee clearance ≥ new label, else reassignment required first | CLASSIFICATION_CHANGE_NOT_AUTHORIZED |
 
 **فصل المهام:** CMD-TASK-APPROVE: reviewer ≠ assignee (PB-06)؛ CMD-TASK-ASSIGN: assignee clearance ≥ task label؛ CMD-TASK-REASSIGN: assignee clearance ≥ task label؛ CMD-TASK-START-REVIEW: reviewer ≠ assignee
 

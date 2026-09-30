@@ -19,11 +19,11 @@ generator: 17-system-study/_build/build_analysis_design.py
 | العنوان الأساسي | `https://{cell}.platform.local/api/v1/<context>/<resource>` | `servers` في كل عقد |
 | سياقات المسار | `foundation`، `information`، `intelligence`، `operations`، `readiness`، `knowledge`، `governance`، `integration`، `ai`، `field`، `discovery` | المسارات في العقود |
 | نمط الواجهة | **مبني على المهام (task-based)** وفق CQRS: الأوامر `POST`، والاستعلامات `GET` (أو `POST` حين يكون جسم الطلب معقدًا) | 491 `POST` و120 `GET`؛ لا `PUT` ولا `PATCH` ولا `DELETE` |
-| الإنشاء | `POST /…/<resources>` ← `201` | 83 عملية: 82 بفاعل بشري أو خدمة، و`CMD-SIM-START` يصدره النظام |
+| الإنشاء | `POST /…/<resources>` ← `201` | 83 عملية: 82 بفاعل بشري أو خدمة، و`CMD-SIM-START` يصدره النظام. استثناءان ينشئان من مورد قائم عبر `actions`: `CMD-AUT-DELEGATE` و`CMD-RUN-REPRODUCE` (`201`) |
 | أمر على مورد | `POST /…/<resources>/{id}/actions/<verb>` ← `202` | الفعل هو فعل الأمر بحروف صغيرة |
-| الاستعلام | `GET /…/<resources>` (قائمة) أو `GET /…/<resources>/{id}` (عنصر) ← `200` | 119 `GET` + 14 استعلامًا بـ`POST` (§6) |
+| الاستعلام | `GET /…/<resources>` (قائمة) أو `GET /…/<resources>/{id}` (عنصر) ← `200` | 134 استعلامًا (133 في الكتالوجات + `QRY-LABEL-CHECK`): 120 `GET` و14 `POST` (§6) |
 | معرّف العملية | `operationId` = معرّف الأمر أو الاستعلام في المواصفات (`CMD-TASK-ASSIGN`) | يربط الكود بالقصة والسياسة والاختبار |
-| الامتدادات | `x-aggregate`، `x-policy`، `x-events`، `x-error-codes`، `x-offline-capable` | في كل عملية أمر |
+| الامتدادات | أوامر: `x-aggregate`، `x-policy`، `x-events`، `x-error-codes`، `x-offline-capable`، `x-internal`؛ استعلامات: `x-authorized`، `x-requirement` | سياسة الاستعلام ليست في العقد؛ معرّفها من `08-security/policies-slc*.md` |
 
 **لماذا لا `DELETE`:** لا يُحذف سجل فعليًا؛ الإنهاء أمر ينقل إلى حالة نهائية، والمحو إتلاف مفتاح (`05-user-stories/00-guide.md`، ضابط C-DEL).
 
@@ -32,9 +32,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الترويسة | إلزامية في | الغرض | عند المخالفة |
 |---|---|---|---|
 | `Authorization: Bearer <token>` | كل العمليات | هوية المستخدم أو حساب الخدمة (OIDC — `08-security/trust-boundaries.md`) | رفض من البوابة (الرمز غير موثق في العقود — §10) |
-| `Idempotency-Key` (≤ 128 حرفًا) | كل الأوامر (477) | عدم التكرار؛ يُحفظ 24 ساعة في `idempotency_keys` | نفس المفتاح بحمولة مختلفة ← `IDEMPOTENCY_KEY_REUSED` (422) |
+| `Idempotency-Key` (≤ 128 حرفًا) | كل الأوامر (477) | عدم التكرار؛ يُحفظ 24 ساعة في `idempotency_keys` مع `request_hash` و`response`: التكرار بنفس الحمولة يعيد الاستجابة المحفوظة | نفس المفتاح بحمولة مختلفة ← `IDEMPOTENCY_KEY_REUSED` (422) |
 | `If-Match` | كل الأوامر عدا الإنشاء (394) | الإصدار المتوقع (تزامن متفائل) | `VERSION_CONFLICT` (409)، بعد التخويل الكامل فقط |
-| `X-Purpose` | كل العمليات عدا `QRY-LABEL-CHECK` (610) | غرض الوصول؛ مدخل لقرار السياسة والتدقيق | `VALIDATION_FAILED` |
+| `X-Purpose` | كل العمليات عدا `QRY-LABEL-CHECK` (610) | غرض الوصول (`operations`، `analysis`، `audit`، `administration`… — `authorization-model.md` §2)؛ مدخل لقرار السياسة والتدقيق | `VALIDATION_FAILED` |
 | `X-Correlation-Id` | كل العمليات (611) | ربط الطلب بالأحداث والسجلات (`correlation_id` في غلاف الحدث) | `VALIDATION_FAILED` |
 
 ## 3. الاستجابات
@@ -42,26 +42,26 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الحالة | الجسم | متى |
 |---|---|---|
 | `201` | `ResourceRef` { `urn`، `id`، `version`، `state` } | إنشاء |
-| `202` | `ResourceRef` | أمر على مورد قائم (مقبول ومحفوظ؛ الآثار اللاحقة عبر الأحداث) |
+| `202` | `ResourceRef` | أمر على مورد قائم (مقبول ومحفوظ؛ الآثار اللاحقة عبر الأحداث)؛ وكذلك الاستعلام `QRY-AUD-VERIFY` لأنه يبدأ عملية تحقق |
 | `200` | العنصر، أو `Page` { `items`، `next_cursor` } | استعلام |
 | `4xx` / `5xx` | `ApiError` { `code`، `message`، `details`، `correlation_id`، `trace_id`، `retryable`، `policy` { `decision`، `reason_code` } } | خطأ |
 
 ## 4. الأخطاء المشتركة
 
-الأخطاء أدناه ممكنة في كل عملية ولا تُكرَّر في الكتالوج؛ عمود «أخطاء خاصة» في الكتالوج يذكر ما سواها فقط. الكتالوج الكامل للأخطاء (306 رموز) في `05-contracts/errors-*.md` ويُفصَّل في `18-error-handling.md` (المرحلة 4).
+الرموز الأربعة العامة (`VALIDATION_FAILED`، `AUTHZ_DENIED`، `VERSION_CONFLICT`، `IDEMPOTENCY_KEY_REUSED`) ورموز المنصة (`RATE_LIMITED`، `POLICY_ENGINE_UNAVAILABLE`، `AUDIT_UNAVAILABLE`) ممكنة في كل أمر ولا تُكرَّر في الكتالوج. أما رموز الانتقال والشروط فعمود «أخطاء خاصة» يذكرها لكل عملية. الكتالوج الكامل للأخطاء (306 رموز) في `05-contracts/errors-*.md` ويُفصَّل في `18-error-handling.md` (المرحلة 4).
 
 | الرمز | HTTP | إعادة المحاولة | المعنى |
 |---|---|---|---|
 | `VALIDATION_FAILED` | 400 | لا | حقل إلزامي مفقود أو غير صالح |
-| `AUTHZ_DENIED` | 403، أو **404** | لا | السياسة ترفض. يُعاد `403` فقط لمورد يحق للمستخدم رؤيته دون تنفيذ الإجراء؛ وإلا `404` بنفس شكل المورد غير الموجود (ADR-P06 §5) |
+| `AUTHZ_DENIED` | 403→404 | لا | السياسة ترفض. المورد غير المرئي يُعاد `404` بنفس شكل غير الموجود (ADR-P06 البند 5)؛ ويُعاد `403` فقط لمورد يحق للمستخدم رؤيته دون تنفيذ الإجراء (ترويسة `errors-*.md`) — لكن لا عملية تعلن `403` في العقود (§10) |
 | `NOT_FOUND` | 404 | لا | المورد غير موجود أو غير مرئي |
-| `VERSION_CONFLICT` | 409 | لا (يُعاد تحميل المورد أولًا) | `If-Match` لا يطابق |
+| `VERSION_CONFLICT` | 409 | نعم (بعد إعادة تحميل المورد وإعادة بناء الأمر) | `If-Match` لا يطابق |
 | `*_INVALID_STATE_TRANSITION` | 409 | لا | الأمر غير مسموح من الحالة الحالية |
 | `IDEMPOTENCY_KEY_REUSED` | 422 | لا | نفس المفتاح بحمولة مختلفة |
 | أخطاء الشروط (`*_INVALID`، `REASON_REQUIRED`، `SEGREGATION_OF_DUTIES`…) | 422 | لا | شرط انتقال أو قاعدة لم تتحقق |
 | `RATE_LIMITED` | 429 | نعم | تجاوز حصة المستأجر |
 | `POLICY_ENGINE_UNAVAILABLE` | 503 | نعم | محرك السياسات غير متاح ← الطلب مرفوض (FIT-16) |
-| `AUDIT_UNAVAILABLE` | 503 | لا | لا يمكن كتابة التدقيق ← لا يُنفَّذ الأمر |
+| `AUDIT_UNAVAILABLE` | 503 | لا | مخزن التدقيق معطل وتراكمت السجلات محليًا أكثر من 24 ساعة أو 80 % من السعة ← تُرفض **الأوامر المغيرة للحالة** فقط؛ قبل ذلك تستمر الأوامر (`08-security/audit-architecture.md`) |
 
 ## 5. القوائم والزمن
 
@@ -70,7 +70,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الترقيم | بمؤشر فقط: `cursor` و`limit` (1–200، الافتراضي 50)؛ لا إزاحة | FIT-13؛ 74 استعلامًا |
 | النطاق | `allowed_scope` من قرار السياسة يُطبَّق قبل العدّ والترتيب والترقيم | ADR-P06، CR-47 |
 | الزمن المزدوج | `valid_at` (متى كان صحيحًا) و`known_at` (متى عُرف) | 16 استعلامًا؛ ADR-P01 |
-| البحث | `q` في استعلام البحث؛ `depth` في استعلام الرسم البياني | استعلاما BC07 للاكتشاف |
+| البحث | `QRY-SRCH-QUERY` بجسم طلب (`text`، `types`، `geo`، `time`، `valid_at`، `filters`، `facets`، `sort`، `cursor`، `limit`)؛ `q` (إلزامي) في `QRY-SRCH-SUGGEST`؛ `depth` في `QRY-GRAPH-NEIGHBORHOOD` | استعلامات BC07 للاكتشاف |
 
 ## 6. استعلامات بـ`POST`
 
@@ -80,8 +80,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 | الفئة | العمليات | الاصطلاح |
 |---|---|---|
-| داخلية (5) | `CMD-TEN-COMPLETE-PROVISIONING`، `CMD-TEN-FAIL-PROVISIONING`، `CMD-TEN-COMPLETE-CELL-MIGRATION`، `CMD-TEN-COMPLETE-DECOMMISSION`، `CMD-USR-RECORD-FIRST-SIGN-IN` | في `openapi-foundation-internal-slc01.md`؛ يستدعيها النظام بهوية عبء عمل، ولا تُعرض عبر البوابة للمستخدمين |
-| دون اتصال (6) | `CMD-TASK-ACCEPT`، `START`، `BLOCK`، `RESUME`، `ADD-RESULT-ITEM`، `SUBMIT` | `x-offline-capable: true`؛ يُنفذها الجهاز الميداني محليًا وتُرسل في المزامنة (ADR-P09، `11-hexagonal-reference.md` §8) |
+| داخلية (6) | `CMD-TEN-COMPLETE-PROVISIONING`، `CMD-TEN-FAIL-PROVISIONING`، `CMD-TEN-COMPLETE-CELL-MIGRATION`، `CMD-TEN-COMPLETE-DECOMMISSION`، `CMD-USR-RECORD-FIRST-SIGN-IN` (في `openapi-foundation-internal-slc01.md`)، و`CMD-SIM-START` (`x-internal: true` داخل عقد readiness العام) | يستدعيها النظام بهوية عبء عمل؛ البوابة لا تعرض أي عملية تحمل `x-internal` أو تقع في عقد داخلي |
+| دون اتصال | `x-offline-capable: true` على 6 أوامر (`CMD-TASK-ACCEPT`، `START`، `BLOCK`، `RESUME`، `ADD-RESULT-ITEM`، `SUBMIT`)؛ و`CommandEnvelope` في `openapi-field-slc11.md` يقبل 12 أمرًا (تلك الستة + `CMD-OBS-RECORD`، `CMD-OBS-AMEND`، `CMD-OBS-ATTACH-EVIDENCE`، `CMD-EVD-REGISTER`، `CMD-ATT-INITIATE-UPLOAD`، `CMD-ATT-COMPLETE-UPLOAD`) | الجهاز ينفذها محليًا ويرسلها في جلسة مزامنة داخل `CommandEnvelope` { `client_command_id` (ULID)، `seq`، `prev_hash`، `base_version`، `device_time`، `target_command`، `target_urn`، `payload`، `signature` }؛ عدم مطابقة `base_version` يفتح تعارض مزامنة بدل `VERSION_CONFLICT` (ADR-P09، `11-hexagonal-reference.md` §8). الفرق بين 6 و12 **[Needs Review]** |
 | العقود العابرة | `QRY-LABEL-CHECK` على `/api/v1/{context}/label-checks` | يقدمه كل سياق يملك موارد معلَّمة، لإعادة فحص العلامات مجمّعة (CR-47) |
 
 ## 8. الإصدارات
@@ -99,12 +99,17 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `x-policy` | معرّف السياسة الذي يرسله منفذ التخويل إلى محرك السياسات |
 | `x-events` | الأحداث التي يكتبها المعالج في الـoutbox داخل نفس المعاملة |
 | `x-error-codes` | أخطاء المجال التي يحوّلها المحوّل إلى `ApiError` بحالة HTTP من §4 |
+| `ApiError.policy.decision` | قيمة قرار السياسة: `ALLOW`، `DENY`، `CONDITIONAL`، `REDACT`، `AGGREGATE`، `REQUIRE_APPROVAL` (`authorization-model.md`) |
+| أنواع حقول الحمولة | في قصة كل أمر (`05-user-stories/`) وكتالوج الأوامر، لا في هذا الكتالوج؛ المعرّفات `Urn` بالنمط `^urn:[a-z0-9-]+:[a-z0-9-]+:<ULID>$` (ADR-P13) |
 
 ## 10. فجوات وملاحظات
 
 | البند | الحالة |
 |---|---|
-| استعلامات التاريخ لإعادة البناء: لا يوجد إلا `QRY-TASK-HISTORY` | **[Missing]** (مسجل في `11-hexagonal-reference.md` §8) |
+| استعلامات التاريخ لإعادة البناء: لا يوجد استعلام تاريخ عام للـAggregate إلا `QRY-TASK-HISTORY` (توجد استعلامات إصدارات وخطوط زمنية خاصة مثل `QRY-ASM-VERSIONS`) | **[Missing]** (مسجل في `11-hexagonal-reference.md` §8) |
+| `403` مذكور في ترويسة `errors-*.md` لكن لا عملية تعلنه في العقود | **[Needs Review]** — إما يُضاف `403` إلى استجابات الأوامر، وإما يُعاد `404` دائمًا (ADR-P06 البند 5) |
+| التزام قبل التنفيذ غير مستوفى (MFA، موافقة — ADR-P17 الخطوة 6) بلا رمز خطأ في أي `errors-*.md` | **[Missing]** — يُعرَّف في `18-error-handling.md` مع `REQUIRE_APPROVAL` / `CONDITIONAL` |
+| `CMD-SIM-START` داخلي (`x-internal`) لكنه في عقد عام | **[Needs Review]** — نقله إلى عقد داخلي أو اعتماد `x-internal` في البوابة |
 | رموز رفض البوابة (المصادقة، حجم الطلب، نوع المحتوى) غير موثقة في العقود | **[Missing]** — تُضاف في `18-error-handling.md` |
 
 ## 11. الكتالوج
@@ -113,7 +118,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 <!-- BEGIN GENERATED: build_analysis_design.py -->
 
-## الكتالوج الكامل للعمليات
+### ملخص الكتالوج
 
 إجمالي العمليات: **611**.
 
@@ -123,21 +128,21 @@ generator: 17-system-study/_build/build_analysis_design.py
 | BC02 | 92 | 27 | 0 | 119 |
 | BC03 | 52 | 17 | 0 | 69 |
 | BC04 | 82 | 21 | 0 | 103 |
-| BC05 | 69 | 20 | 0 | 89 |
+| BC05 | 69 | 20 | 1 | 89 |
 | BC06 | 29 | 8 | 0 | 37 |
 | BC07 | 58 | 19 | 0 | 77 |
 | BC08 | 28 | 11 | 0 | 39 |
 | — | 0 | 1 | 0 | 1 |
 
-### BC01 — Foundation — الأساس
+#### BC01 — Foundation — الأساس
 
-#### `/api/v1/foundation/authority-checks`
+##### `/api/v1/foundation/authority-checks`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | POST | `/api/v1/foundation/authority-checks` | QRY-AUT-CHECK | جلب | POL-AUT-CHECK | actor!, decision_type!, scope!, at!, amount | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/foundation/authority-grants`
+##### `/api/v1/foundation/authority-grants`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -150,7 +155,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/foundation/authority-grants/{id}/actions/revoke` | CMD-AUT-REVOKE | حذف / إنهاء | POL-AUT-REVOKE | reason! | 202, 400, 404, 409, 422, 429, 503 | AUTHORITY_GRANT_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/foundation/authority-grants/{id}/actions/suspend` | CMD-AUT-SUSPEND | سير عمل | POL-AUT-SUSPEND | reason! | 202, 400, 404, 409, 422, 429, 503 | AUTHORITY_GRANT_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/foundation/clearances`
+##### `/api/v1/foundation/clearances`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -161,7 +166,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/foundation/clearances/{id}/actions/revoke` | CMD-CLR-REVOKE | حذف / إنهاء | POL-CLR-REVOKE | reason! | 202, 400, 404, 409, 422, 429, 503 | CLEARANCE_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/foundation/clearances/{id}/actions/suspend` | CMD-CLR-SUSPEND | سير عمل | POL-CLR-SUSPEND | reason! | 202, 400, 404, 409, 422, 429, 503 | CLEARANCE_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/foundation/devices`
+##### `/api/v1/foundation/devices`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -174,7 +179,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/foundation/devices/{id}/actions/rotate-key` | CMD-DEV-ROTATE-KEY | تعديل | POL-DEV-ROTATE-KEY | new_public_key!, signature! | 202, 400, 404, 409, 422, 429, 503 | DEVICE_INVALID_STATE_TRANSITION, SIGNATURE_INVALID |
 | POST | `/api/v1/foundation/devices/{id}/actions/suspend` | CMD-DEV-SUSPEND | سير عمل | POL-DEV-SUSPEND | reason! | 202, 400, 404, 409, 422, 429, 503 | DEVICE_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/foundation/hr-sync-proposals`
+##### `/api/v1/foundation/hr-sync-proposals`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -182,13 +187,13 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/foundation/hr-sync-proposals/{id}/actions/approve` | CMD-HRS-APPROVE | حذف / إنهاء | POL-HRS-APPROVE | note | 202, 400, 404, 409, 422, 429, 503 | HR_SYNC_PROPOSAL_INVALID_STATE_TRANSITION, OWNER_REJECTED |
 | POST | `/api/v1/foundation/hr-sync-proposals/{id}/actions/reject` | CMD-HRS-REJECT | حذف / إنهاء | POL-HRS-REJECT | reason! | 202, 400, 404, 409, 422, 429, 503 | HR_SYNC_PROPOSAL_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/foundation/me`
+##### `/api/v1/foundation/me`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | GET | `/api/v1/foundation/me/security-context` | QRY-SEC-CONTEXT | جلب | POL-SEC-CONTEXT | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/foundation/organizations`
+##### `/api/v1/foundation/organizations`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -202,7 +207,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/foundation/organizations/{id}/actions/rename-unit` | CMD-ORG-RENAME-UNIT | تعديل | POL-ORG-RENAME-UNIT | unit!, name! | 202, 400, 404, 409, 422, 429, 503 | ORGANIZATION_INVALID_STATE_TRANSITION, ORG_UNIT_NAME_TAKEN |
 | GET | `/api/v1/foundation/organizations/{org_id}/units` | QRY-ORG-TREE | جلب | POL-ORG-TREE | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/foundation/persons`
+##### `/api/v1/foundation/persons`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -212,14 +217,14 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/foundation/persons/{id}/actions/reactivate` | CMD-PER-REACTIVATE | سير عمل | POL-PER-REACTIVATE | — | 202, 400, 404, 409, 422, 429, 503 | PERSON_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/foundation/persons/{id}/actions/update-details` | CMD-PER-UPDATE-DETAILS | تعديل | POL-PER-UPDATE-DETAILS | names, contact | 202, 400, 404, 409, 422, 429, 503 | PERSON_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/foundation/role-assignments`
+##### `/api/v1/foundation/role-assignments`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | POST | `/api/v1/foundation/role-assignments` | CMD-RAS-ASSIGN | إنشاء | POL-RAS-ASSIGN | user!, role!, org_scope!, include_descendants!, valid_from!, valid_to | 201, 400, 404, 409, 422, 429, 503 | SOD_ROLE_CONFLICT |
 | POST | `/api/v1/foundation/role-assignments/{id}/actions/revoke` | CMD-RAS-REVOKE | حذف / إنهاء | POL-RAS-REVOKE | reason! | 202, 400, 404, 409, 422, 429, 503 | REASON_REQUIRED, ROLE_ASSIGNMENT_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/foundation/roles`
+##### `/api/v1/foundation/roles`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -228,7 +233,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/foundation/roles/{id}/actions/retire` | CMD-ROL-RETIRE | حذف / إنهاء | POL-ROL-RETIRE | reason! | 202, 400, 404, 409, 422, 429, 503 | ROLE_INVALID_STATE_TRANSITION, ROLE_IN_USE |
 | POST | `/api/v1/foundation/roles/{id}/actions/set-permissions` | CMD-ROL-SET-PERMISSIONS | تعديل | POL-ROL-SET-PERMISSIONS | permissions! | 202, 400, 404, 409, 422, 429, 503 | ROLE_INVALID_STATE_TRANSITION, SYSTEM_ROLE_LOCKED |
 
-#### `/api/v1/foundation/service-accounts`
+##### `/api/v1/foundation/service-accounts`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -238,7 +243,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/foundation/service-accounts/{id}/actions/enable` | CMD-SVC-ENABLE | سير عمل | POL-SVC-ENABLE | — | 202, 400, 404, 409, 422, 429, 503 | OWNER_REQUIRED, SERVICE_ACCOUNT_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/foundation/service-accounts/{id}/actions/rotate-credential` | CMD-SVC-ROTATE-CREDENTIAL | تعديل | POL-SVC-ROTATE-CREDENTIAL | public_key!, expires_at! | 202, 400, 404, 409, 422, 429, 503 | CREDENTIAL_LIFETIME_EXCEEDED, SERVICE_ACCOUNT_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/foundation/tenants`
+##### `/api/v1/foundation/tenants`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -255,7 +260,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/foundation/tenants/{id}/actions/update-quotas` | CMD-TEN-UPDATE-QUOTAS | تعديل | POL-TEN-UPDATE-QUOTAS | quotas! | 202, 400, 404, 409, 422, 429, 503 | QUOTA_EXCEEDS_CAPACITY, TENANT_INVALID_STATE_TRANSITION |
 | GET | `/api/v1/foundation/tenants/{tenant_id}` | QRY-TEN-GET | جلب | POL-TEN-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/foundation/users`
+##### `/api/v1/foundation/users`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -274,9 +279,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | GET | `/api/v1/foundation/users/{user_id}/clearance` | QRY-CLR-GET | جلب | POL-CLR-GET | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
 
-### BC02 — Information — نواة المعلومات
+#### BC02 — Information — نواة المعلومات
 
-#### `/api/v1/information/attachments`
+##### `/api/v1/information/attachments`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -285,19 +290,19 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/information/attachments/{id}/actions/complete-upload` | CMD-ATT-COMPLETE-UPLOAD | سير عمل | POL-ATT-COMPLETE-UPLOAD | — | 202, 400, 404, 409, 422, 429, 503 | ATTACHMENT_INVALID_STATE_TRANSITION, HASH_MISMATCH |
 | POST | `/api/v1/information/attachments/{id}/actions/erase` | CMD-ATT-ERASE | حذف / إنهاء | POL-ATT-ERASE | erasure_order_ref! | 202, 400, 404, 409, 422, 429, 503 | ATTACHMENT_INVALID_STATE_TRANSITION, LEGAL_HOLD_ACTIVE |
 
-#### `/api/v1/information/claims`
+##### `/api/v1/information/claims`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | POST | `/api/v1/information/claims` | CMD-CLM-ASSERT | إنشاء | POL-CLM-ASSERT | subject!, predicate!, value!, valid!, source_refs!, derived_from, confidence!, label! | 201, 400, 404, 409, 422, 429, 503 | CLAIM_INVALID |
 | GET | `/api/v1/information/claims/{claim_id}` | QRY-CLM-GET | جلب | POL-CLM-GET | valid_at, known_at | 200, 400, 404, 409, 422, 429, 503 | — |
 | POST | `/api/v1/information/claims/{id}/actions/assess` | CMD-CLM-ASSESS | تعديل | POL-CLM-ASSESS | information_confidence, verification_status, rationale! | 202, 400, 404, 409, 422, 429, 503 | ASSESSMENT_INVALID, CLAIM_INVALID_STATE_TRANSITION |
-| POST | `/api/v1/information/claims/{id}/actions/correct` | CMD-CLM-CORRECT | حذف / إنهاء | POL-CLM-CORRECT | value!, valid, source_refs!, confidence!, reason! | 202, 400, 404, 409, 422, 429, 503 | CLAIM_INVALID_STATE_TRANSITION, REASON_REQUIRED |
+| POST | `/api/v1/information/claims/{id}/actions/correct` | CMD-CLM-CORRECT | تعديل | POL-CLM-CORRECT | value!, valid, source_refs!, confidence!, reason! | 202, 400, 404, 409, 422, 429, 503 | CLAIM_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/information/claims/{id}/actions/reclassify` | CMD-CLM-RECLASSIFY | تعديل | POL-CLM-RECLASSIFY | label!, reason! | 202, 400, 404, 409, 422, 429, 503 | CLAIM_INVALID_STATE_TRANSITION, CLASSIFICATION_CHANGE_NOT_AUTHORIZED |
 | POST | `/api/v1/information/claims/{id}/actions/record-change` | CMD-CLM-RECORD-CHANGE | حذف / إنهاء | POL-CLM-RECORD-CHANGE | t_change!, new_value!, source_refs!, confidence! | 202, 400, 404, 409, 422, 429, 503 | CHANGE_TIME_INVALID, CLAIM_INVALID_STATE_TRANSITION |
-| POST | `/api/v1/information/claims/{id}/actions/retract` | CMD-CLM-RETRACT | حذف / إنهاء | POL-CLM-RETRACT | reason! | 202, 400, 404, 409, 422, 429, 503 | CLAIM_INVALID_STATE_TRANSITION, REASON_REQUIRED |
+| POST | `/api/v1/information/claims/{id}/actions/retract` | CMD-CLM-RETRACT | تعديل | POL-CLM-RETRACT | reason! | 202, 400, 404, 409, 422, 429, 503 | CLAIM_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/information/collection-plans`
+##### `/api/v1/information/collection-plans`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -309,7 +314,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/information/collection-plans/{id}/actions/remove-activity` | CMD-CPL-REMOVE-ACTIVITY | تعديل | POL-CPL-REMOVE-ACTIVITY | activity_id! | 202, 400, 404, 409, 422, 429, 503 | ACTIVITY_ALREADY_TASKED, COLLECTION_PLAN_INVALID_STATE_TRANSITION |
 | GET | `/api/v1/information/collection-plans/{plan_id}` | QRY-CPL-GET | جلب | POL-CPL-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/information/collection-requirements`
+##### `/api/v1/information/collection-requirements`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -325,7 +330,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | GET | `/api/v1/information/collection-requirements/{requirement_id}` | QRY-CRQ-GET | جلب | POL-CRQ-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 | GET | `/api/v1/information/collection-requirements/{requirement_id}/fulfilment` | QRY-CRQ-EVIDENCE | جلب | POL-CRQ-EVIDENCE | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/information/conflicts`
+##### `/api/v1/information/conflicts`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -338,7 +343,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/information/conflicts/{id}/actions/resolve` | CMD-CNF-RESOLVE | سير عمل | POL-CNF-RESOLVE | preferred_claim!, rationale!, evidence | 202, 400, 404, 409, 422, 429, 503 | CONFLICT_INVALID_STATE_TRANSITION, SEGREGATION_OF_DUTIES |
 | POST | `/api/v1/information/conflicts/{id}/actions/start-review` | CMD-CNF-START-REVIEW | سير عمل | POL-CNF-START-REVIEW | — | 202, 400, 404, 409, 422, 429, 503 | CONFLICT_INVALID_STATE_TRANSITION, NOT_ASSIGNED_REVIEWER |
 
-#### `/api/v1/information/correlation-proposals`
+##### `/api/v1/information/correlation-proposals`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -349,7 +354,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/information/correlation-proposals/{id}/actions/start-review` | CMD-CRP-START-REVIEW | سير عمل | POL-CRP-START-REVIEW | — | 202, 400, 404, 409, 422, 429, 503 | CORRELATION_PROPOSAL_INVALID_STATE_TRANSITION, REVIEWER_NOT_CLEARED |
 | GET | `/api/v1/information/correlation-proposals/{proposal_id}` | QRY-CRP-GET | جلب | POL-CRP-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/information/correlation-rules`
+##### `/api/v1/information/correlation-rules`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -358,7 +363,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/information/correlation-rules/{id}/actions/edit` | CMD-CRR-EDIT | تعديل | POL-CRR-EDIT | parameters! | 202, 400, 404, 409, 422, 429, 503 | CORRELATION_RULE_INVALID_STATE_TRANSITION, RULE_INVALID |
 | POST | `/api/v1/information/correlation-rules/{id}/actions/retire` | CMD-CRR-RETIRE | حذف / إنهاء | POL-CRR-RETIRE | reason! | 202, 400, 404, 409, 422, 429, 503 | CORRELATION_RULE_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/information/entities`
+##### `/api/v1/information/entities`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -374,7 +379,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/information/entities/{id}/actions/reinstate` | CMD-ENT-REINSTATE | سير عمل | POL-ENT-REINSTATE | reason! | 202, 400, 404, 409, 422, 429, 503 | ENTITY_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/information/entities/{id}/actions/retire` | CMD-ENT-RETIRE | سير عمل | POL-ENT-RETIRE | reason! | 202, 400, 404, 409, 422, 429, 503 | ENTITY_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/information/er-cases`
+##### `/api/v1/information/er-cases`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -391,7 +396,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/information/er-cases/{id}/actions/start-review` | CMD-ER-START-REVIEW | سير عمل | POL-ER-START-REVIEW | — | 202, 400, 404, 409, 422, 429, 503 | ER_CASE_INVALID_STATE_TRANSITION, REVIEWER_NOT_CLEARED |
 | POST | `/api/v1/information/er-cases/{id}/actions/withdraw` | CMD-ER-WITHDRAW | حذف / إنهاء | POL-ER-WITHDRAW | reason! | 202, 400, 404, 409, 422, 429, 503 | ER_CASE_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/information/events`
+##### `/api/v1/information/events`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -402,7 +407,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/information/events/{id}/actions/reinstate` | CMD-RWE-REINSTATE | سير عمل | POL-RWE-REINSTATE | reason! | 202, 400, 404, 409, 422, 429, 503 | REALWORLD_EVENT_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/information/events/{id}/actions/retire` | CMD-RWE-RETIRE | سير عمل | POL-RWE-RETIRE | reason! | 202, 400, 404, 409, 422, 429, 503 | REALWORLD_EVENT_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/information/evidence`
+##### `/api/v1/information/evidence`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -414,14 +419,14 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/information/evidence/{id}/actions/update-locator` | CMD-EVD-UPDATE-LOCATOR | تعديل | POL-EVD-UPDATE-LOCATOR | locator! | 202, 400, 404, 409, 422, 429, 503 | EVIDENCE_INVALID_STATE_TRANSITION, LOCATOR_INVALID |
 | POST | `/api/v1/information/evidence/{id}/actions/withdraw` | CMD-EVD-WITHDRAW | حذف / إنهاء | POL-EVD-WITHDRAW | reason! | 202, 400, 404, 409, 422, 429, 503 | EVIDENCE_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/information/evidence-links`
+##### `/api/v1/information/evidence-links`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | POST | `/api/v1/information/evidence-links` | CMD-EVL-LINK | إنشاء | POL-EVL-LINK | evidence!, claim!, stance!, note | 201, 400, 404, 409, 422, 429, 503 | LINK_DUPLICATE |
 | POST | `/api/v1/information/evidence-links/{id}/actions/unlink` | CMD-EVL-UNLINK | حذف / إنهاء | POL-EVL-UNLINK | reason! | 202, 400, 404, 409, 422, 429, 503 | EVIDENCE_LINK_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/information/external-ids`
+##### `/api/v1/information/external-ids`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -429,7 +434,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/information/external-ids/{id}/actions/end` | CMD-EXT-END | حذف / إنهاء | POL-EXT-END | valid_to!, reason! | 202, 400, 404, 409, 422, 429, 503 | EXTERNAL_ID_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | GET | `/api/v1/information/external-ids/{system}/{external_id}` | QRY-EXT-RESOLVE | جلب | POL-EXT-RESOLVE | valid_at, known_at | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/information/import-batches`
+##### `/api/v1/information/import-batches`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -439,13 +444,13 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/information/import-batches/{id}/actions/cancel` | CMD-IMP-CANCEL | حذف / إنهاء | POL-IMP-CANCEL | reason! | 202, 400, 404, 409, 422, 429, 503 | IMPORT_BATCH_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/information/import-batches/{id}/actions/reprocess-quarantine` | CMD-IMP-REPROCESS-QUARANTINE | سير عمل | POL-IMP-REPROCESS-QUARANTINE | mapping_version, corrections | 202, 400, 404, 409, 422, 429, 503 | IMPORT_BATCH_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/information/lineage`
+##### `/api/v1/information/lineage`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | GET | `/api/v1/information/lineage/{object_urn}` | QRY-LIN-TRACE | جلب | POL-LIN-TRACE | valid_at, known_at | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/information/match-rulesets`
+##### `/api/v1/information/match-rulesets`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -454,7 +459,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/information/match-rulesets/{id}/actions/edit` | CMD-MRS-EDIT | تعديل | POL-MRS-EDIT | blocking_keys!, features!, thresholds!, evaluation_attachment! | 202, 400, 404, 409, 422, 429, 503 | MATCH_RULESET_INVALID_STATE_TRANSITION, RULESET_INVALID |
 | GET | `/api/v1/information/match-rulesets/{ruleset_id}` | QRY-MRS-GET | جلب | POL-MRS-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/information/observations`
+##### `/api/v1/information/observations`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -467,7 +472,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/information/observations/{id}/actions/validate` | CMD-OBS-VALIDATE | حذف / إنهاء | POL-OBS-VALIDATE | note | 202, 400, 404, 409, 422, 429, 503 | OBSERVATION_INVALID_STATE_TRANSITION, SEGREGATION_OF_DUTIES |
 | GET | `/api/v1/information/observations/{observation_id}` | QRY-OBS-GET | جلب | POL-OBS-GET | valid_at, known_at | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/information/relationships`
+##### `/api/v1/information/relationships`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -476,7 +481,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/information/relationships/{id}/actions/reinstate` | CMD-REL-REINSTATE | سير عمل | POL-REL-REINSTATE | reason! | 202, 400, 404, 409, 422, 429, 503 | REASON_REQUIRED, RELATIONSHIP_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/information/relationships/{id}/actions/retire` | CMD-REL-RETIRE | سير عمل | POL-REL-RETIRE | reason! | 202, 400, 404, 409, 422, 429, 503 | REASON_REQUIRED, RELATIONSHIP_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/information/sources`
+##### `/api/v1/information/sources`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -491,9 +496,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | GET | `/api/v1/information/sources/{source_id}` | QRY-SRC-GET | جلب | POL-SRC-GET | valid_at, known_at | 200, 400, 404, 409, 422, 429, 503 | — |
 
 
-### BC03 — Intelligence — الوعي والتحليل
+#### BC03 — Intelligence — الوعي والتحليل
 
-#### `/api/v1/intelligence/alert-rules`
+##### `/api/v1/intelligence/alert-rules`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -504,7 +509,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/intelligence/alert-rules/{id}/actions/enable` | CMD-ARL-ENABLE | سير عمل | POL-ARL-ENABLE | — | 202, 400, 404, 409, 422, 429, 503 | ALERT_RULE_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/intelligence/alert-rules/{id}/actions/retire` | CMD-ARL-RETIRE | حذف / إنهاء | POL-ARL-RETIRE | reason! | 202, 400, 404, 409, 422, 429, 503 | ALERT_RULE_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/intelligence/alerts`
+##### `/api/v1/intelligence/alerts`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -513,7 +518,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/intelligence/alerts/{id}/actions/dismiss` | CMD-ALR-DISMISS | حذف / إنهاء | POL-ALR-DISMISS | reason! | 202, 400, 404, 409, 422, 429, 503 | ALERT_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/intelligence/alerts/{id}/actions/resolve` | CMD-ALR-RESOLVE | حذف / إنهاء | POL-ALR-RESOLVE | note! | 202, 400, 404, 409, 422, 429, 503 | ALERT_INVALID_STATE_TRANSITION, NOT_A_RECIPIENT |
 
-#### `/api/v1/intelligence/analysis-cases`
+##### `/api/v1/intelligence/analysis-cases`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -536,7 +541,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/intelligence/analysis-cases/{id}/actions/select-evidence` | CMD-ACS-SELECT-EVIDENCE | تعديل | POL-ACS-SELECT-EVIDENCE | items!, note | 202, 400, 404, 409, 422, 429, 503 | ANALYSIS_CASE_INVALID_STATE_TRANSITION, EVIDENCE_ABOVE_CASE_LABEL |
 | POST | `/api/v1/intelligence/analysis-cases/{id}/actions/update-hypothesis` | CMD-ACS-UPDATE-HYPOTHESIS | تعديل | POL-ACS-UPDATE-HYPOTHESIS | hypothesis_id!, status!, rationale!, findings | 202, 400, 404, 409, 422, 429, 503 | ANALYSIS_CASE_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/intelligence/analysis-methods`
+##### `/api/v1/intelligence/analysis-methods`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -546,7 +551,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/intelligence/analysis-methods/{id}/actions/deprecate` | CMD-AMT-DEPRECATE | سير عمل | POL-AMT-DEPRECATE | reason! | 202, 400, 404, 409, 422, 429, 503 | ANALYSIS_METHOD_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/intelligence/analysis-methods/{id}/actions/retire` | CMD-AMT-RETIRE | حذف / إنهاء | POL-AMT-RETIRE | reason! | 202, 400, 404, 409, 422, 429, 503 | ANALYSIS_METHOD_INVALID_STATE_TRANSITION, METHOD_BACKS_PUBLISHED_WORK |
 
-#### `/api/v1/intelligence/analysis-runs`
+##### `/api/v1/intelligence/analysis-runs`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -556,7 +561,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | GET | `/api/v1/intelligence/analysis-runs/{run_id}` | QRY-RUN-GET | جلب | POL-RUN-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 | POST | `/api/v1/intelligence/analysis-runs/{run_id}/artifact-grants` | QRY-RUN-ARTIFACT | جلب | POL-RUN-ARTIFACT | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/intelligence/assessments`
+##### `/api/v1/intelligence/assessments`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -570,13 +575,13 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/intelligence/assessments/{id}/actions/submit` | CMD-ASM-SUBMIT | سير عمل | POL-ASM-SUBMIT | — | 202, 400, 404, 409, 422, 429, 503 | ASSESSMENT_INCOMPLETE, ASSESSMENT_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/intelligence/assessments/{id}/actions/withdraw` | CMD-ASM-WITHDRAW | حذف / إنهاء | POL-ASM-WITHDRAW | reason! | 202, 400, 404, 409, 422, 429, 503 | ASSESSMENT_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/intelligence/base-maps`
+##### `/api/v1/intelligence/base-maps`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | GET | `/api/v1/intelligence/base-maps/{layer}/{z}/{x}/{y}` | QRY-BASE-TILE | جلب | POL-BASE-TILE | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/intelligence/cap-messages`
+##### `/api/v1/intelligence/cap-messages`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -586,7 +591,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/intelligence/cap-messages/{id}/actions/release` | CMD-CAP-RELEASE | حذف / إنهاء | POL-CAP-RELEASE | note | 202, 400, 404, 409, 422, 429, 503 | CAP_MESSAGE_INVALID_STATE_TRANSITION, SEGREGATION_OF_DUTIES |
 | POST | `/api/v1/intelligence/cap-messages/{id}/actions/retry` | CMD-CAP-RETRY | سير عمل | POL-CAP-RETRY | — | 202, 400, 404, 409, 422, 429, 503 | CAP_MESSAGE_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/intelligence/findings`
+##### `/api/v1/intelligence/findings`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -595,7 +600,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/intelligence/findings/{id}/actions/edit` | CMD-FND-EDIT | تعديل | POL-FND-EDIT | statement, sources, uncertainty | 202, 400, 404, 409, 422, 429, 503 | FINDING_INVALID, FINDING_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/intelligence/findings/{id}/actions/withdraw` | CMD-FND-WITHDRAW | حذف / إنهاء | POL-FND-WITHDRAW | reason! | 202, 400, 404, 409, 422, 429, 503 | FINDING_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/intelligence/situations`
+##### `/api/v1/intelligence/situations`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -613,9 +618,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | GET | `/api/v1/intelligence/situations/{situation_id}/tiles/{layer}/{z}/{x}/{y}` | QRY-SIT-TILE | جلب | POL-SIT-TILE | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
 
-### BC04 — Operations — التخطيط والتنفيذ
+#### BC04 — Operations — التخطيط والتنفيذ
 
-#### `/api/v1/operations/coordination-cases`
+##### `/api/v1/operations/coordination-cases`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -631,7 +636,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/operations/coordination-cases/{id}/actions/request-decision` | CMD-CRD-REQUEST-DECISION | تعديل | POL-CRD-REQUEST-DECISION | responsibility_id!, question!, options! | 202, 400, 404, 409, 422, 429, 503 | COORDINATION_CASE_INVALID_STATE_TRANSITION, RESPONSIBILITY_INVALID |
 | POST | `/api/v1/operations/coordination-cases/{id}/actions/update-responsibility` | CMD-CRD-UPDATE-RESPONSIBILITY | تعديل | POL-CRD-UPDATE-RESPONSIBILITY | responsibility_id!, status!, note | 202, 400, 404, 409, 422, 429, 503 | COORDINATION_CASE_INVALID_STATE_TRANSITION, DECISION_PENDING |
 
-#### `/api/v1/operations/decision-requests`
+##### `/api/v1/operations/decision-requests`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -643,7 +648,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/operations/decision-requests/{id}/actions/withdraw` | CMD-DRQ-WITHDRAW | حذف / إنهاء | POL-DRQ-WITHDRAW | reason! | 202, 400, 404, 409, 422, 429, 503 | DECISION_REQUEST_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | GET | `/api/v1/operations/decision-requests/{request_id}` | QRY-DRQ-GET | جلب | POL-DRQ-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/operations/decisions`
+##### `/api/v1/operations/decisions`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -652,7 +657,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | GET | `/api/v1/operations/decisions/{decision_id}/basis` | QRY-DEC-BASIS | جلب | POL-DEC-BASIS | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 | POST | `/api/v1/operations/decisions/{id}/actions/annul` | CMD-DEC-ANNUL | حذف / إنهاء | POL-DEC-ANNUL | reason! | 202, 400, 404, 409, 422, 429, 503 | AUTHORITY_REQUIRED, DECISION_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/operations/incidents`
+##### `/api/v1/operations/incidents`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -670,21 +675,21 @@ generator: 17-system-study/_build/build_analysis_design.py
 | GET | `/api/v1/operations/incidents/{incident_id}` | QRY-INC-GET | جلب | POL-INC-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 | GET | `/api/v1/operations/incidents/{incident_id}/recovery-status` | QRY-INC-RECOVERY-STATUS | جلب | POL-INC-RECOVERY-STATUS | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/operations/notifications`
+##### `/api/v1/operations/notifications`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | GET | `/api/v1/operations/notifications` | QRY-NTF-INBOX | جلب | POL-NTF-INBOX | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 | POST | `/api/v1/operations/notifications/{id}/actions/mark-read` | CMD-NTF-MARK-READ | حذف / إنهاء | POL-NTF-MARK-READ | — | 202, 400, 404, 409, 422, 429, 503 | NOTIFICATION_INVALID_STATE_TRANSITION, NOT_RECIPIENT |
 
-#### `/api/v1/operations/outcome-trackers`
+##### `/api/v1/operations/outcome-trackers`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | POST | `/api/v1/operations/outcome-trackers/{id}/actions/correct` | CMD-OUT-CORRECT | تعديل | POL-OUT-CORRECT | measurement_id!, value!, unit!, reason! | 202, 400, 404, 409, 422, 429, 503 | OUTCOME_TRACKER_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/operations/outcome-trackers/{id}/actions/record` | CMD-OUT-RECORD | تعديل | POL-OUT-RECORD | value!, unit!, measured_at!, source!, source_ref, note | 202, 400, 404, 409, 422, 429, 503 | MEASUREMENT_INVALID, OUTCOME_TRACKER_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/operations/plan-versions`
+##### `/api/v1/operations/plan-versions`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -697,7 +702,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/operations/plan-versions/{id}/actions/return` | CMD-PLV-RETURN | سير عمل | POL-PLV-RETURN | reason! | 202, 400, 404, 409, 422, 429, 503 | PLAN_VERSION_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/operations/plan-versions/{id}/actions/submit` | CMD-PLV-SUBMIT | سير عمل | POL-PLV-SUBMIT | — | 202, 400, 404, 409, 422, 429, 503 | PLAN_VERSION_INCOMPLETE, PLAN_VERSION_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/operations/plans`
+##### `/api/v1/operations/plans`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -714,7 +719,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | GET | `/api/v1/operations/plans/{plan_id}/versions` | QRY-PLV-LIST | جلب | POL-PLV-LIST | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 | GET | `/api/v1/operations/plans/{plan_id}/versions/{version}/diff` | QRY-PLV-DIFF | جلب | POL-PLV-DIFF | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/operations/risks`
+##### `/api/v1/operations/risks`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -726,7 +731,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/operations/risks/{id}/actions/reassess` | CMD-RIS-REASSESS | سير عمل | POL-RIS-REASSESS | likelihood!, impact!, reason! | 202, 400, 404, 409, 422, 429, 503 | RISK_INVALID_STATE_TRANSITION, SEGREGATION_OF_DUTIES |
 | GET | `/api/v1/operations/risks/{risk_id}` | QRY-RIS-GET | جلب | POL-RIS-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/operations/subscriptions`
+##### `/api/v1/operations/subscriptions`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -736,7 +741,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/operations/subscriptions/{id}/actions/unsubscribe` | CMD-SUB-UNSUBSCRIBE | حذف / إنهاء | POL-SUB-UNSUBSCRIBE | reason | 202, 400, 404, 409, 422, 429, 503 | SUBSCRIPTION_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/operations/subscriptions/{id}/actions/update-channels` | CMD-SUB-UPDATE-CHANNELS | تعديل | POL-SUB-UPDATE-CHANNELS | channels!, quiet_hours | 202, 400, 404, 409, 422, 429, 503 | SUBSCRIPTION_INVALID, SUBSCRIPTION_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/operations/task-types`
+##### `/api/v1/operations/task-types`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -746,7 +751,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/operations/task-types/{id}/actions/retire` | CMD-TTY-RETIRE | حذف / إنهاء | POL-TTY-RETIRE | reason! | 202, 400, 404, 409, 422, 429, 503 | REASON_REQUIRED, TASK_TYPE_INVALID_STATE_TRANSITION |
 | GET | `/api/v1/operations/task-types/{task_type_id}` | QRY-TTY-GET | جلب | POL-TTY-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/operations/tasks`
+##### `/api/v1/operations/tasks`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -779,9 +784,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | GET | `/api/v1/operations/tasks/{task_id}/history` | QRY-TASK-HISTORY | جلب | POL-TASK-HISTORY | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
 
-### BC05 — Readiness — الموارد والجاهزية
+#### BC05 — Readiness — الموارد والجاهزية
 
-#### `/api/v1/readiness/allocations`
+##### `/api/v1/readiness/allocations`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -793,7 +798,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/readiness/allocations/{id}/actions/reject` | CMD-ALC-REJECT | حذف / إنهاء | POL-ALC-REJECT | reason! | 202, 400, 404, 409, 422, 429, 503 | ALLOCATION_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/readiness/allocations/{id}/actions/release` | CMD-ALC-RELEASE | حذف / إنهاء | POL-ALC-RELEASE | note | 202, 400, 404, 409, 422, 429, 503 | ALLOCATION_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/readiness/asset-assignments`
+##### `/api/v1/readiness/asset-assignments`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -801,13 +806,13 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/readiness/asset-assignments/{id}/actions/cancel` | CMD-ASG-CANCEL | حذف / إنهاء | POL-ASG-CANCEL | reason! | 202, 400, 404, 409, 422, 429, 503 | ASSET_ASSIGNMENT_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/readiness/asset-assignments/{id}/actions/return` | CMD-ASG-RETURN | حذف / إنهاء | POL-ASG-RETURN | condition_report! | 202, 400, 404, 409, 422, 429, 503 | ASSET_ASSIGNMENT_INVALID_STATE_TRANSITION, CONDITION_REPORT_REQUIRED |
 
-#### `/api/v1/readiness/asset-availability-queries`
+##### `/api/v1/readiness/asset-availability-queries`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | POST | `/api/v1/readiness/asset-availability-queries` | QRY-AST-AVAILABILITY | جلب | POL-AST-AVAILABILITY | asset_types, capabilities, window!, bbox | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/readiness/asset-reservations`
+##### `/api/v1/readiness/asset-reservations`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -816,7 +821,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/readiness/asset-reservations/{id}/actions/confirm` | CMD-RSV-CONFIRM | سير عمل | POL-RSV-CONFIRM | link! | 202, 400, 404, 409, 422, 429, 503 | ASSET_RESERVATION_INVALID_STATE_TRANSITION, LINK_REQUIRED |
 | POST | `/api/v1/readiness/asset-reservations/{id}/actions/release` | CMD-RSV-RELEASE | حذف / إنهاء | POL-RSV-RELEASE | note | 202, 400, 404, 409, 422, 429, 503 | ASSET_RESERVATION_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/readiness/assets`
+##### `/api/v1/readiness/assets`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -834,13 +839,13 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/readiness/assets/{id}/actions/transfer-custody` | CMD-AST-TRANSFER-CUSTODY | تعديل | POL-AST-TRANSFER-CUSTODY | new_holder!, reason! | 202, 400, 404, 409, 422, 429, 503 | ASSET_INVALID_STATE_TRANSITION, CUSTODY_INVALID |
 | POST | `/api/v1/readiness/assets/{id}/actions/update-condition` | CMD-AST-UPDATE-CONDITION | تعديل | POL-AST-UPDATE-CONDITION | grade!, inspector!, notes | 202, 400, 404, 409, 422, 429, 503 | ASSET_INVALID_STATE_TRANSITION, CONDITION_INVALID |
 
-#### `/api/v1/readiness/eligibility-checks`
+##### `/api/v1/readiness/eligibility-checks`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | POST | `/api/v1/readiness/eligibility-checks` | QRY-ELIG-CHECK | جلب | POL-ELIG-CHECK | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/readiness/exercises`
+##### `/api/v1/readiness/exercises`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -851,7 +856,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/readiness/exercises/{id}/actions/schedule` | CMD-EXR-SCHEDULE | سير عمل | POL-EXR-SCHEDULE | window!, location!, participants! | 202, 400, 404, 409, 422, 429, 503 | EXERCISE_INVALID, EXERCISE_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/readiness/exercises/{id}/actions/start` | CMD-EXR-START | سير عمل | POL-EXR-START | note | 202, 400, 404, 409, 422, 429, 503 | EXERCISE_INVALID, EXERCISE_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/readiness/logistics-requests`
+##### `/api/v1/readiness/logistics-requests`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -861,7 +866,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/readiness/logistics-requests/{id}/actions/dispatch` | CMD-LGR-DISPATCH | سير عمل | POL-LGR-DISPATCH | carrier!, ship_quantity! | 202, 400, 404, 409, 422, 429, 503 | ALLOCATION_NOT_COMMITTED, LOGISTICS_REQUEST_INVALID_STATE_TRANSITION |
 | GET | `/api/v1/readiness/logistics-requests/{request_id}` | QRY-LGR-GET | جلب | POL-LGR-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/readiness/maintenance-orders`
+##### `/api/v1/readiness/maintenance-orders`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -872,13 +877,13 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/readiness/maintenance-orders/{id}/actions/reschedule` | CMD-MNT-RESCHEDULE | تعديل | POL-MNT-RESCHEDULE | window!, reason! | 202, 400, 404, 409, 422, 429, 503 | MAINTENANCE_ORDER_INVALID_STATE_TRANSITION, MAINTENANCE_OVERLAP |
 | POST | `/api/v1/readiness/maintenance-orders/{id}/actions/start` | CMD-MNT-START | سير عمل | POL-MNT-START | technician! | 202, 400, 404, 409, 422, 429, 503 | MAINTENANCE_ORDER_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/readiness/persons`
+##### `/api/v1/readiness/persons`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | GET | `/api/v1/readiness/persons/{person_id}/qualifications` | QRY-QUAL-LIST | جلب | POL-QUAL-LIST | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/readiness/qualification-records`
+##### `/api/v1/readiness/qualification-records`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -888,13 +893,13 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/readiness/qualification-records/{id}/actions/revoke` | CMD-QUAL-REVOKE | حذف / إنهاء | POL-QUAL-REVOKE | reason! | 202, 400, 404, 409, 422, 429, 503 | QUALIFICATION_RECORD_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/readiness/qualification-records/{id}/actions/suspend` | CMD-QUAL-SUSPEND | سير عمل | POL-QUAL-SUSPEND | reason! | 202, 400, 404, 409, 422, 429, 503 | QUALIFICATION_RECORD_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/readiness/readiness-checks`
+##### `/api/v1/readiness/readiness-checks`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | POST | `/api/v1/readiness/readiness-checks` | QRY-READINESS | جلب | POL-READINESS | subject!, role!, at! | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/readiness/resource-pools`
+##### `/api/v1/readiness/resource-pools`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -905,7 +910,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/readiness/resource-pools/{id}/actions/suspend` | CMD-RPL-SUSPEND | سير عمل | POL-RPL-SUSPEND | reason! | 202, 400, 404, 409, 422, 429, 503 | REASON_REQUIRED, RESOURCE_POOL_INVALID_STATE_TRANSITION |
 | GET | `/api/v1/readiness/resource-pools/{pool_id}/timeline` | QRY-POL-TIMELINE | جلب | POL-POL-TIMELINE | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/readiness/role-requirements`
+##### `/api/v1/readiness/role-requirements`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -914,7 +919,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/readiness/role-requirements/{id}/actions/edit` | CMD-RRQ-EDIT | تعديل | POL-RRQ-EDIT | requirements! | 202, 400, 404, 409, 422, 429, 503 | ROLE_REQUIREMENT_INVALID, ROLE_REQUIREMENT_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/readiness/role-requirements/{id}/actions/retire` | CMD-RRQ-RETIRE | حذف / إنهاء | POL-RRQ-RETIRE | reason! | 202, 400, 404, 409, 422, 429, 503 | REASON_REQUIRED, ROLE_REQUIREMENT_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/readiness/scenarios`
+##### `/api/v1/readiness/scenarios`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -925,7 +930,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/readiness/scenarios/{id}/actions/retire` | CMD-SCN-RETIRE | حذف / إنهاء | POL-SCN-RETIRE | reason! | 202, 400, 404, 409, 422, 429, 503 | REASON_REQUIRED, SCENARIO_INVALID_STATE_TRANSITION |
 | GET | `/api/v1/readiness/scenarios/{scenario_id}` | QRY-SCN-GET | جلب | POL-SCN-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/readiness/shipments`
+##### `/api/v1/readiness/shipments`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -940,12 +945,12 @@ generator: 17-system-study/_build/build_analysis_design.py
 | GET | `/api/v1/readiness/shipments/{shipment_id}` | QRY-SHP-GET | جلب | POL-SHP-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 | GET | `/api/v1/readiness/shipments/{shipment_id}/checkpoints` | QRY-SHP-TRACKING | جلب | POL-SHP-TRACKING | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/readiness/simulations`
+##### `/api/v1/readiness/simulations`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | GET | `/api/v1/readiness/simulations` | QRY-SIM-LIST | جلب | POL-SIM-LIST | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
-| POST | `/api/v1/readiness/simulations` | CMD-SIM-START | نظام | POL-SIM-START | exercise!, scenario!, started_at! | 201, 400, 404, 409, 422, 429, 503 | SIMULATION_INVALID |
+| POST | `/api/v1/readiness/simulations` | CMD-SIM-START | نظام (داخلي) | POL-SIM-START | exercise!, scenario!, started_at! | 201, 400, 404, 409, 422, 429, 503 | SIMULATION_INVALID |
 | POST | `/api/v1/readiness/simulations/{id}/actions/abort` | CMD-SIM-ABORT | حذف / إنهاء | POL-SIM-ABORT | reason! | 202, 400, 404, 409, 422, 429, 503 | REASON_REQUIRED, SIMULATION_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/readiness/simulations/{id}/actions/complete` | CMD-SIM-COMPLETE | حذف / إنهاء | POL-SIM-COMPLETE | — | 202, 400, 404, 409, 422, 429, 503 | EVALUATION_MISSING, SIMULATION_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/readiness/simulations/{id}/actions/deliver-inject` | CMD-SIM-DELIVER-INJECT | تعديل | POL-SIM-DELIVER-INJECT | inject_ref!, delivered_at!, note | 202, 400, 404, 409, 422, 429, 503 | INJECT_INVALID, SIMULATION_INVALID_STATE_TRANSITION |
@@ -956,9 +961,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | GET | `/api/v1/readiness/simulations/{simulation_id}/timeline` | QRY-SIM-TIMELINE | جلب | POL-SIM-TIMELINE | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
 
-### BC06 — Knowledge — المعرفة والمنتجات
+#### BC06 — Knowledge — المعرفة والمنتجات
 
-#### `/api/v1/knowledge/archive-packages`
+##### `/api/v1/knowledge/archive-packages`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -969,14 +974,14 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/knowledge/archive-packages/{id}/actions/transfer` | CMD-ARC-TRANSFER | حذف / إنهاء | POL-ARC-TRANSFER | decision!, receiving_archive!, receipt! | 202, 400, 404, 409, 422, 429, 503 | ARCHIVE_PACKAGE_INVALID_STATE_TRANSITION, AUTHORITY_REQUIRED |
 | POST | `/api/v1/knowledge/archive-packages/{package_id}/retrievals` | QRY-ARC-RETRIEVE | جلب | POL-ARC-RETRIEVE | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/knowledge/distributions`
+##### `/api/v1/knowledge/distributions`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | POST | `/api/v1/knowledge/distributions` | CMD-DST-DISTRIBUTE | إنشاء | POL-DST-DISTRIBUTE | product!, recipients!, formats!, message | 201, 400, 404, 409, 422, 429, 503 | PRODUCT_NOT_APPROVED |
 | POST | `/api/v1/knowledge/distributions/{id}/actions/cancel` | CMD-DST-CANCEL | حذف / إنهاء | POL-DST-CANCEL | reason! | 202, 400, 404, 409, 422, 429, 503 | DISTRIBUTION_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/knowledge/knowledge-objects`
+##### `/api/v1/knowledge/knowledge-objects`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -991,13 +996,13 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/knowledge/knowledge-objects/{id}/actions/return` | CMD-KNO-RETURN | سير عمل | POL-KNO-RETURN | reason! | 202, 400, 404, 409, 422, 429, 503 | KNOWLEDGE_OBJECT_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/knowledge/knowledge-objects/{id}/actions/submit` | CMD-KNO-SUBMIT | سير عمل | POL-KNO-SUBMIT | — | 202, 400, 404, 409, 422, 429, 503 | KNOWLEDGE_INCOMPLETE, KNOWLEDGE_OBJECT_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/knowledge/knowledge-suggestions`
+##### `/api/v1/knowledge/knowledge-suggestions`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | POST | `/api/v1/knowledge/knowledge-suggestions` | QRY-KNO-SUGGEST | جلب | POL-KNO-SUGGEST | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/knowledge/product-templates`
+##### `/api/v1/knowledge/product-templates`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1006,7 +1011,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/knowledge/product-templates/{id}/actions/edit` | CMD-PTM-EDIT | تعديل | POL-PTM-EDIT | sections! | 202, 400, 404, 409, 422, 429, 503 | PRODUCT_TEMPLATE_INVALID_STATE_TRANSITION, TEMPLATE_INVALID |
 | POST | `/api/v1/knowledge/product-templates/{id}/actions/retire` | CMD-PTM-RETIRE | حذف / إنهاء | POL-PTM-RETIRE | reason! | 202, 400, 404, 409, 422, 429, 503 | PRODUCT_TEMPLATE_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/knowledge/products`
+##### `/api/v1/knowledge/products`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1022,7 +1027,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | GET | `/api/v1/knowledge/products/{product_id}` | QRY-PRD-GET | جلب | POL-PRD-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 | GET | `/api/v1/knowledge/products/{product_id}/distributions` | QRY-DST-LOG | جلب | POL-DST-LOG | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/knowledge/reconstructions`
+##### `/api/v1/knowledge/reconstructions`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1031,9 +1036,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | GET | `/api/v1/knowledge/reconstructions/{reconstruction_id}/report` | QRY-REC-REPORT | جلب | POL-REC-REPORT | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
 
-### BC07 — Platform Intelligence — التكامل والذكاء الاصطناعي
+#### BC07 — Platform Intelligence — التكامل والذكاء الاصطناعي
 
-#### `/api/v1/ai/evaluation-suites`
+##### `/api/v1/ai/evaluation-suites`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1041,7 +1046,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/ai/evaluation-suites/{id}/actions/activate` | CMD-EVS-ACTIVATE | سير عمل | POL-EVS-ACTIVATE | — | 202, 400, 404, 409, 422, 429, 503 | EVAL_SUITE_INVALID_STATE_TRANSITION, SEGREGATION_OF_DUTIES |
 | POST | `/api/v1/ai/evaluation-suites/{id}/actions/edit` | CMD-EVS-EDIT | تعديل | POL-EVS-EDIT | sets! | 202, 400, 404, 409, 422, 429, 503 | EVAL_SUITE_INVALID_STATE_TRANSITION, SUITE_INVALID |
 
-#### `/api/v1/ai/models`
+##### `/api/v1/ai/models`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1056,7 +1061,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/ai/models/{id}/actions/stage` | CMD-MDL-STAGE | سير عمل | POL-MDL-STAGE | canary_share!, operations! | 202, 400, 404, 409, 422, 429, 503 | MODEL_VERSION_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/ai/models/{id}/actions/start-evaluation` | CMD-MDL-START-EVALUATION | سير عمل | POL-MDL-START-EVALUATION | suite! | 202, 400, 404, 409, 422, 429, 503 | MODEL_VERSION_INVALID_STATE_TRANSITION, SUITE_NOT_ACTIVE |
 
-#### `/api/v1/ai/requests`
+##### `/api/v1/ai/requests`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1065,7 +1070,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | GET | `/api/v1/ai/requests/{request_id}` | QRY-AIR-GET | جلب | POL-AIR-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 | GET | `/api/v1/ai/requests/{request_id}/context` | QRY-AIR-CONTEXT | جلب | POL-AIR-CONTEXT | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/ai/results`
+##### `/api/v1/ai/results`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1075,13 +1080,13 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/ai/results/{id}/actions/reject` | CMD-AIRS-REJECT | حذف / إنهاء | POL-AIRS-REJECT | reason! | 202, 400, 404, 409, 422, 429, 503 | AI_RESULT_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/ai/results/{id}/actions/start-review` | CMD-AIRS-START-REVIEW | سير عمل | POL-AIRS-START-REVIEW | — | 202, 400, 404, 409, 422, 429, 503 | AI_RESULT_INVALID_STATE_TRANSITION, REVIEWER_NOT_CLEARED |
 
-#### `/api/v1/ai/routing`
+##### `/api/v1/ai/routing`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | GET | `/api/v1/ai/routing` | QRY-RTG-ACTIVE | جلب | POL-RTG-ACTIVE | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/ai/routings`
+##### `/api/v1/ai/routings`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1090,7 +1095,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/ai/routings/{id}/actions/discard` | CMD-RTG-DISCARD | حذف / إنهاء | POL-RTG-DISCARD | reason! | 202, 400, 404, 409, 422, 429, 503 | AI_ROUTING_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/ai/routings/{id}/actions/edit` | CMD-RTG-EDIT | تعديل | POL-RTG-EDIT | routes! | 202, 400, 404, 409, 422, 429, 503 | AI_ROUTING_INVALID_STATE_TRANSITION, ROUTING_INVALID |
 
-#### `/api/v1/ai/tools`
+##### `/api/v1/ai/tools`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1101,20 +1106,20 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/ai/tools/{id}/actions/enable` | CMD-TOL-ENABLE | سير عمل | POL-TOL-ENABLE | — | 202, 400, 404, 409, 422, 429, 503 | AI_TOOL_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/ai/tools/{id}/actions/retire` | CMD-TOL-RETIRE | حذف / إنهاء | POL-TOL-RETIRE | reason! | 202, 400, 404, 409, 422, 429, 503 | AI_TOOL_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/ai/usage`
+##### `/api/v1/ai/usage`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | GET | `/api/v1/ai/usage` | QRY-AI-USAGE | جلب | POL-AI-USAGE | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/discovery/graph`
+##### `/api/v1/discovery/graph`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | GET | `/api/v1/discovery/graph/entities/{entity_id}/neighborhood` | QRY-GRAPH-NEIGHBORHOOD | جلب | POL-GRAPH-NEIGHBORHOOD | cursor, limit, depth, valid_at, known_at | 200, 400, 404, 409, 422, 429, 503 | — |
 | POST | `/api/v1/discovery/graph/paths` | QRY-GRAPH-PATHS | جلب | POL-GRAPH-PATHS | from!, to!, max_hops, relationship_types, valid_at, known_at, max_paths | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/discovery/projection-versions`
+##### `/api/v1/discovery/projection-versions`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1124,19 +1129,19 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/discovery/projection-versions/{id}/actions/promote` | CMD-PRJ-PROMOTE | سير عمل | POL-PRJ-PROMOTE | — | 202, 400, 404, 409, 422, 429, 503 | PROJECTION_NOT_VERIFIED, PROJECTION_VERSION_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/discovery/projection-versions/{id}/actions/retire` | CMD-PRJ-RETIRE | حذف / إنهاء | POL-PRJ-RETIRE | reason! | 202, 400, 404, 409, 422, 429, 503 | LAST_ACTIVE_PROJECTION, PROJECTION_VERSION_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/discovery/search-queries`
+##### `/api/v1/discovery/search-queries`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | POST | `/api/v1/discovery/search-queries` | QRY-SRCH-QUERY | جلب | POL-SRCH-QUERY | text, types!, geo, time, valid_at, filters, facets, sort, cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/discovery/suggestions`
+##### `/api/v1/discovery/suggestions`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
-| GET | `/api/v1/discovery/suggestions` | QRY-SRCH-SUGGEST | جلب | POL-SRCH-SUGGEST | cursor, limit, q | 200, 400, 404, 409, 422, 429, 503 | — |
+| GET | `/api/v1/discovery/suggestions` | QRY-SRCH-SUGGEST | جلب | POL-SRCH-SUGGEST | cursor, limit, q! | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/field/preload-packages`
+##### `/api/v1/field/preload-packages`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1145,7 +1150,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/field/preload-packages/{id}/actions/revoke` | CMD-PKG-REVOKE | حذف / إنهاء | POL-PKG-REVOKE | reason! | 202, 400, 404, 409, 422, 429, 503 | PRELOAD_PACKAGE_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | GET | `/api/v1/field/preload-packages/{package_id}` | QRY-PKG-GET | جلب | POL-PKG-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/field/sync-conflicts`
+##### `/api/v1/field/sync-conflicts`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1156,7 +1161,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/field/sync-conflicts/{id}/actions/reapply` | CMD-SCF-REAPPLY | حذف / إنهاء | POL-SCF-REAPPLY | note | 202, 400, 404, 409, 422, 429, 503 | OWNER_REJECTED, SYNC_CONFLICT_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/field/sync-conflicts/{id}/actions/resolve-manually` | CMD-SCF-RESOLVE-MANUALLY | حذف / إنهاء | POL-SCF-RESOLVE-MANUALLY | note!, action_ref | 202, 400, 404, 409, 422, 429, 503 | REASON_REQUIRED, SYNC_CONFLICT_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/field/sync-sessions`
+##### `/api/v1/field/sync-sessions`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1164,7 +1169,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/field/sync-sessions/{id}/actions/upload-batch` | CMD-SYN-UPLOAD-BATCH | سير عمل | POL-SYN-UPLOAD-BATCH | envelopes!, end_of_queue! | 202, 400, 404, 409, 422, 429, 503 | SEQUENCE_GAP, SYNC_SESSION_INVALID_STATE_TRANSITION |
 | GET | `/api/v1/field/sync-sessions/{session_id}/delta` | QRY-SYN-DELTA | جلب | POL-SYN-DELTA | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/integration/adapters`
+##### `/api/v1/integration/adapters`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1176,7 +1181,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/integration/adapters/{id}/actions/suspend` | CMD-ADP-SUSPEND | سير عمل | POL-ADP-SUSPEND | reason! | 202, 400, 404, 409, 422, 429, 503 | ADAPTER_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/integration/adapters/{id}/actions/update-mapping` | CMD-ADP-UPDATE-MAPPING | تعديل | POL-ADP-UPDATE-MAPPING | mapping!, tests! | 202, 400, 404, 409, 422, 429, 503 | ADAPTER_INVALID_STATE_TRANSITION, MAPPING_TESTS_FAILED |
 
-#### `/api/v1/integration/connections`
+##### `/api/v1/integration/connections`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1189,7 +1194,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/integration/connections/{id}/actions/suspend` | CMD-CON-SUSPEND | سير عمل | POL-CON-SUSPEND | reason! | 202, 400, 404, 409, 422, 429, 503 | INTEGRATION_CONNECTION_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | POST | `/api/v1/integration/connections/{id}/actions/test` | CMD-CON-TEST | سير عمل | POL-CON-TEST | — | 202, 400, 404, 409, 422, 429, 503 | INTEGRATION_CONNECTION_INVALID_STATE_TRANSITION |
 
-#### `/api/v1/integration/sensor-streams`
+##### `/api/v1/integration/sensor-streams`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1201,27 +1206,27 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/integration/sensor-streams/{id}/actions/set-quality-rules` | CMD-SNS-SET-QUALITY-RULES | تعديل | POL-SNS-SET-QUALITY-RULES | rules! | 202, 400, 404, 409, 422, 429, 503 | QUALITY_RULES_INVALID, SENSOR_STREAM_INVALID_STATE_TRANSITION |
 
 
-### BC08 — Governance — الحوكمة والأمن
+#### BC08 — Governance — الحوكمة والأمن
 
-#### `/api/v1/governance/audit-integrity-checks`
+##### `/api/v1/governance/audit-integrity-checks`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
-| POST | `/api/v1/governance/audit-integrity-checks` | QRY-AUD-VERIFY | جلب | POL-AUD-VERIFY | — | 400, 404, 409, 422, 429, 503, 202 | — |
+| POST | `/api/v1/governance/audit-integrity-checks` | QRY-AUD-VERIFY | جلب | POL-AUD-VERIFY | — | 202, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/governance/audit-records`
+##### `/api/v1/governance/audit-records`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | GET | `/api/v1/governance/audit-records` | QRY-AUD-SEARCH | جلب | POL-AUD-SEARCH | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/governance/classification-scheme`
+##### `/api/v1/governance/classification-scheme`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | GET | `/api/v1/governance/classification-scheme` | QRY-CLS-ACTIVE | جلب | POL-CLS-ACTIVE | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/governance/classification-schemes`
+##### `/api/v1/governance/classification-schemes`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1230,7 +1235,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/governance/classification-schemes/{id}/actions/discard` | CMD-CLS-DISCARD | حذف / إنهاء | POL-CLS-DISCARD | — | 202, 400, 404, 409, 422, 429, 503 | CLASSIFICATION_SCHEME_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/governance/classification-schemes/{id}/actions/edit` | CMD-CLS-EDIT | تعديل | POL-CLS-EDIT | levels!, compartments!, caveats!, audit_threshold!, default_level! | 202, 400, 404, 409, 422, 429, 503 | CLASSIFICATION_SCHEME_INVALID_STATE_TRANSITION, SCHEME_INVALID |
 
-#### `/api/v1/governance/disposition-runs`
+##### `/api/v1/governance/disposition-runs`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1239,7 +1244,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/governance/disposition-runs/{id}/actions/submit` | CMD-DSP-SUBMIT | سير عمل | POL-DSP-SUBMIT | note | 202, 400, 404, 409, 422, 429, 503 | DISPOSITION_RUN_INVALID_STATE_TRANSITION |
 | GET | `/api/v1/governance/disposition-runs/{run_id}` | QRY-DSP-GET | جلب | POL-DSP-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/governance/erasure-requests`
+##### `/api/v1/governance/erasure-requests`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1248,13 +1253,13 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/governance/erasure-requests/{id}/actions/reject` | CMD-ERS-REJECT | حذف / إنهاء | POL-ERS-REJECT | reason! | 202, 400, 404, 409, 422, 429, 503 | ERASURE_REQUEST_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 | GET | `/api/v1/governance/erasure-requests/{request_id}` | QRY-ERS-GET | جلب | POL-ERS-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/governance/hold-checks`
+##### `/api/v1/governance/hold-checks`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | POST | `/api/v1/governance/hold-checks` | QRY-LHD-CHECK | جلب | POL-LHD-CHECK | urns, subjects, buckets | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/governance/legal-holds`
+##### `/api/v1/governance/legal-holds`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1265,13 +1270,13 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/governance/legal-holds/{id}/actions/extend` | CMD-LHD-EXTEND | تعديل | POL-LHD-EXTEND | scope!, reason! | 202, 400, 404, 409, 422, 429, 503 | HOLD_INVALID, LEGAL_HOLD_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/governance/legal-holds/{id}/actions/request-release` | CMD-LHD-REQUEST-RELEASE | سير عمل | POL-LHD-REQUEST-RELEASE | reason! | 202, 400, 404, 409, 422, 429, 503 | LEGAL_HOLD_INVALID_STATE_TRANSITION, REASON_REQUIRED |
 
-#### `/api/v1/governance/policy-decisions`
+##### `/api/v1/governance/policy-decisions`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | POST | `/api/v1/governance/policy-decisions` | QRY-PDP-DECIDE | جلب | POL-PDP-DECIDE | subject!, action!, resource!, purpose!, context! | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/governance/policy-sets`
+##### `/api/v1/governance/policy-sets`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1282,13 +1287,13 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/governance/policy-sets/{id}/actions/submit` | CMD-POL-SUBMIT | سير عمل | POL-POL-SUBMIT | effective_from! | 202, 400, 404, 409, 422, 429, 503 | POLICY_SET_INVALID_STATE_TRANSITION, POLICY_TESTS_FAILED |
 | GET | `/api/v1/governance/policy-sets/{version_id}` | QRY-POL-GET | جلب | POL-POL-GET | — | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/governance/retention-schedule`
+##### `/api/v1/governance/retention-schedule`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
 | GET | `/api/v1/governance/retention-schedule` | QRY-RTS-ACTIVE | جلب | POL-RTS-ACTIVE | cursor, limit | 200, 400, 404, 409, 422, 429, 503 | — |
 
-#### `/api/v1/governance/retention-schedules`
+##### `/api/v1/governance/retention-schedules`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1297,7 +1302,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/governance/retention-schedules/{id}/actions/discard` | CMD-RTS-DISCARD | حذف / إنهاء | POL-RTS-DISCARD | reason! | 202, 400, 404, 409, 422, 429, 503 | REASON_REQUIRED, RETENTION_SCHEDULE_INVALID_STATE_TRANSITION |
 | POST | `/api/v1/governance/retention-schedules/{id}/actions/edit` | CMD-RTS-EDIT | تعديل | POL-RTS-EDIT | rules! | 202, 400, 404, 409, 422, 429, 503 | RETENTION_SCHEDULE_INVALID_STATE_TRANSITION, SCHEDULE_INVALID |
 
-#### `/api/v1/governance/security-exceptions`
+##### `/api/v1/governance/security-exceptions`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|
@@ -1308,9 +1313,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | POST | `/api/v1/governance/security-exceptions/{id}/actions/revoke` | CMD-EXC-REVOKE | حذف / إنهاء | POL-EXC-REVOKE | reason! | 202, 400, 404, 409, 422, 429, 503 | REASON_REQUIRED, SECURITY_EXCEPTION_INVALID_STATE_TRANSITION |
 
 
-### — — عقود عابرة
+#### — — عقود عابرة
 
-#### `/api/v1/{context}/label-checks`
+##### `/api/v1/{context}/label-checks`
 
 | الطريقة | المسار | العملية | النوع | السياسة | المدخلات (! إلزامي) | الاستجابات | أخطاء خاصة |
 |---|---|---|---|---|---|---|---|

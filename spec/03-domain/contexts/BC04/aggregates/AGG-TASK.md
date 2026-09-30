@@ -1,0 +1,440 @@
+---
+id: AGG-TASK
+type: aggregate
+title: Task
+wave: W4
+slice: SLC-03
+tier: T1
+status: APPROVED_DELEGATED
+approved_by: Claude (acting decision owner, delegated by project owner)
+approved_at: '2026-09-24'
+bounded_context: BC04
+importance_tier: T2
+personal_data: false
+traces:
+  satisfies:
+  - REQ-OPS-006
+  - REQ-OPS-007
+  - REQ-OPS-008
+  - REQ-OPS-009
+  - REQ-OPS-010
+  - REQ-OPS-011
+  - REQ-OPS-012
+  - REQ-OFF-001
+  state_machine: SM-TASK
+  decided_by:
+  - ADR-P01
+  - ADR-P02
+  - ADR-P03
+  - ADR-P13
+---
+
+
+# AGG-TASK — Task
+
+**الغرض:** وحدة عمل قابلة للإسناد والتنفيذ والمراجعة والقياس  
+**السياق:** BC04 · **المستوى:** T2 · **بيانات شخصية:** لا
+
+> SUSPENDED from V6§13.5 is modelled as an orthogonal flag (INV-TASK-06): resuming returns to the same state without storing a 'prior_state' (CR-46).
+
+## الثوابت (Invariants)
+
+- **INV-TASK-01** — no transition from COMPLETED or any terminal state to IN_PROGRESS
+- **INV-TASK-02** — COMPLETED only when every completion criterion is satisfied (BRL-006)
+- **INV-TASK-03** — every accepted command produces exactly one event and one audit record
+- **INV-TASK-04** — terminal states accept no state-changing command
+- **INV-TASK-05** — from ASSIGNED onwards the assignee was eligible and cleared at assignment time (recorded with the eligibility result)
+- **INV-TASK-06** — while suspended = true, every state-changing command except UNSUSPEND and CANCEL is rejected with TASK_SUSPENDED (orthogonal flag, not a state)
+- **INV-TASK-07** — approver ≠ assignee under default policy (REQ-OPS-009)
+- **INV-TASK-08** — the dependency graph is acyclic
+- **INV-TASK-09** — completion criteria are frozen from ASSIGNED onwards
+
+## مكونات داخلية
+
+- CompletionCriterion (kind: attestation | result_item | evidence_count ≥ n | measurement_recorded | checklist)
+- ResultItem
+- Dependency (predecessor URN)
+- EligibilitySnapshot
+
+## الحالات
+
+- غير نهائية: DRAFT, READY, ASSIGNED, ACCEPTED, IN_PROGRESS, BLOCKED, SUBMITTED, UNDER_REVIEW, APPROVED, COMPLETED
+- نهائية: CLOSED, CANCELLED, REJECTED, EXPIRED, SUPERSEDED
+- قابلية الوصول لحالة نهائية (SL-06): **PASS**
+
+## الانتقالات
+
+| من | الأمر | إلى | الشرط (Guard) | الحدث | خطأ فشل الشرط |
+|---|---|---|---|---|---|
+| ∅ (إنشاء) | CMD-TASK-CREATE | DRAFT | task type ACTIVE (version pinned); plan_ref (operations, collection or contingency plan — CR-59, CR-61) or incident_ref (direct response task under an Incident, SLC-17 — CR-61), or ad_hoc_reason + accountable owner (REQ-OPS-010); label ≤ creator clearance | EVT-TASK-CREATED | TASK_INVALID |
+| DRAFT, READY | CMD-TASK-EDIT | (بلا تغيير) | creator or Planner; completion criteria editable only in DRAFT/READY; new version | EVT-TASK-EDITED | TASK_INVALID |
+| DRAFT | CMD-TASK-MARK-READY | READY | title, ≥ 1 completion criterion, owner; dependencies reference existing tasks without cycle | EVT-TASK-READIED | TASK_NOT_READY |
+| READY | CMD-TASK-ASSIGN | ASSIGNED | assignee ACTIVE user; assignee clearance ≥ task label; EligibilityCheck(assignee, task type, now) ∈ {ELIGIBLE, CONDITIONALLY_ELIGIBLE with condition met} (REQ-OPS-007); actor authorized in scope | EVT-TASK-ASSIGNED | ASSIGNEE_NOT_ELIGIBLE |
+| ASSIGNED, ACCEPTED, IN_PROGRESS, BLOCKED | CMD-TASK-REASSIGN | ASSIGNED | same checks as assign for the new assignee; reason; previous assignee notified | EVT-TASK-REASSIGNED | ASSIGNEE_NOT_ELIGIBLE |
+| ASSIGNED | CMD-TASK-ACCEPT | ACCEPTED | actor = assignee | EVT-TASK-ACCEPTED | NOT_ASSIGNEE |
+| ASSIGNED | CMD-TASK-DECLINE | READY | actor = assignee; reason | EVT-TASK-DECLINED | REASON_REQUIRED |
+| ACCEPTED | CMD-TASK-START | IN_PROGRESS | actor = assignee; all predecessor tasks COMPLETED or CLOSED | EVT-TASK-STARTED | DEPENDENCIES_NOT_MET |
+| IN_PROGRESS | CMD-TASK-BLOCK | BLOCKED | actor = assignee; blocking reason | EVT-TASK-BLOCKED | REASON_REQUIRED |
+| BLOCKED | CMD-TASK-RESUME | IN_PROGRESS | actor = assignee; resolution note | EVT-TASK-RESUMED | REASON_REQUIRED |
+| IN_PROGRESS, BLOCKED | CMD-TASK-ADD-RESULT-ITEM | (بلا تغيير) | actor = assignee; item = note | evidence URN | observation URN | measurement | EVT-TASK-RESULT-ITEM-ADDED | RESULT_ITEM_INVALID |
+| IN_PROGRESS | CMD-TASK-SUBMIT | SUBMITTED | actor = assignee; result has ≥ 1 item | EVT-TASK-SUBMITTED | RESULT_REQUIRED |
+| SUBMITTED | CMD-TASK-START-REVIEW | UNDER_REVIEW | actor has review permission in scope; actor ≠ assignee | EVT-TASK-REVIEW-STARTED | SEGREGATION_OF_DUTIES |
+| UNDER_REVIEW | CMD-TASK-RETURN | IN_PROGRESS | reviewer; rework reason | EVT-TASK-RETURNED-FOR-REWORK | REASON_REQUIRED |
+| UNDER_REVIEW | CMD-TASK-APPROVE | APPROVED | reviewer ≠ assignee unless tenant policy disables SoD (REQ-OPS-009) | EVT-TASK-APPROVED | SEGREGATION_OF_DUTIES |
+| UNDER_REVIEW | CMD-TASK-REJECT | REJECTED | reviewer; reason; follow-up task may be created linked by follow_up_of (OQ-033) | EVT-TASK-REJECTED | REASON_REQUIRED |
+| APPROVED | SYS:all completion criteria satisfied | COMPLETED | system-checkable criteria evaluated at approval and whenever result evidence changes (BRL-006) | EVT-TASK-COMPLETED | — |
+| APPROVED | CMD-TASK-COMPLETE | COMPLETED | attestation-type criteria confirmed by an authorized actor; all criteria satisfied (BRL-006) | EVT-TASK-COMPLETED | TASK_CRITERIA_NOT_MET |
+| COMPLETED | CMD-TASK-CLOSE | CLOSED | no open follow-up tasks | EVT-TASK-CLOSED | OPEN_FOLLOW_UPS |
+| COMPLETED | SYS:follow-up window (7 d) elapsed without open follow-ups | CLOSED | scheduler | EVT-TASK-CLOSED | — |
+| DRAFT, READY, ASSIGNED, ACCEPTED, IN_PROGRESS, BLOCKED, SUBMITTED, UNDER_REVIEW, APPROVED | CMD-TASK-CANCEL | CANCELLED | actor has cancel authority in scope; reason | EVT-TASK-CANCELLED | REASON_REQUIRED |
+| DRAFT, READY, ASSIGNED, ACCEPTED, IN_PROGRESS, BLOCKED, SUBMITTED, UNDER_REVIEW | SYS:due passed and task type expires_on_due | EXPIRED | scheduler; only when the task type declares expires_on_due = true (OQ-032) | EVT-TASK-EXPIRED | — |
+| DRAFT, READY, ASSIGNED, ACCEPTED, IN_PROGRESS, BLOCKED, SUBMITTED, UNDER_REVIEW, APPROVED | SYS:plan version baselined without this task | SUPERSEDED | SLC-08 trigger | EVT-TASK-SUPERSEDED | — |
+| أي حالة غير نهائية | CMD-TASK-ESCALATE | (بلا تغيير) | reason; notifies next authority level (REQ-OPS-012) | EVT-TASK-ESCALATED | REASON_REQUIRED |
+| أي حالة غير نهائية | SYS:due passed (escalation policy) | (بلا تغيير) | scheduler; at due and at due + grace from task type | EVT-TASK-ESCALATED | — |
+| DRAFT, READY, ASSIGNED, ACCEPTED, IN_PROGRESS, BLOCKED | CMD-TASK-SET-DUE | (بلا تغيير) | Planner or owner; reason | EVT-TASK-DUE-CHANGED | REASON_REQUIRED |
+| أي حالة غير نهائية | CMD-TASK-SUSPEND | (بلا تغيير) | suspend authority; reason; sets suspended = true | EVT-TASK-SUSPENDED | REASON_REQUIRED |
+| أي حالة غير نهائية | CMD-TASK-UNSUSPEND | (بلا تغيير) | suspend authority; suspended = true | EVT-TASK-UNSUSPENDED | NOT_SUSPENDED |
+| أي حالة غير نهائية | CMD-TASK-RECLASSIFY | (بلا تغيير) | authority per tenant policy; assignee clearance ≥ new label, else reassignment required first | EVT-TASK-RECLASSIFIED | CLASSIFICATION_CHANGE_NOT_AUTHORIZED |
+
+## مصفوفة الحالات × الأوامر (كاملة — SL-05)
+
+كل خلية حُكم صريح: `→ حالة` مسموح، `✗ رمز` مرفوض. لا خلايا فارغة.
+
+| الحالة \ الأمر | CMD-TASK-CREATE | CMD-TASK-EDIT | CMD-TASK-MARK-READY | CMD-TASK-ASSIGN | CMD-TASK-REASSIGN | CMD-TASK-ACCEPT | CMD-TASK-DECLINE | CMD-TASK-START | CMD-TASK-BLOCK | CMD-TASK-RESUME | CMD-TASK-ADD-RESULT-ITEM | CMD-TASK-SUBMIT | CMD-TASK-START-REVIEW | CMD-TASK-RETURN | CMD-TASK-APPROVE | CMD-TASK-REJECT | SYS:all completion criteria satisfied | CMD-TASK-COMPLETE | CMD-TASK-CLOSE | SYS:follow-up window (7 d) elapsed without open follow-ups | CMD-TASK-CANCEL | SYS:due passed and task type expires_on_due | SYS:plan version baselined without this task | CMD-TASK-ESCALATE | SYS:due passed (escalation policy) | CMD-TASK-SET-DUE | CMD-TASK-SUSPEND | CMD-TASK-UNSUSPEND | CMD-TASK-RECLASSIFY |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| ∅ | → DRAFT | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — |
+| DRAFT | ✗ TASK_INVALID_STATE_TRANSITION | → DRAFT | → READY | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → CANCELLED | → EXPIRED | → SUPERSEDED | → DRAFT | → DRAFT | → DRAFT | → DRAFT | → DRAFT | → DRAFT |
+| READY | ✗ TASK_INVALID_STATE_TRANSITION | → READY | ✗ TASK_INVALID_STATE_TRANSITION | → ASSIGNED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → CANCELLED | → EXPIRED | → SUPERSEDED | → READY | → READY | → READY | → READY | → READY | → READY |
+| ASSIGNED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → ASSIGNED | → ACCEPTED | → READY | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → CANCELLED | → EXPIRED | → SUPERSEDED | → ASSIGNED | → ASSIGNED | → ASSIGNED | → ASSIGNED | → ASSIGNED | → ASSIGNED |
+| ACCEPTED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → ASSIGNED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → IN_PROGRESS | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → CANCELLED | → EXPIRED | → SUPERSEDED | → ACCEPTED | → ACCEPTED | → ACCEPTED | → ACCEPTED | → ACCEPTED | → ACCEPTED |
+| IN_PROGRESS | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → ASSIGNED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → BLOCKED | ✗ TASK_INVALID_STATE_TRANSITION | → IN_PROGRESS | → SUBMITTED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → CANCELLED | → EXPIRED | → SUPERSEDED | → IN_PROGRESS | → IN_PROGRESS | → IN_PROGRESS | → IN_PROGRESS | → IN_PROGRESS | → IN_PROGRESS |
+| BLOCKED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → ASSIGNED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → IN_PROGRESS | → BLOCKED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → CANCELLED | → EXPIRED | → SUPERSEDED | → BLOCKED | → BLOCKED | → BLOCKED | → BLOCKED | → BLOCKED | → BLOCKED |
+| SUBMITTED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → UNDER_REVIEW | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → CANCELLED | → EXPIRED | → SUPERSEDED | → SUBMITTED | → SUBMITTED | ✗ TASK_INVALID_STATE_TRANSITION | → SUBMITTED | → SUBMITTED | → SUBMITTED |
+| UNDER_REVIEW | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → IN_PROGRESS | → APPROVED | → REJECTED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → CANCELLED | → EXPIRED | → SUPERSEDED | → UNDER_REVIEW | → UNDER_REVIEW | ✗ TASK_INVALID_STATE_TRANSITION | → UNDER_REVIEW | → UNDER_REVIEW | → UNDER_REVIEW |
+| APPROVED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → COMPLETED | → COMPLETED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → CANCELLED | ✗ TASK_INVALID_STATE_TRANSITION | → SUPERSEDED | → APPROVED | → APPROVED | ✗ TASK_INVALID_STATE_TRANSITION | → APPROVED | → APPROVED | → APPROVED |
+| COMPLETED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → CLOSED | → CLOSED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | → COMPLETED | → COMPLETED | ✗ TASK_INVALID_STATE_TRANSITION | → COMPLETED | → COMPLETED | → COMPLETED |
+| CLOSED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION |
+| CANCELLED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION |
+| REJECTED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION |
+| EXPIRED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION |
+| SUPERSEDED | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION | ✗ TASK_INVALID_STATE_TRANSITION |
+
+## التزامن وعدم التكرار
+
+- Optimistic concurrency: `If-Match: <version>`؛ عدم التطابق → `VERSION_CONFLICT` (HTTP 409) دون تغيير.
+- كل أمر يحمل `Idempotency-Key`؛ التكرار يعيد النتيجة الأصلية؛ نفس المفتاح بحمولة مختلفة → `IDEMPOTENCY_KEY_REUSED` (HTTP 422).
+- الأوامر التي تبدأ بـ `SYS:` يطلقها المجدول بهوية عبء عمل، وتخضع لنفس الثوابت.
+
+## الحفظ
+
+- State + history (إصدار غير قابل للتعديل لكل تغيير، ADR-P02) + outbox + audit outbox في نفس المعاملة (FIT-04).
+- النموذج المنطقي: `06-data/logical-model/slc-03.md`.
+
+---
+
+<details>
+<summary>Machine-readable data (YAML)</summary>
+
+```yaml
+id: AGG-TASK
+bc: BC04
+name: Task
+tier: T2
+purpose: وحدة عمل قابلة للإسناد والتنفيذ والمراجعة والقياس
+states:
+- DRAFT
+- READY
+- ASSIGNED
+- ACCEPTED
+- IN_PROGRESS
+- BLOCKED
+- SUBMITTED
+- UNDER_REVIEW
+- APPROVED
+- COMPLETED
+- CLOSED
+- CANCELLED
+- REJECTED
+- EXPIRED
+- SUPERSEDED
+terminal:
+- CLOSED
+- CANCELLED
+- REJECTED
+- EXPIRED
+- SUPERSEDED
+invariants:
+- 'INV-TASK-01: no transition from COMPLETED or any terminal state to IN_PROGRESS'
+- 'INV-TASK-02: COMPLETED only when every completion criterion is satisfied (BRL-006)'
+- 'INV-TASK-03: every accepted command produces exactly one event and one audit record'
+- 'INV-TASK-04: terminal states accept no state-changing command'
+- 'INV-TASK-05: from ASSIGNED onwards the assignee was eligible and cleared at assignment
+  time (recorded with the eligibility result)'
+- 'INV-TASK-06: while suspended = true, every state-changing command except UNSUSPEND
+  and CANCEL is rejected with TASK_SUSPENDED (orthogonal flag, not a state)'
+- 'INV-TASK-07: approver ≠ assignee under default policy (REQ-OPS-009)'
+- 'INV-TASK-08: the dependency graph is acyclic'
+- 'INV-TASK-09: completion criteria are frozen from ASSIGNED onwards'
+entities:
+- 'CompletionCriterion (kind: attestation | result_item | evidence_count ≥ n | measurement_recorded
+  | checklist)'
+- ResultItem
+- Dependency (predecessor URN)
+- EligibilitySnapshot
+requirements:
+- REQ-OPS-006
+- REQ-OPS-007
+- REQ-OPS-008
+- REQ-OPS-009
+- REQ-OPS-010
+- REQ-OPS-011
+- REQ-OPS-012
+- REQ-OFF-001
+notes: 'SUSPENDED from V6§13.5 is modelled as an orthogonal flag (INV-TASK-06): resuming
+  returns to the same state without storing a ''prior_state'' (CR-46).'
+personal_data: false
+reachability: PASS
+transitions:
+- from: ∅
+  command: CMD-TASK-CREATE
+  to: DRAFT
+  guard: task type ACTIVE (version pinned); plan_ref (operations, collection or contingency
+    plan — CR-59, CR-61) or incident_ref (direct response task under an Incident,
+    SLC-17 — CR-61), or ad_hoc_reason + accountable owner (REQ-OPS-010); label ≤ creator
+    clearance
+  event: EVT-TASK-CREATED
+  guard_error: TASK_INVALID
+- from:
+  - DRAFT
+  - READY
+  command: CMD-TASK-EDIT
+  to: '='
+  guard: creator or Planner; completion criteria editable only in DRAFT/READY; new
+    version
+  event: EVT-TASK-EDITED
+  guard_error: TASK_INVALID
+- from:
+  - DRAFT
+  command: CMD-TASK-MARK-READY
+  to: READY
+  guard: title, ≥ 1 completion criterion, owner; dependencies reference existing tasks
+    without cycle
+  event: EVT-TASK-READIED
+  guard_error: TASK_NOT_READY
+- from:
+  - READY
+  command: CMD-TASK-ASSIGN
+  to: ASSIGNED
+  guard: assignee ACTIVE user; assignee clearance ≥ task label; EligibilityCheck(assignee,
+    task type, now) ∈ {ELIGIBLE, CONDITIONALLY_ELIGIBLE with condition met} (REQ-OPS-007);
+    actor authorized in scope
+  event: EVT-TASK-ASSIGNED
+  guard_error: ASSIGNEE_NOT_ELIGIBLE
+- from:
+  - ASSIGNED
+  - ACCEPTED
+  - IN_PROGRESS
+  - BLOCKED
+  command: CMD-TASK-REASSIGN
+  to: ASSIGNED
+  guard: same checks as assign for the new assignee; reason; previous assignee notified
+  event: EVT-TASK-REASSIGNED
+  guard_error: ASSIGNEE_NOT_ELIGIBLE
+- from:
+  - ASSIGNED
+  command: CMD-TASK-ACCEPT
+  to: ACCEPTED
+  guard: actor = assignee
+  event: EVT-TASK-ACCEPTED
+  guard_error: NOT_ASSIGNEE
+- from:
+  - ASSIGNED
+  command: CMD-TASK-DECLINE
+  to: READY
+  guard: actor = assignee; reason
+  event: EVT-TASK-DECLINED
+  guard_error: REASON_REQUIRED
+- from:
+  - ACCEPTED
+  command: CMD-TASK-START
+  to: IN_PROGRESS
+  guard: actor = assignee; all predecessor tasks COMPLETED or CLOSED
+  event: EVT-TASK-STARTED
+  guard_error: DEPENDENCIES_NOT_MET
+- from:
+  - IN_PROGRESS
+  command: CMD-TASK-BLOCK
+  to: BLOCKED
+  guard: actor = assignee; blocking reason
+  event: EVT-TASK-BLOCKED
+  guard_error: REASON_REQUIRED
+- from:
+  - BLOCKED
+  command: CMD-TASK-RESUME
+  to: IN_PROGRESS
+  guard: actor = assignee; resolution note
+  event: EVT-TASK-RESUMED
+  guard_error: REASON_REQUIRED
+- from:
+  - IN_PROGRESS
+  - BLOCKED
+  command: CMD-TASK-ADD-RESULT-ITEM
+  to: '='
+  guard: actor = assignee; item = note | evidence URN | observation URN | measurement
+  event: EVT-TASK-RESULT-ITEM-ADDED
+  guard_error: RESULT_ITEM_INVALID
+- from:
+  - IN_PROGRESS
+  command: CMD-TASK-SUBMIT
+  to: SUBMITTED
+  guard: actor = assignee; result has ≥ 1 item
+  event: EVT-TASK-SUBMITTED
+  guard_error: RESULT_REQUIRED
+- from:
+  - SUBMITTED
+  command: CMD-TASK-START-REVIEW
+  to: UNDER_REVIEW
+  guard: actor has review permission in scope; actor ≠ assignee
+  event: EVT-TASK-REVIEW-STARTED
+  guard_error: SEGREGATION_OF_DUTIES
+- from:
+  - UNDER_REVIEW
+  command: CMD-TASK-RETURN
+  to: IN_PROGRESS
+  guard: reviewer; rework reason
+  event: EVT-TASK-RETURNED-FOR-REWORK
+  guard_error: REASON_REQUIRED
+- from:
+  - UNDER_REVIEW
+  command: CMD-TASK-APPROVE
+  to: APPROVED
+  guard: reviewer ≠ assignee unless tenant policy disables SoD (REQ-OPS-009)
+  event: EVT-TASK-APPROVED
+  guard_error: SEGREGATION_OF_DUTIES
+- from:
+  - UNDER_REVIEW
+  command: CMD-TASK-REJECT
+  to: REJECTED
+  guard: reviewer; reason; follow-up task may be created linked by follow_up_of (OQ-033)
+  event: EVT-TASK-REJECTED
+  guard_error: REASON_REQUIRED
+- from:
+  - APPROVED
+  command: SYS:all completion criteria satisfied
+  to: COMPLETED
+  guard: system-checkable criteria evaluated at approval and whenever result evidence
+    changes (BRL-006)
+  event: EVT-TASK-COMPLETED
+  guard_error: null
+- from:
+  - APPROVED
+  command: CMD-TASK-COMPLETE
+  to: COMPLETED
+  guard: attestation-type criteria confirmed by an authorized actor; all criteria
+    satisfied (BRL-006)
+  event: EVT-TASK-COMPLETED
+  guard_error: TASK_CRITERIA_NOT_MET
+- from:
+  - COMPLETED
+  command: CMD-TASK-CLOSE
+  to: CLOSED
+  guard: no open follow-up tasks
+  event: EVT-TASK-CLOSED
+  guard_error: OPEN_FOLLOW_UPS
+- from:
+  - COMPLETED
+  command: SYS:follow-up window (7 d) elapsed without open follow-ups
+  to: CLOSED
+  guard: scheduler
+  event: EVT-TASK-CLOSED
+  guard_error: null
+- from:
+  - DRAFT
+  - READY
+  - ASSIGNED
+  - ACCEPTED
+  - IN_PROGRESS
+  - BLOCKED
+  - SUBMITTED
+  - UNDER_REVIEW
+  - APPROVED
+  command: CMD-TASK-CANCEL
+  to: CANCELLED
+  guard: actor has cancel authority in scope; reason
+  event: EVT-TASK-CANCELLED
+  guard_error: REASON_REQUIRED
+- from:
+  - DRAFT
+  - READY
+  - ASSIGNED
+  - ACCEPTED
+  - IN_PROGRESS
+  - BLOCKED
+  - SUBMITTED
+  - UNDER_REVIEW
+  command: SYS:due passed and task type expires_on_due
+  to: EXPIRED
+  guard: scheduler; only when the task type declares expires_on_due = true (OQ-032)
+  event: EVT-TASK-EXPIRED
+  guard_error: null
+- from:
+  - DRAFT
+  - READY
+  - ASSIGNED
+  - ACCEPTED
+  - IN_PROGRESS
+  - BLOCKED
+  - SUBMITTED
+  - UNDER_REVIEW
+  - APPROVED
+  command: SYS:plan version baselined without this task
+  to: SUPERSEDED
+  guard: SLC-08 trigger
+  event: EVT-TASK-SUPERSEDED
+  guard_error: null
+- from: '*NT'
+  command: CMD-TASK-ESCALATE
+  to: '='
+  guard: reason; notifies next authority level (REQ-OPS-012)
+  event: EVT-TASK-ESCALATED
+  guard_error: REASON_REQUIRED
+- from: '*NT'
+  command: SYS:due passed (escalation policy)
+  to: '='
+  guard: scheduler; at due and at due + grace from task type
+  event: EVT-TASK-ESCALATED
+  guard_error: null
+- from:
+  - DRAFT
+  - READY
+  - ASSIGNED
+  - ACCEPTED
+  - IN_PROGRESS
+  - BLOCKED
+  command: CMD-TASK-SET-DUE
+  to: '='
+  guard: Planner or owner; reason
+  event: EVT-TASK-DUE-CHANGED
+  guard_error: REASON_REQUIRED
+- from: '*NT'
+  command: CMD-TASK-SUSPEND
+  to: '='
+  guard: suspend authority; reason; sets suspended = true
+  event: EVT-TASK-SUSPENDED
+  guard_error: REASON_REQUIRED
+- from: '*NT'
+  command: CMD-TASK-UNSUSPEND
+  to: '='
+  guard: suspend authority; suspended = true
+  event: EVT-TASK-UNSUSPENDED
+  guard_error: NOT_SUSPENDED
+- from: '*NT'
+  command: CMD-TASK-RECLASSIFY
+  to: '='
+  guard: authority per tenant policy; assignee clearance ≥ new label, else reassignment
+    required first
+  event: EVT-TASK-RECLASSIFIED
+  guard_error: CLASSIFICATION_CHANGE_NOT_AUTHORIZED
+```
+
+</details>

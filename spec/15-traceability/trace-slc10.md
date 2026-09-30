@@ -1,0 +1,174 @@
+---
+id: TRACE-SLC10
+type: traceability-matrix
+title: Traceability — SLC-10 (generated)
+wave: W7
+slice: SLC-10
+status: GENERATED
+---
+
+# Traceability — SLC-10 (generated)
+
+## requirements
+
+_14 items_
+
+| requirement | design_elements | tests | status |
+|---|---|---|---|
+| REQ-AI-001 | AGG-AI-REQUEST, QRY-AI-USAGE, QRY-AIR-GET, SPEC-AI | TST-AI-REQUEST-SM, TST-SLC10-INVARIANTS | TRACED |
+| REQ-AI-002 | AGG-AI-REQUEST, QRY-AIR-CONTEXT, SPEC-AI | TST-AI-REQUEST-SM, TST-SLC10-INVARIANTS | TRACED |
+| REQ-AI-003 | AGG-AI-REQUEST, SPEC-AI | TST-AI-REQUEST-SM, TST-SLC10-INVARIANTS | TRACED |
+| REQ-AI-004 | AGG-AI-REQUEST, SPEC-AI | TST-AI-REQUEST-SM, TST-SLC10-INVARIANTS | TRACED |
+| REQ-AI-005 | AGG-AI-RESULT, QRY-AIRS-QUEUE, SPEC-AI | TST-AI-RESULT-SM, TST-SLC10-INVARIANTS | TRACED |
+| REQ-AI-006 | AGG-AI-RESULT, SPEC-AI | TST-AI-RESULT-SM, TST-SLC10-INVARIANTS | TRACED |
+| REQ-AI-007 | AGG-AI-REQUEST, SPEC-AI | TST-AI-REQUEST-SM, TST-SLC10-INVARIANTS | TRACED |
+| REQ-AI-008 | AGG-AI-REQUEST, AGG-AI-RESULT, AGG-AI-ROUTING, QRY-RTG-ACTIVE, SPEC-AI | TST-AI-REQUEST-SM, TST-AI-RESULT-SM, TST-AI-ROUTING-SM, TST-SLC10-INVARIANTS | TRACED |
+| REQ-AI-009 | AGG-MODEL-VERSION, QRY-MDL-LIST, SPEC-AI | TST-MODEL-VERSION-SM, TST-SLC10-INVARIANTS | TRACED |
+| REQ-AI-010 | AGG-EVAL-SUITE, AGG-MODEL-VERSION, SPEC-AI | TST-EVAL-SUITE-SM, TST-MODEL-VERSION-SM, TST-SLC10-INVARIANTS | TRACED |
+| REQ-AI-011 | AGG-AI-REQUEST, AGG-AI-ROUTING, SPEC-AI | TST-AI-REQUEST-SM, TST-AI-ROUTING-SM, TST-SLC10-INVARIANTS | TRACED |
+| REQ-AI-012 | AGG-AI-REQUEST, AGG-AI-TOOL, SPEC-AI | TST-AI-REQUEST-SM, TST-AI-TOOL-SM, TST-SLC10-INVARIANTS | TRACED |
+| REQ-AI-013 | AGG-AI-TOOL, QRY-TOL-LIST, SPEC-AI | TST-AI-TOOL-SM, TST-SLC10-INVARIANTS | TRACED |
+| REQ-AI-014 | SPEC-AI | TST-SLC10-INVARIANTS | TRACED |
+
+## gaps
+
+_empty_
+
+---
+
+<details>
+<summary>Machine-readable data (YAML) — المصدر المعتمد لهذا الملف</summary>
+
+```yaml
+requirements:
+- requirement: REQ-AI-001
+  design_elements:
+  - AGG-AI-REQUEST
+  - QRY-AI-USAGE
+  - QRY-AIR-GET
+  - SPEC-AI
+  tests:
+  - TST-AI-REQUEST-SM
+  - TST-SLC10-INVARIANTS
+  status: TRACED
+- requirement: REQ-AI-002
+  design_elements:
+  - AGG-AI-REQUEST
+  - QRY-AIR-CONTEXT
+  - SPEC-AI
+  tests:
+  - TST-AI-REQUEST-SM
+  - TST-SLC10-INVARIANTS
+  status: TRACED
+- requirement: REQ-AI-003
+  design_elements:
+  - AGG-AI-REQUEST
+  - SPEC-AI
+  tests:
+  - TST-AI-REQUEST-SM
+  - TST-SLC10-INVARIANTS
+  status: TRACED
+- requirement: REQ-AI-004
+  design_elements:
+  - AGG-AI-REQUEST
+  - SPEC-AI
+  tests:
+  - TST-AI-REQUEST-SM
+  - TST-SLC10-INVARIANTS
+  status: TRACED
+- requirement: REQ-AI-005
+  design_elements:
+  - AGG-AI-RESULT
+  - QRY-AIRS-QUEUE
+  - SPEC-AI
+  tests:
+  - TST-AI-RESULT-SM
+  - TST-SLC10-INVARIANTS
+  status: TRACED
+- requirement: REQ-AI-006
+  design_elements:
+  - AGG-AI-RESULT
+  - SPEC-AI
+  tests:
+  - TST-AI-RESULT-SM
+  - TST-SLC10-INVARIANTS
+  status: TRACED
+- requirement: REQ-AI-007
+  design_elements:
+  - AGG-AI-REQUEST
+  - SPEC-AI
+  tests:
+  - TST-AI-REQUEST-SM
+  - TST-SLC10-INVARIANTS
+  status: TRACED
+- requirement: REQ-AI-008
+  design_elements:
+  - AGG-AI-REQUEST
+  - AGG-AI-RESULT
+  - AGG-AI-ROUTING
+  - QRY-RTG-ACTIVE
+  - SPEC-AI
+  tests:
+  - TST-AI-REQUEST-SM
+  - TST-AI-RESULT-SM
+  - TST-AI-ROUTING-SM
+  - TST-SLC10-INVARIANTS
+  status: TRACED
+- requirement: REQ-AI-009
+  design_elements:
+  - AGG-MODEL-VERSION
+  - QRY-MDL-LIST
+  - SPEC-AI
+  tests:
+  - TST-MODEL-VERSION-SM
+  - TST-SLC10-INVARIANTS
+  status: TRACED
+- requirement: REQ-AI-010
+  design_elements:
+  - AGG-EVAL-SUITE
+  - AGG-MODEL-VERSION
+  - SPEC-AI
+  tests:
+  - TST-EVAL-SUITE-SM
+  - TST-MODEL-VERSION-SM
+  - TST-SLC10-INVARIANTS
+  status: TRACED
+- requirement: REQ-AI-011
+  design_elements:
+  - AGG-AI-REQUEST
+  - AGG-AI-ROUTING
+  - SPEC-AI
+  tests:
+  - TST-AI-REQUEST-SM
+  - TST-AI-ROUTING-SM
+  - TST-SLC10-INVARIANTS
+  status: TRACED
+- requirement: REQ-AI-012
+  design_elements:
+  - AGG-AI-REQUEST
+  - AGG-AI-TOOL
+  - SPEC-AI
+  tests:
+  - TST-AI-REQUEST-SM
+  - TST-AI-TOOL-SM
+  - TST-SLC10-INVARIANTS
+  status: TRACED
+- requirement: REQ-AI-013
+  design_elements:
+  - AGG-AI-TOOL
+  - QRY-TOL-LIST
+  - SPEC-AI
+  tests:
+  - TST-AI-TOOL-SM
+  - TST-SLC10-INVARIANTS
+  status: TRACED
+- requirement: REQ-AI-014
+  design_elements:
+  - SPEC-AI
+  tests:
+  - TST-SLC10-INVARIANTS
+  status: TRACED
+gaps: []
+```
+
+</details>

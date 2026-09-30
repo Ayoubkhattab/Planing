@@ -1,0 +1,123 @@
+---
+id: TRACE-SLC06
+type: traceability-matrix
+title: Traceability — SLC-06 (generated)
+wave: W7
+slice: SLC-06
+status: GENERATED
+---
+
+# Traceability — SLC-06 (generated)
+
+## requirements
+
+_9 items_
+
+| requirement | design_elements | tests | status |
+|---|---|---|---|
+| REQ-COM-001 | AGG-NOTIFICATION, AGG-SUBSCRIPTION, QRY-NTF-INBOX, SPEC-SITUATION | TST-NOTIFICATION-SM, TST-SLC06-INVARIANTS, TST-SUBSCRIPTION-SM | TRACED |
+| REQ-COM-002 | AGG-NOTIFICATION, SPEC-SITUATION | TST-NOTIFICATION-SM, TST-SLC06-INVARIANTS | TRACED |
+| REQ-SIT-001 | AGG-SITUATION, QRY-SIT-GET, QRY-SIT-LIST, SPEC-SITUATION | TST-SITUATION-SM, TST-SLC06-INVARIANTS | TRACED |
+| REQ-SIT-002 | AGG-SITUATION, QRY-SIT-CHANGES, SPEC-SITUATION | TST-SITUATION-SM, TST-SLC06-INVARIANTS | TRACED |
+| REQ-SIT-003 | AGG-SITUATION, QRY-SIT-COP, SPEC-SITUATION | TST-SITUATION-SM, TST-SLC06-INVARIANTS | TRACED |
+| REQ-SIT-004 | AGG-ALERT, AGG-ALERT-RULE, SPEC-SITUATION | TST-ALERT-RULE-SM, TST-ALERT-SM, TST-SLC06-INVARIANTS | TRACED |
+| REQ-SIT-005 | AGG-ALERT, QRY-ALR-LIST | TST-ALERT-SM, TST-SLC06-INVARIANTS | TRACED |
+| REQ-SIT-006 | AGG-ALERT, SPEC-SITUATION | TST-ALERT-SM, TST-SLC06-INVARIANTS | TRACED |
+| REQ-SIT-007 | QRY-BASE-TILE, QRY-SIT-TILE, SPEC-SITUATION | TST-SLC06-INVARIANTS | TRACED |
+
+## gaps
+
+_empty_
+
+---
+
+<details>
+<summary>Machine-readable data (YAML) — المصدر المعتمد لهذا الملف</summary>
+
+```yaml
+requirements:
+- requirement: REQ-COM-001
+  design_elements:
+  - AGG-NOTIFICATION
+  - AGG-SUBSCRIPTION
+  - QRY-NTF-INBOX
+  - SPEC-SITUATION
+  tests:
+  - TST-NOTIFICATION-SM
+  - TST-SLC06-INVARIANTS
+  - TST-SUBSCRIPTION-SM
+  status: TRACED
+- requirement: REQ-COM-002
+  design_elements:
+  - AGG-NOTIFICATION
+  - SPEC-SITUATION
+  tests:
+  - TST-NOTIFICATION-SM
+  - TST-SLC06-INVARIANTS
+  status: TRACED
+- requirement: REQ-SIT-001
+  design_elements:
+  - AGG-SITUATION
+  - QRY-SIT-GET
+  - QRY-SIT-LIST
+  - SPEC-SITUATION
+  tests:
+  - TST-SITUATION-SM
+  - TST-SLC06-INVARIANTS
+  status: TRACED
+- requirement: REQ-SIT-002
+  design_elements:
+  - AGG-SITUATION
+  - QRY-SIT-CHANGES
+  - SPEC-SITUATION
+  tests:
+  - TST-SITUATION-SM
+  - TST-SLC06-INVARIANTS
+  status: TRACED
+- requirement: REQ-SIT-003
+  design_elements:
+  - AGG-SITUATION
+  - QRY-SIT-COP
+  - SPEC-SITUATION
+  tests:
+  - TST-SITUATION-SM
+  - TST-SLC06-INVARIANTS
+  status: TRACED
+- requirement: REQ-SIT-004
+  design_elements:
+  - AGG-ALERT
+  - AGG-ALERT-RULE
+  - SPEC-SITUATION
+  tests:
+  - TST-ALERT-RULE-SM
+  - TST-ALERT-SM
+  - TST-SLC06-INVARIANTS
+  status: TRACED
+- requirement: REQ-SIT-005
+  design_elements:
+  - AGG-ALERT
+  - QRY-ALR-LIST
+  tests:
+  - TST-ALERT-SM
+  - TST-SLC06-INVARIANTS
+  status: TRACED
+- requirement: REQ-SIT-006
+  design_elements:
+  - AGG-ALERT
+  - SPEC-SITUATION
+  tests:
+  - TST-ALERT-SM
+  - TST-SLC06-INVARIANTS
+  status: TRACED
+- requirement: REQ-SIT-007
+  design_elements:
+  - QRY-BASE-TILE
+  - QRY-SIT-TILE
+  - SPEC-SITUATION
+  tests:
+  - TST-SLC06-INVARIANTS
+  status: TRACED
+gaps: []
+```
+
+</details>

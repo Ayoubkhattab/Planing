@@ -1,0 +1,96 @@
+---
+id: TRACE-SLC11
+type: traceability-matrix
+title: Traceability — SLC-11 (generated)
+wave: W7
+slice: SLC-11
+status: GENERATED
+---
+
+# Traceability — SLC-11 (generated)
+
+## requirements
+
+_6 items_
+
+| requirement | design_elements | tests | status |
+|---|---|---|---|
+| REQ-OFF-001 | AGG-SYNC-SESSION, QRY-SYN-DELTA, SPEC-FIELD-SYNC | TST-SLC11-INVARIANTS, TST-SYNC-SESSION-SM | TRACED |
+| REQ-OFF-002 | AGG-PRELOAD-PACKAGE, QRY-PKG-GET, SPEC-FIELD-SYNC | TST-PRELOAD-PACKAGE-SM, TST-SLC11-INVARIANTS | TRACED |
+| REQ-OFF-003 | AGG-SYNC-SESSION, SPEC-FIELD-SYNC | TST-SLC11-INVARIANTS, TST-SYNC-SESSION-SM | TRACED |
+| REQ-OFF-004 | AGG-SYNC-CONFLICT, AGG-SYNC-SESSION, QRY-SCF-GET, QRY-SCF-LIST, SPEC-FIELD-SYNC | TST-SLC11-INVARIANTS, TST-SYNC-CONFLICT-SM, TST-SYNC-SESSION-SM | TRACED |
+| REQ-OFF-005 | AGG-DEVICE, AGG-PRELOAD-PACKAGE, QRY-DEV-LIST, SPEC-FIELD-SYNC | TST-DEVICE-SM, TST-PRELOAD-PACKAGE-SM, TST-SLC11-INVARIANTS | TRACED |
+| REQ-OFF-006 | AGG-SYNC-SESSION, SPEC-FIELD-SYNC | TST-SLC11-INVARIANTS, TST-SYNC-SESSION-SM | TRACED |
+
+## gaps
+
+_empty_
+
+---
+
+<details>
+<summary>Machine-readable data (YAML) — المصدر المعتمد لهذا الملف</summary>
+
+```yaml
+requirements:
+- requirement: REQ-OFF-001
+  design_elements:
+  - AGG-SYNC-SESSION
+  - QRY-SYN-DELTA
+  - SPEC-FIELD-SYNC
+  tests:
+  - TST-SLC11-INVARIANTS
+  - TST-SYNC-SESSION-SM
+  status: TRACED
+- requirement: REQ-OFF-002
+  design_elements:
+  - AGG-PRELOAD-PACKAGE
+  - QRY-PKG-GET
+  - SPEC-FIELD-SYNC
+  tests:
+  - TST-PRELOAD-PACKAGE-SM
+  - TST-SLC11-INVARIANTS
+  status: TRACED
+- requirement: REQ-OFF-003
+  design_elements:
+  - AGG-SYNC-SESSION
+  - SPEC-FIELD-SYNC
+  tests:
+  - TST-SLC11-INVARIANTS
+  - TST-SYNC-SESSION-SM
+  status: TRACED
+- requirement: REQ-OFF-004
+  design_elements:
+  - AGG-SYNC-CONFLICT
+  - AGG-SYNC-SESSION
+  - QRY-SCF-GET
+  - QRY-SCF-LIST
+  - SPEC-FIELD-SYNC
+  tests:
+  - TST-SLC11-INVARIANTS
+  - TST-SYNC-CONFLICT-SM
+  - TST-SYNC-SESSION-SM
+  status: TRACED
+- requirement: REQ-OFF-005
+  design_elements:
+  - AGG-DEVICE
+  - AGG-PRELOAD-PACKAGE
+  - QRY-DEV-LIST
+  - SPEC-FIELD-SYNC
+  tests:
+  - TST-DEVICE-SM
+  - TST-PRELOAD-PACKAGE-SM
+  - TST-SLC11-INVARIANTS
+  status: TRACED
+- requirement: REQ-OFF-006
+  design_elements:
+  - AGG-SYNC-SESSION
+  - SPEC-FIELD-SYNC
+  tests:
+  - TST-SLC11-INVARIANTS
+  - TST-SYNC-SESSION-SM
+  status: TRACED
+gaps: []
+```
+
+</details>

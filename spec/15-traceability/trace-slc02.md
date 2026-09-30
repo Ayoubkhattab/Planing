@@ -1,0 +1,275 @@
+---
+id: TRACE-SLC02
+type: traceability-matrix
+title: Traceability — SLC-02 (generated)
+wave: W7
+slice: SLC-02
+status: GENERATED
+---
+
+# Traceability — SLC-02 (generated)
+
+## requirements
+
+_24 items_
+
+| requirement | design_elements | tests | status |
+|---|---|---|---|
+| REQ-GOV-008 | AGG-ATTACHMENT | TST-ATTACHMENT-SM | TRACED |
+| REQ-INF-001 | AGG-SOURCE, QRY-SRC-GET | TST-SLC02-INVARIANTS, TST-SOURCE-SM | TRACED |
+| REQ-INF-002 | AGG-OBSERVATION, QRY-OBS-GET, QRY-OBS-LIST | TST-OBSERVATION-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-003 | AGG-ATTACHMENT, AGG-EVIDENCE | TST-ATTACHMENT-SM, TST-EVIDENCE-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-004 | AGG-ATTACHMENT, AGG-EVIDENCE, QRY-ATT-DOWNLOAD, QRY-EVD-GET | TST-ATTACHMENT-SM, TST-EVIDENCE-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-005 | AGG-ADAPTER, AGG-IMPORT-BATCH, QRY-ADP-GET | TST-ADAPTER-SM, TST-IMPORT-BATCH-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-006 | AGG-IMPORT-BATCH, QRY-IMP-GET | TST-IMPORT-BATCH-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-007 | AGG-IMPORT-BATCH | TST-IMPORT-BATCH-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-008 | AGG-ADAPTER, AGG-IMPORT-BATCH | TST-ADAPTER-SM, TST-IMPORT-BATCH-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-009 | AGG-ADAPTER, AGG-IMPORT-BATCH | TST-ADAPTER-SM, TST-IMPORT-BATCH-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-020 | AGG-ENTITY, AGG-REALWORLD-EVENT, QRY-ENT-LIST, QRY-RWE-GET | TST-ENTITY-SM, TST-REALWORLD-EVENT-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-021 | AGG-CLAIM, AGG-ENTITY, AGG-EVIDENCE-LINK, QRY-CLM-GET | TST-CLAIM-SM, TST-ENTITY-SM, TST-EVIDENCE-LINK-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-022 | AGG-CLAIM, QRY-ENT-CLAIMS | TST-CLAIM-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-023 | LIB-CLAIMS-KERNEL, QRY-ENT-RESOLVED | TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-024 | AGG-CLAIM | TST-CLAIM-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-026 | AGG-CLAIM, LIB-CLAIMS-KERNEL | TST-CLAIM-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-027 | AGG-RELATIONSHIP, QRY-REL-LIST | TST-RELATIONSHIP-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-028 | AGG-OBSERVATION | TST-OBSERVATION-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-029 | LIB-CLAIMS-KERNEL | TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-030 | LIB-CLAIMS-KERNEL, QRY-ENT-POSITIONS | TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-031 | LIB-CLAIMS-KERNEL, LDM name_forms | TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-035 | LIB-CLAIMS-KERNEL, QRY-LIN-TRACE | TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-036 | AGG-ENTITY, AGG-EXTERNAL-ID, QRY-EXT-RESOLVE | TST-ENTITY-SM, TST-EXTERNAL-ID-SM, TST-SLC02-INVARIANTS | TRACED |
+| REQ-INF-037 | AGG-CLAIM | TST-CLAIM-SM, TST-SLC02-INVARIANTS | TRACED |
+
+## information_requirements_in_other_slices
+
+_4 items_
+
+| requirement | slice |
+|---|---|
+| REQ-INF-025 | SLC-04 (conflict) |
+| REQ-INF-032 | SLC-04 |
+| REQ-INF-033 | SLC-04 |
+| REQ-INF-034 | SLC-04 |
+
+## gaps
+
+_empty_
+
+---
+
+<details>
+<summary>Machine-readable data (YAML) — المصدر المعتمد لهذا الملف</summary>
+
+```yaml
+requirements:
+- requirement: REQ-GOV-008
+  design_elements:
+  - AGG-ATTACHMENT
+  tests:
+  - TST-ATTACHMENT-SM
+  status: TRACED
+- requirement: REQ-INF-001
+  design_elements:
+  - AGG-SOURCE
+  - QRY-SRC-GET
+  tests:
+  - TST-SLC02-INVARIANTS
+  - TST-SOURCE-SM
+  status: TRACED
+- requirement: REQ-INF-002
+  design_elements:
+  - AGG-OBSERVATION
+  - QRY-OBS-GET
+  - QRY-OBS-LIST
+  tests:
+  - TST-OBSERVATION-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-003
+  design_elements:
+  - AGG-ATTACHMENT
+  - AGG-EVIDENCE
+  tests:
+  - TST-ATTACHMENT-SM
+  - TST-EVIDENCE-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-004
+  design_elements:
+  - AGG-ATTACHMENT
+  - AGG-EVIDENCE
+  - QRY-ATT-DOWNLOAD
+  - QRY-EVD-GET
+  tests:
+  - TST-ATTACHMENT-SM
+  - TST-EVIDENCE-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-005
+  design_elements:
+  - AGG-ADAPTER
+  - AGG-IMPORT-BATCH
+  - QRY-ADP-GET
+  tests:
+  - TST-ADAPTER-SM
+  - TST-IMPORT-BATCH-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-006
+  design_elements:
+  - AGG-IMPORT-BATCH
+  - QRY-IMP-GET
+  tests:
+  - TST-IMPORT-BATCH-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-007
+  design_elements:
+  - AGG-IMPORT-BATCH
+  tests:
+  - TST-IMPORT-BATCH-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-008
+  design_elements:
+  - AGG-ADAPTER
+  - AGG-IMPORT-BATCH
+  tests:
+  - TST-ADAPTER-SM
+  - TST-IMPORT-BATCH-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-009
+  design_elements:
+  - AGG-ADAPTER
+  - AGG-IMPORT-BATCH
+  tests:
+  - TST-ADAPTER-SM
+  - TST-IMPORT-BATCH-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-020
+  design_elements:
+  - AGG-ENTITY
+  - AGG-REALWORLD-EVENT
+  - QRY-ENT-LIST
+  - QRY-RWE-GET
+  tests:
+  - TST-ENTITY-SM
+  - TST-REALWORLD-EVENT-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-021
+  design_elements:
+  - AGG-CLAIM
+  - AGG-ENTITY
+  - AGG-EVIDENCE-LINK
+  - QRY-CLM-GET
+  tests:
+  - TST-CLAIM-SM
+  - TST-ENTITY-SM
+  - TST-EVIDENCE-LINK-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-022
+  design_elements:
+  - AGG-CLAIM
+  - QRY-ENT-CLAIMS
+  tests:
+  - TST-CLAIM-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-023
+  design_elements:
+  - LIB-CLAIMS-KERNEL
+  - QRY-ENT-RESOLVED
+  tests:
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-024
+  design_elements:
+  - AGG-CLAIM
+  tests:
+  - TST-CLAIM-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-026
+  design_elements:
+  - AGG-CLAIM
+  - LIB-CLAIMS-KERNEL
+  tests:
+  - TST-CLAIM-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-027
+  design_elements:
+  - AGG-RELATIONSHIP
+  - QRY-REL-LIST
+  tests:
+  - TST-RELATIONSHIP-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-028
+  design_elements:
+  - AGG-OBSERVATION
+  tests:
+  - TST-OBSERVATION-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-029
+  design_elements:
+  - LIB-CLAIMS-KERNEL
+  tests:
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-030
+  design_elements:
+  - LIB-CLAIMS-KERNEL
+  - QRY-ENT-POSITIONS
+  tests:
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-031
+  design_elements:
+  - LIB-CLAIMS-KERNEL
+  - LDM name_forms
+  tests:
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-035
+  design_elements:
+  - LIB-CLAIMS-KERNEL
+  - QRY-LIN-TRACE
+  tests:
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-036
+  design_elements:
+  - AGG-ENTITY
+  - AGG-EXTERNAL-ID
+  - QRY-EXT-RESOLVE
+  tests:
+  - TST-ENTITY-SM
+  - TST-EXTERNAL-ID-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+- requirement: REQ-INF-037
+  design_elements:
+  - AGG-CLAIM
+  tests:
+  - TST-CLAIM-SM
+  - TST-SLC02-INVARIANTS
+  status: TRACED
+information_requirements_in_other_slices:
+- requirement: REQ-INF-025
+  slice: SLC-04 (conflict)
+- requirement: REQ-INF-032
+  slice: SLC-04
+- requirement: REQ-INF-033
+  slice: SLC-04
+- requirement: REQ-INF-034
+  slice: SLC-04
+gaps: []
+```
+
+</details>

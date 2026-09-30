@@ -1,0 +1,138 @@
+---
+id: TRACE-SLC08
+type: traceability-matrix
+title: Traceability — SLC-08 (generated)
+wave: W7
+slice: SLC-08
+status: GENERATED
+---
+
+# Traceability — SLC-08 (generated)
+
+## requirements
+
+_11 items_
+
+| requirement | design_elements | tests | status |
+|---|---|---|---|
+| REQ-DEC-001 | AGG-DECISION-REQUEST, QRY-DRQ-GET, QRY-DRQ-LIST | TST-DECISION-REQUEST-SM, TST-SLC08-INVARIANTS | TRACED |
+| REQ-DEC-002 | AGG-DECISION, SPEC-PLAN | TST-DECISION-SM, TST-SLC08-INVARIANTS | TRACED |
+| REQ-DEC-003 | AGG-DECISION, QRY-DEC-BASIS, QRY-DEC-GET, SPEC-PLAN | TST-DECISION-SM, TST-SLC08-INVARIANTS | TRACED |
+| REQ-DEC-004 | AGG-DECISION | TST-DECISION-SM, TST-SLC08-INVARIANTS | TRACED |
+| REQ-OPS-001 | AGG-PLAN, AGG-PLAN-VERSION, QRY-PLN-GET | TST-PLAN-SM, TST-PLAN-VERSION-SM, TST-SLC08-INVARIANTS | TRACED |
+| REQ-OPS-002 | AGG-PLAN | TST-PLAN-SM, TST-SLC08-INVARIANTS | TRACED |
+| REQ-OPS-003 | AGG-PLAN, AGG-PLAN-VERSION, QRY-PLV-LIST | TST-PLAN-SM, TST-PLAN-VERSION-SM, TST-SLC08-INVARIANTS | TRACED |
+| REQ-OPS-004 | AGG-PLAN-VERSION, QRY-PLV-DIFF, SPEC-PLAN | TST-PLAN-VERSION-SM, TST-SLC08-INVARIANTS | TRACED |
+| REQ-OPS-005 | AGG-PLAN-VERSION | TST-PLAN-VERSION-SM, TST-SLC08-INVARIANTS | TRACED |
+| REQ-OPS-013 | AGG-OUTCOME-TRACKER, QRY-OUT-SERIES, QRY-PLN-PROGRESS, SPEC-PLAN | TST-OUTCOME-TRACKER-SM, TST-SLC08-INVARIANTS | TRACED |
+| REQ-OPS-014 | AGG-PLAN-VERSION | TST-PLAN-VERSION-SM, TST-SLC08-INVARIANTS | TRACED |
+
+## gaps
+
+_empty_
+
+---
+
+<details>
+<summary>Machine-readable data (YAML) — المصدر المعتمد لهذا الملف</summary>
+
+```yaml
+requirements:
+- requirement: REQ-DEC-001
+  design_elements:
+  - AGG-DECISION-REQUEST
+  - QRY-DRQ-GET
+  - QRY-DRQ-LIST
+  tests:
+  - TST-DECISION-REQUEST-SM
+  - TST-SLC08-INVARIANTS
+  status: TRACED
+- requirement: REQ-DEC-002
+  design_elements:
+  - AGG-DECISION
+  - SPEC-PLAN
+  tests:
+  - TST-DECISION-SM
+  - TST-SLC08-INVARIANTS
+  status: TRACED
+- requirement: REQ-DEC-003
+  design_elements:
+  - AGG-DECISION
+  - QRY-DEC-BASIS
+  - QRY-DEC-GET
+  - SPEC-PLAN
+  tests:
+  - TST-DECISION-SM
+  - TST-SLC08-INVARIANTS
+  status: TRACED
+- requirement: REQ-DEC-004
+  design_elements:
+  - AGG-DECISION
+  tests:
+  - TST-DECISION-SM
+  - TST-SLC08-INVARIANTS
+  status: TRACED
+- requirement: REQ-OPS-001
+  design_elements:
+  - AGG-PLAN
+  - AGG-PLAN-VERSION
+  - QRY-PLN-GET
+  tests:
+  - TST-PLAN-SM
+  - TST-PLAN-VERSION-SM
+  - TST-SLC08-INVARIANTS
+  status: TRACED
+- requirement: REQ-OPS-002
+  design_elements:
+  - AGG-PLAN
+  tests:
+  - TST-PLAN-SM
+  - TST-SLC08-INVARIANTS
+  status: TRACED
+- requirement: REQ-OPS-003
+  design_elements:
+  - AGG-PLAN
+  - AGG-PLAN-VERSION
+  - QRY-PLV-LIST
+  tests:
+  - TST-PLAN-SM
+  - TST-PLAN-VERSION-SM
+  - TST-SLC08-INVARIANTS
+  status: TRACED
+- requirement: REQ-OPS-004
+  design_elements:
+  - AGG-PLAN-VERSION
+  - QRY-PLV-DIFF
+  - SPEC-PLAN
+  tests:
+  - TST-PLAN-VERSION-SM
+  - TST-SLC08-INVARIANTS
+  status: TRACED
+- requirement: REQ-OPS-005
+  design_elements:
+  - AGG-PLAN-VERSION
+  tests:
+  - TST-PLAN-VERSION-SM
+  - TST-SLC08-INVARIANTS
+  status: TRACED
+- requirement: REQ-OPS-013
+  design_elements:
+  - AGG-OUTCOME-TRACKER
+  - QRY-OUT-SERIES
+  - QRY-PLN-PROGRESS
+  - SPEC-PLAN
+  tests:
+  - TST-OUTCOME-TRACKER-SM
+  - TST-SLC08-INVARIANTS
+  status: TRACED
+- requirement: REQ-OPS-014
+  design_elements:
+  - AGG-PLAN-VERSION
+  tests:
+  - TST-PLAN-VERSION-SM
+  - TST-SLC08-INVARIANTS
+  status: TRACED
+gaps: []
+```
+
+</details>

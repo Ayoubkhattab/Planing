@@ -33,13 +33,13 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 
 | # | الملف | المحتوى | النوع | المرحلة | الحالة |
 |---|---|---|---|---|---|
-| 01 | `01-system-overview.md` | المشكلة، الأهداف، النطاق، حدود النظام، الأنظمة الخارجية؛ مخطط السياق (DFD 0) | مكتوب | 3 | ⏳ |
-| 02 | `02-actors-roles.md` | 15 فاعلًا بشريًا + الفاعلون النظاميون؛ مصفوفة الفاعل × العملية | مولَّد + مكتوب | 3 | ⏳ |
-| 03 | `03-requirements-analysis.md` | 210 متطلبًا وظيفيًا حسب القدرة، 95 سيناريو جودة (74 منها في مصفوفة التحقق R1)، الأولويات | مولَّد + مكتوب | 3 | ⏳ |
-| 04 | `04-use-cases.md` | 101 حالة استخدام؛ مخطط حالات استخدام لكل BC | مولَّد + مكتوب | 3 | ⏳ |
+| 01 | [01-system-overview.md](01-system-overview.md) | المشكلة، الأهداف، النطاق، حدود النظام، الأنظمة الخارجية؛ مخطط السياق (DFD 0) | مكتوب | 3 | ✅ |
+| 02 | [02-actors-roles.md](02-actors-roles.md) | 15 فاعلًا أعمال + أدوار المنصة والسلطة والعلاقة بالمورد والفاعلون النظاميون؛ مصفوفات الفاعل × السياق × نوع العملية؛ حقوق القرار | مولَّد + مكتوب | 3 | ✅ |
+| 03 | [03-requirements-analysis.md](03-requirements-analysis.md) | 210 متطلبًا وظيفيًا حسب القدرة، 95 سيناريو جودة (91 منها في مصفوفة التحقق)، الأولويات، التغطية | مولَّد + مكتوب | 3 | ✅ |
+| 04 | [04-use-cases.md](04-use-cases.md) | 101 حالة استخدام بفاعلين ومسار رئيسي وبدائل (مشتقة حيث يتركها المصدر TBD)؛ مخطط حالات استخدام لكل BC | مولَّد + مكتوب | 3 | ✅ |
 | 05 | [05-user-stories/](05-user-stories/00-guide.md) | 739 قصة مستخدم: قصة لكل أمر (477) واستعلام (133) وقاعدة انتقال تلقائي (129 تغطي 175 انتقالًا)، مصنفة حسب نوع العملية وفئة المجال، مع ضوابط قبول لكل نوع | مولَّد + مكتوب | 2 | ✅ |
-| 06 | `06-process-models.md` | تيارات القيمة السبعة؛ Activity وSwimlane وDFD 1 | مكتوب | 3 | ⏳ |
-| 07 | `07-domain-model.md` | النموذج المفاهيمي؛ Class diagram وخريطة السياقات | مولَّد + مكتوب | 3 | ⏳ |
+| 06 | [06-process-models.md](06-process-models.md) | تيارات القيمة السبعة؛ Activity وSwimlane وDFD 1 | مكتوب | 3 | ✅ |
+| 07 | [07-domain-model.md](07-domain-model.md) | المجالات والسياقات، خريطة السياقات والمراجع بينها، Class diagram لكل BC | مولَّد + مكتوب | 3 | ✅ |
 | 08 | [08-state-models.md](08-state-models.md) | 89 مخطط حالات | مولَّد + مكتوب | 2 | ✅ |
 | 09 | [09-business-rules.md](09-business-rules.md) | قواعد العمل، 302 ثابتًا عبر 89 Aggregate، قواعد التحقق، قواعد البيانات المرجعية، وموقع تنفيذ كل نوع | مولَّد + مكتوب | 2 | ✅ |
 
@@ -124,9 +124,9 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 | القبول والتحقق | `13-verification/` |
 | الفهرس والتحقق الآلي للمواصفات | `17-system-study/` |
 
-## 6. مشكلات في المصادر المعتمدة كشفتها المرحلة 2
+## 6. مشكلات في المصادر المعتمدة كشفتها الدراسة
 
-كشفتها المولِّدات والمراجعات المستقلة. لم تُصحَّح المصادر في هذه المرحلة؛ الملفات المولَّدة تعرضها كما هي وتعلّمها. كل بند يصبح CR في `00-governance/corrections.md` عند تصحيحه.
+كشفتها المولِّدات والمراجعات المستقلة (S-01..S-11 في المرحلة 2، وما بعدها في المرحلة 3). لم تُصحَّح المصادر بعد؛ الملفات المولَّدة تعرضها كما هي وتعلّمها. كل بند يصبح CR في `00-governance/corrections.md` عند تصحيحه.
 
 | # | المشكلة | المصدر | أين تظهر |
 |---|---|---|---|
@@ -141,4 +141,10 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 | S-09 | 6 أوامر معلَّمة `x-offline-capable` بينما `CommandEnvelope` الميداني يقبل 12 | `openapi-*.md`، `openapi-field-slc11.md` | `14-api-design.md` §7 |
 | S-10 | `QRY-QUAL-LIST` يعد «as of t» في الكتالوج بلا معامل زمني في العقد | `queries-slc03.md`، `openapi-readiness-slc03.md` | `us-bc05.md` |
 | S-11 | اسم schema مخزن الإسقاطات في PostgreSQL غير محدد | `06-data/logical-model/slc-05.md` | `16-database-schema.md` |
-
+| S-12 | أجهزة الاستشعار R2 في W1 (Q24) وSLC-16 وREQ-INT-002، لكنها في مخطط السياق C4 بخط متصل بلا علامة R2 | `12-solution/c4-context.md` | `01-system-overview.md` |
+| S-13 | إجراء تخفيف RSK-028 ما زال «لا تصميم لشرائح R3 قبل مراجعة Pilot» بينما SLC-17..19 مسجلة DESIGN_COMPLETE | `00-governance/registers/risks.md`، `01-business/release-3-scope.md` | `01-system-overview.md` |
+| S-14 | ترويسة `14-slices/slices.md` تقول 18 عنصرًا والملف فيه 21 | `14-slices/slices.md` | `01-system-overview.md` |
+| S-15 | الجزء غير R1 من SLC-11 بلا إصدار؛ وحقوق القرار لمجموعات أصحاب المصلحة UNKNOWN؛ و`contributing_requirements` للنتائج TBD (CR-30) | `system-definition.md`، `stakeholders.md`، `outcomes.md` | `01`، `02`، `03` |
+| S-16 | أدوار في السياسات ليست ضمن ACT-01..15 (Platform Operator، AI platform engineer، AI governance authority، integration engineer، Legal/Compliance authority، Privacy officer)، ودور «finance» غير معرَّف | `01-business/stakeholders.md`، `08-security/policies-slc*.md` | `02-actors-roles.md` |
+| S-17 | 51 حالة استخدام بلا فاعلين ولا مسار (TBD)، والباقي يحيل إلى الشريحة؛ 3 حالات بلا Aggregate (UC-087، UC-096، UC-163)؛ وAGG-EXTERNAL-ID بلا حالة استخدام | `02-requirements/use-cases.md` | `04-use-cases.md` (مشتقة **[Derived]**) |
+| S-18 | 4 سيناريوهات جودة بلا طريقة تحقق (QAS-LOG-001/002، QAS-TRX-001/002)؛ وترويسة مصفوفة التحقق تقول 74 وفيها 91 | `15-traceability/quality-verification-matrix.md` | `03-requirements-analysis.md` |

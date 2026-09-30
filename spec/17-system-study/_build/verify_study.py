@@ -400,6 +400,26 @@ def v8(sys_trans):
     for eid in evts:
         if f"| {eid} |" not in docs["15-event-design.md"]:
             gaps.append(("15", eid, "حدث غير مذكور"))
+    reqs, ucs = bad.load_requirements()
+    qas = bad.md_records((SPEC / "02-requirements" / "quality-scenarios.md").read_text(encoding="utf-8"), "QAS")
+    p3 = {n: (AD / n).read_text(encoding="utf-8") if (AD / n).exists() else "" for n in
+          ("02-actors-roles.md", "03-requirements-analysis.md", "04-use-cases.md", "07-domain-model.md")}
+    for uid in ucs:
+        if not re.search(rf"^##### {uid} — ", p3["04-use-cases.md"], re.M):
+            gaps.append(("04", uid, "حالة استخدام غير مذكورة"))
+    for rid in reqs:
+        if f"| {rid} |" not in p3["03-requirements-analysis.md"]:
+            gaps.append(("03", rid, "متطلب غير مذكور"))
+    for qid in qas:
+        if f"| {qid} |" not in p3["03-requirements-analysis.md"]:
+            gaps.append(("03", qid, "سيناريو جودة غير مذكور"))
+    for aid in aggs:
+        if f"| {aid} |" not in p3["07-domain-model.md"]:
+            gaps.append(("07", aid, "Aggregate غير مذكور"))
+    actor_lists = p3["02-actors-roles.md"].split("### 2.4")[-1]
+    for oid in list(cmds) + list(qrys):
+        if f"`{oid}`" not in actor_lists:
+            gaps.append(("02", oid, "عملية بلا فاعل"))
     broken = []
     for f in files:
         for target in re.findall(r"\]\((?!https?:|#)([^)#\s]+)", before[f]):
@@ -526,7 +546,8 @@ def main():
     L += ["", "## 9. V8 — دراسة التحليل والتصميم", "",
           "يعيد تشغيل `build_analysis_design.py` ويقارن ناتجه بالملفات (ثم يعيدها كما كانت)، ويتحقق من أن كل عنصر في "
           "المواصفات يظهر مرة واحدة في موضعه: قصة لكل أمر واستعلام وقاعدة `SYS:`، مخطط وقسم قواعد لكل Aggregate، "
-          "كل ثابت في قواعد العمل، كل عملية OpenAPI في تصميم الواجهات، كل حدث في تصميم الأحداث؛ وأن كل رابط نسبي يُحلّ. "
+          "كل ثابت في قواعد العمل، كل عملية OpenAPI في تصميم الواجهات، كل حدث في تصميم الأحداث، كل حالة استخدام ومتطلب وسيناريو جودة، "
+          "فاعل لكل أمر واستعلام، وكل Aggregate في النموذج المفاهيمي؛ وأن كل رابط نسبي يُحلّ. "
           "رسم مخططات Mermaid يُفحص بأداة منفصلة (mermaid-cli) لأنه يحتاج متصفحًا.", "",
           f"- التغطية: {ad['cmds']} أمرًا + {ad['qrys']} استعلامًا + {ad['sys_stories']} قاعدة `SYS:` (تغطي {ad['sys_trans']} انتقالًا) = "
           f"{ad['stories']} قصة؛ {ad['aggs']} Aggregate؛ {ad['invs']} ثابتًا؛ {ad['ops']} عملية؛ {ad['evts']} رسالة.",

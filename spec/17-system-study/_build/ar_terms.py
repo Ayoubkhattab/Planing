@@ -137,3 +137,11 @@ CATEGORIES = {
                    "AGG-ROLE-ASSIGNMENT", "AGG-AUTHORITY-GRANT", "AGG-SERVICE-ACCOUNT", "AGG-AI-ROUTING", "AGG-AI-TOOL",
                    "AGG-MODEL-VERSION", "AGG-EVAL-SUITE"},
 }
+
+# Arabic names of the 15 business actors (01-business/stakeholders.md gives English names only).
+ACTORS_AR = {
+    "ACT-01": "القيادي التنفيذي", "ACT-02": "المدير", "ACT-03": "المخطِّط", "ACT-04": "المحلل", "ACT-05": "المشغِّل",
+    "ACT-06": "المستخدم الميداني", "ACT-07": "مدير الموارد", "ACT-08": "مستخدم الإمداد", "ACT-09": "مدير المخاطر",
+    "ACT-10": "مدير التدريب", "ACT-11": "مدير المعرفة", "ACT-12": "أمين الأرشيف", "ACT-13": "مسؤول الأمن",
+    "ACT-14": "المدقِّق", "ACT-15": "مسؤول الإدارة",
+}

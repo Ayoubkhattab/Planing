@@ -18,7 +18,7 @@ from pathlib import Path
 import yaml
 
 sys.path.insert(0, str(Path(__file__).parent))
-from ar_terms import AGGREGATES as AR_AGG, VERBS as AR_VERB, CATEGORIES, COMMAND_PHRASES  # noqa: E402
+from ar_terms import AGGREGATES as AR_AGG, VERBS as AR_VERB, CATEGORIES, COMMAND_PHRASES, ACTORS_AR  # noqa: E402
 
 SPEC = Path(__file__).resolve().parents[2]
 OUT = SPEC / "18-analysis-design"
@@ -115,7 +115,7 @@ def load_aggregates():
         final = [s.strip() for s in st_final.group(1).split(",")] if st_final else []
         final = [s for s in final if re.match(r"^[A-Z_]+$", s)]
         a = {"id": fm["id"], "bc": fm["bounded_context"], "slice": fm.get("slice", ""), "title": fm.get("title", ""),
-             "purpose": purpose.group(1).strip() if purpose else "", "personal": bool(fm.get("personal_data")),
+             "purpose": purpose.group(1).strip() if purpose else "", "personal": bool(fm.get("personal_data")), "tier": fm.get("importance_tier", "—"),
              "reqs": list((fm.get("traces") or {}).get("satisfies") or []),
              "open": [s.strip() for s in st_open.group(1).split(",")] if st_open else [], "final": final,
              "exempt": "EXEMPT" in text.split("## الانتقالات")[0], "trans": [], "matrix": {}, "invs": {},
@@ -1054,6 +1054,522 @@ def build_database(aggs):
     return sum(len(v) for v in by_schema.values())
 
 
+# ------------------------------------------------------------------ 02 actors and roles
+ROLE_RULES = [  # (label, regex) — checked in order, a role string may match several labels
+    ("ACT-01", r"\bexecutive\b"),
+    ("ACT-02", r"(?<!resource )(?<!training )(?<!knowledge )(?<!risk )\bmanagers?\b|product owner"),
+    ("ACT-03", r"\bplanner\b"),
+    ("ACT-04", r"\banaly(st|sis lead)|analyst lead"),
+    ("ACT-05", r"(?<!platform )(?<!carrier )\boperator\b|duty officer"),
+    ("ACT-06", r"field (user|device)|device \+ user"),
+    ("ACT-07", r"resource manager|technician"),
+    ("ACT-08", r"logistics|dispatcher|carrier|receiving party"),
+    ("ACT-09", r"risk manager|مدير المخاطر|محدِّد الخطر|^مقيّم$|موافق المعالجة|مالك النطاق"),
+    ("ACT-10", r"training manager|exercise (director|controller)|\bevaluator\b"),
+    ("ACT-11", r"knowledge manager"),
+    ("ACT-12", r"archivist|records"),
+    ("ACT-13", r"security officer"),
+    ("ACT-14", r"\bauditor\b"),
+    ("ACT-15", r"administrator|mdm policy"),
+    ("PLT-OPS", r"platform operator"),
+    ("PLT-AI", r"ai platform engineer|ai governance"),
+    ("PLT-INT", r"integration engineer"),
+    ("AUTH-LEGAL", r"legal|compliance|privacy officer"),
+    ("AUTH-GRANT", r"authority|approver|second (approver|lead)|\bholder\b"),
+    ("REL-TASK", r"assignee|reviewer|attestation role"),
+    ("REL-OWNER", r"\bowner\b|requester|custodian|self\b|participant|lead organization|^lead$|write permission|distributor"),
+    ("REL-RECIPIENT", r"recipient|subscriber"),
+    ("REL-INCIDENT", r"الحادثة|مُبلِّغ|القائد|مالك الاستمرارية"),
+    ("REL-PEER", r"\bsecond (analyst|administrator)|peer analyst"),
+    ("ANY-USER", r"any (authorized )?user|authenticated user|^user$|user \(|مستخدم مخوَّل|any analyst|cleared for|authorized (on|by)|user of tenant|and above|^planner scope$|asset owner scope"),
+    ("SYS", r"service account|workload identity|^system$|analysis-run identity|system identity|internal (peps|services)|owner contexts|adapter owner|scim"),
+]
+ROLE_LABELS = {
+    "PLT-OPS": ("مشغّل المنصة", "Platform Operator — فرق المنصة (SH-05)"),
+    "PLT-AI": ("مهندس/حوكمة الذكاء الاصطناعي", "AI platform engineer، AI governance authority"),
+    "PLT-INT": ("مهندس التكامل", "integration engineer"),
+    "AUTH-LEGAL": ("السلطة القانونية والامتثال", "Legal/Compliance authority، Privacy officer"),
+    "AUTH-GRANT": ("صاحب سلطة أو معتمِد ثانٍ", "حامل منح سلطة في BC01 أو معتمِد ≠ المُعد (allocation/disposal/transfer/release authority، second approver…)"),
+    "REL-TASK": ("المنفّذ والمراجع", "assignee، reviewer — دور يحدده المورد نفسه"),
+    "REL-OWNER": ("المالك والطالب والمشارك", "owner، requester، custodian، participant، self"),
+    "REL-RECIPIENT": ("المستلم والمشترك", "recipient، subscriber"),
+    "REL-INCIDENT": ("أدوار الحادثة", "المُبلِّغ، مقيّم الحادثة، قائد الحادثة"),
+    "REL-PEER": ("الشخص الثاني", "second Analyst / Administrator، peer Analyst — لفصل المهام"),
+    "ANY-USER": ("أي مستخدم مخوَّل", "أي مستخدم ضمن `allowed_scope` أو مصرَّح له بعلامة المورد"),
+    "SYS": ("هويات النظام والخدمات", "adapter/SCIM service accounts، workload identities، analysis-run identity، internal PEPs"),
+}
+ROLE_GROUPS = [("A", "الفاعلون الأعمال (ACT-01..15 — `01-business/stakeholders.md`)", lambda k: k.startswith("ACT-")),
+               ("B", "أدوار المنصة", lambda k: k.startswith("PLT-")),
+               ("C", "أدوار السلطة والاعتماد", lambda k: k.startswith("AUTH-")),
+               ("D", "أدوار العلاقة بالمورد (سمات للمورد يقيّمها قرار السياسة — ABAC عبر PIP، `08-security/authorization-model.md` §1–3)", lambda k: k.startswith(("REL-", "ANY-"))),
+               ("E", "الفاعلون النظاميون", lambda k: k == "SYS")]
+
+
+def classify_role(role):
+    r = role.lower().strip()
+    labels = [lab for lab, rx in ROLE_RULES if re.search(rx, r)]
+    return labels
+
+
+def load_actors():
+    text = (SPEC / "01-business" / "stakeholders.md").read_text(encoding="utf-8")
+    d = yaml_block(text)
+    return d
+
+
+def build_actors(aggs, cmds, qrys, pol_c, pol_q):
+    st = load_actors()
+    acts = {a["id"]: a for a in st.get("actors", [])}
+    groups = {g["id"]: g for g in st.get("stakeholder_groups", [])}
+    uses = defaultdict(lambda: {"cmd": defaultdict(list), "qry": defaultdict(list), "types": defaultdict(int)})
+    unmapped = defaultdict(list)
+    for cid, c in sorted(cmds.items()):
+        a = aggs[c["Aggregate"]]
+        roles, _ = pick_actor(str(pol_c.get(cid, {}).get("subject") or c["الفاعل"]), cid)
+        typ = op_type(cid, a, c)
+        labs = set()
+        for role in roles.split(" · "):
+            got = classify_role(role)
+            labs |= set(got)
+            if not got:
+                unmapped[role].append(cid)
+        for lab in labs:
+            uses[lab]["cmd"][c["_bc"]].append(cid)
+            uses[lab]["types"][typ] += 1
+    for qid, q in sorted(qrys.items()):
+        labs = set()
+        for i, segment in enumerate(re.split(r"\s*[;؛]\s*", query_actor(q, pol_q.get(qid, {}), pol_q))):
+            for role in re.split(r"\s*[,،]\s*|\s+or\s+", segment):
+                role = re.sub(r"^or\s+", "", role.strip())
+                got = classify_role(role) if role.strip() else []
+                labs |= set(got)
+                if not got and i == 0 and role.strip():  # later segments are visibility qualifiers unless they name a role
+                    unmapped[role.strip()].append(qid)
+        for lab in labs:
+            uses[lab]["qry"][q["_bc"]].append(qid)
+            uses[lab]["types"]["جلب"] += 1
+
+    def name(lab):
+        if lab in acts:
+            return f"{lab} {acts[lab]['name']} — {ACTORS_AR.get(lab, '')}"
+        return f"{lab} — {ROLE_LABELS[lab][0]}"
+
+    bcs = sorted(BC_NAMES)
+    types = ["إنشاء", "تعديل", "سير عمل", "حذف / إنهاء", "نظام", "جلب"]
+    L = [BEGIN, "", "### 2.1 كتالوج الفاعلين والأدوار", ""]
+    for gid, gtitle, pred in ROLE_GROUPS:
+        labs = [lab for lab, _ in ROLE_RULES if pred(lab)]
+        labs = list(dict.fromkeys(labs))
+        L += [f"#### ({gid}) {gtitle}", "", "| الفاعل / الدور | الوصف | أوامر | استعلامات | السياقات |", "|---|---|---|---|---|"]
+        for lab in labs:
+            u = uses.get(lab)
+            nc = sum(len(v) for v in u["cmd"].values()) if u else 0
+            nq = sum(len(v) for v in u["qry"].values()) if u else 0
+            ctx = sorted(set(u["cmd"]) | set(u["qry"])) if u else []
+            desc = (f"{groups.get(acts[lab]['group'], {}).get('ar', '')} ({acts[lab]['group']})" if lab in acts
+                    else ROLE_LABELS[lab][1])
+            L.append(f"| {name(lab)} | {desc} | {nc} | {nq} | {', '.join(ctx) or '—'} |")
+        L.append("")
+    L += ["### 2.2 مصفوفة الفاعل × السياق (عدد الأوامر / الاستعلامات)", "",
+          "| الفاعل / الدور | " + " | ".join(bcs) + " |", "|---|" + "---|" * len(bcs)]
+    for lab in dict.fromkeys(lab for lab, _ in ROLE_RULES):
+        u = uses.get(lab)
+        if not u:
+            continue
+        L.append(f"| {name(lab)} | " + " | ".join(
+            (f"{len(u['cmd'].get(bc, []))} / {len(u['qry'].get(bc, []))}" if u["cmd"].get(bc) or u["qry"].get(bc) else "—") for bc in bcs) + " |")
+    L += ["", "### 2.3 مصفوفة الفاعل × نوع العملية", "",
+          "| الفاعل / الدور | " + " | ".join(types) + " |", "|---|" + "---|" * len(types)]
+    for lab in dict.fromkeys(lab for lab, _ in ROLE_RULES):
+        u = uses.get(lab)
+        if u:
+            L.append(f"| {name(lab)} | " + " | ".join(str(u["types"].get(t, 0) or "—") for t in types) + " |")
+    L += ["", "### 2.4 عمليات كل فاعل", "",
+          "لكل فاعل: الأوامر ثم الاستعلامات حسب السياق. القصة المقابلة لكل معرّف في `05-user-stories/us-bcNN.md`.", ""]
+    for lab in dict.fromkeys(lab for lab, _ in ROLE_RULES):
+        u = uses.get(lab)
+        if not u:
+            continue
+        L += [f"#### {name(lab)}", ""]
+        for bc in bcs:
+            cs, qs = u["cmd"].get(bc, []), u["qry"].get(bc, [])
+            if cs or qs:
+                L.append(f"- **{bc}:** " + ", ".join(f"`{x}`" for x in cs + qs))
+        L.append("")
+    L += ["### 2.5 أوصاف أدوار لم تُصنَّف", "",
+          ("| الوصف في المصدر | العمليات |\n|---|---|\n" + "\n".join(f"| {esc(r)} | {', '.join(v)} |" for r, v in sorted(unmapped.items())))
+          if unmapped else "لا شيء — كل وصف دور في السياسات صُنِّف.", "", END]
+    write_generated(OUT / "02-actors-roles.md", None, "\n".join(L))
+    return uses
+
+
+# ------------------------------------------------------------------ 03 requirements analysis
+def load_capabilities():
+    text = (SPEC / "01-business" / "capabilities.md").read_text(encoding="utf-8").split("<details>")[0]
+    caps = {}
+    for block in re.split(r"\n(?=### CAP-)", text):
+        m = re.match(r"### (CAP-\d+) — (.*)", block)
+        if m:
+            caps[m.group(1)] = {"name": m.group(2).strip(),
+                                "outcomes": re.findall(r"OUT-\d+", (re.search(r"\*\*outcomes:\*\*(.*)", block) or [""])[0] if re.search(r"\*\*outcomes:\*\*(.*)", block) else ""),
+                                "subs": re.findall(r"\{id: (CAP-\d+\.\d+), name: ([^,}]+), release: ([^}]+)\}", block)}
+    return caps
+
+
+def load_outcomes():
+    text = (SPEC / "01-business" / "outcomes.md").read_text(encoding="utf-8").split("<details>")[0]
+    outs = {}
+    for block in re.split(r"\n(?=### OUT-)", text):
+        m = re.match(r"### (OUT-\d+)", block)
+        if m:
+            f = dict(re.findall(r"^- \*\*([a-z_0-9]+):\*\* (.*)$", block, re.M))
+            outs[m.group(1)] = f
+    return outs
+
+
+def short(text, n=160):
+    text = re.sub(r"\s+", " ", text or "").strip()
+    return text if len(text) <= n else text[: n - 1].rstrip() + "…"
+
+
+def build_requirements(aggs, reqs, ucs, qrys):
+    caps, outs = load_capabilities(), load_outcomes()
+    qas = md_records((SPEC / "02-requirements" / "quality-scenarios.md").read_text(encoding="utf-8"), "QAS")
+    matrix = {}
+    for header, rows in tables((SPEC / "15-traceability" / "quality-verification-matrix.md").read_text(encoding="utf-8")):
+        if header and header[0] == "qas":
+            matrix.update({r[0]: dict(zip(header, r)) for r in rows})
+    req_aggs = defaultdict(list)
+    for aid, a in aggs.items():
+        for r in a["reqs"]:
+            req_aggs[r].append(aid)
+    req_ucs = {rid: re.findall(r"UC-\d+", r.get("use_cases", "")) for rid, r in reqs.items()}
+    by_cap = defaultdict(list)
+    for rid, r in sorted(reqs.items()):
+        by_cap[(r.get("capability") or "—")[:6]].append(rid)
+    count = lambda ids, key, val: sum(1 for i in ids if reqs[i].get(key) == val)  # noqa: E731
+    L = [BEGIN, "", "### 3.1 المتطلبات الوظيفية حسب القدرة", "",
+         "| القدرة | الاسم | المتطلبات | R1 | R2 | R3 | must | should | بلا Aggregate | بلا حالة استخدام |", "|---|---|---|---|---|---|---|---|---|---|"]
+    for cap in sorted(by_cap):
+        ids = by_cap[cap]
+        L.append(f"| {cap} | {caps.get(cap, {}).get('name', '—')} | {len(ids)} | {count(ids, 'release', 'R1')} | {count(ids, 'release', 'R2')} | "
+                 f"{count(ids, 'release', 'R3')} | {count(ids, 'priority', 'must')} | {count(ids, 'priority', 'should')} | "
+                 f"{sum(1 for i in ids if not req_aggs.get(i))} | {sum(1 for i in ids if not req_ucs.get(i))} |")
+    allids = list(reqs)
+    L.append(f"| **المجموع** | | **{len(allids)}** | {count(allids, 'release', 'R1')} | {count(allids, 'release', 'R2')} | "
+             f"{count(allids, 'release', 'R3')} | {count(allids, 'priority', 'must')} | {count(allids, 'priority', 'should')} | "
+             f"{sum(1 for i in allids if not req_aggs.get(i))} | {sum(1 for i in allids if not req_ucs.get(i))} |")
+    pat = defaultdict(int)
+    for r in reqs.values():
+        pat[r.get("pattern", "—")] += 1
+    L += ["", "**أنماط الصياغة (EARS):** " + "، ".join(f"{k}: {v}" for k, v in sorted(pat.items(), key=lambda x: -x[1])) +
+          f". **طريقة التحقق:** " + "، ".join(f"{k}: {v}" for k, v in sorted(defaultdict(int, {m: sum(1 for r in reqs.values() if r.get('verification_method') == m) for m in {r.get('verification_method') for r in reqs.values()}}).items())) + ".", ""]
+    L += ["### 3.2 من النتائج إلى القدرات إلى المتطلبات", "",
+          "حقل `contributing_requirements` في النتائج ما زال TBD (CR-30)، فالربط هنا مشتق عبر حقل `outcomes` في كل قدرة **[Derived]**.", "",
+          "| النتيجة | الاسم | أولوية السنة الأولى | القدرات | المتطلبات عبرها |", "|---|---|---|---|---|"]
+    for oid, o in sorted(outs.items()):
+        cs = sorted(c for c, v in caps.items() if oid in v["outcomes"])
+        L.append(f"| {oid} | {o.get('ar', '')} ({o.get('en', '')}) | {o.get('priority_year1', '—')} | {', '.join(cs) or '—'} | {sum(len(by_cap.get(c, [])) for c in cs)} |")
+    L += ["", "### 3.3 المتطلبات حسب القدرة", ""]
+    for cap in sorted(by_cap):
+        c = caps.get(cap, {})
+        L += [f"#### {cap} — {c.get('name', '—')}", "",
+              "القدرات الفرعية: " + ("، ".join(f"{i} {n.strip()} ({rel.strip()})" for i, n, rel in c.get("subs", [])) or "—"), "",
+              "| المتطلب | النص | النمط | الأولوية | الإصدار | حالات الاستخدام | الـAggregates | QAS |", "|---|---|---|---|---|---|---|---|"]
+        for rid in by_cap[cap]:
+            r = reqs[rid]
+            L.append(f"| {rid} | {esc(short(r.get('statement', '')))} | {r.get('pattern', '—')} | {r.get('priority', '—')} | {r.get('release', '—')} | "
+                     f"{', '.join(req_ucs.get(rid, [])) or '**—**'} | {', '.join(req_aggs.get(rid, [])) or '**[Missing]**'} | {r.get('quality', '—')} |")
+        L.append("")
+    no_agg = sorted(i for i in allids if not req_aggs.get(i))
+    fit_text = (SPEC / "13-verification" / "fitness-functions.md").read_text(encoding="utf-8")
+    fits = {m.group(1): m.group(2) for m in re.finditer(r"^\| (FIT-\d+) \|[^|]*\| ([^|]*) \|", fit_text, re.M)}
+    trace = defaultdict(set)
+    for f in sorted((SPEC / "15-traceability").glob("trace-*.md")):
+        for header, rows in tables(f.read_text(encoding="utf-8")):
+            if header[:2] == ["requirement", "design_elements"]:
+                for r in rows:
+                    trace[r[0]] |= {x.strip() for x in r[1].split(",") if x.strip() and x.strip() != "—"}
+        for rid, design in re.findall(r"^- \*\*requirement:\*\* (REQ-[A-Z]+-\d+)\n- \*\*design:\*\* (.*)$", f.read_text(encoding="utf-8"), re.M):
+            trace[rid].add(design.strip())
+    L += ["### 3.4 فجوات التغطية", "",
+          f"**متطلبات لا يحققها أي Aggregate ({len(no_agg)}).** أغلبها قيود منصة أو أمن أو مكتبات مشتركة تتحقق بالبنية لا بـAggregate. "
+          "العمود الأخير يسرد عناصر التصميم التي تحققها من ملفات التتبع `15-traceability/trace-*.md` (العمود `design_elements`)، "
+          "والاستعلامات التي تذكرها، ودوال اللياقة التي تستند إليها؛ المتطلب بلا أي منها فجوة **[Needs Review]**.", "",
+          "| المتطلب | النمط | الإصدار | النص | يتحقق عبر |", "|---|---|---|---|---|"]
+    for i in no_agg:
+        refs = sorted(trace.get(i, set()) | {q for q, v in qrys.items() if re.search(rf"\b{i}\b", v.get("المتطلب", ""))} |
+                      {k for k, v in fits.items() if re.search(rf"\b{i}\b", v)})
+        L.append(f"| {i} | {reqs[i].get('pattern', '—')} | {reqs[i].get('release', '—')} | {esc(short(reqs[i].get('statement', ''), 110))} | "
+                 f"{esc(', '.join(refs)) or '**[Needs Review]**'} |")
+    L += ["", f"**متطلبات بلا حالة استخدام ({sum(1 for i in allids if not req_ucs.get(i))}):** مسرودة بعلامة **—** في §3.3؛ أغلبها في CAP-14 (تشغيل المنصة) وCAP-03.", ""]
+    qual = defaultdict(list)
+    for qid, q in sorted(qas.items()):
+        qual[q.get("quality", "—")].append(qid)
+    L += ["### 3.5 سيناريوهات الجودة", "",
+          f"{len(qas)} سيناريو في `02-requirements/quality-scenarios.md`؛ مصفوفة التحقق `15-traceability/quality-verification-matrix.md` تغطي {len(set(qas) & set(matrix))} منها. "
+          f"غير المغطاة: {', '.join(sorted(set(qas) - set(matrix))) or 'لا شيء'} **[Missing]**.", "",
+          "| الخاصية | العدد | السيناريوهات |", "|---|---|---|"]
+    L += [f"| {k} | {len(v)} | {', '.join(v)} |" for k, v in sorted(qual.items(), key=lambda x: (-len(x[1]), x[0]))]
+    L += ["", "#### محركات المعمارية (الأولوية H/H)", "", "| السيناريو | الخاصية | المحفِّز | المقياس | التحقق |", "|---|---|---|---|---|"]
+    for qid, q in sorted(qas.items()):
+        if q.get("priority") == "H/H":
+            L.append(f"| {qid} | {q.get('quality')} | {esc(short(q.get('stimulus', ''), 90))} | {esc(q.get('response_measure', ''))} | "
+                     f"{esc(matrix.get(qid, {}).get('verification', '**[Missing]**'))} |")
+    L += ["", "#### الكتالوج الكامل", "", "| السيناريو | الخاصية | الأولوية | المحفِّز | المقياس | الحمل | التحقق | متى |", "|---|---|---|---|---|---|---|---|"]
+    for qid, q in sorted(qas.items()):
+        m = matrix.get(qid, {})
+        L.append(f"| {qid} | {q.get('quality')} | {q.get('priority', '—')} | {esc(short(q.get('stimulus', ''), 90))} | {esc(q.get('response_measure', ''))} | "
+                 f"{q.get('workload', '—')} | {esc(m.get('verification', '**[Missing]**'))} | {esc(m.get('when', '—'))} |")
+    L += ["", END]
+    write_generated(OUT / "03-requirements-analysis.md", None, "\n".join(L))
+
+
+# ------------------------------------------------------------------ 04 use cases
+NEGATIVE = {"CANCEL", "REJECT", "WITHDRAW", "DISCARD", "ABORT", "FAIL", "DECLINE", "SUSPEND", "BLOCK", "RETURN", "REVOKE",
+            "EXPIRE", "LOCK", "DISABLE", "PARK", "DEPRECATE", "ESCALATE", "RECLASSIFY", "MARK", "REOPEN", "DISPOSE", "ERASE",
+            "PAUSE", "RETRACT", "QUARANTINE", "LOST", "DE"}
+
+
+ENDING = {"RETIRE", "UNLINK", "END", "CORRECT", "RECORD-CHANGE", "SUPERSEDE"}
+
+
+def _ending(t, a):
+    return verb_of(t["cmd"]) in ENDING or closes_and_replaces([t], a)
+
+
+def happy_path(a):
+    """Commands from creation to a terminal (or last reachable) state, avoiding cancellations and returns."""
+    trs = [t for t in a["trans"] if t["to"] not in UNCHANGED]
+    create = next((t for t in trs if t["from"] == ["∅"]), None)
+    if not create:
+        return []
+    path, state, seen = [create], create["to"], {create["to"]}
+    while state not in a["final"] and len(path) < 12:
+        nxt = next((t for t in trs if t is not create and state in expand_from(t["from"], a) and t["to"] not in seen
+                    and not t["cmd"].startswith("SYS:") and verb_of(t["cmd"]).split("-")[0] not in NEGATIVE and not _ending(t, a)), None)
+        if not nxt:
+            nxt = next((t for t in trs if t["cmd"].startswith("SYS:") and state in expand_from(t["from"], a) and t["to"] not in seen
+                        and not re.search(r"expir|timeout|fail|reject|cancel|lost", t["cmd"], re.I)), None)
+        if not nxt:
+            break
+        path.append(nxt)
+        state = nxt["to"]
+        seen.add(state)
+    return path
+
+
+def uc_label(lab, acts):
+    return f"{acts[lab]['name']}" if lab in acts else ROLE_LABELS[lab][0]
+
+
+def build_use_cases(aggs, cmds, pol_c, reqs, ucs):
+    acts = {a["id"]: a for a in load_actors().get("actors", [])}
+    req_aggs = defaultdict(list)
+    for aid, a in aggs.items():
+        for r in a["reqs"]:
+            req_aggs[r].append(aid)
+    cmd_roles = {}
+    for cid, c in cmds.items():
+        roles, _ = pick_actor(str(pol_c.get(cid, {}).get("subject") or c["الفاعل"]), cid)
+        cmd_roles[cid] = (roles, {lab for r in roles.split(" · ") for lab in classify_role(r)})
+    by_bc, info = defaultdict(list), {}
+    for uid, u in sorted(ucs.items(), key=lambda x: int(x[0][3:])):
+        rids = re.findall(r"REQ-[A-Z]+-\d+", u.get("requirements", ""))
+        ag = sorted({x for r in rids for x in req_aggs.get(r, [])})
+        words = {w.lower()[:5] for w in re.findall(r"[A-Za-z]{4,}", u.get("title", "")) if w.lower() not in ("manage", "management")}
+        primary = [x for x in ag if words & {w.lower()[:5] for w in re.findall(r"[A-Za-z]{4,}", aggs[x]["title"])}] or ag
+        bcs = defaultdict(int)
+        for x in ag:
+            bcs[aggs[x]["bc"]] += 1
+        bc = max(sorted(bcs), key=lambda k: bcs[k]) if bcs else "—"
+        labs = set()
+        for x in primary:
+            for cid in cmds:
+                if cmds[cid]["Aggregate"] == x:
+                    labs |= cmd_roles[cid][1]
+        info[uid] = (rids, ag, bc, labs, primary)
+        by_bc[bc].append(uid)
+    L = [BEGIN, "", "### 4.1 الملخص", "", "| السياق | حالات الاستخدام | R1 | R2 | R3 | فاعلوها في المصدر | مشتقة الفاعلين |", "|---|---|---|---|---|---|---|"]
+    for bc in sorted(by_bc):
+        ids = by_bc[bc]
+        L.append(f"| {bc} | {len(ids)} | " + " | ".join(str(sum(1 for i in ids if ucs[i].get("release") == r)) for r in ("R1", "R2", "R3")) +
+                 f" | {sum(1 for i in ids if ucs[i].get('actors', 'TBD') != 'TBD')} | {sum(1 for i in ids if ucs[i].get('actors', 'TBD') == 'TBD')} |")
+    L += ["", "### 4.2 مخططات حالات الاستخدام", "",
+          "لكل سياق: الفاعلون (يسارًا) وحالات الاستخدام التي يشاركون فيها، مشتقة من أدوار أوامر الـAggregates التي تحقق متطلبات كل حالة **[Derived]**. "
+          "الأدوار العامة (أي مستخدم، هويات النظام) محذوفة من المخططات لتبقى مقروءة، ومذكورة في جدول كل حالة.", ""]
+    skip = {"ANY-USER", "SYS"}
+    for bc in sorted(by_bc):
+        if bc == "—":
+            continue
+        L += [f"#### {bc} — {BC_NAMES[bc]}", "", "```mermaid", "flowchart LR"]
+        used = sorted({lab for u in by_bc[bc] for lab in info[u][3] - skip}, key=lambda k: (not k.startswith("ACT"), k))
+        for lab in used:
+            L.append(f'  {lab.replace("-", "_")}["{uc_label(lab, acts)}"]')
+        L.append(f'  subgraph {bc}["{bc} {BC_NAMES[bc].split(" — ")[0]}"]')
+        for u in by_bc[bc]:
+            title = re.sub(r"[\"()\[\]{}<>:;|#]", " ", ucs[u].get("title", ""))
+            L.append(f'    {u.replace("-", "")}(["{u} {title}"])')
+        L.append("  end")
+        for u in by_bc[bc]:
+            for lab in sorted(info[u][3] - skip):
+                L.append(f"  {lab.replace('-', '_')} --- {u.replace('-', '')}")
+        L += ["```", ""]
+    L += ["### 4.3 مواصفة كل حالة استخدام", ""]
+    for bc in sorted(by_bc):
+        L += [f"#### {bc} — {BC_NAMES.get(bc, 'بلا Aggregate مرتبط')}", ""]
+        for uid in by_bc[bc]:
+            u = ucs[uid]
+            rids, ag, _, labs, primary = info[uid]
+            cap = u.get("capability") or ", ".join(sorted({(reqs[r].get("capability") or "")[:6] for r in rids if r in reqs} - {""})) + " **[Derived]**"
+            src_actors = u.get("actors", "TBD")
+            L += [f"##### {uid} — {u.get('title', '')}", "",
+                  f"| تيار القيمة | القدرة | الإصدار | الحالة | المتطلبات |", "|---|---|---|---|---|",
+                  f"| {u.get('value_stream', '—')} | {cap} | {u.get('release', '—')} | {u.get('status', '—')} | {', '.join(rids) or '—'} |", "",
+                  "- **الفاعلون:** " + (esc(src_actors) + " (المصدر)" if src_actors != "TBD" else
+                                         (", ".join(uc_label(x, acts) for x in sorted(labs)) or "**[Missing]**") + " **[Derived]**"),
+                  "- **الـAggregates:** " + (", ".join(f"`{x}`" for x in primary) or "**[Missing]** — لا Aggregate يحقق متطلباتها") +
+                  ("؛ مشاركة عبر المتطلبات نفسها: " + ", ".join(f"`{x}`" for x in ag if x not in primary) if set(ag) - set(primary) else ""),
+                  "- **الشروط المسبقة:** " + (esc(u["preconditions"]) if u.get("preconditions", "TBD") not in ("TBD", "") else
+                                             "المستخدم مصادَق عليه داخل المستأجر، وقرار السياسة يسمح بكل خطوة (ADR-P17) **[Derived]**")]
+            flow = u.get("main_flow", "TBD")
+            if flow not in ("TBD", "") and not flow.startswith("SLC-"):
+                L.append(f"- **المسار الرئيسي (المصدر):** {esc(flow)}")
+            steps, alts = [], []
+            for x in primary:
+                path = happy_path(aggs[x])
+                for t in path:
+                    who = "النظام" if t["cmd"].startswith("SYS:") else (cmd_roles.get(t["cmd"], ("?",))[0])
+                    what = f"«{esc(t['cmd'][4:])}»" if t["cmd"].startswith("SYS:") else f"`{t['cmd']}`"
+                    steps.append(f"{esc(who)}: {what} ({show_from(t['from'])} → {t['to']}) ⇐ `{t['event']}`")
+                alts += [f"`{t['cmd']}` → {t['to']}" for t in aggs[x]["trans"] if not t["cmd"].startswith("SYS:") and t not in path
+                         and t["to"] not in UNCHANGED and (verb_of(t["cmd"]).split("-")[0] in NEGATIVE or _ending(t, aggs[x]))]
+            if steps:
+                L += ["- **المسار الرئيسي" + (" (مشتق من آلات الحالات)" if flow in ("TBD", "") or flow.startswith("SLC-") else " (تفصيل مشتق)") + "** **[Derived]**:"]
+                L += [f"  {i}. {s}" for i, s in enumerate(steps, 1)]
+            if alts:
+                L.append("- **مسارات بديلة (إلغاء، رفض، إرجاع…):** " + "، ".join(dict.fromkeys(alts)))
+            L.append("- **الاستثناءات:** رموز الرفض لكل خطوة في قصة أمرها (`05-user-stories/`، Scenario Outline «is rejected»).")
+            L.append("")
+    no_ag = [u for u in ucs if not info[u][1]]
+    covered = {x for u in info.values() for x in u[1]}
+    L += ["### 4.4 فجوات التغطية", "",
+          f"- **حالات استخدام بلا Aggregate ({len(no_ag)}):** " + (", ".join(sorted(no_ag, key=lambda x: int(x[3:]))) or "لا شيء"),
+          f"- **Aggregates لا تظهر في أي حالة استخدام ({len(set(aggs) - covered)}):** " + (", ".join(sorted(set(aggs) - covered)) or "لا شيء"), "", END]
+    write_generated(OUT / "04-use-cases.md", None, "\n".join(L))
+
+
+# ------------------------------------------------------------------ 07 domain model
+def agg_slug(aid):
+    return aid[4:].lower().replace("-", "_")
+
+
+MAIN_TABLE_ALIAS = {"AGG-ASSESSMENT": "assessment_versions"}
+
+
+def main_table(aid, tabs, schemas):
+    s = agg_slug(aid)
+    names = (MAIN_TABLE_ALIAS[aid],) if aid in MAIN_TABLE_ALIAS else (s + "s", s + "es", s[:-1] + "ies", s)
+    for (schema, name), t in tabs.items():
+        if schema in schemas and name in names:
+            return t
+    return None
+
+
+def ref_target(col, aggs, own):
+    """Aggregate referenced by a column like plan_ref / task_type_ref / exercise_urn (exact slug match only)."""
+    m = re.match(r"^(?:parent_)?(\w+?)_(ref|id|urn|refs|ids|urns)$", col)
+    if not m:
+        return None
+    target = "AGG-" + m.group(1).upper().replace("_", "-")
+    return target if target in aggs and target != own else None
+
+
+def build_domain_model(aggs, cmds):
+    tabs = load_ldm()[0]
+    doms = {}
+    for header, rows in tables((SPEC / "03-domain" / "domains.md").read_text(encoding="utf-8")):
+        if header and header[0] == "id":
+            for r in rows:
+                if r[0].startswith("DOM-"):
+                    doms[r[0]] = dict(zip(header, r))
+    bc_schemas = defaultdict(set)
+    for s_, bc in SCHEMA_BC.items():
+        bc_schemas[bc].add(s_)
+    comps = {}
+    for aid, a in aggs.items():
+        text = (SPEC / a["path"]).read_text(encoding="utf-8")
+        sec = re.search(r"^## مكونات داخلية\n(.*?)(?=^## )", text, re.S | re.M)
+        comps[aid] = [re.match(r"-\s*([A-Za-z][A-Za-z0-9]*)", l).group(1) for l in (sec.group(1).splitlines() if sec else [])
+                      if re.match(r"-\s*[A-Za-z]", l)]
+    refs = defaultdict(set)  # (from, to) -> columns
+    attrs = {}
+    for aid, a in aggs.items():
+        t = main_table(aid, tabs, bc_schemas[a["bc"]])
+        cols = []
+        if t:
+            cols = [clean_col(c) for c in t["cols"]]
+            attrs[aid] = (t, [c for c in key_cols(t["key"]) if c != "tenant_id"] + [c for c in cols if c not in key_cols(t["key"])])
+        creates = [c for c in cmds.values() if c["Aggregate"] == aid]
+        fields = [n for c in creates for n, _, _ in payload_fields(c.get("الحمولة (! إلزامي)", ""))]
+        for col in dict.fromkeys(cols + fields):
+            tgt = ref_target(col, aggs, aid)
+            if tgt:
+                refs[(aid, tgt)].add(col)
+    L = [BEGIN, "", "### 7.1 المجالات والسياقات", "", "| السياق | المجالات (DOM) | عناصرها في `03-domain/domains.md` | الـAggregates |", "|---|---|---|---|"]
+    for bc in sorted(BC_NAMES):
+        ds = [d for d in doms.values() if d.get("bounded_context") == bc]
+        L.append(f"| {bc} {BC_NAMES[bc]} | " + "<br>".join(f"{d['id']} {d['name']}" for d in ds) + " | " +
+                 "<br>".join(esc(d.get("elements", "")) for d in ds) + " | " +
+                 ", ".join(x[4:] for x in sorted(aggs) if aggs[x]["bc"] == bc) + " |")
+    cross = defaultdict(list)
+    for (f, t), cs in refs.items():
+        if aggs[f]["bc"] != aggs[t]["bc"]:
+            cross[(aggs[f]["bc"], aggs[t]["bc"])].append(f"{f[4:]} → {t[4:]} ({', '.join(sorted(cs))})")
+    L += ["", "### 7.2 المراجع بين السياقات (مشتقة من البيانات)", "",
+          "كل مرجع عمود أو حقل حمولة اسمه `<aggregate>_ref|_id|_urn` يطابق اسم Aggregate في سياق آخر **[Derived]**. "
+          "المرجع URN يُتحقق منه عبر عقد السياق المالك، لا قيد قاعدة بيانات (FIT-01). يُقارَن بخريطة السياقات المعتمدة في §7.3.", "",
+          "| من | إلى | المراجع |", "|---|---|---|"]
+    L += [f"| {a_} | {b_} | {'؛ '.join(sorted(v))} |" for (a_, b_), v in sorted(cross.items())]
+    L += ["", "```mermaid", "flowchart LR"]
+    for bc in sorted(BC_NAMES):
+        L.append(f'  {bc}["{bc} {BC_NAMES[bc].split(" — ")[0]}"]')
+    for (a_, b_), v in sorted(cross.items()):
+        L.append(f"  {a_} -->|{len(v)}| {b_}")
+    L += ["```", "", "### 7.4 مخططات الأصناف (Class diagrams) لكل سياق", "",
+          "لكل Aggregate صنف جذر `<<AggregateRoot>>` بمفتاحه وأبرز أعمدته من جدوله الرئيسي في النموذج المنطقي (حتى 8)، ومكوناته الداخلية بعلاقة تركيب (`*--`)، "
+          "ومراجعه إلى Aggregates السياق نفسه (`-->` باسم العمود). المراجع العابرة في §7.2. Aggregate بلا جدول مطابق الاسم تُترك أعمدته **[Missing]**.", ""]
+    for bc in sorted(BC_NAMES):
+        members = sorted(x for x in aggs if aggs[x]["bc"] == bc)
+        L += [f"#### {bc} — {BC_NAMES[bc]}", "", "```mermaid", "classDiagram", "  direction LR"]
+        for aid in members:
+            cid = aid.replace("-", "_")
+            L.append(f'  class {cid}["{aid[4:]} — {aggs[aid]["title"]}"] {{')
+            L.append("    <<AggregateRoot>>")
+            if aid in attrs:
+                for col in attrs[aid][1][:8]:
+                    L.append(f"    +{col_type(col) if col_type(col) != 'text' else 'text'} {col}")
+            else:
+                L.append("    +enum state")
+            L.append("  }")
+            for comp in comps[aid]:
+                L.append(f'  class {cid}__{comp}["{comp}"]')
+                L.append(f"  {cid} *-- {cid}__{comp}")
+        for (f, t), cs in sorted(refs.items()):
+            if aggs[f]["bc"] == bc and aggs[t]["bc"] == bc:
+                L.append(f"  {f.replace('-', '_')} --> {t.replace('-', '_')} : {sorted(cs)[0]}")
+        L += ["```", ""]
+        missing = [x for x in members if x not in attrs]
+        L += ["| Aggregate | المستوى | بيانات شخصية | الجدول الرئيسي | المكونات الداخلية |", "|---|---|---|---|---|"]
+        for aid in members:
+            t = attrs.get(aid, (None,))[0]
+            L.append(f"| {aid} | {aggs[aid].get('tier', '—')} | {'نعم' if aggs[aid]['personal'] else '—'} | "
+                     f"{('`' + t['schema'] + '.' + t['name'] + '`') if t else ('`projection_versions` (مخزن الإسقاطات، اسم الـschema **[Missing]**)' if aid == 'AGG-PROJECTION-VERSION' else '**[Missing]**')} | {', '.join(comps[aid]) or '—'} |")
+        L.append("")
+    L += [END]
+    write_generated(OUT / "07-domain-model.md", None, "\n".join(L))
+
+
 # ------------------------------------------------------------------ writer
 def write_generated(path, header, block):
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -1083,6 +1599,10 @@ def main():
     build_api(ops, cmds, qrys, pol_c, pol_q, aggs)
     ne = build_events(evts, chan, aggs)
     nt = build_database(aggs)
+    build_actors(aggs, cmds, qrys, pol_c, pol_q)
+    build_requirements(aggs, reqs, ucs, qrys)
+    build_use_cases(aggs, cmds, pol_c, reqs, ucs)
+    build_domain_model(aggs, cmds)
     total = sum(sum(v.values()) for v in stats.values())
     print(f"stories={total} (commands={sum(1 for k in story_ids if k.startswith('CMD-'))}, "
           f"queries={sum(1 for k in story_ids if k.startswith('QRY-'))}, sys={sum(v.get('نظام (SYS)', 0) for v in stats.values())}) "

@@ -148,3 +148,7 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 | S-16 | أدوار في السياسات ليست ضمن ACT-01..15 (Platform Operator، AI platform engineer، AI governance authority، integration engineer، Legal/Compliance authority، Privacy officer)، ودور «finance» غير معرَّف | `01-business/stakeholders.md`، `08-security/policies-slc*.md` | `02-actors-roles.md` |
 | S-17 | 51 حالة استخدام بلا فاعلين ولا مسار (TBD)، والباقي يحيل إلى الشريحة؛ 3 حالات بلا Aggregate (UC-087، UC-096، UC-163)؛ وAGG-EXTERNAL-ID بلا حالة استخدام | `02-requirements/use-cases.md` | `04-use-cases.md` (مشتقة **[Derived]**) |
 | S-18 | 4 سيناريوهات جودة بلا طريقة تحقق (QAS-LOG-001/002، QAS-TRX-001/002)؛ وترويسة مصفوفة التحقق تقول 74 وفيها 91 | `15-traceability/quality-verification-matrix.md` | `03-requirements-analysis.md` |
+| S-19 | تغطية VS04 وVS05 ما زالت «none — CR-09» بينما UC-140..144 وUC-160..163 (CR-70) وAggregates R3 تحققهما | `01-business/value-streams.md` | `06-process-models.md` |
+| S-20 | لا حدث يحمل إجراء الإتلاف `ARCHIVE` من BC08 إلى BC06 (`SYS:disposition action ARCHIVE…` في AGG-ARCHIVE-PACKAGE، ومستهلكو `EVT-DSP-*` لا يذكرون BC06) | `BC06/aggregates/AGG-ARCHIVE-PACKAGE.md`، `BC08/events-slc12a.md` | `06-process-models.md` |
+| S-21 | مراحل تيارات قيمة بلا تحقيق: عتبة الخطر (VS04)، خطة التدريب BP42 (VS05)، الذاكرة المؤسسية (VS07)؛ ولا انتقال من التنبيه أو الموقف (VS01) إلى الحادثة (VS04) — `EVT-ALR-RAISED` بلا مستهلك في BC04 | `AGG-RISK`، `processes.md`، `events-slc06.md` | `06-process-models.md` |
+

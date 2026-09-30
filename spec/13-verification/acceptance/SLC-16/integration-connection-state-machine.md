@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — Integration Connection
 
-مولّدة من مصفوفة AGG-INTEGRATION-CONNECTION: 8 انتقالاً مسموحاً، 34 رفضاً.
+مولّدة من مصفوفة AGG-INTEGRATION-CONNECTION: 8 انتقالاً مسموحاً، 34 رفضاً، 2 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Integration Connection lifecycle (AGG-INTEGRATION-CONNECTION)
@@ -96,4 +96,16 @@ Feature: Integration Connection lifecycle (AGG-INTEGRATION-CONNECTION)
       | Integration Connection | RETIRED | CMD-CON-SUSPEND | INTEGRATION_CONNECTION_INVALID_STATE_TRANSITION |
       | Integration Connection | RETIRED | CMD-CON-RESUME | INTEGRATION_CONNECTION_INVALID_STATE_TRANSITION |
       | Integration Connection | RETIRED | CMD-CON-RETIRE | INTEGRATION_CONNECTION_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Integration Connection | ACTIVE | health checks failing 5 min | DEGRADED | EVT-CON-DEGRADED |
+      | Integration Connection | DEGRADED | health restored | ACTIVE | EVT-CON-RECOVERED |
 ```

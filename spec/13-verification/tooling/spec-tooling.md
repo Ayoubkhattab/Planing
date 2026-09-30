@@ -117,7 +117,7 @@ def write(p, t):
     os.makedirs(os.path.dirname(f"{W}/{p}"), exist_ok=True); open(f"{W}/{p}", "w", encoding="utf-8").write(t)
 def meta(i, t, title, wave="W4", tier="T1", extra=None):
     m = {"id": i, "type": t, "title": title, "wave": wave, "slice": SL, "tier": tier, "status": "APPROVED_DELEGATED",
-         "approved_by": BY, "approved_at": "2026-09-24"}
+         "approved_by": BY, "approved_at": getattr(D, "APPROVED_AT", "2026-09-24")}
     if extra: m.update(extra)
     return m
 def slug(c): return c.split("-", 2)[2].lower()
@@ -225,6 +225,7 @@ for a in D.AGGS.values():
           f"- قابلية الوصول لحالة نهائية (SL-06): **{r}**", "", "## الانتقالات", "", "| من | الأمر | إلى | الشرط (Guard) | الحدث | خطأ فشل الشرط |", "|---|---|---|---|---|---|"]
     for fr, cmd, to, g, evt, ge in a["transitions"]:
         frs = "∅ (إنشاء)" if fr == "∅" else ("أي حالة غير نهائية" if fr == "*NT" else ", ".join(fr))
+        g = str(g).replace("|", "\\|")
         L.append(f"| {frs} | {cmd} | {'(بلا تغيير)' if to == '=' else to} | {g} | {evt} | {ge or '—'} |")
     L += ["", "## مصفوفة الحالات × الأوامر (كاملة — SL-05)", "", "كل خلية حُكم صريح: `→ حالة` مسموح، `✗ رمز` مرفوض. لا خلايا فارغة.", ""]
     L.append("| الحالة \\ الأمر | " + " | ".join(cmds) + " |"); L.append("|---|" + "---|" * len(cmds))
@@ -434,7 +435,7 @@ def build(ctx, bc, title, internal=False):
 
 def md(doc_id, title, spec, notes):
     head = {"id": doc_id, "type": "api-contract", "title": title, "wave": "W6", "slice": SL, "tier": "T1", "status": "APPROVED_DELEGATED",
-            "approved_by": BY, "approved_at": "2026-09-24", "format": "OpenAPI 3.1 (validated)", "traces": {"decided_by": ["CR-40", "REQ-PLT-007", "REQ-PLT-008", "REQ-PLT-009"]}}
+            "approved_by": BY, "approved_at": getattr(D, "APPROVED_AT", "2026-09-24"), "format": "OpenAPI 3.1 (validated)", "traces": {"decided_by": ["CR-40", "REQ-PLT-007", "REQ-PLT-008", "REQ-PLT-009"]}}
     ops = [(p, m, o["operationId"]) for p, ms in spec["paths"].items() for m, o in ms.items()]
     L = ["---", yaml.safe_dump(head, allow_unicode=True, sort_keys=False).strip(), "---", "", f"# {title}", "", notes, "",
          f"_{len(ops)} operations · validated with openapi-spec-validator_", "", "| Method | Path | Operation |", "|---|---|---|"]
@@ -481,7 +482,7 @@ asy = {"asyncapi": "3.0.0", "info": {"title": f"{SL} Domain Events", "version": 
        "operations": {f"publish_{ch}": {"action": "send", "channel": {"$ref": "#/channels/" + (f"{ch}.events" if ch != "security" else "security.versions")}} for ch in ch_msgs},
        "components": {"schemas": {"EventEnvelope": env}, "messages": msgs}}
 head = {"id": f"ASYNCAPI-{SFX.upper()}", "type": "event-contract", "title": f"AsyncAPI — {SL} Domain Events", "wave": "W6", "slice": SL, "tier": "T1",
-        "status": "APPROVED_DELEGATED", "approved_by": BY, "approved_at": "2026-09-24", "format": "AsyncAPI 3.0"}
+        "status": "APPROVED_DELEGATED", "approved_by": BY, "approved_at": getattr(D, "APPROVED_AT", "2026-09-24"), "format": "AsyncAPI 3.0"}
 L = ["---", yaml.safe_dump(head, allow_unicode=True, sort_keys=False).strip(), "---", "", f"# AsyncAPI — {SL} Domain Events", "",
      f"_{len(msgs)} messages on {len(ch_msgs)} channels. Envelope = PRJ§14 EventEnvelope + security labels. Delivery at-least-once via outbox; consumers idempotent via inbox._", "",
      "```yaml", yaml.safe_dump(asy, allow_unicode=True, sort_keys=False).strip(), "```", ""]
@@ -496,7 +497,7 @@ HTTP = lambda e: ("409" if "INVALID_STATE_TRANSITION" in e or e == "VERSION_CONF
 extra = {"NOT_FOUND": "404", "RATE_LIMITED": "429", "AUDIT_UNAVAILABLE": "503", "SEGREGATION_OF_DUTIES": "422", "POLICY_ENGINE_UNAVAILABLE": "503 (request denied)"}
 rows = [f"| `{e}` | {HTTP(e)} | {'نعم' if e in ('VERSION_CONFLICT','AUDIT_UNAVAILABLE') else 'لا'} | {len(cs)} | {', '.join(sorted(cs))[:160]}{'…' if len(', '.join(cs))>160 else ''} |" for e, cs in sorted(codes.items())]
 rows += [f"| `{e}` | {h} | {'نعم' if e in ('RATE_LIMITED','POLICY_ENGINE_UNAVAILABLE') else 'لا'} | — | platform-wide |" for e, h in extra.items() if e not in codes]
-head = {"id": f"ERRORS-{SFX.upper()}", "type": "error-catalog", "title": f"Error Catalog — {SL}", "wave": "W6", "slice": SL, "status": "APPROVED_DELEGATED", "approved_by": BY, "approved_at": "2026-09-24"}
+head = {"id": f"ERRORS-{SFX.upper()}", "type": "error-catalog", "title": f"Error Catalog — {SL}", "wave": "W6", "slice": SL, "status": "APPROVED_DELEGATED", "approved_by": BY, "approved_at": getattr(D, "APPROVED_AT", "2026-09-24")}
 open(f"{W}/05-contracts/errors-{SFX}.md", "w", encoding="utf-8").write("\n".join(["---", yaml.safe_dump(head, allow_unicode=True, sort_keys=False).strip(), "---", "",
   f"# Error Catalog — {SL}", "", "`AUTHZ_DENIED` لا يُعاد للعميل كما هو عند موارد غير مرئية: يُعاد `NOT_FOUND` بنفس الشكل (ADR-P06 §5). يُعاد `403` فقط لمورد يحق للمستخدم رؤيته دون تنفيذ الإجراء.", "",
   "| الرمز | HTTP | retryable | عدد الأوامر | الأوامر |", "|---|---|---|---|---|"] + rows + [""]))
@@ -517,20 +518,25 @@ BY = "Claude (acting decision owner, delegated by project owner)"
 out = f"work/13-verification/acceptance/{SL}"; os.makedirs(out, exist_ok=True)
 tok = trej = 0
 for a in D.AGGS.values():
-    cmds, rows, create = G.matrix(a); ok, rej = [], []
+    cmds, rows, create = G.matrix(a); ok, rej, sysok = [], [], []
     for s in a["states"]:
         for c in cmds:
-            if c.startswith("SYS"): continue
             v = rows[s][c]
+            if c.startswith("SYS"):
+                if v.startswith("→"):
+                    evt = [t[4] for t in a["transitions"] if t[1] == c and ((t[0] == "*NT" and s not in a["terminal"]) or (isinstance(t[0], list) and s in t[0]))][0]
+                    sysok.append((s, c[4:], v[2:], evt))
+                continue
             if v.startswith("→"):
                 evt = [t[4] for t in a["transitions"] if t[1] == c and ((t[0] == "*NT" and s not in a["terminal"]) or (isinstance(t[0], list) and s in t[0]))][0]
                 ok.append((s, c, v[2:], evt))
             else: rej.append((s, c, v[2:]))
+    sysok = [("∅", c[4:], to, e) for c, (to, e) in create.items() if c.startswith("SYS")] + sysok
     tok += len(ok); trej += len(rej)
     h = {"id": f"TST-{a['id'][4:]}-SM", "type": "acceptance-spec", "title": f"Acceptance — {a['name']} state machine", "wave": "W6", "slice": SL,
-         "status": "APPROVED_DELEGATED", "approved_by": BY, "approved_at": "2026-09-24", "generated_from": a["id"], "traces": {"verifies": ["SL-05", a["id"]] + a["requirements"]}}
+         "status": "APPROVED_DELEGATED", "approved_by": BY, "approved_at": getattr(D, "APPROVED_AT", "2026-09-24"), "generated_from": a["id"], "traces": {"verifies": ["SL-05", a["id"]] + a["requirements"]}}
     L = ["---", yaml.safe_dump(h, allow_unicode=True, sort_keys=False).strip(), "---", "", f"# Acceptance — {a['name']}", "",
-         f"مولّدة من مصفوفة {a['id']}: {len(ok)} انتقالاً مسموحاً، {len(rej)} رفضاً.", "", "```gherkin", f"Feature: {a['name']} lifecycle ({a['id']})", "",
+         f"مولّدة من مصفوفة {a['id']}: {len(ok)} انتقالاً مسموحاً، {len(rej)} رفضاً" + (f"، {len(sysok)} انتقالاً نظامياً (SYS)." if sysok else "."), "", "```gherkin", f"Feature: {a['name']} lifecycle ({a['id']})", "",
          "  Background:", "    Given an ACTIVE tenant, baseline policies, and an authorized actor", "    And every guard of the command is satisfied", "",
          "  Scenario Outline: allowed transition", "    Given a <aggregate> in state <from> at version <v>", "    When the actor sends <command> with a new Idempotency-Key and If-Match <v>",
          "    Then the state becomes <to>", "    And exactly one <event> is written to the outbox", "    And one audit record is written in the same transaction", "", "    Examples:",
@@ -542,6 +548,11 @@ for a in D.AGGS.values():
         L += ["", "  Scenario Outline: rejected transition", "    Given a <aggregate> in state <state>", "    When the actor sends <command>",
               "    Then the command is rejected with <error> and HTTP 409", "    And the state and version are unchanged", "    And no event is written", "", "    Examples:",
               "      | aggregate | state | command | error |"] + [f"      | {a['name']} | {s} | {c} | {e} |" for s, c, e in rej]
+    if sysok:
+        L += ["", "  Scenario Outline: system-triggered transition", "    Given a <aggregate> in state <from>",
+              "    When the system trigger <trigger> occurs under a workload identity", "    Then the state becomes <to>",
+              "    And exactly one <event> is written to the outbox", "    And the aggregate invariants hold exactly as for actor commands", "", "    Examples:",
+              "      | aggregate | from | trigger | to | event |"] + [f"      | {a['name']} | {s} | {c} | {t} | {e} |" for s, c, t, e in sysok]
     L += ["```", ""]
     open(f"{out}/{a['id'][4:].lower()}-state-machine.md", "w", encoding="utf-8").write("\n".join(L))
 print("allowed", tok, "rejected", trej)

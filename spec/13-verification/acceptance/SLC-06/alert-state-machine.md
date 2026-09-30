@@ -19,7 +19,7 @@ traces:
 
 # Acceptance — Alert
 
-مولّدة من مصفوفة AGG-ALERT: 5 انتقالاً مسموحاً، 7 رفضاً.
+مولّدة من مصفوفة AGG-ALERT: 5 انتقالاً مسموحاً، 7 رفضاً، 6 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Alert lifecycle (AGG-ALERT)
@@ -67,4 +67,20 @@ Feature: Alert lifecycle (AGG-ALERT)
       | Alert | DISMISSED | CMD-ALR-ACKNOWLEDGE | ALERT_INVALID_STATE_TRANSITION |
       | Alert | DISMISSED | CMD-ALR-RESOLVE | ALERT_INVALID_STATE_TRANSITION |
       | Alert | DISMISSED | CMD-ALR-DISMISS | ALERT_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Alert | ∅ | rule condition met | RAISED | EVT-ALR-RAISED |
+      | Alert | RAISED | condition met again within dedupe window | RAISED | EVT-ALR-REPEATED |
+      | Alert | RAISED | unacknowledged beyond escalation delay | RAISED | EVT-ALR-ESCALATED |
+      | Alert | RAISED | condition cleared and rule auto_resolve | RESOLVED | EVT-ALR-RESOLVED |
+      | Alert | ACKNOWLEDGED | condition met again within dedupe window | ACKNOWLEDGED | EVT-ALR-REPEATED |
+      | Alert | ACKNOWLEDGED | condition cleared and rule auto_resolve | RESOLVED | EVT-ALR-RESOLVED |
 ```

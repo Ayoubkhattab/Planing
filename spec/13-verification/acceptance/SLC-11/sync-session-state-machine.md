@@ -20,7 +20,7 @@ traces:
 
 # Acceptance — Sync Session
 
-مولّدة من مصفوفة AGG-SYNC-SESSION: 2 انتقالاً مسموحاً، 10 رفضاً.
+مولّدة من مصفوفة AGG-SYNC-SESSION: 2 انتقالاً مسموحاً، 10 رفضاً، 5 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Sync Session lifecycle (AGG-SYNC-SESSION)
@@ -69,4 +69,19 @@ Feature: Sync Session lifecycle (AGG-SYNC-SESSION)
       | Sync Session | FAILED | CMD-SYN-UPLOAD-BATCH | SYNC_SESSION_INVALID_STATE_TRANSITION |
       | Sync Session | REJECTED | CMD-SYN-OPEN | SYNC_SESSION_INVALID_STATE_TRANSITION |
       | Sync Session | REJECTED | CMD-SYN-UPLOAD-BATCH | SYNC_SESSION_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Sync Session | ∅ | device LOST or SUSPENDED at handshake | REJECTED | EVT-SYN-REJECTED |
+      | Sync Session | OPEN | idle timeout (5 min) or transport loss | FAILED | EVT-SYN-FAILED |
+      | Sync Session | APPLYING | all uploaded commands processed without conflict | COMPLETED | EVT-SYN-COMPLETED |
+      | Sync Session | APPLYING | all processed with ≥ 1 sync conflict | COMPLETED_WITH_CONFLICTS | EVT-SYN-COMPLETED-WITH-CONFLICTS |
+      | Sync Session | APPLYING | idle timeout (5 min) or transport loss | FAILED | EVT-SYN-FAILED |
 ```

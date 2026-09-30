@@ -21,7 +21,7 @@ traces:
 
 # Acceptance — Risk
 
-مولّدة من مصفوفة AGG-RISK: 7 انتقالاً مسموحاً، 13 رفضاً.
+مولّدة من مصفوفة AGG-RISK: 7 انتقالاً مسموحاً، 13 رفضاً، 3 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Risk lifecycle (AGG-RISK)
@@ -78,4 +78,17 @@ Feature: Risk lifecycle (AGG-RISK)
       | Risk | CLOSED | CMD-RIS-PLAN-TREATMENT | RISK_INVALID_STATE_TRANSITION |
       | Risk | CLOSED | CMD-RIS-REASSESS | RISK_INVALID_STATE_TRANSITION |
       | Risk | CLOSED | CMD-RIS-CLOSE | RISK_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Risk | IDENTIFIED | incident references this risk as risk_ref | IDENTIFIED | EVT-RIS-MATERIALIZATION-LINKED |
+      | Risk | ASSESSED | incident references this risk as risk_ref | ASSESSED | EVT-RIS-MATERIALIZATION-LINKED |
+      | Risk | TREATED | incident references this risk as risk_ref | TREATED | EVT-RIS-MATERIALIZATION-LINKED |
 ```

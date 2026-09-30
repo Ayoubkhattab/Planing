@@ -18,7 +18,7 @@ traces:
 
 # Acceptance — Distribution
 
-مولّدة من مصفوفة AGG-DISTRIBUTION: 1 انتقالاً مسموحاً، 7 رفضاً.
+مولّدة من مصفوفة AGG-DISTRIBUTION: 1 انتقالاً مسموحاً، 7 رفضاً، 2 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Distribution lifecycle (AGG-DISTRIBUTION)
@@ -63,4 +63,16 @@ Feature: Distribution lifecycle (AGG-DISTRIBUTION)
       | Distribution | COMPLETED_WITH_EXCLUSIONS | CMD-DST-CANCEL | DISTRIBUTION_INVALID_STATE_TRANSITION |
       | Distribution | CANCELLED | CMD-DST-DISTRIBUTE | DISTRIBUTION_INVALID_STATE_TRANSITION |
       | Distribution | CANCELLED | CMD-DST-CANCEL | DISTRIBUTION_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Distribution | PREPARING | all recipients authorized and delivered | COMPLETED | EVT-DST-COMPLETED |
+      | Distribution | PREPARING | some recipients not authorized | COMPLETED_WITH_EXCLUSIONS | EVT-DST-COMPLETED-WITH-EXCLUSIONS |
 ```

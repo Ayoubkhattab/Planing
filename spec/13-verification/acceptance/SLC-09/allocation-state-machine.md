@@ -22,7 +22,7 @@ traces:
 
 # Acceptance — Resource Allocation
 
-مولّدة من مصفوفة AGG-ALLOCATION: 5 انتقالاً مسموحاً، 31 رفضاً.
+مولّدة من مصفوفة AGG-ALLOCATION: 5 انتقالاً مسموحاً، 31 رفضاً، 5 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Resource Allocation lifecycle (AGG-ALLOCATION)
@@ -95,4 +95,19 @@ Feature: Resource Allocation lifecycle (AGG-ALLOCATION)
       | Resource Allocation | RELEASED | CMD-ALC-RECORD-CONSUMPTION | ALLOCATION_INVALID_STATE_TRANSITION |
       | Resource Allocation | RELEASED | CMD-ALC-PREEMPT | ALLOCATION_INVALID_STATE_TRANSITION |
       | Resource Allocation | RELEASED | CMD-ALC-RELEASE | ALLOCATION_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Resource Allocation | REQUESTED | all checks passed | COMMITTED | EVT-ALC-COMMITTED |
+      | Resource Allocation | REQUESTED | checks passed, policy requires approval | PENDING_APPROVAL | EVT-ALC-APPROVAL-REQUIRED |
+      | Resource Allocation | REQUESTED | a check failed | REJECTED | EVT-ALC-REJECTED |
+      | Resource Allocation | PENDING_APPROVAL | provisional hold (1 h) elapsed | REJECTED | EVT-ALC-REJECTED |
+      | Resource Allocation | COMMITTED | linked task terminal | RELEASED | EVT-ALC-RELEASED |
 ```

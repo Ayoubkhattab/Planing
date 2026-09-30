@@ -18,7 +18,7 @@ traces:
 
 # Acceptance — Conflict
 
-مولّدة من مصفوفة AGG-CONFLICT: 7 انتقالاً مسموحاً، 23 رفضاً.
+مولّدة من مصفوفة AGG-CONFLICT: 7 انتقالاً مسموحاً، 23 رفضاً، 7 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Conflict lifecycle (AGG-CONFLICT)
@@ -85,4 +85,21 @@ Feature: Conflict lifecycle (AGG-CONFLICT)
       | Conflict | SUPERSEDED | CMD-CNF-RESOLVE | CONFLICT_INVALID_STATE_TRANSITION |
       | Conflict | SUPERSEDED | CMD-CNF-ACCEPT | CONFLICT_INVALID_STATE_TRANSITION |
       | Conflict | SUPERSEDED | CMD-CNF-REOPEN | CONFLICT_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Conflict | ∅ | conflict rule matched | OPEN | EVT-CNF-DETECTED |
+      | Conflict | OPEN | incompatible claim joined | OPEN | EVT-CNF-CLAIM-ADDED |
+      | Conflict | OPEN | member set no longer conflicting | SUPERSEDED | EVT-CNF-SUPERSEDED |
+      | Conflict | UNDER_REVIEW | incompatible claim joined | UNDER_REVIEW | EVT-CNF-CLAIM-ADDED |
+      | Conflict | UNDER_REVIEW | member set no longer conflicting | SUPERSEDED | EVT-CNF-SUPERSEDED |
+      | Conflict | RESOLVED | member set no longer conflicting | SUPERSEDED | EVT-CNF-SUPERSEDED |
+      | Conflict | ACCEPTED_AS_CONFLICT | member set no longer conflicting | SUPERSEDED | EVT-CNF-SUPERSEDED |
 ```

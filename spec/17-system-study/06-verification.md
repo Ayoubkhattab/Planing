@@ -1,0 +1,177 @@
+---
+id: SYS-STUDY-VERIFICATION
+type: verification-report
+title: "Phase 3.7 — تحقق آلي من اتساق المواصفات (قبول · عقود · أحداث · أخطاء)"
+status: GENERATED
+generated_by: _build/verify_study.py
+---
+
+# تحقق آلي من اتساق المواصفات
+
+هذا الملف مولَّد بالكامل بواسطة `_build/verify_study.py` ولا يُحرَّر يدويًا. يغطي جولات التحقق التي بقيت [Missing verification pass] في §20 من ملفات الـBC: مطابقة كل ملف قبول لمصفوفة الـAggregate سطرًا بسطر، ومطابقة كل أمر واستعلام وحدث ورمز خطأ لعقده. كل فحص هنا **Explicit** (مقارنة جداول حرفية)؛ لا حكم دلالي.
+
+## 1. الملخص
+
+| الفحص | النطاق | النتيجة |
+|---|---|---|
+| V1 ملفات القبول ↔ مصفوفات الحالات | 89 Aggregate، 89 ملف قبول | 89 مطابق، 0 بفروق |
+| V1b انتقالات المجدول (`SYS:`) بلا سيناريو قبول | 175 انتقالًا في 56 Aggregate | 0 بلا تغطية في 0 Aggregate |
+| V2 الأوامر والاستعلامات ↔ OpenAPI | 477 أمرًا، 133 استعلامًا، 611 عملية | 0 فرقًا؛ 1 عملية بلا كتالوج؛ 0 operationId مكرر |
+| V3 الأحداث ↔ AsyncAPI | 585 حدثًا، 585 رسالة | 0 حدثًا بلا رسالة؛ 0 رسالة بلا كتالوج |
+| V4a أخطاء الأوامر ↔ كتالوج الأخطاء | 2756 زوجًا (أمر، رمز) | 0 فرقًا |
+| V4b أخطاء الشروط (Guards) ↔ أخطاء الأمر | 430 رمزًا | 0 رمزًا لا يظهر في قائمة أخطاء الأمر |
+| V5 ذهاب وإياب أدوات المواصفة | 326 ملفًا مولَّدًا من 19 شريحة | 0 ملفًا يختلف عن مولِّده خارج SLC-19؛ SLC-19 مستثناة (13 ملفًا مكتوبًا خارج الأدوات)؛ 0 فشل تشغيل |
+| V6 صلاحية كتل YAML المضمَّنة | 1018 كتلة (front-matter + YAML) | 0 كتلة لا تُقرأ |
+| V7 سياسة لكل أمر (SL-02) | 477 أمرًا، 611 سياسة معرَّفة | 0 سياسة غير معرَّفة؛ 0 أمرًا بغير سياسة واحدة؛ 0 سياسة يتشاركها أكثر من أمر |
+
+## 2. V1 — ملفات القبول مقابل مصفوفات الحالات
+
+لكل Aggregate: كل خلية `→ حالة` في مصفوفة الحالات × الأوامر يجب أن تظهر كانتقال مسموح (أو إنشاء من ∅) بنفس الحالة الهدف والحدث، وكل خلية `✗ رمز` كرفض بنفس الرمز، ولا صف زائد في ملف القبول. العمود «مسموح+إنشاء / رفض» عدد الخلايا في المصفوفة.
+
+| Aggregate | BC | مسموح+إنشاء / رفض | النتيجة |
+|---|---|---|---|
+| AGG-ADAPTER | BC07 | 8+1 / 16 | ✅ |
+| AGG-AI-REQUEST | BC07 | 3+1 / 13 | ✅ |
+| AGG-AI-RESULT | BC07 | 5+0 / 15 | ✅ |
+| AGG-AI-ROUTING | BC07 | 3+1 / 13 | ✅ |
+| AGG-AI-TOOL | BC07 | 6+1 / 14 | ✅ |
+| AGG-ALERT | BC03 | 5+0 / 7 | ✅ |
+| AGG-ALERT-RULE | BC03 | 8+1 / 16 | ✅ |
+| AGG-ALLOCATION | BC05 | 5+1 / 31 | ✅ |
+| AGG-ANALYSIS-CASE | BC03 | 17+1 / 39 | ✅ |
+| AGG-ANALYSIS-METHOD | BC03 | 3+1 / 13 | ✅ |
+| AGG-ANALYSIS-RUN | BC03 | 2+2 / 13 | ✅ |
+| AGG-ARCHIVE-PACKAGE | BC06 | 4+0 / 20 | ✅ |
+| AGG-ASSESSMENT | BC03 | 6+1 / 36 | ✅ |
+| AGG-ASSET | BC05 | 23+1 / 37 | ✅ |
+| AGG-ASSET-ASSIGNMENT | BC05 | 2+1 / 7 | ✅ |
+| AGG-ASSET-RESERVATION | BC05 | 4+1 / 16 | ✅ |
+| AGG-ATTACHMENT | BC02 | 2+1 / 16 | ✅ |
+| AGG-AUTHORITY-GRANT | BC01 | 7+2 / 35 | ✅ |
+| AGG-CAP-MESSAGE | BC03 | 4+1 / 12 | ✅ |
+| AGG-CLAIM | BC02 | 6+1 / 6 | ✅ |
+| AGG-CLASSIFICATION-SCHEME | BC08 | 3+1 / 13 | ✅ |
+| AGG-CLEARANCE | BC01 | 7+1 / 23 | ✅ |
+| AGG-COLLECTION-PLAN | BC02 | 7+1 / 17 | ✅ |
+| AGG-COLLECTION-REQUIREMENT | BC02 | 9+1 / 47 | ✅ |
+| AGG-CONFLICT | BC02 | 7+1 / 23 | ✅ |
+| AGG-COORDINATION-CASE | BC04 | 11+1 / 25 | ✅ |
+| AGG-CORRELATION-PROPOSAL | BC02 | 4+1 / 16 | ✅ |
+| AGG-CORRELATION-RULE | BC02 | 4+1 / 8 | ✅ |
+| AGG-DECISION | BC04 | 1+1 / 5 | ✅ |
+| AGG-DECISION-REQUEST | BC04 | 7+1 / 13 | ✅ |
+| AGG-DEVICE | BC01 | 8+1 / 34 | ✅ |
+| AGG-DISPOSITION-RUN | BC08 | 5+0 / 16 | ✅ |
+| AGG-DISTRIBUTION | BC06 | 1+1 / 7 | ✅ |
+| AGG-ENTITY | BC02 | 5+1 / 5 | ✅ |
+| AGG-ER-CASE | BC02 | 12+1 / 68 | ✅ |
+| AGG-ERASURE-REQUEST | BC08 | 2+1 / 19 | ✅ |
+| AGG-EVAL-SUITE | BC07 | 2+1 / 7 | ✅ |
+| AGG-EVIDENCE | BC02 | 9+1 / 9 | ✅ |
+| AGG-EVIDENCE-LINK | BC02 | 1+1 / 3 | ✅ |
+| AGG-EXERCISE | BC05 | 4+1 / 20 | ✅ |
+| AGG-EXTERNAL-ID | BC02 | 1+1 / 3 | ✅ |
+| AGG-FINDING | BC03 | 4+1 / 8 | ✅ |
+| AGG-HR-SYNC-PROPOSAL | BC01 | 2+0 / 8 | ✅ |
+| AGG-IMPORT-BATCH | BC02 | 3+1 / 21 | ✅ |
+| AGG-INCIDENT | BC04 | 21+1 / 29 | ✅ |
+| AGG-INTEGRATION-CONNECTION | BC07 | 8+1 / 34 | ✅ |
+| AGG-KNOWLEDGE-OBJECT | BC06 | 8+1 / 55 | ✅ |
+| AGG-LEGAL-HOLD | BC08 | 4+1 / 11 | ✅ |
+| AGG-LOGISTICS-REQUEST | BC05 | 4+1 / 8 | ✅ |
+| AGG-MAINTENANCE-ORDER | BC05 | 4+1 / 16 | ✅ |
+| AGG-MATCH-RULESET | BC02 | 2+1 / 7 | ✅ |
+| AGG-MODEL-VERSION | BC07 | 10+1 / 62 | ✅ |
+| AGG-NOTIFICATION | BC04 | 1+0 / 5 | ✅ |
+| AGG-OBSERVATION | BC02 | 7+1 / 11 | ✅ |
+| AGG-ORGANIZATION | BC01 | 7+1 / 9 | ✅ |
+| AGG-OUTCOME-TRACKER | BC04 | 2+0 / 2 | ✅ |
+| AGG-PERSON | BC01 | 4+1 / 11 | ✅ |
+| AGG-PLAN | BC04 | 10+1 / 32 | ✅ |
+| AGG-PLAN-VERSION | BC04 | 7+1 / 41 | ✅ |
+| AGG-POLICY-SET | BC08 | 4+1 / 26 | ✅ |
+| AGG-PRELOAD-PACKAGE | BC07 | 5+1 / 13 | ✅ |
+| AGG-PRODUCT | BC06 | 11+1 / 61 | ✅ |
+| AGG-PRODUCT-TEMPLATE | BC06 | 4+1 / 8 | ✅ |
+| AGG-PROJECTION-VERSION | BC07 | 5+1 / 19 | ✅ |
+| AGG-QUALIFICATION-RECORD | BC05 | 5+1 / 15 | ✅ |
+| AGG-REALWORLD-EVENT | BC02 | 5+1 / 5 | ✅ |
+| AGG-RECONSTRUCTION | BC06 | 2+1 / 8 | ✅ |
+| AGG-RELATIONSHIP | BC02 | 4+1 / 4 | ✅ |
+| AGG-RESOURCE-POOL | BC05 | 6+1 / 9 | ✅ |
+| AGG-RETENTION-SCHEDULE | BC08 | 3+1 / 13 | ✅ |
+| AGG-RISK | BC04 | 7+1 / 13 | ✅ |
+| AGG-ROLE | BC01 | 4+1 / 8 | ✅ |
+| AGG-ROLE-ASSIGNMENT | BC01 | 1+1 / 5 | ✅ |
+| AGG-ROLE-REQUIREMENT | BC05 | 4+1 / 8 | ✅ |
+| AGG-SCENARIO | BC05 | 4+1 / 8 | ✅ |
+| AGG-SECURITY-EXCEPTION | BC08 | 5+1 / 19 | ✅ |
+| AGG-SENSOR-STREAM | BC07 | 8+1 / 12 | ✅ |
+| AGG-SERVICE-ACCOUNT | BC01 | 4+1 / 11 | ✅ |
+| AGG-SHIPMENT | BC05 | 6+1 / 8 | ✅ |
+| AGG-SIMULATION | BC05 | 9+1 / 19 | ✅ |
+| AGG-SITUATION | BC03 | 12+1 / 16 | ✅ |
+| AGG-SOURCE | BC02 | 12+1 / 12 | ✅ |
+| AGG-SUBSCRIPTION | BC04 | 6+1 / 9 | ✅ |
+| AGG-SYNC-CONFLICT | BC07 | 4+0 / 12 | ✅ |
+| AGG-SYNC-SESSION | BC07 | 2+1 / 10 | ✅ |
+| AGG-TASK | BC04 | 77+1 / 283 | ✅ |
+| AGG-TASK-TYPE | BC04 | 4+1 / 8 | ✅ |
+| AGG-TENANT | BC01 | 12+1 / 65 | ✅ |
+| AGG-USER | BC01 | 20+1 / 30 | ✅ |
+
+### 2.1 V1b — انتقالات المجدول بلا سيناريو قبول
+
+مولِّد ملفات القبول في W6 يغطي أوامر الفاعلين فقط؛ الانتقالات التي يطلقها المجدول (`SYS:`، مثل انتهاء الصلاحية) لا سيناريو لها إلا حيث كُتب يدويًا (SLC-19). هذه **فجوة تغطية اختبار** لا خطأ في التصميم: الانتقالات موثَّقة في المصفوفات وتخضع لنفس الثوابت. منذ CR-72 يولِّد `acc_gen` سيناريو «system-triggered transition» لكل انتقال مجدول؛ ويُحتسَب أيضًا السيناريو السردي المكتوب يدويًا (`Then … becomes <state>`) كما في SLC-19.
+
+| Aggregate | BC | الانتقالات غير المغطاة |
+|---|---|---|
+
+## 3. V2 — الأوامر والاستعلامات مقابل OpenAPI
+
+كل أمر واستعلام له عملية OpenAPI بنفس الـoperationId والطريقة والمسار.
+
+**عمليات OpenAPI بلا أمر أو استعلام في الكتالوجات:** QRY-LABEL-CHECK — عقد OHS مشترك تنفّذه كل السياقات المالكة (POL-LABEL-CHECK في `08-security/policies-slc05.md`)؛ لا كتالوج استعلام له لأنه لا يملكه BC واحد — بالتصميم
+
+**operationId يظهر في أكثر من عقد:** لا شيء
+
+## 4. V3 — الأحداث مقابل AsyncAPI
+
+**أحداث بلا رسالة AsyncAPI:** لا شيء
+
+**رسائل AsyncAPI بلا حدث في الكتالوجات:** لا شيء
+
+## 5. V4 — رموز الأخطاء
+
+### 5.1 V4a — قوائم أخطاء الأوامر مقابل `errors-slcNN.md`
+
+لكل شريحة ورمز: عدد الأوامر في الكتالوج يساوي عدد الأوامر التي تذكر الرمز، وكل أمر مذكور بالاسم. الكتالوج يقطع القوائم الطويلة بـ«…» عمدًا، فتُقارَن عندها الأعداد والأسماء الظاهرة فقط.
+
+لا فروق.
+
+### 5.2 V4b — خطأ شرط في جدول الانتقالات لا يظهر في قائمة أخطاء الأمر
+
+لا فروق.
+
+## 6. V5 — ذهاب وإياب أدوات المواصفة
+
+`13-verification/tooling/spec-tooling.md` يعلن أن ملفات الـAggregates والكتالوجات والعقود وملفات القبول **مولَّدة لا تُعدَّل يدويًا**، وأن استخراج الأدوات وإعادة التوليد يعطي ملفات مطابقة حرفيًا. هذا الفحص يستخرج الأدوات من الملفين، يشغّل `slice_gen` ثم `slice_contracts` ثم `acc_gen` لكل شريحة في مجلد مؤقت، ويقارن كل ملف بايتًا ببايت.
+
+- ملفات مولَّدة: 326
+- تختلف عن مولِّدها خارج SLC-19: **لا شيء — ذهاب وإياب تام**
+- فشل تشغيل: لا شيء
+- **SLC-19 مستثناة (13 ملفًا):** كُتبت خارج الأدوات (ترتيب أعمدة مختلف، ملاحظات يدوية، وسيناريوهات قبول لانتقالات المجدول لا يولّدها `acc_gen`). إعادة توليدها كانت ستحذف تلك السيناريوهات، فهي دَين تقني مسجَّل لا فرق يُصحَّح آليًا.
+
+## 7. V6 — صلاحية كتل YAML المضمَّنة
+
+كثير من ملفات المواصفة تعلن أن كتلة YAML في آخرها هي «المصدر المعتمد» للملف؛ كتلة لا تُقرأ آليًا تُبطل هذا الادعاء.
+
+كل الكتل تُقرأ بلا أخطاء.
+
+## 8. V7 — سياسة واحدة معرَّفة لكل أمر (SL-02)
+
+كل سياسة يسمّيها أمر معرَّفة في `08-security/policies-*.md`.
+
+كل أمر يسمّي سياسة واحدة بالضبط.
+
+لا سياسة يتشاركها أمران.

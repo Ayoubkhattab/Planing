@@ -18,7 +18,7 @@ traces:
 
 # Acceptance — Preload Package
 
-مولّدة من مصفوفة AGG-PRELOAD-PACKAGE: 5 انتقالاً مسموحاً، 13 رفضاً.
+مولّدة من مصفوفة AGG-PRELOAD-PACKAGE: 5 انتقالاً مسموحاً، 13 رفضاً، 8 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Preload Package lifecycle (AGG-PRELOAD-PACKAGE)
@@ -73,4 +73,22 @@ Feature: Preload Package lifecycle (AGG-PRELOAD-PACKAGE)
       | Preload Package | REVOKED | CMD-PKG-REQUEST | PRELOAD_PACKAGE_INVALID_STATE_TRANSITION |
       | Preload Package | REVOKED | CMD-PKG-CONFIRM-DOWNLOAD | PRELOAD_PACKAGE_INVALID_STATE_TRANSITION |
       | Preload Package | REVOKED | CMD-PKG-REVOKE | PRELOAD_PACKAGE_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Preload Package | REQUESTED | build started | BUILDING | EVT-PKG-BUILDING |
+      | Preload Package | REQUESTED | user security_version changed or device not ACTIVE | REVOKED | EVT-PKG-REVOKED |
+      | Preload Package | BUILDING | build finished | READY | EVT-PKG-READY |
+      | Preload Package | BUILDING | user security_version changed or device not ACTIVE | REVOKED | EVT-PKG-REVOKED |
+      | Preload Package | READY | expires_at reached | EXPIRED | EVT-PKG-EXPIRED |
+      | Preload Package | READY | user security_version changed or device not ACTIVE | REVOKED | EVT-PKG-REVOKED |
+      | Preload Package | DOWNLOADED | expires_at reached | EXPIRED | EVT-PKG-EXPIRED |
+      | Preload Package | DOWNLOADED | user security_version changed or device not ACTIVE | REVOKED | EVT-PKG-REVOKED |
 ```

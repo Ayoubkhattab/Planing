@@ -19,7 +19,7 @@ traces:
 
 # Acceptance — AI Result (reviewable)
 
-مولّدة من مصفوفة AGG-AI-RESULT: 5 انتقالاً مسموحاً، 15 رفضاً.
+مولّدة من مصفوفة AGG-AI-RESULT: 5 انتقالاً مسموحاً، 15 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: AI Result (reviewable) lifecycle (AGG-AI-RESULT)
@@ -75,4 +75,15 @@ Feature: AI Result (reviewable) lifecycle (AGG-AI-RESULT)
       | AI Result (reviewable) | REJECTED | CMD-AIRS-ACCEPT | AI_RESULT_INVALID_STATE_TRANSITION |
       | AI Result (reviewable) | REJECTED | CMD-AIRS-ACCEPT-PARTIALLY | AI_RESULT_INVALID_STATE_TRANSITION |
       | AI Result (reviewable) | REJECTED | CMD-AIRS-REJECT | AI_RESULT_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | AI Result (reviewable) | ∅ | request COMPLETED for a reviewable operation | PROPOSED | EVT-AIRS-PROPOSED |
 ```

@@ -93,7 +93,7 @@ id: AGG-SIMULATION
 bc: BC05
 name: Simulation
 tier: T2
-purpose: تنفيذ فعلي واحد لتمرين: تسليم الحقن، تسجيل التقييمات، والانتهاء إلى نتيجة نهائية
+purpose: 'تنفيذ فعلي واحد لتمرين: تسليم الحقن، تسجيل التقييمات، والانتهاء إلى نتيجة نهائية'
 states:
 - IN_PROGRESS
 - PAUSED

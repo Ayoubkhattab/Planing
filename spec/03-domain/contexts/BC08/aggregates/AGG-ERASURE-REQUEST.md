@@ -51,7 +51,7 @@ traces:
 | من | الأمر | إلى | الشرط (Guard) | الحدث | خطأ فشل الشرط |
 |---|---|---|---|---|---|
 | ∅ (إنشاء) | CMD-ERS-REGISTER | RECEIVED | legal basis reference; subject identification (platform person URN and/or information entity URNs of type person); requester | EVT-ERS-RECEIVED | ERASURE_INVALID |
-| RECEIVED | SYS:subject scope resolved | SCOPED | subject keys located in BC01 (persons) and BC02 (entities with personal_data claims); affected record counts per context | EVT-ERS-SCOPED | — |
+| RECEIVED | SYS:subject scope resolved | SCOPED | subject keys located in BC01 (persons), BC02 (entities with personal_data claims) and BC05 (qualification records of that person, CR-69); affected record counts per context | EVT-ERS-SCOPED | — |
 | SCOPED | CMD-ERS-APPROVE | APPROVED | Legal/Compliance authority ≠ registrar; decision recorded with basis | EVT-ERS-APPROVED | SEGREGATION_OF_DUTIES |
 | SCOPED | CMD-ERS-REJECT | REJECTED | reason (e.g. legal obligation to retain) | EVT-ERS-REJECTED | REASON_REQUIRED |
 | APPROVED | SYS:hold matches subject | BLOCKED_BY_HOLD | HoldCheck positive | EVT-ERS-BLOCKED | — |
@@ -133,8 +133,9 @@ transitions:
   - RECEIVED
   command: SYS:subject scope resolved
   to: SCOPED
-  guard: subject keys located in BC01 (persons) and BC02 (entities with personal_data
-    claims); affected record counts per context
+  guard: subject keys located in BC01 (persons), BC02 (entities with personal_data
+    claims) and BC05 (qualification records of that person, CR-69); affected record
+    counts per context
   event: EVT-ERS-SCOPED
   guard_error: null
 - from:

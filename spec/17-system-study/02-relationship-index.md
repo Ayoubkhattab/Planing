@@ -160,12 +160,12 @@ BC08 (7 aggregates: Classification-Scheme/Policy-Set/Security-Exception (SLC-01�
 | استعلامات مرتبطة بـAggregate (Derived) | 117 |
 | استعلامات لم تُطابَق مع Aggregate بالبادئة | 16 |
 | متطلبات يلبيها Aggregate واحد على الأقل (`traces.satisfies`) | 173 من 210 |
-| Aggregates بلا أي UC عبر متطلباتها | 11 |
+| Aggregates بلا أي UC عبر متطلباتها | 1 |
 | Aggregates بلا أوامر | 0 |
 | أحداث بلا مستهلك مُعلَن | 0 |
 | Aggregates بلا ملف اختبار قبول مطابق | 0 |
 
-**Aggregates بلا أي Use Case عبر حلقة REQ→UC:** `AGG-EVAL-SUITE` (BC07), `AGG-EXERCISE` (BC05), `AGG-EXTERNAL-ID` (BC02), `AGG-INCIDENT` (BC04), `AGG-LOGISTICS-REQUEST` (BC05), `AGG-MODEL-VERSION` (BC07), `AGG-PROJECTION-VERSION` (BC07), `AGG-RISK` (BC04), `AGG-SCENARIO` (BC05), `AGG-SHIPMENT` (BC05), `AGG-SIMULATION` (BC05)
+**Aggregates بلا أي Use Case عبر حلقة REQ→UC:** `AGG-EXTERNAL-ID` (BC02)
 
 هذه القائمة آلية وتتبع حلقة REQ→UC فقط. قد يربط ملف الـBC حالة استخدام بالـAggregate مباشرة (Derived، في §5 منه)، فراجعه قبل اعتبار البند فجوة. الفجوات المؤكَّدة يدويًا مسجَّلة في [05-conflicts.md §6](05-conflicts.md) (CONFLICT-05).
 
@@ -208,14 +208,14 @@ BC08 (7 aggregates: Classification-Scheme/Policy-Set/Security-Exception (SLC-01�
 | EVT-CLS-ACTIVATED | BC08 · AGG-CLASSIFICATION-SCHEME | Security-version service (EVT-SEC-VERSION-INCREMENTED); PEP decision caches; Projection security-version table; Search/Directory projection (BC01 read model); PDP bundle distributor |
 | EVT-CLS-DISCARDED | BC08 · AGG-CLASSIFICATION-SCHEME | Search/Directory projection (BC01 read model); PDP bundle distributor |
 | EVT-CLS-SUPERSEDED | BC08 · AGG-CLASSIFICATION-SCHEME | Search/Directory projection (BC01 read model); PDP bundle distributor |
-| EVT-ERS-RECEIVED | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) |
-| EVT-ERS-SCOPED | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) |
-| EVT-ERS-APPROVED | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) |
-| EVT-ERS-REJECTED | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) |
-| EVT-ERS-BLOCKED | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) |
-| EVT-ERS-UNBLOCKED | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) |
-| EVT-ERS-EXECUTING | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) |
-| EVT-ERS-COMPLETED | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) |
+| EVT-ERS-RECEIVED | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) |
+| EVT-ERS-SCOPED | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) |
+| EVT-ERS-APPROVED | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) |
+| EVT-ERS-REJECTED | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) |
+| EVT-ERS-BLOCKED | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) |
+| EVT-ERS-UNBLOCKED | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) |
+| EVT-ERS-EXECUTING | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) |
+| EVT-ERS-COMPLETED | BC08 · AGG-ERASURE-REQUEST | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) |
 | EVT-POL-DRAFTED | BC08 · AGG-POLICY-SET | Search/Directory projection (BC01 read model); PDP bundle distributor |
 | EVT-POL-EDITED | BC08 · AGG-POLICY-SET | Search/Directory projection (BC01 read model); PDP bundle distributor |
 | EVT-POL-SUBMITTED | BC08 · AGG-POLICY-SET | Search/Directory projection (BC01 read model); PDP bundle distributor |
@@ -1348,7 +1348,7 @@ CAP  CAP-06.01
 
 ```
 CAP  CAP-09.02, CAP-09.03
- └ UC   —
+ └ UC   UC-142, UC-143, UC-144
     └ REQ  REQ-RCM-006, REQ-RCM-007, REQ-RCM-008, REQ-RCM-009, REQ-RCM-010, REQ-RCM-011, REQ-RCM-012, REQ-RCM-013
        └ AGG-INCIDENT
           ├ INV  INV-INC-01, INV-INC-02, INV-INC-03, INV-INC-04, INV-INC-05
@@ -1372,8 +1372,6 @@ CAP  CAP-09.02, CAP-09.03
 | CMD-INC-ESCALATE | أي مُبلِّغ مخوَّل (تبليغ، إلغاء) · مقيّم الحادثة (تقييم) · قائد الحادثة (استجابة، احتواء، حل، إغلاق، تصعيد، تخفيض، تفعيل الاستمرارية) | POL-INC-ESCALATE | EVT-INC-ESCALATED | Search projection (SLC-05); Notification (SLC-06); اقتراحات كائن المعرفة (SLC-12، بعد الإغلاق — R3-Q5) |
 | CMD-INC-DE-ESCALATE | أي مُبلِّغ مخوَّل (تبليغ، إلغاء) · مقيّم الحادثة (تقييم) · قائد الحادثة (استجابة، احتواء، حل، إغلاق، تصعيد، تخفيض، تفعيل الاستمرارية) | POL-INC-DE-ESCALATE | EVT-INC-DE-ESCALATED | Search projection (SLC-05); Notification (SLC-06); اقتراحات كائن المعرفة (SLC-12، بعد الإغلاق — R3-Q5) |
 | CMD-INC-ACTIVATE-CONTINGENCY | أي مُبلِّغ مخوَّل (تبليغ، إلغاء) · مقيّم الحادثة (تقييم) · قائد الحادثة (استجابة، احتواء، حل، إغلاق، تصعيد، تخفيض، تفعيل الاستمرارية) | POL-INC-ACTIVATE-CONTINGENCY | EVT-INC-CONTINGENCY-ACTIVATED | Search projection (SLC-05); Notification (SLC-06); اقتراحات كائن المعرفة (SLC-12، بعد الإغلاق — R3-Q5) |
-
-> لا Use Case مرتبط بهذا الـAggregate عبر متطلباته. راجع §5 في [bc04-planning-execution.md](bc04-planning-execution.md) وCONFLICT-05 قبل اعتباره فجوة.
 
 #### AGG-NOTIFICATION — Notification
 
@@ -1483,7 +1481,7 @@ CAP  CAP-07.01, CAP-07.02, CAP-07.04
 
 ```
 CAP  CAP-09.01
- └ UC   —
+ └ UC   UC-140, UC-141
     └ REQ  REQ-RCM-001, REQ-RCM-002, REQ-RCM-003, REQ-RCM-004, REQ-RCM-005
        └ AGG-RISK
           ├ INV  INV-RIS-01, INV-RIS-02, INV-RIS-03, INV-RIS-04, INV-RIS-05
@@ -1502,8 +1500,6 @@ CAP  CAP-09.01
 | CMD-RIS-PLAN-TREATMENT | محدِّد الخطر (تحديد) · مقيّم (تقييم، إعادة تقييم) · موافق المعالجة (تخطيط المعالجة) · مدير المخاطر (إغلاق) | POL-RIS-PLAN-TREATMENT | EVT-RIS-TREATMENT-PLANNED | Search projection (SLC-05); Coordination cases (SLC-15، عند ارتباط النطاق) |
 | CMD-RIS-REASSESS | محدِّد الخطر (تحديد) · مقيّم (تقييم، إعادة تقييم) · موافق المعالجة (تخطيط المعالجة) · مدير المخاطر (إغلاق) | POL-RIS-REASSESS | EVT-RIS-REASSESSED | Search projection (SLC-05); Coordination cases (SLC-15، عند ارتباط النطاق) |
 | CMD-RIS-CLOSE | محدِّد الخطر (تحديد) · مقيّم (تقييم، إعادة تقييم) · موافق المعالجة (تخطيط المعالجة) · مدير المخاطر (إغلاق) | POL-RIS-CLOSE | EVT-RIS-CLOSED | Search projection (SLC-05); Coordination cases (SLC-15، عند ارتباط النطاق) |
-
-> لا Use Case مرتبط بهذا الـAggregate عبر متطلباته. راجع §5 في [bc04-planning-execution.md](bc04-planning-execution.md) وCONFLICT-05 قبل اعتباره فجوة.
 
 #### AGG-SUBSCRIPTION — Subscription
 
@@ -1722,7 +1718,7 @@ CAP  CAP-08.01
 
 ```
 CAP  CAP-08.05
- └ UC   —
+ └ UC   UC-161, UC-162
     └ REQ  REQ-TRX-003, REQ-TRX-004, REQ-TRX-005, REQ-TRX-006, REQ-TRX-007
        └ AGG-EXERCISE
           ├ INV  INV-EXR-01, INV-EXR-02
@@ -1741,15 +1737,13 @@ CAP  CAP-08.05
 | CMD-EXR-START | Exercise Director / Training Manager | POL-EXR-START | EVT-EXR-STARTED | Simulation (creation trigger); Search projection (SLC-05) |
 | CMD-EXR-CANCEL | Exercise Director / Training Manager | POL-EXR-CANCEL | EVT-EXR-CANCELLED | Search projection (SLC-05) |
 
-> لا Use Case مرتبط بهذا الـAggregate عبر متطلباته. راجع §5 في [bc05-resources-readiness.md](bc05-resources-readiness.md) وCONFLICT-05 قبل اعتباره فجوة.
-
 #### AGG-LOGISTICS-REQUEST — Logistics Request
 
 `03-domain/contexts/BC05/aggregates/AGG-LOGISTICS-REQUEST.md` · SLC-18 · T2 · بيانات شخصية: لا
 
 ```
 CAP  CAP-08.03
- └ UC   —
+ └ UC   UC-150, UC-152
     └ REQ  REQ-LOG-001, REQ-LOG-002, REQ-LOG-003, REQ-LOG-008, REQ-LOG-009, REQ-LOG-013, REQ-LOG-014
        └ AGG-LOGISTICS-REQUEST
           ├ INV  INV-LGR-01, INV-LGR-02, INV-LGR-03, INV-LGR-04, INV-LGR-05
@@ -1766,8 +1760,6 @@ CAP  CAP-08.03
 | CMD-LGR-REQUEST | Logistics Officer / Planner (request, cancel) · dispatcher (dispatch) | POL-LGR-REQUEST | EVT-LGR-REQUESTED | Capacity ledger (via linked allocation, SLC-09); Search projection (SLC-05) |
 | CMD-LGR-DISPATCH | Logistics Officer / Planner (request, cancel) · dispatcher (dispatch) | POL-LGR-DISPATCH | EVT-LGR-DISPATCHED | Capacity ledger (via linked allocation, SLC-09); Search projection (SLC-05) |
 | CMD-LGR-CANCEL | Logistics Officer / Planner (request, cancel) · dispatcher (dispatch) | POL-LGR-CANCEL | EVT-LGR-CANCELLED | Capacity ledger (via linked allocation, SLC-09); Search projection (SLC-05) |
-
-> لا Use Case مرتبط بهذا الـAggregate عبر متطلباته. راجع §5 في [bc05-resources-readiness.md](bc05-resources-readiness.md) وCONFLICT-05 قبل اعتباره فجوة.
 
 #### AGG-MAINTENANCE-ORDER — Maintenance Order
 
@@ -1878,7 +1870,7 @@ CAP  CAP-08.04
 
 ```
 CAP  CAP-08.05
- └ UC   —
+ └ UC   UC-160
     └ REQ  REQ-TRX-001, REQ-TRX-002
        └ AGG-SCENARIO
           ├ INV  INV-SCN-01, INV-SCN-02
@@ -1897,15 +1889,13 @@ CAP  CAP-08.05
 | CMD-SCN-ACTIVATE | Training Manager (define, edit) · Exercise Director (activate, retire) | POL-SCN-ACTIVATE | EVT-SCN-ACTIVATED | Exercise (frozen scenario reference on plan); Search projection (SLC-05) |
 | CMD-SCN-RETIRE | Training Manager (define, edit) · Exercise Director (activate, retire) | POL-SCN-RETIRE | EVT-SCN-RETIRED | Search projection (SLC-05) |
 
-> لا Use Case مرتبط بهذا الـAggregate عبر متطلباته. راجع §5 في [bc05-resources-readiness.md](bc05-resources-readiness.md) وCONFLICT-05 قبل اعتباره فجوة.
-
 #### AGG-SHIPMENT — Shipment
 
 `03-domain/contexts/BC05/aggregates/AGG-SHIPMENT.md` · SLC-18 · T2 · بيانات شخصية: لا
 
 ```
 CAP  CAP-08.03
- └ UC   —
+ └ UC   UC-151, UC-152
     └ REQ  REQ-LOG-004, REQ-LOG-005, REQ-LOG-006, REQ-LOG-007, REQ-LOG-009
        └ AGG-SHIPMENT
           ├ INV  INV-SHP-01, INV-SHP-02, INV-SHP-03, INV-SHP-04
@@ -1927,15 +1917,13 @@ CAP  CAP-08.03
 | CMD-SHP-REPORT-LOST | dispatcher / carrier operator (plan, depart, checkpoint, deliver, report damage, report lost, cancel) | POL-SHP-REPORT-LOST | EVT-SHP-LOST | Logistics Request (fulfillment status); Search projection (SLC-05) |
 | CMD-SHP-CANCEL | dispatcher / carrier operator (plan, depart, checkpoint, deliver, report damage, report lost, cancel) | POL-SHP-CANCEL | EVT-SHP-CANCELLED | Logistics Request (fulfillment status); Search projection (SLC-05) |
 
-> لا Use Case مرتبط بهذا الـAggregate عبر متطلباته. راجع §5 في [bc05-resources-readiness.md](bc05-resources-readiness.md) وCONFLICT-05 قبل اعتباره فجوة.
-
 #### AGG-SIMULATION — Simulation
 
 `03-domain/contexts/BC05/aggregates/AGG-SIMULATION.md` · SLC-19 · T2 · بيانات شخصية: لا
 
 ```
 CAP  CAP-08.05
- └ UC   —
+ └ UC   UC-162
     └ REQ  REQ-TRX-008, REQ-TRX-009, REQ-TRX-010, REQ-TRX-011
        └ AGG-SIMULATION
           ├ INV  INV-SIM-01, INV-SIM-02, INV-SIM-03
@@ -1956,8 +1944,6 @@ CAP  CAP-08.05
 | CMD-SIM-RESUME | Exercise Controller (start, deliver-inject, pause, resume, complete, abort) · Evaluator (record-evaluation) | POL-SIM-RESUME | EVT-SIM-RESUMED | Search projection (SLC-05) |
 | CMD-SIM-COMPLETE | Exercise Controller (start, deliver-inject, pause, resume, complete, abort) · Evaluator (record-evaluation) | POL-SIM-COMPLETE | EVT-SIM-COMPLETED | Exercise (COMPLETED trigger); Knowledge Object (optional AAR terminal source, SLC-12 — CR-63); Search projection (SLC-05) |
 | CMD-SIM-ABORT | Exercise Controller (start, deliver-inject, pause, resume, complete, abort) · Evaluator (record-evaluation) | POL-SIM-ABORT | EVT-SIM-ABORTED | Exercise (ABORTED trigger); Search projection (SLC-05) |
-
-> لا Use Case مرتبط بهذا الـAggregate عبر متطلباته. راجع §5 في [bc05-resources-readiness.md](bc05-resources-readiness.md) وCONFLICT-05 قبل اعتباره فجوة.
 
 ### 21.9 BC06 — [bc06-knowledge-products.md](bc06-knowledge-products.md)
 
@@ -2157,7 +2143,7 @@ CAP  CAP-02.04
 
 ```
 CAP  CAP-12.01, CAP-12.03
- └ UC   UC-070, UC-071, UC-072, UC-074
+ └ UC   UC-070, UC-071, UC-072, UC-074, UC-077
     └ REQ  REQ-AI-001, REQ-AI-002, REQ-AI-003, REQ-AI-004, REQ-AI-007, REQ-AI-008, REQ-AI-011, REQ-AI-012
        └ AGG-AI-REQUEST
           ├ INV  INV-AIR-01, INV-AIR-02, INV-AIR-03, INV-AIR-04, INV-AIR-05
@@ -2205,7 +2191,7 @@ CAP  CAP-12.01, CAP-12.02, CAP-12.03
 
 ```
 CAP  CAP-12.01
- └ UC   UC-074
+ └ UC   UC-074, UC-077
     └ REQ  REQ-AI-008, REQ-AI-011
        └ AGG-AI-ROUTING
           ├ INV  INV-RTG-01, INV-RTG-02, INV-RTG-03
@@ -2230,7 +2216,7 @@ CAP  CAP-12.01
 
 ```
 CAP  CAP-12.01
- └ UC   UC-071
+ └ UC   UC-071, UC-077
     └ REQ  REQ-AI-012, REQ-AI-013
        └ AGG-AI-TOOL
           ├ INV  INV-TOL-01, INV-TOL-02, INV-TOL-03
@@ -2256,7 +2242,7 @@ CAP  CAP-12.01
 
 ```
 CAP  CAP-12.04
- └ UC   —
+ └ UC   UC-075, UC-076
     └ REQ  REQ-AI-010
        └ AGG-EVAL-SUITE
           ├ INV  INV-EVS-01, INV-EVS-02
@@ -2273,8 +2259,6 @@ CAP  CAP-12.04
 | CMD-EVS-DRAFT | AI governance (draft, edit) · second authority (activate) | POL-EVS-DRAFT | EVT-EVS-DRAFTED | Evaluation runner |
 | CMD-EVS-EDIT | AI governance (draft, edit) · second authority (activate) | POL-EVS-EDIT | EVT-EVS-EDITED | Evaluation runner |
 | CMD-EVS-ACTIVATE | AI governance (draft, edit) · second authority (activate) | POL-EVS-ACTIVATE | EVT-EVS-ACTIVATED | Evaluation runner |
-
-> لا Use Case مرتبط بهذا الـAggregate عبر متطلباته. راجع §5 في [bc07-integration-ai-discovery.md](bc07-integration-ai-discovery.md) وCONFLICT-05 قبل اعتباره فجوة.
 
 #### AGG-INTEGRATION-CONNECTION — Integration Connection
 
@@ -2310,7 +2294,7 @@ CAP  CAP-02.04
 
 ```
 CAP  CAP-12.04
- └ UC   —
+ └ UC   UC-075, UC-076
     └ REQ  REQ-AI-009, REQ-AI-010
        └ AGG-MODEL-VERSION
           ├ INV  INV-MDL-01, INV-MDL-02, INV-MDL-03
@@ -2333,8 +2317,6 @@ CAP  CAP-12.04
 | CMD-MDL-DEPRECATE | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | POL-MDL-DEPRECATE | EVT-MDL-DEPRECATED | Inference servers (load/unload); Routing validation |
 | CMD-MDL-REINSTATE | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | POL-MDL-REINSTATE | EVT-MDL-REINSTATED | Inference servers (load/unload); Routing validation |
 | CMD-MDL-RETIRE | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | POL-MDL-RETIRE | EVT-MDL-RETIRED | Inference servers (load/unload); Routing validation |
-
-> لا Use Case مرتبط بهذا الـAggregate عبر متطلباته. راجع §5 في [bc07-integration-ai-discovery.md](bc07-integration-ai-discovery.md) وCONFLICT-05 قبل اعتباره فجوة.
 
 #### AGG-PRELOAD-PACKAGE — Preload Package
 
@@ -2366,7 +2348,7 @@ CAP  CAP-02.03
 
 ```
 CAP  CAP-03.01
- └ UC   —
+ └ UC   UC-078
     └ REQ  REQ-SRC-004
        └ AGG-PROJECTION-VERSION
           ├ INV  INV-PRJ-01, INV-PRJ-02, INV-PRJ-03, INV-PRJ-04
@@ -2384,8 +2366,6 @@ CAP  CAP-03.01
 | CMD-PRJ-PROMOTE | Platform Operator | POL-PRJ-PROMOTE | EVT-PRJ-PROMOTED | Query router (alias switch); Operations alerting |
 | CMD-PRJ-RETIRE | Platform Operator | POL-PRJ-RETIRE | EVT-PRJ-RETIRED | Query router (alias switch); Operations alerting |
 | CMD-PRJ-CANCEL-BUILD | Platform Operator | POL-PRJ-CANCEL-BUILD | EVT-PRJ-FAILED | Query router (alias switch); Operations alerting |
-
-> لا Use Case مرتبط بهذا الـAggregate عبر متطلباته. راجع §5 في [bc07-integration-ai-discovery.md](bc07-integration-ai-discovery.md) وCONFLICT-05 قبل اعتباره فجوة.
 
 #### AGG-SENSOR-STREAM — Sensor Stream
 
@@ -2536,9 +2516,9 @@ CAP  CAP-13.03
 
 | الأمر | الفاعل | السياسة | الحدث الناتج | مستهلكو الحدث |
 |---|---|---|---|---|
-| CMD-ERS-REGISTER | Privacy officer / Legal (register) · Legal authority ≠ registrar (approve, reject) | POL-ERS-REGISTER | EVT-ERS-RECEIVED | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) |
-| CMD-ERS-APPROVE | Privacy officer / Legal (register) · Legal authority ≠ registrar (approve, reject) | POL-ERS-APPROVE | EVT-ERS-APPROVED | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) |
-| CMD-ERS-REJECT | Privacy officer / Legal (register) · Legal authority ≠ registrar (approve, reject) | POL-ERS-REJECT | EVT-ERS-REJECTED | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) |
+| CMD-ERS-REGISTER | Privacy officer / Legal (register) · Legal authority ≠ registrar (approve, reject) | POL-ERS-REGISTER | EVT-ERS-RECEIVED | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) |
+| CMD-ERS-APPROVE | Privacy officer / Legal (register) · Legal authority ≠ registrar (approve, reject) | POL-ERS-APPROVE | EVT-ERS-APPROVED | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) |
+| CMD-ERS-REJECT | Privacy officer / Legal (register) · Legal authority ≠ registrar (approve, reject) | POL-ERS-REJECT | EVT-ERS-REJECTED | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) |
 
 #### AGG-LEGAL-HOLD — Legal Hold
 

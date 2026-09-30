@@ -170,7 +170,8 @@ agg("AGG-CLASSIFICATION-SCHEME","BC08","Classification Scheme Version","T2","ن�
   "INV-CLS-02: level ranks strictly ordered and unique; codes immutable",
   "INV-CLS-03: levels, compartments and caveats can be deprecated, never removed",
   "INV-CLS-04: activation increments the security_version of all subjects in the tenant"],
- ["Level, Compartment, Caveat (value objects)"],["REQ-GOV-001","REQ-GOV-009"])
+ ["Level, Compartment, Caveat (value objects)"],["REQ-GOV-001","REQ-GOV-004","REQ-GOV-009"],
+ "REQ-GOV-004 added to satisfies by CR-65 (2026-09-29): CMD-CLS-ACTIVATE's guard (previous ACTIVE -> SUPERSEDED in same transaction) plus INV-CLS-04 (activation increments security_version of all subjects in the tenant) is the scheme-level enforcement mechanism for REQ-GOV-004's \"stop returning the object to newly unauthorized subjects from the moment of the change\" -- previously undeclared here despite UC-085 already being listed against REQ-GOV-004 in requirements.md (see CR-64 residual_note).")
 
 agg("AGG-POLICY-SET","BC08","Policy Set Version","T2","مجموعة سياسات مستأجر (جداول قرار) بإصدارات",
  ["DRAFT","IN_REVIEW","APPROVED","ACTIVE","SUPERSEDED","REJECTED"],["SUPERSEDED","REJECTED"],
@@ -1701,7 +1702,7 @@ agg("AGG-DISTRIBUTION","BC06","Distribution","T2","توزيع نسخة معتم�
 
 agg("AGG-KNOWLEDGE-OBJECT","BC06","Knowledge Object Version","T1 content / T2 lifecycle","إجراء أو درس أو ممارسة فضلى أو معرفة سياساتية، كعبارات بأدلة وعلاقات",
  ["DRAFT","IN_REVIEW","PUBLISHED","REJECTED","SUPERSEDED","RETIRED","DISCARDED"],["REJECTED","SUPERSEDED","RETIRED","DISCARDED"],
- [("∅","CMD-KNO-DRAFT","DRAFT","type ∈ {procedure, lesson, best_practice, policy_knowledge}; lessons reference a terminal source (task, plan, incident) and its evidence (REQ-KNW-002); label ≥ source label","EVT-KNO-DRAFTED","KNOWLEDGE_INVALID"),
+ [("∅","CMD-KNO-DRAFT","DRAFT","type ∈ {procedure, lesson, best_practice, policy_knowledge}; lessons reference a terminal source (task, plan, incident, or a completed exercise simulation — CR-63) and its evidence (REQ-KNW-002); label ≥ source label","EVT-KNO-DRAFTED","KNOWLEDGE_INVALID"),
   (["DRAFT"],"CMD-KNO-EDIT","=","statements with evidence links; relationships to task types, plan types, entity types, areas","EVT-KNO-EDITED","KNOWLEDGE_INVALID"),
   (["DRAFT"],"CMD-KNO-SUBMIT","IN_REVIEW","≥ 1 statement; lessons: ≥ 1 evidence link","EVT-KNO-SUBMITTED","KNOWLEDGE_INCOMPLETE"),
   (["IN_REVIEW"],"CMD-KNO-RETURN","DRAFT","reviewer; reason","EVT-KNO-RETURNED","REASON_REQUIRED"),
@@ -1856,7 +1857,7 @@ agg("AGG-DISPOSITION-RUN","BC08","Disposition Run","T2","دورة إتلاف: ت
 agg("AGG-ERASURE-REQUEST","BC08","Erasure Request","T2","طلب محو البيانات الشخصية لصاحب بيانات عبر إتلاف مفتاحه",
  ["RECEIVED","SCOPED","APPROVED","BLOCKED_BY_HOLD","EXECUTING","COMPLETED","REJECTED"],["COMPLETED","REJECTED"],
  [("∅","CMD-ERS-REGISTER","RECEIVED","legal basis reference; subject identification (platform person URN and/or information entity URNs of type person); requester","EVT-ERS-RECEIVED","ERASURE_INVALID"),
-  (["RECEIVED"],"SYS:subject scope resolved","SCOPED","subject keys located in BC01 (persons) and BC02 (entities with personal_data claims); affected record counts per context","EVT-ERS-SCOPED",None),
+  (["RECEIVED"],"SYS:subject scope resolved","SCOPED","subject keys located in BC01 (persons), BC02 (entities with personal_data claims) and BC05 (qualification records of that person, CR-69); affected record counts per context","EVT-ERS-SCOPED",None),
   (["SCOPED"],"CMD-ERS-APPROVE","APPROVED","Legal/Compliance authority ≠ registrar; decision recorded with basis","EVT-ERS-APPROVED","SEGREGATION_OF_DUTIES"),
   (["SCOPED"],"CMD-ERS-REJECT","REJECTED","reason (e.g. legal obligation to retain)","EVT-ERS-REJECTED","REASON_REQUIRED"),
   (["APPROVED"],"SYS:hold matches subject","BLOCKED_BY_HOLD","HoldCheck positive","EVT-ERS-BLOCKED",None),
@@ -1893,7 +1894,7 @@ SECURITY_AFFECTING = set()
 CONSUMERS = {"AGG-RETENTION-SCHEDULE":["Disposition planner","Key-bucket policy (class period sizing)"],
  "AGG-LEGAL-HOLD":["HoldCheck cache (all owners)","Disposition planner","Erasure executor"],
  "AGG-DISPOSITION-RUN":["Key manager (bucket key destruction)","Owner contexts (purge plaintext caches, projections)","Audit"],
- "AGG-ERASURE-REQUEST":["Key manager (subject key destruction)","BC01 / BC02 (scope + confirmation)","Projections (purge)"],
+ "AGG-ERASURE-REQUEST":["Key manager (subject key destruction)","BC01 / BC02 / BC05 (scope + confirmation)","Projections (purge)"],
  "default":["Audit"]}
 
 
@@ -2296,6 +2297,7 @@ SLC-18 — Logistics & Supply (R3, scope-only design; G6 held per RSK-028; reuse
 # -*- coding: utf-8 -*-
 # SLC-18 — Logistics & Supply (CAP-08.03, DOM-16, BC05), R3 — scope-only design, G6 held (RSK-028)
 SLICE = "SLC-18"
+APPROVED_AT = "2026-09-27"
 AGGS = {}
 def agg(id_, bc, name, tier, purpose, states, terminal, transitions, invariants, entities, reqs, notes=None, personal=False):
     AGGS[id_] = dict(id=id_, bc=bc, name=name, tier=tier, purpose=purpose, states=states, terminal=terminal,
@@ -2441,6 +2443,7 @@ ACTORS = {"SCN":"Training Manager (define, edit) · Exercise Director (activate,
 P = {
  "CMD-SCN-DEFINE":"title!:LocalizedName exercise_type_ref!:urn situation!:string target_competencies!:array injects!:array",
  "CMD-SCN-EDIT":"title:LocalizedName situation:string target_competencies:array injects:array",
+ "CMD-SCN-ACTIVATE":"",
  "CMD-SCN-RETIRE":"reason!:string",
  "CMD-EXR-PLAN":"scenario!:urn objectives!:string participants!:array purpose!:enum(drill,certification,assessment) role_ref:urn",
  "CMD-EXR-SCHEDULE":"window!:Interval location!:LocalizedName participants!:array",
@@ -2450,6 +2453,8 @@ P = {
  "CMD-SIM-DELIVER-INJECT":"inject_ref!:urn delivered_at!:date-time note:string",
  "CMD-SIM-RECORD-EVALUATION":"participant!:urn competency_code!:string result!:enum(MET,PARTIAL,NOT_MET) notes:string",
  "CMD-SIM-PAUSE":"reason!:string",
+ "CMD-SIM-RESUME":"",
+ "CMD-SIM-COMPLETE":"",
  "CMD-SIM-ABORT":"reason!:string",
 }
 SYSTEM_CMDS = {"CMD-SIM-START"}

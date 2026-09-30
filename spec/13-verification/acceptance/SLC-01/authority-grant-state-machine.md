@@ -19,7 +19,7 @@ traces:
 
 # Acceptance — Authority Grant (incl. delegation)
 
-مولّدة من مصفوفة AGG-AUTHORITY-GRANT: 7 انتقالاً مسموحاً، 35 رفضاً.
+مولّدة من مصفوفة AGG-AUTHORITY-GRANT: 7 انتقالاً مسموحاً، 35 رفضاً، 2 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Authority Grant (incl. delegation) lifecycle (AGG-AUTHORITY-GRANT)
@@ -99,4 +99,16 @@ Feature: Authority Grant (incl. delegation) lifecycle (AGG-AUTHORITY-GRANT)
       | Authority Grant (incl. delegation) | REJECTED | CMD-AUT-SUSPEND | AUTHORITY_GRANT_INVALID_STATE_TRANSITION |
       | Authority Grant (incl. delegation) | REJECTED | CMD-AUT-RESUME | AUTHORITY_GRANT_INVALID_STATE_TRANSITION |
       | Authority Grant (incl. delegation) | REJECTED | CMD-AUT-REVOKE | AUTHORITY_GRANT_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Authority Grant (incl. delegation) | ACTIVE | valid_to reached | EXPIRED | EVT-AUT-EXPIRED |
+      | Authority Grant (incl. delegation) | SUSPENDED | valid_to reached | EXPIRED | EVT-AUT-EXPIRED |
 ```

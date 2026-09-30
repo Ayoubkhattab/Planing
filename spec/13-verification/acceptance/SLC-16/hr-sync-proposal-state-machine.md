@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — HR Sync Proposal
 
-مولّدة من مصفوفة AGG-HR-SYNC-PROPOSAL: 2 انتقالاً مسموحاً، 8 رفضاً.
+مولّدة من مصفوفة AGG-HR-SYNC-PROPOSAL: 2 انتقالاً مسموحاً، 8 رفضاً، 3 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: HR Sync Proposal lifecycle (AGG-HR-SYNC-PROPOSAL)
@@ -63,4 +63,17 @@ Feature: HR Sync Proposal lifecycle (AGG-HR-SYNC-PROPOSAL)
       | HR Sync Proposal | SUPERSEDED | CMD-HRS-REJECT | HR_SYNC_PROPOSAL_INVALID_STATE_TRANSITION |
       | HR Sync Proposal | EXPIRED | CMD-HRS-APPROVE | HR_SYNC_PROPOSAL_INVALID_STATE_TRANSITION |
       | HR Sync Proposal | EXPIRED | CMD-HRS-REJECT | HR_SYNC_PROPOSAL_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | HR Sync Proposal | ∅ | HRIS change received | PROPOSED | EVT-HRS-PROPOSED |
+      | HR Sync Proposal | PROPOSED | newer HR change for the same person | SUPERSEDED | EVT-HRS-SUPERSEDED |
+      | HR Sync Proposal | PROPOSED | 14 days without decision | EXPIRED | EVT-HRS-EXPIRED |
 ```

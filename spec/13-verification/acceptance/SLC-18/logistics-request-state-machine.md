@@ -23,7 +23,7 @@ traces:
 
 # Acceptance — Logistics Request
 
-مولّدة من مصفوفة AGG-LOGISTICS-REQUEST: 4 انتقالاً مسموحاً، 8 رفضاً.
+مولّدة من مصفوفة AGG-LOGISTICS-REQUEST: 4 انتقالاً مسموحاً، 8 رفضاً، 7 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Logistics Request lifecycle (AGG-LOGISTICS-REQUEST)
@@ -72,4 +72,21 @@ Feature: Logistics Request lifecycle (AGG-LOGISTICS-REQUEST)
       | Logistics Request | IN_TRANSIT | CMD-LGR-REQUEST | LOGISTICS_REQUEST_INVALID_STATE_TRANSITION |
       | Logistics Request | IN_TRANSIT | CMD-LGR-DISPATCH | LOGISTICS_REQUEST_INVALID_STATE_TRANSITION |
       | Logistics Request | IN_TRANSIT | CMD-LGR-CANCEL | LOGISTICS_REQUEST_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Logistics Request | REQUESTED | linked allocation committed | APPROVED | EVT-LGR-APPROVED |
+      | Logistics Request | REQUESTED | linked allocation requires approval | PENDING_APPROVAL | EVT-LGR-PENDING-APPROVAL |
+      | Logistics Request | REQUESTED | linked allocation rejected | REJECTED | EVT-LGR-REJECTED |
+      | Logistics Request | PENDING_APPROVAL | linked allocation committed | APPROVED | EVT-LGR-APPROVED |
+      | Logistics Request | PENDING_APPROVAL | linked allocation rejected | REJECTED | EVT-LGR-REJECTED |
+      | Logistics Request | IN_TRANSIT | linked shipment delivered in full | FULFILLED | EVT-LGR-FULFILLED |
+      | Logistics Request | IN_TRANSIT | linked shipment resolved short | PARTIALLY_FULFILLED | EVT-LGR-PARTIALLY-FULFILLED |
 ```

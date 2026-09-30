@@ -18,7 +18,7 @@ traces:
 
 # Acceptance — Coordination Case
 
-مولّدة من مصفوفة AGG-COORDINATION-CASE: 11 انتقالاً مسموحاً، 25 رفضاً.
+مولّدة من مصفوفة AGG-COORDINATION-CASE: 11 انتقالاً مسموحاً، 25 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Coordination Case lifecycle (AGG-COORDINATION-CASE)
@@ -91,4 +91,15 @@ Feature: Coordination Case lifecycle (AGG-COORDINATION-CASE)
       | Coordination Case | CANCELLED | CMD-CRD-REQUEST-DECISION | COORDINATION_CASE_INVALID_STATE_TRANSITION |
       | Coordination Case | CANCELLED | CMD-CRD-CLOSE | COORDINATION_CASE_INVALID_STATE_TRANSITION |
       | Coordination Case | CANCELLED | CMD-CRD-CANCEL | COORDINATION_CASE_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Coordination Case | ACTIVE | linked decision recorded | ACTIVE | EVT-CRD-DECISION-RECORDED |
 ```

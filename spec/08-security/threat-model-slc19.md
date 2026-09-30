@@ -46,7 +46,7 @@ threats:
   threat: an exercise forced into COMPLETED without a simulation ever actually running, hiding that no training occurred
   likelihood: L
   impact: H
-  controls: no human command sets COMPLETED or ABORTED; only SYS: transitions driven by the linked Simulation's own EVT-SIM-COMPLETED/EVT-SIM-ABORTED (INV-EXR-02) — visible in the full state × command matrix (SL-05), which has no human-triggered cell for either terminal state
+  controls: 'no human command sets COMPLETED or ABORTED; only SYS: transitions driven by the linked Simulation''s own EVT-SIM-COMPLETED/EVT-SIM-ABORTED (INV-EXR-02) — visible in the full state × command matrix (SL-05), which has no human-triggered cell for either terminal state'
   residual_risk: L
 - id: THR-S19-03
   component: Evaluation recording

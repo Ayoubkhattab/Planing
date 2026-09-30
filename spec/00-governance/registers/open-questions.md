@@ -15,7 +15,7 @@ consumers: []
 
 ## open_questions
 
-_10 items_ (OQ-034 added — see CR-64 / spec/17-system-study/bc01-foundation.md)
+_11 items_ (OQ-034 added — see CR-64 / spec/17-system-study/bc01-foundation.md; OQ-035 added in Phase 3.7 — bc03-situational-awareness.md)
 
 ### OQ-001
 
@@ -71,6 +71,8 @@ _10 items_ (OQ-034 added — see CR-64 / spec/17-system-study/bc01-foundation.md
 - **status:** closed
 - **answer:** تصنيف صحيح بالتصميم، وليس نقصًا. الثلاثة تصف سلوك إنفاذ (enforcement) مدمجًا في شرط مسبق (precondition) يُطبَّق داخل *كل* Use Case آخر في المنصة (تقييم PDP قبل أي استرجاع؛ الفشل الآمن عند تعطّل PDP؛ إلزامية التصنيف عند إنشاء أي كائن T1/T2 في أي BC)، وليست فعلًا مستقلاً يقوم به فاعل بخطوات خاصة به. الفرق عن باقي متطلبات BC01 الـubiquitous (مثل REQ-FND-001/007/011) هو أن تلك الأخيرة تصف *إدارة* مورد (تزويد مستأجر، تعريف صلاحية، إدارة سياسة) له واجهة مستخدم واضحة، بينما هذه الثلاثة تصف *تشغيل النظام نفسه* أثناء تنفيذ أي واجهة أخرى. اختراع UC مستقل لها (مثل "تقييم التخويل") كان سيكون Use Case وهميًا بلا فاعل حقيقي، فتم تفادي ذلك عمدًا. لا حاجة لإجراء تصحيحي.
 
+### OQ-030
+
 - **question:** هل يُمنع أن يعتمد المنفذ مهمته بنفسه؟
 - **affects:** SM-TASK
 - **owner:** BC04
@@ -104,6 +106,15 @@ _10 items_ (OQ-034 added — see CR-64 / spec/17-system-study/bc01-foundation.md
 - **deadline_gate:** W4
 - **status:** closed
 - **answer:** REJECTED is terminal; retry = linked follow-up task (SPEC-TASK-RULES §1)
+
+### OQ-035
+
+- **question:** لماذا REQ-SIT-006 (عدم كشف كائن غير مخوَّل أو وجوده في تنبيه) وREQ-ANL-008 (حجب دليل غير مخوَّل في تقييم) بلا أي Use Case، بينما بقية متطلبات BC03 مرتبطة بحالات استخدام؟ هل هذا نقص توثيقي أم تصنيف صحيح بالتصميم مثل OQ-034؟
+- **affects:** REQ-SIT-006, REQ-ANL-008, traceability BC03 (spec/17-system-study/bc03-situational-awareness.md §4/§20)
+- **owner:** BC03 (Situational Awareness) + منهجية المتطلبات
+- **deadline_gate:** Phase 3.7 (System Study verification)
+- **status:** closed
+- **answer:** تصنيف صحيح بالتصميم (قرار مفوَّض، 2026-09-30). كلاهما من نمط unwanted-behaviour يصف سلوك إنفاذ لمبدأ الإفصاح الصفري (04-cross-cutting §2.2) يُطبَّق داخل كل حالة استخدام تعرض تنبيهًا أو تقييمًا (UC-010..016، UC-020..024)، لا فعلًا مستقلًا لفاعل. التحقق منهما عبر INV-ALR-02 وسياسات الاستعلام (SL-09) واختبارات عدم الاستدلال (QAS-SEC)، لا عبر UC منفصل — نفس منطق OQ-034.
 
 ---
 
@@ -191,6 +202,17 @@ open_questions:
   deadline_gate: W4
   status: closed
   answer: REJECTED is terminal; retry = linked follow-up task (SPEC-TASK-RULES §1)
+- id: OQ-035
+  question: لماذا REQ-SIT-006 (عدم كشف كائن غير مخوَّل أو وجوده في تنبيه) وREQ-ANL-008 (حجب دليل غير مخوَّل في تقييم) بلا
+    أي Use Case، بينما بقية متطلبات BC03 مرتبطة بحالات استخدام؟ هل هذا نقص توثيقي أم تصنيف صحيح بالتصميم مثل OQ-034؟
+  affects: REQ-SIT-006, REQ-ANL-008, traceability BC03 (spec/17-system-study/bc03-situational-awareness.md §4/§20)
+  owner: BC03 (Situational Awareness) + منهجية المتطلبات
+  deadline_gate: Phase 3.7 (System Study verification)
+  status: closed
+  answer: تصنيف صحيح بالتصميم (قرار مفوَّض، 2026-09-30). كلاهما من نمط unwanted-behaviour يصف سلوك إنفاذ لمبدأ الإفصاح الصفري
+    (04-cross-cutting §2.2) يُطبَّق داخل كل حالة استخدام تعرض تنبيهًا أو تقييمًا (UC-010..016، UC-020..024)، لا فعلًا مستقلًا
+    لفاعل. التحقق منهما عبر INV-ALR-02 وسياسات الاستعلام (SL-09) واختبارات عدم الاستدلال (QAS-SEC)، لا عبر UC منفصل — نفس
+    منطق OQ-034.
 ```
 
 </details>

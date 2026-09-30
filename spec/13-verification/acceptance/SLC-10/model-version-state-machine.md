@@ -18,7 +18,7 @@ traces:
 
 # Acceptance — Model Version
 
-مولّدة من مصفوفة AGG-MODEL-VERSION: 10 انتقالاً مسموحاً، 62 رفضاً.
+مولّدة من مصفوفة AGG-MODEL-VERSION: 10 انتقالاً مسموحاً، 62 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Model Version lifecycle (AGG-MODEL-VERSION)
@@ -127,4 +127,15 @@ Feature: Model Version lifecycle (AGG-MODEL-VERSION)
       | Model Version | RETIRED | CMD-MDL-DEPRECATE | MODEL_VERSION_INVALID_STATE_TRANSITION |
       | Model Version | RETIRED | CMD-MDL-REINSTATE | MODEL_VERSION_INVALID_STATE_TRANSITION |
       | Model Version | RETIRED | CMD-MDL-RETIRE | MODEL_VERSION_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Model Version | PRODUCTION | monitoring drift detected | PRODUCTION | EVT-MDL-DRIFT-DETECTED |
 ```

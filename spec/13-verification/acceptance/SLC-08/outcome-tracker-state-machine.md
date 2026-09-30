@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — Outcome Tracker
 
-مولّدة من مصفوفة AGG-OUTCOME-TRACKER: 2 انتقالاً مسموحاً، 2 رفضاً.
+مولّدة من مصفوفة AGG-OUTCOME-TRACKER: 2 انتقالاً مسموحاً، 2 رفضاً، 3 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Outcome Tracker lifecycle (AGG-OUTCOME-TRACKER)
@@ -57,4 +57,17 @@ Feature: Outcome Tracker lifecycle (AGG-OUTCOME-TRACKER)
       | aggregate | state | command | error |
       | Outcome Tracker | CLOSED | CMD-OUT-RECORD | OUTCOME_TRACKER_INVALID_STATE_TRANSITION |
       | Outcome Tracker | CLOSED | CMD-OUT-CORRECT | OUTCOME_TRACKER_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Outcome Tracker | ∅ | outcome baselined | ACTIVE | EVT-OUT-TRACKER-CREATED |
+      | Outcome Tracker | ACTIVE | target changed by new baseline | ACTIVE | EVT-OUT-TARGET-CHANGED |
+      | Outcome Tracker | ACTIVE | plan closed or cancelled | CLOSED | EVT-OUT-TRACKER-CLOSED |
 ```

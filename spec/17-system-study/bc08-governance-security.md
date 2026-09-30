@@ -378,6 +378,12 @@ BC08 هو **"الحارس الأخير" لدورة حياة البيانات و�
 
 ## 20. Missing Information
 
+**تحديث Phase 3.7 (2026-09-30):**
+
+- التحقق سطرًا بسطر: ملفات القبول السبعة تطابق مصفوفاتها، وانتقالات المجدول (الإتلاف، المحو، التجميد) لها سيناريوهات الآن (V1، V1b في [06-verification.md](06-verification.md)؛ CR-72).
+- نطاق AGG-ERASURE-REQUEST يشمل BC05 الآن (CR-69، CONFLICT-04 مغلق).
+
+
 1. REQ-GOV-005 (حدود الولاية القضائية) بلا aggregate ولا use case — **مُحسَم كقرار تصميم لا فجوة** (بنية تحتية/نشر خارج نطاق الـdomain model، انظر §4).
 2. أسطر ملفات acceptance Gherkin الفعلية لكل الـ7 aggregates (`classification-scheme-state-machine.md` حتى `erasure-request-state-machine.md`) لم تُقرأ حرفيًا في أي جولة حتى الآن — فقط عُرفت بالاسم من الفهرس. **[Missing verification pass]** — انظر §15.
 3. **CONFLICT-04 (مُكرَّر هنا للربط المباشر، انظر §19 للتفصيل الكامل):** نطاق SCOPED في AGG-ERASURE-REQUEST لا يذكر BC05 (AGG-QUALIFICATION-RECORD، `personal_data: true`) — [Needs Review] بشري، لم يُحسَم بعد.
@@ -396,4 +402,4 @@ BC08 هو **"الحارس الأخير" لدورة حياة البيانات و�
 | CONFLICT-01/OQ-034 مُغلَق نهائيًا ومُتحقَّق منه في المصدر؟ | ✅ (CR-65، تم التحقق المباشر من `traces.satisfies` في AGG-CLASSIFICATION-SCHEME.md هذه الجولة) |
 | CONFLICT-04 موثَّق بوضوح كسؤال مفتوح؟ | ✅ (OPEN، لا حسم مُدَّعى) |
 | Verification/Acceptance مفحوصة سطرًا بسطر؟ | ❌ **[Missing]** — أسماء الملفات فقط، لا المحتوى (انظر §15/§20) |
-| **الحالة الإجمالية** | **OPEN جزئيًا** — البند الوحيد المتبقي فعليًا هو تحقق Verification/Acceptance سطرًا بسطر (لم يُطلَب في أي جولة بعد) وحسم CONFLICT-04 بشريًا؛ كل الفجوات الأخرى من الجولات السابقة تحوّلت لعلاقات Cross-BC مؤكَّدة أو قرارات "بالتصميم" موثَّقة. هذا آخر BC في Phase 3؛ الثمانية BCs (BC01–BC08) مكتملة بنفس العمق الآن. |
+| **الحالة الإجمالية** | **CLOSED (Phase 3.7)** — لا بنود مفتوحة. (الحالة السابقة قبل Phase 3.7 محفوظة في سجل git) |

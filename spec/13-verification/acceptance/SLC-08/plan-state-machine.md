@@ -19,7 +19,7 @@ traces:
 
 # Acceptance — Plan (identity)
 
-مولّدة من مصفوفة AGG-PLAN: 10 انتقالاً مسموحاً، 32 رفضاً.
+مولّدة من مصفوفة AGG-PLAN: 10 انتقالاً مسموحاً، 32 رفضاً، 3 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Plan (identity) lifecycle (AGG-PLAN)
@@ -98,4 +98,17 @@ Feature: Plan (identity) lifecycle (AGG-PLAN)
       | Plan (identity) | CANCELLED | CMD-PLN-CLOSE | PLAN_INVALID_STATE_TRANSITION |
       | Plan (identity) | CANCELLED | CMD-PLN-CANCEL | PLAN_INVALID_STATE_TRANSITION |
       | Plan (identity) | CANCELLED | CMD-PLN-RECLASSIFY | PLAN_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Plan (identity) | DRAFT | first version baselined | ACTIVE | EVT-PLN-ACTIVATED |
+      | Plan (identity) | ACTIVE | implemented decision annulled or superseded | ACTIVE | EVT-PLN-REVIEW-FLAGGED |
+      | Plan (identity) | SUSPENDED | implemented decision annulled or superseded | SUSPENDED | EVT-PLN-REVIEW-FLAGGED |
 ```

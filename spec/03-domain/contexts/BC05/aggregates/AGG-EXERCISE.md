@@ -58,7 +58,7 @@ traces:
 
 كل خلية حُكم صريح: `→ حالة` مسموح، `✗ رمز` مرفوض. لا خلايا فارغة.
 
-| الحالة \ الأمر | CMD-EXR-PLAN | CMD-EXR-SCHEDULE | CMD-EXR-START | CMD-EXR-CANCEL | SYS:simulation completed | SYS:simulation aborted |
+| الحالة \ الأمر | CMD-EXR-PLAN | CMD-EXR-SCHEDULE | CMD-EXR-START | CMD-EXR-CANCEL | SYS:linked simulation completed | SYS:linked simulation aborted |
 |---|---|---|---|---|---|---|
 | ∅ | → PLANNED | — | — | — | — | — |
 | PLANNED | ✗ EXERCISE_INVALID_STATE_TRANSITION | → SCHEDULED | ✗ EXERCISE_INVALID_STATE_TRANSITION | → CANCELLED | ✗ EXERCISE_INVALID_STATE_TRANSITION | ✗ EXERCISE_INVALID_STATE_TRANSITION |

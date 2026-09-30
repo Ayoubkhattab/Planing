@@ -18,7 +18,7 @@ traces:
 
 # Acceptance — Match Ruleset
 
-مولّدة من مصفوفة AGG-MATCH-RULESET: 2 انتقالاً مسموحاً، 7 رفضاً.
+مولّدة من مصفوفة AGG-MATCH-RULESET: 2 انتقالاً مسموحاً، 7 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Match Ruleset lifecycle (AGG-MATCH-RULESET)
@@ -64,4 +64,15 @@ Feature: Match Ruleset lifecycle (AGG-MATCH-RULESET)
       | Match Ruleset | SUPERSEDED | CMD-MRS-DRAFT | MATCH_RULESET_INVALID_STATE_TRANSITION |
       | Match Ruleset | SUPERSEDED | CMD-MRS-EDIT | MATCH_RULESET_INVALID_STATE_TRANSITION |
       | Match Ruleset | SUPERSEDED | CMD-MRS-ACTIVATE | MATCH_RULESET_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Match Ruleset | ACTIVE | successor activated | SUPERSEDED | EVT-MRS-SUPERSEDED |
 ```

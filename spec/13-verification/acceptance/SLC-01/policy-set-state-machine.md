@@ -19,7 +19,7 @@ traces:
 
 # Acceptance — Policy Set Version
 
-مولّدة من مصفوفة AGG-POLICY-SET: 4 انتقالاً مسموحاً، 26 رفضاً.
+مولّدة من مصفوفة AGG-POLICY-SET: 4 انتقالاً مسموحاً، 26 رفضاً، 2 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Policy Set Version lifecycle (AGG-POLICY-SET)
@@ -86,4 +86,16 @@ Feature: Policy Set Version lifecycle (AGG-POLICY-SET)
       | Policy Set Version | REJECTED | CMD-POL-SUBMIT | POLICY_SET_INVALID_STATE_TRANSITION |
       | Policy Set Version | REJECTED | CMD-POL-APPROVE | POLICY_SET_INVALID_STATE_TRANSITION |
       | Policy Set Version | REJECTED | CMD-POL-REJECT | POLICY_SET_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Policy Set Version | APPROVED | effective_from reached | ACTIVE | EVT-POL-ACTIVATED |
+      | Policy Set Version | ACTIVE | successor activated | SUPERSEDED | EVT-POL-SUPERSEDED |
 ```

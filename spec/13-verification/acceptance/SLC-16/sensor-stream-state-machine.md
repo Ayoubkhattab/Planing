@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — Sensor Stream
 
-مولّدة من مصفوفة AGG-SENSOR-STREAM: 8 انتقالاً مسموحاً، 12 رفضاً.
+مولّدة من مصفوفة AGG-SENSOR-STREAM: 8 انتقالاً مسموحاً، 12 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Sensor Stream lifecycle (AGG-SENSOR-STREAM)
@@ -74,4 +74,15 @@ Feature: Sensor Stream lifecycle (AGG-SENSOR-STREAM)
       | Sensor Stream | RETIRED | CMD-SNS-ACTIVATE | SENSOR_STREAM_INVALID_STATE_TRANSITION |
       | Sensor Stream | RETIRED | CMD-SNS-PAUSE | SENSOR_STREAM_INVALID_STATE_TRANSITION |
       | Sensor Stream | RETIRED | CMD-SNS-RETIRE | SENSOR_STREAM_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Sensor Stream | ACTIVE | no data beyond stale-after | ACTIVE | EVT-SNS-STALE |
 ```

@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — Subscription
 
-مولّدة من مصفوفة AGG-SUBSCRIPTION: 6 انتقالاً مسموحاً، 9 رفضاً.
+مولّدة من مصفوفة AGG-SUBSCRIPTION: 6 انتقالاً مسموحاً، 9 رفضاً، 2 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Subscription lifecycle (AGG-SUBSCRIPTION)
@@ -69,4 +69,16 @@ Feature: Subscription lifecycle (AGG-SUBSCRIPTION)
       | Subscription | ENDED | CMD-SUB-PAUSE | SUBSCRIPTION_INVALID_STATE_TRANSITION |
       | Subscription | ENDED | CMD-SUB-RESUME | SUBSCRIPTION_INVALID_STATE_TRANSITION |
       | Subscription | ENDED | CMD-SUB-UNSUBSCRIBE | SUBSCRIPTION_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Subscription | ACTIVE | subscriber lost visibility of target | ENDED | EVT-SUB-ENDED |
+      | Subscription | PAUSED | subscriber lost visibility of target | ENDED | EVT-SUB-ENDED |
 ```

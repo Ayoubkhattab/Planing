@@ -584,6 +584,16 @@ BC04 هو **محرك القرار والتنفيذ** في المنصة: يسته
 
 ## 20. Missing Information
 
+**تحديث Phase 3.7 (2026-09-30):**
+
+- بند 1 (فجوة CAP-09): أُغلقت بـCR-70 — UC-140..144 مشتقة من جداول أوامر AGG-RISK وAGG-INCIDENT وتغطي REQ-RCM-001..016 كلها.
+- بند 3 (RD-HAZARD-CATEGORIES): أُضيف للكتالوج بـCR-68 ببذور صريحة من risk-contingency-spec §1 (CONFLICT-03 مغلق).
+- بند 4 (عقود SLC-06/SLC-15): `openapi-intelligence-slc06.md` و`openapi-information-slc15.md` بلا أي مسار لـBC04؛ عقد BC04 في SLC-06 هو `openapi-operations-slc06.md` (SUB، NTF).
+- بند 5 (ملفات القبول): الـ12 تطابق مصفوفاتها (V1 في [06-verification.md](06-verification.md)). صُحِّحت ثلاثة جداول انتقالات كان فيها `|` غير مُهرَّب (AGG-TASK، AGG-OUTCOME-TRACKER، AGG-SUBSCRIPTION — CR-71).
+- بند 6 (أحداث SLC-08): العدد 33 مؤكَّد (DECISION 3 + DECISION-REQUEST 7 + OUTCOME-TRACKER 5 + PLAN 9 + PLAN-VERSION 9).
+- **يبقى مفتوحًا (فجوة في المصدر لا في التحقق):** حالات الاستخدام الأصلية UC-030..046 مسودات اسم فقط (`actors: TBD`، `DRAFT`) في `use-cases.md`. تعبئتها تحتاج جلسة elicitation مع أصحاب العمل لأنها سرد تدفّقات أعمال، لا اشتقاقًا آليًا؛ الفاعلون المشتقون في §3/§5 من هذا الملف يبقون المرجع العملي حتى ذلك الحين.
+
+
 1. **فجوة CAP-09 الكاملة (Use Cases)** — أكبر فجوة اكتُشِفت هذه الجولة؛ 16 متطلبًا و2 aggregate (RISK/INCIDENT) و15 أمرًا و17 حدثًا بلا أي واجهة استخدام موثَّقة. **[Missing — Needs Review بشري]**، انظر §4/§19.
 2. **14 من 18 Use Case (UC-030..046) مسودات اسم فقط** (`DRAFT`, `actors: TBD`) — لا preconditions/main_flow فعليين؛ الفاعلون المذكورون في §3/§5 هنا **مُشتقون [Derived]** من جداول `commands-slc0{3,8}.md`/`policies-slc0{3,8}.md` لا من `use-cases.md` مباشرة. **[Missing في المصدر الأصلي]**.
 3. **RD-HAZARD-CATEGORIES** — مُستشهَد به إلزاميًا في `CMD-RIS-IDENTIFY` و`CMD-INC-REPORT` لكن غير معرَّف في `04-information/reference-data.md`؛ مُسجَّل مسبقًا كـCONFLICT-03 (Phase 2/5)، OPEN، لا يحتاج تسجيلًا جديدًا هنا.
@@ -603,4 +613,4 @@ BC04 هو **محرك القرار والتنفيذ** في المنصة: يسته
 | كل Requirement مرتبط بـUC (أو قرار صريح بعدم الحاجة)؟ | ⚠️ **21/38 بـUC + 1/38 بقرار "لا UC بالتصميم" (REQ-OPS-011) + 16/38 بلا UC ولا قرار (REQ-RCM-*، فجوة حقيقية)** |
 | كل UC مرتبط بـAggregate منفِّذ؟ | ✅ 18/18، لكن 14/18 مسودات اسم فقط (DRAFT) |
 | تصحيح رجعي من/إلى BC آخر مؤكَّد؟ | ✅ THR-S06-02/07 → BC04 (مطبَّق في bc03، مؤكَّد هنا) |
-| **الحالة الإجمالية** | **OPEN** — لا يمكن اعتبار BC04 مغلقًا فعليًا: فجوة CAP-09 (16 متطلبًا بلا أي UC) فجوة توثيقية حقيقية وجديدة تحتاج قرارًا بشريًا صريحًا (تسجيل CONFLICT-05/OQ جديدة أم كتابة UCs مباشرة)، إضافة لبندي [Missing] المتبقيين من Phase 2 (RD-HAZARD-CATEGORIES) والتحقق اللاحق لملفات acceptance. |
+| **الحالة الإجمالية** | **CLOSED بالتحقق (Phase 3.7)** — CONFLICT-05 وCONFLICT-03 مغلقان؛ يبقى فقط `actors: TBD` في مسودات UC-030..046. (الحالة السابقة قبل Phase 3.7 محفوظة في سجل git) |

@@ -30,6 +30,8 @@ traces:
 **الغرض:** نظام التصنيف لكل مستأجر بإصدارات  
 **السياق:** BC08 · **المستوى:** T2 · **بيانات شخصية:** لا
 
+> REQ-GOV-004 added to satisfies by CR-65 (2026-09-29): CMD-CLS-ACTIVATE's guard (previous ACTIVE -> SUPERSEDED in same transaction) plus INV-CLS-04 (activation increments security_version of all subjects in the tenant) is the scheme-level enforcement mechanism for REQ-GOV-004's "stop returning the object to newly unauthorized subjects from the moment of the change" -- previously undeclared here despite UC-085 already being listed against REQ-GOV-004 in requirements.md (see CR-64 residual_note).
+
 ## الثوابت (Invariants)
 
 - **INV-CLS-01** — exactly one ACTIVE scheme version per tenant
@@ -111,12 +113,11 @@ requirements:
 - REQ-GOV-004
 - REQ-GOV-009
 notes: 'REQ-GOV-004 added to satisfies by CR-65 (2026-09-29): CMD-CLS-ACTIVATE''s
-  guard (previous ACTIVE -> SUPERSEDED in same transaction) plus INV-CLS-04
-  (activation increments security_version of all subjects in the tenant) is the
-  scheme-level enforcement mechanism for REQ-GOV-004''s "stop returning the object
-  to newly unauthorized subjects from the moment of the change" -- previously
-  undeclared here despite UC-085 already being listed against REQ-GOV-004 in
-  requirements.md (see CR-64 residual_note).'
+  guard (previous ACTIVE -> SUPERSEDED in same transaction) plus INV-CLS-04 (activation
+  increments security_version of all subjects in the tenant) is the scheme-level enforcement
+  mechanism for REQ-GOV-004''s "stop returning the object to newly unauthorized subjects
+  from the moment of the change" -- previously undeclared here despite UC-085 already
+  being listed against REQ-GOV-004 in requirements.md (see CR-64 residual_note).'
 personal_data: false
 reachability: PASS
 transitions:

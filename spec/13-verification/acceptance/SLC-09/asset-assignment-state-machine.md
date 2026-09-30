@@ -18,7 +18,7 @@ traces:
 
 # Acceptance — Asset Assignment
 
-مولّدة من مصفوفة AGG-ASSET-ASSIGNMENT: 2 انتقالاً مسموحاً، 7 رفضاً.
+مولّدة من مصفوفة AGG-ASSET-ASSIGNMENT: 2 انتقالاً مسموحاً، 7 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Asset Assignment lifecycle (AGG-ASSET-ASSIGNMENT)
@@ -64,4 +64,15 @@ Feature: Asset Assignment lifecycle (AGG-ASSET-ASSIGNMENT)
       | Asset Assignment | CANCELLED | CMD-ASG-ASSIGN | ASSET_ASSIGNMENT_INVALID_STATE_TRANSITION |
       | Asset Assignment | CANCELLED | CMD-ASG-RETURN | ASSET_ASSIGNMENT_INVALID_STATE_TRANSITION |
       | Asset Assignment | CANCELLED | CMD-ASG-CANCEL | ASSET_ASSIGNMENT_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Asset Assignment | ACTIVE | linked task terminal | RETURNED | EVT-ASG-RETURNED |
 ```

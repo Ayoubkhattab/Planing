@@ -19,7 +19,7 @@ traces:
 
 # Acceptance — Assessment Version
 
-مولّدة من مصفوفة AGG-ASSESSMENT: 6 انتقالاً مسموحاً، 36 رفضاً.
+مولّدة من مصفوفة AGG-ASSESSMENT: 6 انتقالاً مسموحاً، 36 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Assessment Version lifecycle (AGG-ASSESSMENT)
@@ -98,4 +98,15 @@ Feature: Assessment Version lifecycle (AGG-ASSESSMENT)
       | Assessment Version | DISCARDED | CMD-ASM-PUBLISH | ASSESSMENT_INVALID_STATE_TRANSITION |
       | Assessment Version | DISCARDED | CMD-ASM-WITHDRAW | ASSESSMENT_INVALID_STATE_TRANSITION |
       | Assessment Version | DISCARDED | CMD-ASM-DISCARD | ASSESSMENT_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Assessment Version | PUBLISHED | newer version published | SUPERSEDED | EVT-ASM-SUPERSEDED |
 ```

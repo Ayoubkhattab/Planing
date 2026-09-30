@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — Erasure Request
 
-مولّدة من مصفوفة AGG-ERASURE-REQUEST: 2 انتقالاً مسموحاً، 19 رفضاً.
+مولّدة من مصفوفة AGG-ERASURE-REQUEST: 2 انتقالاً مسموحاً، 19 رفضاً، 5 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Erasure Request lifecycle (AGG-ERASURE-REQUEST)
@@ -75,4 +75,19 @@ Feature: Erasure Request lifecycle (AGG-ERASURE-REQUEST)
       | Erasure Request | REJECTED | CMD-ERS-REGISTER | ERASURE_REQUEST_INVALID_STATE_TRANSITION |
       | Erasure Request | REJECTED | CMD-ERS-APPROVE | ERASURE_REQUEST_INVALID_STATE_TRANSITION |
       | Erasure Request | REJECTED | CMD-ERS-REJECT | ERASURE_REQUEST_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Erasure Request | RECEIVED | subject scope resolved | SCOPED | EVT-ERS-SCOPED |
+      | Erasure Request | APPROVED | hold matches subject | BLOCKED_BY_HOLD | EVT-ERS-BLOCKED |
+      | Erasure Request | APPROVED | execution started | EXECUTING | EVT-ERS-EXECUTING |
+      | Erasure Request | BLOCKED_BY_HOLD | hold released | APPROVED | EVT-ERS-UNBLOCKED |
+      | Erasure Request | EXECUTING | all contexts confirmed | COMPLETED | EVT-ERS-COMPLETED |
 ```

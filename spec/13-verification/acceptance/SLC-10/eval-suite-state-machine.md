@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — Evaluation Suite
 
-مولّدة من مصفوفة AGG-EVAL-SUITE: 2 انتقالاً مسموحاً، 7 رفضاً.
+مولّدة من مصفوفة AGG-EVAL-SUITE: 2 انتقالاً مسموحاً، 7 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Evaluation Suite lifecycle (AGG-EVAL-SUITE)
@@ -63,4 +63,15 @@ Feature: Evaluation Suite lifecycle (AGG-EVAL-SUITE)
       | Evaluation Suite | SUPERSEDED | CMD-EVS-DRAFT | EVAL_SUITE_INVALID_STATE_TRANSITION |
       | Evaluation Suite | SUPERSEDED | CMD-EVS-EDIT | EVAL_SUITE_INVALID_STATE_TRANSITION |
       | Evaluation Suite | SUPERSEDED | CMD-EVS-ACTIVATE | EVAL_SUITE_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Evaluation Suite | ACTIVE | successor activated | SUPERSEDED | EVT-EVS-SUPERSEDED |
 ```

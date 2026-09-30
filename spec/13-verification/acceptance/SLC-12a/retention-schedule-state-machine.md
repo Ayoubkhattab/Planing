@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — Retention Schedule Version
 
-مولّدة من مصفوفة AGG-RETENTION-SCHEDULE: 3 انتقالاً مسموحاً، 13 رفضاً.
+مولّدة من مصفوفة AGG-RETENTION-SCHEDULE: 3 انتقالاً مسموحاً، 13 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Retention Schedule Version lifecycle (AGG-RETENTION-SCHEDULE)
@@ -70,4 +70,15 @@ Feature: Retention Schedule Version lifecycle (AGG-RETENTION-SCHEDULE)
       | Retention Schedule Version | DISCARDED | CMD-RTS-EDIT | RETENTION_SCHEDULE_INVALID_STATE_TRANSITION |
       | Retention Schedule Version | DISCARDED | CMD-RTS-ACTIVATE | RETENTION_SCHEDULE_INVALID_STATE_TRANSITION |
       | Retention Schedule Version | DISCARDED | CMD-RTS-DISCARD | RETENTION_SCHEDULE_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Retention Schedule Version | ACTIVE | successor activated | SUPERSEDED | EVT-RTS-SUPERSEDED |
 ```

@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — Security Exception
 
-مولّدة من مصفوفة AGG-SECURITY-EXCEPTION: 5 انتقالاً مسموحاً، 19 رفضاً.
+مولّدة من مصفوفة AGG-SECURITY-EXCEPTION: 5 انتقالاً مسموحاً، 19 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Security Exception lifecycle (AGG-SECURITY-EXCEPTION)
@@ -78,4 +78,15 @@ Feature: Security Exception lifecycle (AGG-SECURITY-EXCEPTION)
       | Security Exception | REVOKED | CMD-EXC-APPROVE | SECURITY_EXCEPTION_INVALID_STATE_TRANSITION |
       | Security Exception | REVOKED | CMD-EXC-REJECT | SECURITY_EXCEPTION_INVALID_STATE_TRANSITION |
       | Security Exception | REVOKED | CMD-EXC-REVOKE | SECURITY_EXCEPTION_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Security Exception | ACTIVE | end reached | EXPIRED | EVT-EXC-EXPIRED |
 ```

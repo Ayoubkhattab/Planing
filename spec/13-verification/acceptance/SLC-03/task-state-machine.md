@@ -24,7 +24,7 @@ traces:
 
 # Acceptance — Task
 
-مولّدة من مصفوفة AGG-TASK: 77 انتقالاً مسموحاً، 283 رفضاً.
+مولّدة من مصفوفة AGG-TASK: 77 انتقالاً مسموحاً، 283 رفضاً، 29 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Task lifecycle (AGG-TASK)
@@ -421,4 +421,43 @@ Feature: Task lifecycle (AGG-TASK)
       | Task | SUPERSEDED | CMD-TASK-SUSPEND | TASK_INVALID_STATE_TRANSITION |
       | Task | SUPERSEDED | CMD-TASK-UNSUSPEND | TASK_INVALID_STATE_TRANSITION |
       | Task | SUPERSEDED | CMD-TASK-RECLASSIFY | TASK_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Task | DRAFT | due passed and task type expires_on_due | EXPIRED | EVT-TASK-EXPIRED |
+      | Task | DRAFT | plan version baselined without this task | SUPERSEDED | EVT-TASK-SUPERSEDED |
+      | Task | DRAFT | due passed (escalation policy) | DRAFT | EVT-TASK-ESCALATED |
+      | Task | READY | due passed and task type expires_on_due | EXPIRED | EVT-TASK-EXPIRED |
+      | Task | READY | plan version baselined without this task | SUPERSEDED | EVT-TASK-SUPERSEDED |
+      | Task | READY | due passed (escalation policy) | READY | EVT-TASK-ESCALATED |
+      | Task | ASSIGNED | due passed and task type expires_on_due | EXPIRED | EVT-TASK-EXPIRED |
+      | Task | ASSIGNED | plan version baselined without this task | SUPERSEDED | EVT-TASK-SUPERSEDED |
+      | Task | ASSIGNED | due passed (escalation policy) | ASSIGNED | EVT-TASK-ESCALATED |
+      | Task | ACCEPTED | due passed and task type expires_on_due | EXPIRED | EVT-TASK-EXPIRED |
+      | Task | ACCEPTED | plan version baselined without this task | SUPERSEDED | EVT-TASK-SUPERSEDED |
+      | Task | ACCEPTED | due passed (escalation policy) | ACCEPTED | EVT-TASK-ESCALATED |
+      | Task | IN_PROGRESS | due passed and task type expires_on_due | EXPIRED | EVT-TASK-EXPIRED |
+      | Task | IN_PROGRESS | plan version baselined without this task | SUPERSEDED | EVT-TASK-SUPERSEDED |
+      | Task | IN_PROGRESS | due passed (escalation policy) | IN_PROGRESS | EVT-TASK-ESCALATED |
+      | Task | BLOCKED | due passed and task type expires_on_due | EXPIRED | EVT-TASK-EXPIRED |
+      | Task | BLOCKED | plan version baselined without this task | SUPERSEDED | EVT-TASK-SUPERSEDED |
+      | Task | BLOCKED | due passed (escalation policy) | BLOCKED | EVT-TASK-ESCALATED |
+      | Task | SUBMITTED | due passed and task type expires_on_due | EXPIRED | EVT-TASK-EXPIRED |
+      | Task | SUBMITTED | plan version baselined without this task | SUPERSEDED | EVT-TASK-SUPERSEDED |
+      | Task | SUBMITTED | due passed (escalation policy) | SUBMITTED | EVT-TASK-ESCALATED |
+      | Task | UNDER_REVIEW | due passed and task type expires_on_due | EXPIRED | EVT-TASK-EXPIRED |
+      | Task | UNDER_REVIEW | plan version baselined without this task | SUPERSEDED | EVT-TASK-SUPERSEDED |
+      | Task | UNDER_REVIEW | due passed (escalation policy) | UNDER_REVIEW | EVT-TASK-ESCALATED |
+      | Task | APPROVED | all completion criteria satisfied | COMPLETED | EVT-TASK-COMPLETED |
+      | Task | APPROVED | plan version baselined without this task | SUPERSEDED | EVT-TASK-SUPERSEDED |
+      | Task | APPROVED | due passed (escalation policy) | APPROVED | EVT-TASK-ESCALATED |
+      | Task | COMPLETED | follow-up window (7 d) elapsed without open follow-ups | CLOSED | EVT-TASK-CLOSED |
+      | Task | COMPLETED | due passed (escalation policy) | COMPLETED | EVT-TASK-ESCALATED |
 ```

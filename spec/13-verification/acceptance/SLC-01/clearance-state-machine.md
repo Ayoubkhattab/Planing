@@ -18,7 +18,7 @@ traces:
 
 # Acceptance — Clearance
 
-مولّدة من مصفوفة AGG-CLEARANCE: 7 انتقالاً مسموحاً، 23 رفضاً.
+مولّدة من مصفوفة AGG-CLEARANCE: 7 انتقالاً مسموحاً، 23 رفضاً، 2 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Clearance lifecycle (AGG-CLEARANCE)
@@ -85,4 +85,16 @@ Feature: Clearance lifecycle (AGG-CLEARANCE)
       | Clearance | REVOKED | CMD-CLR-SUSPEND | CLEARANCE_INVALID_STATE_TRANSITION |
       | Clearance | REVOKED | CMD-CLR-REINSTATE | CLEARANCE_INVALID_STATE_TRANSITION |
       | Clearance | REVOKED | CMD-CLR-REVOKE | CLEARANCE_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Clearance | ACTIVE | valid_to reached | EXPIRED | EVT-CLR-EXPIRED |
+      | Clearance | SUSPENDED | valid_to reached | EXPIRED | EVT-CLR-EXPIRED |
 ```

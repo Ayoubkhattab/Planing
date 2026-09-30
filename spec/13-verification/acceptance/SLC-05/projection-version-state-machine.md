@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — Projection Version
 
-مولّدة من مصفوفة AGG-PROJECTION-VERSION: 5 انتقالاً مسموحاً، 19 رفضاً.
+مولّدة من مصفوفة AGG-PROJECTION-VERSION: 5 انتقالاً مسموحاً، 19 رفضاً، 4 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Projection Version lifecycle (AGG-PROJECTION-VERSION)
@@ -78,4 +78,18 @@ Feature: Projection Version lifecycle (AGG-PROJECTION-VERSION)
       | Projection Version | RETIRED | CMD-PRJ-PROMOTE | PROJECTION_VERSION_INVALID_STATE_TRANSITION |
       | Projection Version | RETIRED | CMD-PRJ-RETIRE | PROJECTION_VERSION_INVALID_STATE_TRANSITION |
       | Projection Version | RETIRED | CMD-PRJ-CANCEL-BUILD | PROJECTION_VERSION_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Projection Version | BUILDING | full rebuild reached live checkpoint | READY | EVT-PRJ-READY |
+      | Projection Version | BUILDING | build failed | FAILED | EVT-PRJ-FAILED |
+      | Projection Version | ACTIVE | lag above threshold | DEGRADED | EVT-PRJ-DEGRADED |
+      | Projection Version | DEGRADED | lag back within target | ACTIVE | EVT-PRJ-RECOVERED |
 ```

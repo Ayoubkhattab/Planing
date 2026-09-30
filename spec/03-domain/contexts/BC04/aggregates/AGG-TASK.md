@@ -76,7 +76,7 @@ traces:
 | ACCEPTED | CMD-TASK-START | IN_PROGRESS | actor = assignee; all predecessor tasks COMPLETED or CLOSED | EVT-TASK-STARTED | DEPENDENCIES_NOT_MET |
 | IN_PROGRESS | CMD-TASK-BLOCK | BLOCKED | actor = assignee; blocking reason | EVT-TASK-BLOCKED | REASON_REQUIRED |
 | BLOCKED | CMD-TASK-RESUME | IN_PROGRESS | actor = assignee; resolution note | EVT-TASK-RESUMED | REASON_REQUIRED |
-| IN_PROGRESS, BLOCKED | CMD-TASK-ADD-RESULT-ITEM | (بلا تغيير) | actor = assignee; item = note | evidence URN | observation URN | measurement | EVT-TASK-RESULT-ITEM-ADDED | RESULT_ITEM_INVALID |
+| IN_PROGRESS, BLOCKED | CMD-TASK-ADD-RESULT-ITEM | (بلا تغيير) | actor = assignee; item = note \| evidence URN \| observation URN \| measurement | EVT-TASK-RESULT-ITEM-ADDED | RESULT_ITEM_INVALID |
 | IN_PROGRESS | CMD-TASK-SUBMIT | SUBMITTED | actor = assignee; result has ≥ 1 item | EVT-TASK-SUBMITTED | RESULT_REQUIRED |
 | SUBMITTED | CMD-TASK-START-REVIEW | UNDER_REVIEW | actor has review permission in scope; actor ≠ assignee | EVT-TASK-REVIEW-STARTED | SEGREGATION_OF_DUTIES |
 | UNDER_REVIEW | CMD-TASK-RETURN | IN_PROGRESS | reviewer; rework reason | EVT-TASK-RETURNED-FOR-REWORK | REASON_REQUIRED |

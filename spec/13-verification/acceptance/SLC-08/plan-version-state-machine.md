@@ -21,7 +21,7 @@ traces:
 
 # Acceptance — Plan Version
 
-مولّدة من مصفوفة AGG-PLAN-VERSION: 7 انتقالاً مسموحاً، 41 رفضاً.
+مولّدة من مصفوفة AGG-PLAN-VERSION: 7 انتقالاً مسموحاً، 41 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Plan Version lifecycle (AGG-PLAN-VERSION)
@@ -106,4 +106,15 @@ Feature: Plan Version lifecycle (AGG-PLAN-VERSION)
       | Plan Version | DISCARDED | CMD-PLV-REJECT | PLAN_VERSION_INVALID_STATE_TRANSITION |
       | Plan Version | DISCARDED | CMD-PLV-AMEND-MINOR | PLAN_VERSION_INVALID_STATE_TRANSITION |
       | Plan Version | DISCARDED | CMD-PLV-DISCARD | PLAN_VERSION_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Plan Version | BASELINED | newer version baselined | SUPERSEDED | EVT-PLV-SUPERSEDED |
 ```

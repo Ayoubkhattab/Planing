@@ -18,7 +18,7 @@ traces:
 
 # Acceptance — Collection Requirement
 
-مولّدة من مصفوفة AGG-COLLECTION-REQUIREMENT: 9 انتقالاً مسموحاً، 47 رفضاً.
+مولّدة من مصفوفة AGG-COLLECTION-REQUIREMENT: 9 انتقالاً مسموحاً، 47 رفضاً، 2 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Collection Requirement lifecycle (AGG-COLLECTION-REQUIREMENT)
@@ -111,4 +111,16 @@ Feature: Collection Requirement lifecycle (AGG-COLLECTION-REQUIREMENT)
       | Collection Requirement | CANCELLED | CMD-CRQ-AMEND | COLLECTION_REQUIREMENT_INVALID_STATE_TRANSITION |
       | Collection Requirement | CANCELLED | CMD-CRQ-MARK-SATISFIED | COLLECTION_REQUIREMENT_INVALID_STATE_TRANSITION |
       | Collection Requirement | CANCELLED | CMD-CRQ-CANCEL | COLLECTION_REQUIREMENT_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Collection Requirement | APPROVED | validated observation matched | APPROVED | EVT-CRQ-FULFILMENT-UPDATED |
+      | Collection Requirement | APPROVED | due passed | EXPIRED | EVT-CRQ-EXPIRED |
 ```

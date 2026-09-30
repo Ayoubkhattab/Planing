@@ -15,7 +15,7 @@ consumers: []
 
 ## corrections
 
-_65 items_ (header count was stale at 61; true count as of CR-63 was already 63 — corrected alongside CR-64; now 65 with CR-65)
+_72 items_ (CR-66..CR-72 added in Phase 3.7 — automated verification and owner-delegated decisions of 2026-09-30)
 
 ### CR-01
 
@@ -528,7 +528,7 @@ _65 items_ (header count was stale at 61; true count as of CR-63 was already 63 
 - **residual_note:** AGG-CLASSIFICATION-SCHEME.md's own `traces.satisfies` (BC08) still does not list REQ-GOV-004, even though UC-085 is now documented as contributing to it via its scheme-activation security-version bump (INV-CLS-04). Left unchanged pending human review — flagged here rather than edited silently, since it touches a different bounded context's approved aggregate file
 - **target_wave:** W7 (post-hoc, discovered during BC01 feature deep-dive, not a slice-generation artifact)
 - **origin:** Dynamic Discovery reverse-check on AGG-AUTHORITY-GRANT/AGG-CLEARANCE (Reverse Discovery pass against trace-slc01.md)
-- **status:** APPLIED_IN_SPEC (pending human confirmation of UC-089 scope/capability assignment)
+- **status:** APPLIED (confirmed 2026-09-30 under owner-delegated authority; master-study §20.3 item 3)
 
 ### CR-65
 
@@ -536,6 +536,62 @@ _65 items_ (header count was stale at 61; true count as of CR-63 was already 63 
 - **correction:** added REQ-GOV-004 to AGG-CLASSIFICATION-SCHEME.md's `traces.satisfies` (prose front-matter and machine-readable YAML block), with an inline note explaining the INV-CLS-04 linkage; no change needed to requirements.md (REQ-GOV-004.use_cases already lists UC-085 for this side per CR-64) or to any commands/events/queries file — this is a traceability-declaration fix only, not a behavior change
 - **target_wave:** W7 (post-hoc, discovered during BC08 feature deep-dive, closing the CR-64 residual_note)
 - **origin:** Dynamic Discovery Phase 3 — BC08 study, closing CONFLICT-01/OQ-034's last open thread
+- **status:** APPLIED
+
+### CR-66
+
+- **issue:** requirements.md `system_requirements` header stated `_181 items_` while the section (and its YAML block) holds 210 requirements (R1 114, R2 51, R3 45); the R3 requirements added in W1/W2-R3 on 2026-09-27 were never counted. The study's 04-cross-cutting §6.2 had built a false '21 intentional overlaps' explanation on the stale figure.
+- **correction:** header set to 210 with a pointer to this CR; the actual overlap between bounded contexts (from traces.satisfies) is 11, recorded in 04-cross-cutting.md §6.2. The requirements.md YAML block, which did not parse (REQ-TRX-006 acceptance_criteria contained an unquoted 'SYS: rows'), was repaired so the machine-readable source loads again.
+- **target_wave:** W9 baseline (editorial)
+- **origin:** Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated decisions of 2026-09-30
+- **status:** APPLIED (decision delegated by project owner (2026-09-30); master-study §20.3 item 5)
+
+### CR-67
+
+- **issue:** system-definition.md §4 still defined R3 as a single slice SLC-13 (and omitted SLC-12a, SLC-14..16); slices.md kept SLC-13 as g6_slc NOT_STARTED; use-cases.md gaps table resolved VS04 to SLC-13; EVOLUTION-ROADMAP.md said no R3 detailed design had started — while SLC-17/18/19 had been fully designed (DESIGN_COMPLETE, 2026-09-27..29).
+- **correction:** system-definition §4 lists R1 SLC-01..08, SLC-11, SLC-12a; R2 SLC-09, 10, 12, 14, 15, 16; R3 SLC-17, 18, 19 (Communications still undecomposed, UNK-022). SLC-13 marked SUPERSEDED in slices.md (prose and YAML) with its decomposition; VS04 gap now resolves to SLC-17; the roadmap states that design is complete and only G6 is held (RSK-028).
+- **target_wave:** W9 baseline (editorial)
+- **origin:** Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated decisions of 2026-09-30
+- **status:** APPLIED (decision delegated by project owner (2026-09-30); master-study §20.3 item 6)
+
+### CR-68
+
+- **issue:** Six reference-data categories (RD-HAZARD-CATEGORIES, RD-ASSET-TYPES, RD-RESOURCE-TYPES, RD-LOGISTICS-ITEM-TYPES, RD-CONDITION-GRADES, RD-EXERCISE-TYPES) were cited as mandatory guards in BC04/BC05 commands but absent from 04-information/reference-data.md (CONFLICT-03).
+- **correction:** all six added to the code-list catalog (prose table and YAML) as tenant-defined, versioned lists. Seed values are Explicit where a source already states them (hazard categories: risk-contingency-spec §1; asset/resource types: R2-Q1; logistics items: logistics-spec §1), Derived for condition grades (each grade carries a serviceable flag, from AGG-ASSET guards) and Inferred examples for exercise types; the last two are marked for confirmation at tenant setup workshop.
+- **target_wave:** W3 reference data (post-hoc)
+- **origin:** Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated decisions of 2026-09-30
+- **status:** APPLIED (decision delegated by project owner (2026-09-30); closes CONFLICT-03)
+
+### CR-69
+
+- **issue:** AGG-ERASURE-REQUEST's scoping step located subject keys only in BC01 and BC02, while AGG-QUALIFICATION-RECORD (BC05) carries personal_data: true (CONFLICT-04). Subject-key shredding already covers personal data about the person wherever stored, but BC05 was never asked to scope and confirm.
+- **correction:** SYS:subject scope resolved guard now includes BC05 qualification records of the person; BC05 added to the erasure event consumers (scope + confirmation); key-hierarchy-and-disposition.md states that the subject DEK covers BC05 qualification records. Applied in the SLC-12a generator data and regenerated (aggregate, events catalog, AsyncAPI). Legal retention obligations remain handled by CMD-ERS-REJECT and legal hold, unchanged. Chosen per system-definition §6 'design for the strictest legal state'.
+- **target_wave:** SLC-12a
+- **origin:** Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated decisions of 2026-09-30
+- **status:** APPLIED (decision delegated by project owner (2026-09-30); closes CONFLICT-04)
+
+### CR-70
+
+- **issue:** 50 requirements with clearly-actored behaviour had no Use Case (CONFLICT-05): REQ-RCM-001..016 (BC04, SLC-17), REQ-LOG-001..014 and REQ-TRX-001..015 (BC05, SLC-18/19), REQ-AI-009/010/011/013 and REQ-SRC-004 (BC07). Unlike OQ-034, every command involved has a named human actor, so this was a documentation gap, not a design choice.
+- **correction:** 16 Use Cases added, each derived from the owning aggregate's command and policy tables (epistemic DER, following the CR-64/UC-089 precedent): UC-075..078 (AI model lifecycle, evaluation suites, routing and tool registry, projection rebuild), UC-140..144 (risk and incident), UC-150..152 (logistics), UC-160..163 (training and exercises). use_cases of all 50 requirements linked in requirements.md prose and YAML.
+- **target_wave:** W2 requirements (post-hoc)
+- **origin:** Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated decisions of 2026-09-30
+- **status:** APPLIED (decision delegated by project owner (2026-09-30); closes CONFLICT-05)
+
+### CR-71
+
+- **issue:** Automated verification found the spec tooling no longer reproduced its generated files, despite the W9 round-trip claim: CR-63 and CR-65 had been applied by hand to generated Markdown only (CR-63's own 'round-trip confirmed' note was inaccurate), so regeneration would silently revert both; slice_gen wrote guard text without escaping '|', breaking three transition tables (AGG-TASK, AGG-OUTCOME-TRACKER, AGG-SUBSCRIPTION); generators hard-coded approved_at 2026-09-24 while SLC-18 files carry 2026-09-27; slc19_data lacked payload entries for three no-payload commands so SLC-19 could not be generated; AGG-CLASSIFICATION-SCHEME's acceptance spec did not verify REQ-GOV-004. Separately, three register/spec YAML blocks did not parse (corrections.md CR-64, requirements.md REQ-TRX-006, and SLC-18/19 hand-authored AGG-SCENARIO, AGG-SIMULATION, threat-model-slc18/19), open-questions.md had lost OQ-030's heading, and AGG-EXERCISE's matrix header named SYS commands absent from its own transition table.
+- **correction:** slice_gen escapes '|' in guards; slice_gen, slice_contracts and acc_gen honour an optional per-slice APPROVED_AT (set for SLC-18); CR-63 and CR-65 moved into slc12_data/slc01_data; slc19_data completed. Regeneration of SLC-01..18 now reproduces every generated file byte-for-byte (V5 in 17-system-study/06-verification.md). SLC-19 remains hand-authored outside the tooling (DEBT-002). YAML blocks repaired (text preserved), OQ-030 heading restored, AGG-EXERCISE header aligned with its transitions.
+- **target_wave:** W9 tooling (post-hoc)
+- **origin:** Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated decisions of 2026-09-30
+- **status:** APPLIED
+
+### CR-72
+
+- **issue:** acc_gen generated acceptance scenarios for actor commands only: 175 scheduler-driven (SYS:) transitions in 56 aggregates — including SYS creations such as alert raising and archive ingestion — had no acceptance scenario outside hand-written SLC-19.
+- **correction:** acc_gen now emits a 'system-triggered transition' scenario outline (trigger, from, to, event; invariants hold as for actor commands) for every SYS transition including SYS creations; all SLC-01..18 acceptance files regenerated (55 files gained the scenario). V1b coverage: 175/175.
+- **target_wave:** W6 acceptance (post-hoc)
+- **origin:** Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated decisions of 2026-09-30
 - **status:** APPLIED
 
 ---
@@ -940,46 +996,133 @@ corrections:
   status: APPLIED
 - id: CR-63
   issue: SLC-19's After Action Review needs a completed exercise simulation to be a valid terminal source for a lesson-type
-    Knowledge Object (R3-Q5 reuse decision), but AGG-KNOWLEDGE-OBJECT's CMD-KNO-DRAFT guard restricted lesson terminal
-    sources to task, plan or incident only (REQ-KNW-002); the payload field itself (source:urn) was already generic
-  correction: CMD-KNO-DRAFT's guard text is broadened to accept a completed exercise simulation as a fourth alternative
-    terminal source for lessons, alongside task/plan/incident; REQ-KNW-002's statement and acceptance criteria are
-    broadened to match; no payload schema change; SLC-12 source updated and regenerated — round-trip confirmed only
-    the guard-text line in AGG-KNOWLEDGE-OBJECT.md and the matching guard line in commands-slc12.md changed, with
-    OpenAPI/AsyncAPI/errors/acceptance byte-identical to the prior baseline
+    Knowledge Object (R3-Q5 reuse decision), but AGG-KNOWLEDGE-OBJECT's CMD-KNO-DRAFT guard restricted lesson terminal sources
+    to task, plan or incident only (REQ-KNW-002); the payload field itself (source:urn) was already generic
+  correction: CMD-KNO-DRAFT's guard text is broadened to accept a completed exercise simulation as a fourth alternative terminal
+    source for lessons, alongside task/plan/incident; REQ-KNW-002's statement and acceptance criteria are broadened to match;
+    no payload schema change; SLC-12 source updated and regenerated — round-trip confirmed only the guard-text line in AGG-KNOWLEDGE-OBJECT.md
+    and the matching guard line in commands-slc12.md changed, with OpenAPI/AsyncAPI/errors/acceptance byte-identical to the
+    prior baseline
   target_wave: SLC-19
   origin: SLC-19
   status: APPLIED
 - id: CR-65
-  issue: AGG-CLASSIFICATION-SCHEME.md (BC08) did not list REQ-GOV-004 in traces.satisfies
-    despite requirements.md already citing UC-085 for it (CR-64 residual_note); INV-CLS-04
-    (activation increments security_version of all subjects) is the scheme-level enforcement
-    mechanism for REQ-GOV-004
-  correction: added REQ-GOV-004 to AGG-CLASSIFICATION-SCHEME.md's traces.satisfies (prose
-    + YAML); no requirements.md change needed
+  issue: AGG-CLASSIFICATION-SCHEME.md (BC08) did not list REQ-GOV-004 in traces.satisfies despite requirements.md already
+    citing UC-085 for it (CR-64 residual_note); INV-CLS-04 (activation increments security_version of all subjects) is the
+    scheme-level enforcement mechanism for REQ-GOV-004
+  correction: added REQ-GOV-004 to AGG-CLASSIFICATION-SCHEME.md's traces.satisfies (prose + YAML); no requirements.md change
+    needed
   target_wave: W7 (post-hoc, BC08 study)
   origin: Dynamic Discovery Phase 3 — BC08 study, closing CONFLICT-01/OQ-034
   status: APPLIED
 - id: CR-64
-  issue: REQ-GOV-004's use_cases field pointed only to UC-085 (Manage Classification Scheme & Compartments, BC08,
-    satisfies REQ-GOV-001/REQ-GOV-009 per AGG-CLASSIFICATION-SCHEME.md — REQ-GOV-004 is absent from that aggregate's
-    own traces.satisfies), while the aggregate that actually declares satisfies REQ-GOV-004 is AGG-CLEARANCE (BC01),
-    which had no Use Case at all; REQ-GOV-003 (also satisfied by AGG-CLEARANCE) likewise had use_cases empty. Net
-    effect: no Use Case covered granting/modifying/suspending/revoking a user's clearance (CMD-CLR-GRANT/APPROVE/
-    MODIFY/SUSPEND/REINSTATE/REVOKE), even though the commands, policies, events and acceptance tests for that
-    lifecycle are fully specified
-  correction: added UC-089 — Manage User Clearance (BC01, CAP-13.01, actor Security Officer, covers AGG-CLEARANCE's
-    full command set) to use-cases.md (numbering: next free slot in the reserved cross-cutting 080-089 range per
-    OQ-001); linked REQ-GOV-003.use_cases -> UC-089 and REQ-GOV-004.use_cases -> UC-085, UC-089 (both requirements.md
-    prose and YAML blocks) since REQ-GOV-004's acceptance criterion (after a downgrade of a user's access...) is the
-    clearance-side (BC01) path, distinct from UC-085's object/scheme-side path (BC08)
-  residual_note: AGG-CLASSIFICATION-SCHEME.md's own traces.satisfies (BC08) still does not list REQ-GOV-004, even
-    though UC-085 is now documented as contributing to it via its scheme-activation security-version bump (INV-CLS-04).
-    Left unchanged pending human review — flagged here rather than edited silently, since it touches a different
-    bounded context's approved aggregate file
+  issue: REQ-GOV-004's use_cases field pointed only to UC-085 (Manage Classification Scheme & Compartments, BC08, satisfies
+    REQ-GOV-001/REQ-GOV-009 per AGG-CLASSIFICATION-SCHEME.md — REQ-GOV-004 is absent from that aggregate's own traces.satisfies),
+    while the aggregate that actually declares satisfies REQ-GOV-004 is AGG-CLEARANCE (BC01), which had no Use Case at all;
+    REQ-GOV-003 (also satisfied by AGG-CLEARANCE) likewise had use_cases empty. Net result — no Use Case covered granting/modifying/suspending/revoking
+    a user's clearance (CMD-CLR-GRANT/APPROVE/ MODIFY/SUSPEND/REINSTATE/REVOKE), even though the commands, policies, events
+    and acceptance tests for that lifecycle are fully specified
+  correction: 'added UC-089 — Manage User Clearance (BC01, CAP-13.01, actor Security Officer, covers AGG-CLEARANCE''s full
+    command set) to use-cases.md (numbering: next free slot in the reserved cross-cutting 080-089 range per OQ-001); linked
+    REQ-GOV-003.use_cases -> UC-089 and REQ-GOV-004.use_cases -> UC-085, UC-089 (both requirements.md prose and YAML blocks)
+    since REQ-GOV-004''s acceptance criterion (after a downgrade of a user''s access...) is the clearance-side (BC01) path,
+    distinct from UC-085''s object/scheme-side path (BC08)'
+  residual_note: AGG-CLASSIFICATION-SCHEME.md's own traces.satisfies (BC08) still does not list REQ-GOV-004, even though UC-085
+    is now documented as contributing to it via its scheme-activation security-version bump (INV-CLS-04). Left unchanged pending
+    human review — flagged here rather than edited silently, since it touches a different bounded context's approved aggregate
+    file
   target_wave: W7 (post-hoc, discovered during BC01 feature deep-dive, not a slice-generation artifact)
   origin: Dynamic Discovery reverse-check on AGG-AUTHORITY-GRANT/AGG-CLEARANCE (Reverse Discovery pass against trace-slc01.md)
-  status: APPLIED_IN_SPEC (pending human confirmation of UC-089 scope/capability assignment)
+  status: APPLIED (confirmed 2026-09-30 under owner-delegated authority; master-study §20.3 item 3)
+- id: CR-66
+  issue: requirements.md `system_requirements` header stated `_181 items_` while the section (and its YAML block) holds 210
+    requirements (R1 114, R2 51, R3 45); the R3 requirements added in W1/W2-R3 on 2026-09-27 were never counted. The study's
+    04-cross-cutting §6.2 had built a false '21 intentional overlaps' explanation on the stale figure.
+  correction: 'header set to 210 with a pointer to this CR; the actual overlap between bounded contexts (from traces.satisfies)
+    is 11, recorded in 04-cross-cutting.md §6.2. The requirements.md YAML block, which did not parse (REQ-TRX-006 acceptance_criteria
+    contained an unquoted ''SYS: rows''), was repaired so the machine-readable source loads again.'
+  target_wave: W9 baseline (editorial)
+  origin: Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated
+    decisions of 2026-09-30
+  status: APPLIED (decision delegated by project owner (2026-09-30); master-study §20.3 item 5)
+- id: CR-67
+  issue: system-definition.md §4 still defined R3 as a single slice SLC-13 (and omitted SLC-12a, SLC-14..16); slices.md kept
+    SLC-13 as g6_slc NOT_STARTED; use-cases.md gaps table resolved VS04 to SLC-13; EVOLUTION-ROADMAP.md said no R3 detailed
+    design had started — while SLC-17/18/19 had been fully designed (DESIGN_COMPLETE, 2026-09-27..29).
+  correction: system-definition §4 lists R1 SLC-01..08, SLC-11, SLC-12a; R2 SLC-09, 10, 12, 14, 15, 16; R3 SLC-17, 18, 19
+    (Communications still undecomposed, UNK-022). SLC-13 marked SUPERSEDED in slices.md (prose and YAML) with its decomposition;
+    VS04 gap now resolves to SLC-17; the roadmap states that design is complete and only G6 is held (RSK-028).
+  target_wave: W9 baseline (editorial)
+  origin: Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated
+    decisions of 2026-09-30
+  status: APPLIED (decision delegated by project owner (2026-09-30); master-study §20.3 item 6)
+- id: CR-68
+  issue: Six reference-data categories (RD-HAZARD-CATEGORIES, RD-ASSET-TYPES, RD-RESOURCE-TYPES, RD-LOGISTICS-ITEM-TYPES,
+    RD-CONDITION-GRADES, RD-EXERCISE-TYPES) were cited as mandatory guards in BC04/BC05 commands but absent from 04-information/reference-data.md
+    (CONFLICT-03).
+  correction: 'all six added to the code-list catalog (prose table and YAML) as tenant-defined, versioned lists. Seed values
+    are Explicit where a source already states them (hazard categories: risk-contingency-spec §1; asset/resource types: R2-Q1;
+    logistics items: logistics-spec §1), Derived for condition grades (each grade carries a serviceable flag, from AGG-ASSET
+    guards) and Inferred examples for exercise types; the last two are marked for confirmation at tenant setup workshop.'
+  target_wave: W3 reference data (post-hoc)
+  origin: Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated
+    decisions of 2026-09-30
+  status: APPLIED (decision delegated by project owner (2026-09-30); closes CONFLICT-03)
+- id: CR-69
+  issue: 'AGG-ERASURE-REQUEST''s scoping step located subject keys only in BC01 and BC02, while AGG-QUALIFICATION-RECORD (BC05)
+    carries personal_data: true (CONFLICT-04). Subject-key shredding already covers personal data about the person wherever
+    stored, but BC05 was never asked to scope and confirm.'
+  correction: SYS:subject scope resolved guard now includes BC05 qualification records of the person; BC05 added to the erasure
+    event consumers (scope + confirmation); key-hierarchy-and-disposition.md states that the subject DEK covers BC05 qualification
+    records. Applied in the SLC-12a generator data and regenerated (aggregate, events catalog, AsyncAPI). Legal retention
+    obligations remain handled by CMD-ERS-REJECT and legal hold, unchanged. Chosen per system-definition §6 'design for the
+    strictest legal state'.
+  target_wave: SLC-12a
+  origin: Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated
+    decisions of 2026-09-30
+  status: APPLIED (decision delegated by project owner (2026-09-30); closes CONFLICT-04)
+- id: CR-70
+  issue: '50 requirements with clearly-actored behaviour had no Use Case (CONFLICT-05): REQ-RCM-001..016 (BC04, SLC-17), REQ-LOG-001..014
+    and REQ-TRX-001..015 (BC05, SLC-18/19), REQ-AI-009/010/011/013 and REQ-SRC-004 (BC07). Unlike OQ-034, every command involved
+    has a named human actor, so this was a documentation gap, not a design choice.'
+  correction: '16 Use Cases added, each derived from the owning aggregate''s command and policy tables (epistemic DER, following
+    the CR-64/UC-089 precedent): UC-075..078 (AI model lifecycle, evaluation suites, routing and tool registry, projection
+    rebuild), UC-140..144 (risk and incident), UC-150..152 (logistics), UC-160..163 (training and exercises). use_cases of
+    all 50 requirements linked in requirements.md prose and YAML.'
+  target_wave: W2 requirements (post-hoc)
+  origin: Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated
+    decisions of 2026-09-30
+  status: APPLIED (decision delegated by project owner (2026-09-30); closes CONFLICT-05)
+- id: CR-71
+  issue: 'Automated verification found the spec tooling no longer reproduced its generated files, despite the W9 round-trip
+    claim: CR-63 and CR-65 had been applied by hand to generated Markdown only (CR-63''s own ''round-trip confirmed'' note
+    was inaccurate), so regeneration would silently revert both; slice_gen wrote guard text without escaping ''|'', breaking
+    three transition tables (AGG-TASK, AGG-OUTCOME-TRACKER, AGG-SUBSCRIPTION); generators hard-coded approved_at 2026-09-24
+    while SLC-18 files carry 2026-09-27; slc19_data lacked payload entries for three no-payload commands so SLC-19 could not
+    be generated; AGG-CLASSIFICATION-SCHEME''s acceptance spec did not verify REQ-GOV-004. Separately, three register/spec
+    YAML blocks did not parse (corrections.md CR-64, requirements.md REQ-TRX-006, and SLC-18/19 hand-authored AGG-SCENARIO,
+    AGG-SIMULATION, threat-model-slc18/19), open-questions.md had lost OQ-030''s heading, and AGG-EXERCISE''s matrix header
+    named SYS commands absent from its own transition table.'
+  correction: slice_gen escapes '|' in guards; slice_gen, slice_contracts and acc_gen honour an optional per-slice APPROVED_AT
+    (set for SLC-18); CR-63 and CR-65 moved into slc12_data/slc01_data; slc19_data completed. Regeneration of SLC-01..18 now
+    reproduces every generated file byte-for-byte (V5 in 17-system-study/06-verification.md). SLC-19 remains hand-authored
+    outside the tooling (DEBT-002). YAML blocks repaired (text preserved), OQ-030 heading restored, AGG-EXERCISE header aligned
+    with its transitions.
+  target_wave: W9 tooling (post-hoc)
+  origin: Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated
+    decisions of 2026-09-30
+  status: APPLIED
+- id: CR-72
+  issue: 'acc_gen generated acceptance scenarios for actor commands only: 175 scheduler-driven (SYS:) transitions in 56 aggregates
+    — including SYS creations such as alert raising and archive ingestion — had no acceptance scenario outside hand-written
+    SLC-19.'
+  correction: 'acc_gen now emits a ''system-triggered transition'' scenario outline (trigger, from, to, event; invariants
+    hold as for actor commands) for every SYS transition including SYS creations; all SLC-01..18 acceptance files regenerated
+    (55 files gained the scenario). V1b coverage: 175/175.'
+  target_wave: W6 acceptance (post-hoc)
+  origin: Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated
+    decisions of 2026-09-30
+  status: APPLIED
 ```
 
 </details>

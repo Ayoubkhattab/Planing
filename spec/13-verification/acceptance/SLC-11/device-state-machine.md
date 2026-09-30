@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — Field Device
 
-مولّدة من مصفوفة AGG-DEVICE: 8 انتقالاً مسموحاً، 34 رفضاً.
+مولّدة من مصفوفة AGG-DEVICE: 8 انتقالاً مسموحاً، 34 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Field Device lifecycle (AGG-DEVICE)
@@ -96,4 +96,15 @@ Feature: Field Device lifecycle (AGG-DEVICE)
       | Field Device | RETIRED | CMD-DEV-REINSTATE | DEVICE_INVALID_STATE_TRANSITION |
       | Field Device | RETIRED | CMD-DEV-REPORT-LOST | DEVICE_INVALID_STATE_TRANSITION |
       | Field Device | RETIRED | CMD-DEV-RETIRE | DEVICE_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Field Device | LOST | wipe confirmed by device | WIPED | EVT-DEV-WIPED |
 ```

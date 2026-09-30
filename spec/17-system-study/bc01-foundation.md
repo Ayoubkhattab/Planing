@@ -412,6 +412,12 @@ BC01 هو **مزوّد بنية تحتية** (Authority/Identity/Clearance/Audit
 
 ## 20. Missing Information (مُجمَّعة)
 
+**تحديث Phase 3.7 (2026-09-30):**
+
+- CR-64 مؤكَّد (`APPLIED`) وCR-65 منقول إلى بيانات المولِّد (CR-71) فلن تمحوه إعادة التوليد.
+- التحقق الآلي ([06-verification.md](06-verification.md)): ملفات القبول الـ11 تطابق مصفوفاتها سطرًا بسطر، وكل أمر واستعلام وحدث ورمز خطأ يطابق عقده، وكل أمر له سياسة معرَّفة (V7). انتقالات المجدول (مثل انتهاء صلاحية المنح) لها سيناريوهات قبول الآن (CR-72).
+
+
 1. ~~لا ملف Aggregate لـAGG-SECURITY-EXCEPTION~~ — **تم التحقق:** موجود في `03-domain/contexts/BC08/aggregates/AGG-SECURITY-EXCEPTION.md`. ليس Missing، بل Cross-BC (انظر §2).
 2. ~~لا ملف Aggregate ظاهر لـAGG-POLICY-SET~~ — **تم التحقق:** موجود في `03-domain/contexts/BC08/aggregates/AGG-POLICY-SET.md`. ليس Missing، بل Cross-BC (انظر §2).
 3. ~~REQ-FND-010, REQ-FND-013, REQ-GOV-002 بلا Use Case~~ — **مُحسَم:** قرار بالتصميم، ليس فجوة (انظر OQ-034 وCR-64 المرتبط بها في السجل).
@@ -427,4 +433,4 @@ BC01 هو **مزوّد بنية تحتية** (Authority/Identity/Clearance/Audit
 | كل Requirement مرتبط بUC (أو قرار صريح بعدم الحاجة)؟ | ✅ 26/26 (23 بـUC + 3 بقرار "لا UC بالتصميم"، OQ-034) |
 | Threat model مربوط؟ | ✅ 12/12 مع تصنيف STRIDE ومخاطرة متبقية |
 | كل UC مرتبط بAggregate منفِّذ (ولو Cross-BC)؟ | ✅ 10/10 (بعد تأكيد UC-086→BC08 وUC-088→BC08) |
-| **الحالة الإجمالية** | **OPEN** — بند وحيد متبقٍ فعليًا هو حسم CONFLICT-01 بشريًا؛ باقي الفجوات المبدئية تحوّلت لعلاقات Cross-BC مؤكَّدة لا فجوات حقيقية |
+| **الحالة الإجمالية** | **CLOSED (Phase 3.7)** — لا بنود مفتوحة: CR-64/CR-65 مؤكَّدان، والتحقق الآلي نظيف. (الحالة السابقة قبل Phase 3.7 محفوظة في سجل git) |

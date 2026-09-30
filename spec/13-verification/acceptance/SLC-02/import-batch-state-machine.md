@@ -21,7 +21,7 @@ traces:
 
 # Acceptance — Import Batch
 
-مولّدة من مصفوفة AGG-IMPORT-BATCH: 3 انتقالاً مسموحاً، 21 رفضاً.
+مولّدة من مصفوفة AGG-IMPORT-BATCH: 3 انتقالاً مسموحاً، 21 رفضاً، 4 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Import Batch lifecycle (AGG-IMPORT-BATCH)
@@ -82,4 +82,18 @@ Feature: Import Batch lifecycle (AGG-IMPORT-BATCH)
       | Import Batch | CANCELLED | CMD-IMP-REPROCESS-QUARANTINE | IMPORT_BATCH_INVALID_STATE_TRANSITION |
       | Import Batch | CANCELLED | CMD-IMP-ACCEPT-QUARANTINE | IMPORT_BATCH_INVALID_STATE_TRANSITION |
       | Import Batch | CANCELLED | CMD-IMP-CANCEL | IMPORT_BATCH_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Import Batch | RECEIVED | processing started | PROCESSING | EVT-IMP-PROCESSING-STARTED |
+      | Import Batch | PROCESSING | all records applied | COMPLETED | EVT-IMP-COMPLETED |
+      | Import Batch | PROCESSING | finished with invalid records | COMPLETED_WITH_QUARANTINE | EVT-IMP-COMPLETED-WITH-QUARANTINE |
+      | Import Batch | PROCESSING | unrecoverable error | FAILED | EVT-IMP-FAILED |
 ```

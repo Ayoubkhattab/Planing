@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — Collection Plan
 
-مولّدة من مصفوفة AGG-COLLECTION-PLAN: 7 انتقالاً مسموحاً، 17 رفضاً.
+مولّدة من مصفوفة AGG-COLLECTION-PLAN: 7 انتقالاً مسموحاً، 17 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Collection Plan lifecycle (AGG-COLLECTION-PLAN)
@@ -78,4 +78,15 @@ Feature: Collection Plan lifecycle (AGG-COLLECTION-PLAN)
       | Collection Plan | CANCELLED | CMD-CPL-ACTIVATE | COLLECTION_PLAN_INVALID_STATE_TRANSITION |
       | Collection Plan | CANCELLED | CMD-CPL-COMPLETE | COLLECTION_PLAN_INVALID_STATE_TRANSITION |
       | Collection Plan | CANCELLED | CMD-CPL-CANCEL | COLLECTION_PLAN_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Collection Plan | ACTIVE | all activity tasks terminal | COMPLETED | EVT-CPL-COMPLETED |
 ```

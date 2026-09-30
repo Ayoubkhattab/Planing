@@ -18,7 +18,7 @@ traces:
 
 # Acceptance — Disposition Run
 
-مولّدة من مصفوفة AGG-DISPOSITION-RUN: 5 انتقالاً مسموحاً، 16 رفضاً.
+مولّدة من مصفوفة AGG-DISPOSITION-RUN: 5 انتقالاً مسموحاً، 16 رفضاً، 4 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Disposition Run lifecycle (AGG-DISPOSITION-RUN)
@@ -75,4 +75,18 @@ Feature: Disposition Run lifecycle (AGG-DISPOSITION-RUN)
       | Disposition Run | CANCELLED | CMD-DSP-SUBMIT | DISPOSITION_RUN_INVALID_STATE_TRANSITION |
       | Disposition Run | CANCELLED | CMD-DSP-APPROVE | DISPOSITION_RUN_INVALID_STATE_TRANSITION |
       | Disposition Run | CANCELLED | CMD-DSP-CANCEL | DISPOSITION_RUN_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Disposition Run | ∅ | scheduled evaluation (daily) | PLANNED | EVT-DSP-PLANNED |
+      | Disposition Run | APPROVED | execution started | EXECUTING | EVT-DSP-EXECUTING |
+      | Disposition Run | EXECUTING | all buckets processed | COMPLETED | EVT-DSP-COMPLETED |
+      | Disposition Run | EXECUTING | some buckets failed | COMPLETED_WITH_EXCEPTIONS | EVT-DSP-COMPLETED-WITH-EXCEPTIONS |
 ```

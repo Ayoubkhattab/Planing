@@ -18,7 +18,7 @@ traces:
 
 # Acceptance — Notification
 
-مولّدة من مصفوفة AGG-NOTIFICATION: 1 انتقالاً مسموحاً، 5 رفضاً.
+مولّدة من مصفوفة AGG-NOTIFICATION: 1 انتقالاً مسموحاً، 5 رفضاً، 6 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Notification lifecycle (AGG-NOTIFICATION)
@@ -60,4 +60,20 @@ Feature: Notification lifecycle (AGG-NOTIFICATION)
       | Notification | FAILED | CMD-NTF-MARK-READ | NOTIFICATION_INVALID_STATE_TRANSITION |
       | Notification | WITHHELD | CMD-NTF-MARK-READ | NOTIFICATION_INVALID_STATE_TRANSITION |
       | Notification | EXPIRED | CMD-NTF-MARK-READ | NOTIFICATION_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Notification | ∅ | notifiable event for recipient | QUEUED | EVT-NTF-QUEUED |
+      | Notification | QUEUED | delivered to channel | SENT | EVT-NTF-SENT |
+      | Notification | QUEUED | recipient no longer authorized at delivery | WITHHELD | EVT-NTF-WITHHELD |
+      | Notification | QUEUED | delivery failed after retries | FAILED | EVT-NTF-FAILED |
+      | Notification | QUEUED | TTL (30 d) elapsed | EXPIRED | EVT-NTF-EXPIRED |
+      | Notification | SENT | TTL (30 d) elapsed | EXPIRED | EVT-NTF-EXPIRED |
 ```

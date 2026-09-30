@@ -24,7 +24,7 @@ traces:
 
 # Acceptance — AI Request
 
-مولّدة من مصفوفة AGG-AI-REQUEST: 3 انتقالاً مسموحاً، 13 رفضاً.
+مولّدة من مصفوفة AGG-AI-REQUEST: 3 انتقالاً مسموحاً، 13 رفضاً، 8 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: AI Request lifecycle (AGG-AI-REQUEST)
@@ -77,4 +77,22 @@ Feature: AI Request lifecycle (AGG-AI-REQUEST)
       | AI Request | FAILED | CMD-AIR-CANCEL | AI_REQUEST_INVALID_STATE_TRANSITION |
       | AI Request | CANCELLED | CMD-AIR-SUBMIT | AI_REQUEST_INVALID_STATE_TRANSITION |
       | AI Request | CANCELLED | CMD-AIR-CANCEL | AI_REQUEST_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | AI Request | RECEIVED | policy denied | REFUSED | EVT-AIR-REFUSED |
+      | AI Request | RECEIVED | retrieval started | RETRIEVING | EVT-AIR-RETRIEVING |
+      | AI Request | RETRIEVING | context package sealed | GENERATING | EVT-AIR-CONTEXT-SEALED |
+      | AI Request | RETRIEVING | no sufficient evidence retrieved | INSUFFICIENT_EVIDENCE | EVT-AIR-INSUFFICIENT-EVIDENCE |
+      | AI Request | RETRIEVING | error or timeout | FAILED | EVT-AIR-FAILED |
+      | AI Request | GENERATING | output grounded | COMPLETED | EVT-AIR-COMPLETED |
+      | AI Request | GENERATING | output not grounded | INSUFFICIENT_EVIDENCE | EVT-AIR-INSUFFICIENT-EVIDENCE |
+      | AI Request | GENERATING | error or timeout | FAILED | EVT-AIR-FAILED |
 ```

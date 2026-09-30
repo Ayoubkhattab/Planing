@@ -19,7 +19,7 @@ traces:
 
 # Acceptance — Decision
 
-مولّدة من مصفوفة AGG-DECISION: 1 انتقالاً مسموحاً، 5 رفضاً.
+مولّدة من مصفوفة AGG-DECISION: 1 انتقالاً مسموحاً، 5 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Decision lifecycle (AGG-DECISION)
@@ -62,4 +62,15 @@ Feature: Decision lifecycle (AGG-DECISION)
       | Decision | SUPERSEDED | CMD-DEC-ANNUL | DECISION_INVALID_STATE_TRANSITION |
       | Decision | ANNULLED | CMD-DEC-RECORD | DECISION_INVALID_STATE_TRANSITION |
       | Decision | ANNULLED | CMD-DEC-ANNUL | DECISION_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Decision | RECORDED | superseding decision recorded | SUPERSEDED | EVT-DEC-SUPERSEDED |
 ```

@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — Asset Reservation
 
-مولّدة من مصفوفة AGG-ASSET-RESERVATION: 4 انتقالاً مسموحاً، 16 رفضاً.
+مولّدة من مصفوفة AGG-ASSET-RESERVATION: 4 انتقالاً مسموحاً، 16 رفضاً، 2 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Asset Reservation lifecycle (AGG-ASSET-RESERVATION)
@@ -74,4 +74,16 @@ Feature: Asset Reservation lifecycle (AGG-ASSET-RESERVATION)
       | Asset Reservation | CANCELLED | CMD-RSV-CONFIRM | ASSET_RESERVATION_INVALID_STATE_TRANSITION |
       | Asset Reservation | CANCELLED | CMD-RSV-RELEASE | ASSET_RESERVATION_INVALID_STATE_TRANSITION |
       | Asset Reservation | CANCELLED | CMD-RSV-CANCEL | ASSET_RESERVATION_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Asset Reservation | HELD | hold expiry (24 h) reached | EXPIRED | EVT-RSV-EXPIRED |
+      | Asset Reservation | CONFIRMED | linked task or plan terminal | RELEASED | EVT-RSV-RELEASED |
 ```

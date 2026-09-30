@@ -19,7 +19,7 @@ traces:
 
 # Acceptance — Knowledge Object Version
 
-مولّدة من مصفوفة AGG-KNOWLEDGE-OBJECT: 8 انتقالاً مسموحاً، 55 رفضاً.
+مولّدة من مصفوفة AGG-KNOWLEDGE-OBJECT: 8 انتقالاً مسموحاً، 55 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Knowledge Object Version lifecycle (AGG-KNOWLEDGE-OBJECT)
@@ -119,4 +119,15 @@ Feature: Knowledge Object Version lifecycle (AGG-KNOWLEDGE-OBJECT)
       | Knowledge Object Version | DISCARDED | CMD-KNO-RECORD-REUSE | KNOWLEDGE_OBJECT_INVALID_STATE_TRANSITION |
       | Knowledge Object Version | DISCARDED | CMD-KNO-RETIRE | KNOWLEDGE_OBJECT_INVALID_STATE_TRANSITION |
       | Knowledge Object Version | DISCARDED | CMD-KNO-DISCARD | KNOWLEDGE_OBJECT_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Knowledge Object Version | PUBLISHED | newer version published | SUPERSEDED | EVT-KNO-SUPERSEDED |
 ```

@@ -141,8 +141,8 @@ _18 items_
 - **content:** Risk & Emergency, Training, Exercises, Logistics, Communications
 - **depends_on:** —
 - **release:** R3
-- **status:** APPROVED_DELEGATED
-- **g6_slc:** NOT_STARTED
+- **status:** SUPERSEDED
+- **g6_slc:** SUPERSEDED — decomposed into SLC-17 (Risk & Contingency), SLC-18 (Logistics & Supply), SLC-19 (Training, Competency & Exercises); Communications not yet decomposed (UNK-022) — CR-67
 
 ### SLC-12a
 
@@ -329,8 +329,8 @@ slices:
   content: Risk & Emergency, Training, Exercises, Logistics, Communications
   depends_on: []
   release: R3
-  status: APPROVED_DELEGATED
-  g6_slc: NOT_STARTED
+  status: SUPERSEDED
+  g6_slc: SUPERSEDED — decomposed into SLC-17 (Risk & Contingency), SLC-18 (Logistics & Supply), SLC-19 (Training, Competency & Exercises); Communications not yet decomposed (UNK-022) — CR-67
 - id: SLC-12a
   content: Retention schedules & legal hold (R1 portion of SLC-12)
   depends_on:

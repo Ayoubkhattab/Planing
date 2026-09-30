@@ -18,7 +18,7 @@ traces:
 
 # Acceptance — Qualification Record
 
-مولّدة من مصفوفة AGG-QUALIFICATION-RECORD: 5 انتقالاً مسموحاً، 15 رفضاً.
+مولّدة من مصفوفة AGG-QUALIFICATION-RECORD: 5 انتقالاً مسموحاً، 15 رفضاً، 2 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Qualification Record lifecycle (AGG-QUALIFICATION-RECORD)
@@ -75,4 +75,16 @@ Feature: Qualification Record lifecycle (AGG-QUALIFICATION-RECORD)
       | Qualification Record | REVOKED | CMD-QUAL-SUSPEND | QUALIFICATION_RECORD_INVALID_STATE_TRANSITION |
       | Qualification Record | REVOKED | CMD-QUAL-REINSTATE | QUALIFICATION_RECORD_INVALID_STATE_TRANSITION |
       | Qualification Record | REVOKED | CMD-QUAL-REVOKE | QUALIFICATION_RECORD_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Qualification Record | ACTIVE | valid_to reached | EXPIRED | EVT-QUAL-EXPIRED |
+      | Qualification Record | SUSPENDED | valid_to reached | EXPIRED | EVT-QUAL-EXPIRED |
 ```

@@ -18,7 +18,7 @@ notes: الكتالوج مكتمل لنطاق R1. التدفقات التفصي�
 
 ## use_cases
 
-_85 items_ (UC-089 added — see corrections.md#CR-64)
+_101 items_ (UC-089 added — see corrections.md#CR-64; UC-075..078, UC-140..144, UC-150..152, UC-160..163 added — CR-70)
 
 ### UC-001 — Manage Entity
 
@@ -581,6 +581,54 @@ _85 items_ (UC-089 added — see corrections.md#CR-64)
 - **release:** R2
 - **requirements:** REQ-AI-005, REQ-AI-008
 
+### UC-075 — Govern AI Model Lifecycle
+
+- **value_stream:** cross-cutting
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate)
+- **capability:** CAP-12.04
+- **preconditions:** SLC-10 (AGG-MODEL-VERSION.md — register, evaluate, approve, stage, promote, deprecate, reinstate, retire a model version)
+- **main_flow:** SLC-10 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R2
+- **requirements:** REQ-AI-009, REQ-AI-010
+
+### UC-076 — Manage AI Evaluation Suites
+
+- **value_stream:** cross-cutting
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** AI governance (draft, edit) · second authority (activate)
+- **capability:** CAP-12.04
+- **preconditions:** SLC-10 (AGG-EVAL-SUITE.md — draft, edit, activate an evaluation suite)
+- **main_flow:** SLC-10 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R2
+- **requirements:** REQ-AI-010
+
+### UC-077 — Configure AI Routing & Tool Registry
+
+- **value_stream:** cross-cutting
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** AI governance authority (routing draft, edit) · second authority (routing activate) · AI platform engineer (tool register) · Security Officer (tool activate, disable)
+- **capability:** CAP-12.01
+- **preconditions:** SLC-10 (AGG-AI-ROUTING.md — draft, edit, activate, discard a routing policy; AGG-AI-TOOL.md — register, activate, disable, enable, retire a tool)
+- **main_flow:** SLC-10 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R2
+- **requirements:** REQ-AI-011, REQ-AI-013
+
+### UC-078 — Rebuild Search & Graph Projections
+
+- **value_stream:** cross-cutting
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** Platform Operator
+- **capability:** CAP-03.01
+- **preconditions:** SLC-05 (AGG-PROJECTION-VERSION.md — create a projection version, promote, retire, cancel a build)
+- **main_flow:** SLC-05 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R1
+- **requirements:** REQ-SRC-004
+
 ### UC-080 — Provision Tenant
 
 - **value_stream:** cross-cutting
@@ -989,13 +1037,157 @@ _85 items_ (UC-089 added — see corrections.md#CR-64)
 - **release:** R2
 - **requirements:** REQ-FUS-001, REQ-FUS-002
 
+### UC-140 — Identify & Assess Risk
+
+- **value_stream:** VS04
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** محدِّد الخطر (تحديد) · مقيّم (تقييم، إعادة تقييم)
+- **capability:** CAP-09.01
+- **preconditions:** SLC-17 (AGG-RISK.md — CMD-RIS-IDENTIFY, CMD-RIS-ASSESS, CMD-RIS-REASSESS)
+- **main_flow:** SLC-17 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R3
+- **requirements:** REQ-RCM-001, REQ-RCM-002, REQ-RCM-003, REQ-RCM-014
+
+### UC-141 — Treat & Close Risk
+
+- **value_stream:** VS04
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** موافق المعالجة (تخطيط المعالجة) · مدير المخاطر (إغلاق)
+- **capability:** CAP-09.01
+- **preconditions:** SLC-17 (AGG-RISK.md — CMD-RIS-PLAN-TREATMENT, CMD-RIS-CLOSE)
+- **main_flow:** SLC-17 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R3
+- **requirements:** REQ-RCM-004, REQ-RCM-005
+
+### UC-142 — Report & Assess Incident
+
+- **value_stream:** VS04
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** أي مُبلِّغ مخوَّل (تبليغ، إلغاء) · مقيّم الحادثة (تقييم)
+- **capability:** CAP-09.02
+- **preconditions:** SLC-17 (AGG-INCIDENT.md — CMD-INC-REPORT, CMD-INC-ASSESS, CMD-INC-CANCEL)
+- **main_flow:** SLC-17 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R3
+- **requirements:** REQ-RCM-006, REQ-RCM-007, REQ-RCM-015
+
+### UC-143 — Command Incident Response
+
+- **value_stream:** VS04
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** قائد الحادثة
+- **capability:** CAP-09.02
+- **preconditions:** SLC-17 (AGG-INCIDENT.md — CMD-INC-DISPATCH-RESPONSE, CMD-INC-CONTAIN, CMD-INC-RESOLVE, CMD-INC-CLOSE, CMD-INC-ESCALATE, CMD-INC-DE-ESCALATE)
+- **main_flow:** SLC-17 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R3
+- **requirements:** REQ-RCM-008, REQ-RCM-009, REQ-RCM-010, REQ-RCM-012, REQ-RCM-013
+
+### UC-144 — Activate Contingency & Track Recovery
+
+- **value_stream:** VS04
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** قائد الحادثة
+- **capability:** CAP-09.03
+- **preconditions:** SLC-17 (AGG-INCIDENT.md — CMD-INC-ACTIVATE-CONTINGENCY; contingency plan via SLC-08 reuse)
+- **main_flow:** SLC-17 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R3
+- **requirements:** REQ-RCM-011, REQ-RCM-016
+
+### UC-150 — Request Logistics Items
+
+- **value_stream:** cross-cutting
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** Logistics Officer / Planner (request, cancel)
+- **capability:** CAP-08.03
+- **preconditions:** SLC-18 (AGG-LOGISTICS-REQUEST.md — CMD-LGR-REQUEST, CMD-LGR-CANCEL; linked SLC-09 allocation)
+- **main_flow:** SLC-18 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R3
+- **requirements:** REQ-LOG-001, REQ-LOG-002, REQ-LOG-003, REQ-LOG-010, REQ-LOG-013, REQ-LOG-014
+
+### UC-151 — Dispatch & Track Shipment
+
+- **value_stream:** cross-cutting
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** dispatcher / carrier operator
+- **capability:** CAP-08.03
+- **preconditions:** SLC-18 (AGG-LOGISTICS-REQUEST.md — CMD-LGR-DISPATCH; AGG-SHIPMENT.md — CMD-SHP-PLAN, CMD-SHP-DEPART, CMD-SHP-RECORD-CHECKPOINT)
+- **main_flow:** SLC-18 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R3
+- **requirements:** REQ-LOG-004, REQ-LOG-005, REQ-LOG-011, REQ-LOG-012
+
+### UC-152 — Receive Shipment or Report Loss/Damage
+
+- **value_stream:** cross-cutting
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** dispatcher / carrier operator
+- **capability:** CAP-08.03
+- **preconditions:** SLC-18 (AGG-SHIPMENT.md — CMD-SHP-DELIVER, CMD-SHP-REPORT-DAMAGE, CMD-SHP-REPORT-LOST, CMD-SHP-CANCEL)
+- **main_flow:** SLC-18 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R3
+- **requirements:** REQ-LOG-006, REQ-LOG-007, REQ-LOG-008, REQ-LOG-009
+
+### UC-160 — Define Training Scenario
+
+- **value_stream:** VS05
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** Training Manager (define, edit) · Exercise Director (activate, retire)
+- **capability:** CAP-08.05
+- **preconditions:** SLC-19 (AGG-SCENARIO.md — CMD-SCN-DEFINE, CMD-SCN-EDIT, CMD-SCN-ACTIVATE, CMD-SCN-RETIRE)
+- **main_flow:** SLC-19 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R3
+- **requirements:** REQ-TRX-001, REQ-TRX-002
+
+### UC-161 — Plan & Schedule Exercise
+
+- **value_stream:** VS05
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** Exercise Director / Training Manager
+- **capability:** CAP-08.05
+- **preconditions:** SLC-19 (AGG-EXERCISE.md — CMD-EXR-PLAN, CMD-EXR-SCHEDULE, CMD-EXR-CANCEL)
+- **main_flow:** SLC-19 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R3
+- **requirements:** REQ-TRX-003, REQ-TRX-004, REQ-TRX-007, REQ-TRX-014
+
+### UC-162 — Conduct Exercise Simulation
+
+- **value_stream:** VS05
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** Exercise Controller (start, deliver inject, pause, resume, complete, abort) · Evaluator (record evaluation)
+- **capability:** CAP-08.05
+- **preconditions:** SLC-19 (AGG-EXERCISE.md — CMD-EXR-START; AGG-SIMULATION.md — inject delivery, evaluation, pause/resume, complete, abort)
+- **main_flow:** SLC-19 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R3
+- **requirements:** REQ-TRX-005, REQ-TRX-006, REQ-TRX-008, REQ-TRX-009, REQ-TRX-010, REQ-TRX-011, REQ-TRX-015
+
+### UC-163 — Apply Exercise Results
+
+- **value_stream:** VS05
+- **epistemic:** DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+- **actors:** Resource Manager / Training Manager (qualification evidence) · Knowledge Manager (After Action Review lesson)
+- **capability:** CAP-08.05
+- **preconditions:** SLC-19 (AGG-QUALIFICATION-RECORD.md evidence citing a completed simulation; AGG-KNOWLEDGE-OBJECT.md lesson with the simulation as terminal source — CR-63)
+- **main_flow:** SLC-19 (state transitions of the aggregate(s) above)
+- **status:** APPROVED_DELEGATED
+- **release:** R3
+- **requirements:** REQ-TRX-012, REQ-TRX-013
+
 ## gaps
 
 _9 items_
 
 | value_stream | area | processes | domains | ref | resolution |
 |---|---|---|---|---|---|
-| VS04 | Risk → Resilience | BP31–BP38 | DOM-17 | CR-09 | R3 (SLC-13) |
+| VS04 | Risk → Resilience | BP31–BP38 | DOM-17 | CR-09 | R3 (SLC-17; was SLC-13 — CR-67) |
 | VS05 | Capability → Readiness | BP39–BP48 | DOM-18 | CR-09 | UC-102 eligibility (R1); rest R3 |
 | — | Logistics | — | DOM-16 | CR-09 | R3 |
 | — | Communications | — | DOM-11 | CR-09 | UC-099 notifications (R1); rest R3 |
@@ -1619,6 +1811,59 @@ use_cases:
   requirements:
   - REQ-AI-005
   - REQ-AI-008
+- id: UC-075
+  name: Govern AI Model Lifecycle
+  value_stream: cross-cutting
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate)
+  capability: CAP-12.04
+  preconditions: SLC-10 (AGG-MODEL-VERSION.md — register, evaluate, approve, stage, promote, deprecate, reinstate, retire
+    a model version)
+  main_flow: SLC-10 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R2
+  requirements:
+  - REQ-AI-009
+  - REQ-AI-010
+- id: UC-076
+  name: Manage AI Evaluation Suites
+  value_stream: cross-cutting
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: AI governance (draft, edit) · second authority (activate)
+  capability: CAP-12.04
+  preconditions: SLC-10 (AGG-EVAL-SUITE.md — draft, edit, activate an evaluation suite)
+  main_flow: SLC-10 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R2
+  requirements:
+  - REQ-AI-010
+- id: UC-077
+  name: Configure AI Routing & Tool Registry
+  value_stream: cross-cutting
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: AI governance authority (routing draft, edit) · second authority (routing activate) · AI platform engineer (tool
+    register) · Security Officer (tool activate, disable)
+  capability: CAP-12.01
+  preconditions: SLC-10 (AGG-AI-ROUTING.md — draft, edit, activate, discard a routing policy; AGG-AI-TOOL.md — register, activate,
+    disable, enable, retire a tool)
+  main_flow: SLC-10 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R2
+  requirements:
+  - REQ-AI-011
+  - REQ-AI-013
+- id: UC-078
+  name: Rebuild Search & Graph Projections
+  value_stream: cross-cutting
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: Platform Operator
+  capability: CAP-03.01
+  preconditions: SLC-05 (AGG-PROJECTION-VERSION.md — create a projection version, promote, retire, cancel a build)
+  main_flow: SLC-05 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R1
+  requirements:
+  - REQ-SRC-004
 - id: UC-080
   name: Provision Tenant
   value_stream: cross-cutting
@@ -2058,6 +2303,186 @@ use_cases:
   requirements:
   - REQ-FUS-001
   - REQ-FUS-002
+- id: UC-140
+  name: Identify & Assess Risk
+  value_stream: VS04
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: محدِّد الخطر (تحديد) · مقيّم (تقييم، إعادة تقييم)
+  capability: CAP-09.01
+  preconditions: SLC-17 (AGG-RISK.md — CMD-RIS-IDENTIFY, CMD-RIS-ASSESS, CMD-RIS-REASSESS)
+  main_flow: SLC-17 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R3
+  requirements:
+  - REQ-RCM-001
+  - REQ-RCM-002
+  - REQ-RCM-003
+  - REQ-RCM-014
+- id: UC-141
+  name: Treat & Close Risk
+  value_stream: VS04
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: موافق المعالجة (تخطيط المعالجة) · مدير المخاطر (إغلاق)
+  capability: CAP-09.01
+  preconditions: SLC-17 (AGG-RISK.md — CMD-RIS-PLAN-TREATMENT, CMD-RIS-CLOSE)
+  main_flow: SLC-17 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R3
+  requirements:
+  - REQ-RCM-004
+  - REQ-RCM-005
+- id: UC-142
+  name: Report & Assess Incident
+  value_stream: VS04
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: أي مُبلِّغ مخوَّل (تبليغ، إلغاء) · مقيّم الحادثة (تقييم)
+  capability: CAP-09.02
+  preconditions: SLC-17 (AGG-INCIDENT.md — CMD-INC-REPORT, CMD-INC-ASSESS, CMD-INC-CANCEL)
+  main_flow: SLC-17 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R3
+  requirements:
+  - REQ-RCM-006
+  - REQ-RCM-007
+  - REQ-RCM-015
+- id: UC-143
+  name: Command Incident Response
+  value_stream: VS04
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: قائد الحادثة
+  capability: CAP-09.02
+  preconditions: SLC-17 (AGG-INCIDENT.md — CMD-INC-DISPATCH-RESPONSE, CMD-INC-CONTAIN, CMD-INC-RESOLVE, CMD-INC-CLOSE, CMD-INC-ESCALATE,
+    CMD-INC-DE-ESCALATE)
+  main_flow: SLC-17 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R3
+  requirements:
+  - REQ-RCM-008
+  - REQ-RCM-009
+  - REQ-RCM-010
+  - REQ-RCM-012
+  - REQ-RCM-013
+- id: UC-144
+  name: Activate Contingency & Track Recovery
+  value_stream: VS04
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: قائد الحادثة
+  capability: CAP-09.03
+  preconditions: SLC-17 (AGG-INCIDENT.md — CMD-INC-ACTIVATE-CONTINGENCY; contingency plan via SLC-08 reuse)
+  main_flow: SLC-17 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R3
+  requirements:
+  - REQ-RCM-011
+  - REQ-RCM-016
+- id: UC-150
+  name: Request Logistics Items
+  value_stream: cross-cutting
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: Logistics Officer / Planner (request, cancel)
+  capability: CAP-08.03
+  preconditions: SLC-18 (AGG-LOGISTICS-REQUEST.md — CMD-LGR-REQUEST, CMD-LGR-CANCEL; linked SLC-09 allocation)
+  main_flow: SLC-18 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R3
+  requirements:
+  - REQ-LOG-001
+  - REQ-LOG-002
+  - REQ-LOG-003
+  - REQ-LOG-010
+  - REQ-LOG-013
+  - REQ-LOG-014
+- id: UC-151
+  name: Dispatch & Track Shipment
+  value_stream: cross-cutting
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: dispatcher / carrier operator
+  capability: CAP-08.03
+  preconditions: SLC-18 (AGG-LOGISTICS-REQUEST.md — CMD-LGR-DISPATCH; AGG-SHIPMENT.md — CMD-SHP-PLAN, CMD-SHP-DEPART, CMD-SHP-RECORD-CHECKPOINT)
+  main_flow: SLC-18 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R3
+  requirements:
+  - REQ-LOG-004
+  - REQ-LOG-005
+  - REQ-LOG-011
+  - REQ-LOG-012
+- id: UC-152
+  name: Receive Shipment or Report Loss/Damage
+  value_stream: cross-cutting
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: dispatcher / carrier operator
+  capability: CAP-08.03
+  preconditions: SLC-18 (AGG-SHIPMENT.md — CMD-SHP-DELIVER, CMD-SHP-REPORT-DAMAGE, CMD-SHP-REPORT-LOST, CMD-SHP-CANCEL)
+  main_flow: SLC-18 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R3
+  requirements:
+  - REQ-LOG-006
+  - REQ-LOG-007
+  - REQ-LOG-008
+  - REQ-LOG-009
+- id: UC-160
+  name: Define Training Scenario
+  value_stream: VS05
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: Training Manager (define, edit) · Exercise Director (activate, retire)
+  capability: CAP-08.05
+  preconditions: SLC-19 (AGG-SCENARIO.md — CMD-SCN-DEFINE, CMD-SCN-EDIT, CMD-SCN-ACTIVATE, CMD-SCN-RETIRE)
+  main_flow: SLC-19 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R3
+  requirements:
+  - REQ-TRX-001
+  - REQ-TRX-002
+- id: UC-161
+  name: Plan & Schedule Exercise
+  value_stream: VS05
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: Exercise Director / Training Manager
+  capability: CAP-08.05
+  preconditions: SLC-19 (AGG-EXERCISE.md — CMD-EXR-PLAN, CMD-EXR-SCHEDULE, CMD-EXR-CANCEL)
+  main_flow: SLC-19 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R3
+  requirements:
+  - REQ-TRX-003
+  - REQ-TRX-004
+  - REQ-TRX-007
+  - REQ-TRX-014
+- id: UC-162
+  name: Conduct Exercise Simulation
+  value_stream: VS05
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: Exercise Controller (start, deliver inject, pause, resume, complete, abort) · Evaluator (record evaluation)
+  capability: CAP-08.05
+  preconditions: SLC-19 (AGG-EXERCISE.md — CMD-EXR-START; AGG-SIMULATION.md — inject delivery, evaluation, pause/resume, complete,
+    abort)
+  main_flow: SLC-19 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R3
+  requirements:
+  - REQ-TRX-005
+  - REQ-TRX-006
+  - REQ-TRX-008
+  - REQ-TRX-009
+  - REQ-TRX-010
+  - REQ-TRX-011
+  - REQ-TRX-015
+- id: UC-163
+  name: Apply Exercise Results
+  value_stream: VS05
+  epistemic: DER (CR-70 — derived from the aggregate's command/policy tables; closes CONFLICT-05)
+  actors: Resource Manager / Training Manager (qualification evidence) · Knowledge Manager (After Action Review lesson)
+  capability: CAP-08.05
+  preconditions: SLC-19 (AGG-QUALIFICATION-RECORD.md evidence citing a completed simulation; AGG-KNOWLEDGE-OBJECT.md lesson
+    with the simulation as terminal source — CR-63)
+  main_flow: SLC-19 (state transitions of the aggregate(s) above)
+  status: APPROVED_DELEGATED
+  release: R3
+  requirements:
+  - REQ-TRX-012
+  - REQ-TRX-013
 gaps:
 - value_stream: VS04
   area: Risk → Resilience
@@ -2065,7 +2490,7 @@ gaps:
   domains:
   - DOM-17
   ref: CR-09
-  resolution: R3 (SLC-13)
+  resolution: R3 (SLC-17; was SLC-13 — CR-67)
 - value_stream: VS05
   area: Capability → Readiness
   processes: BP39–BP48

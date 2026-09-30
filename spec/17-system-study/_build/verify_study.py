@@ -1,0 +1,467 @@
+#!/usr/bin/env python3
+"""Mechanical verification of the spec against itself; writes 06-verification.md.
+
+Run from anywhere: python3 spec/17-system-study/_build/verify_study.py
+Checks:
+  V1 acceptance state-machine specs vs aggregate state x command matrices
+  V2 command/query catalogs vs OpenAPI contracts (both directions)
+  V3 event catalogs vs AsyncAPI contracts (both directions)
+  V4 command error lists vs error catalogs, and guard errors vs command error lists
+  V5 embedded spec tooling regenerates every generated file byte-for-byte (round trip)
+  V6 every front-matter and embedded YAML block in spec/ parses
+  V7 every command names exactly one policy, and that policy is defined in 08-security/policies-*.md (SL-02)
+"""
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+from collections import defaultdict
+from pathlib import Path
+
+import yaml
+
+SPEC = Path(__file__).resolve().parents[2]
+CTX = SPEC / "03-domain" / "contexts"
+ACC = SPEC / "13-verification" / "acceptance"
+CONTRACTS = SPEC / "05-contracts"
+OUT = SPEC / "17-system-study" / "06-verification.md"
+
+
+def front_matter(text):
+    m = re.match(r"---\n(.*?)\n---", text, re.S)
+    return yaml.safe_load(m.group(1)) if m else {}
+
+
+def tables(text):
+    """Yields (header, rows) for every markdown table; rows are lists of cells."""
+    header, rows = None, []
+    for line in text.splitlines() + [""]:
+        s = line.strip()
+        if s.startswith("|"):
+            cells = [c.strip().replace("\\|", "|") for c in re.split(r"(?<!\\)\|", s.strip("|"))]
+            if header is None:
+                header = cells
+            elif not set(s.replace("|", "").strip()) <= set("-: "):
+                rows.append(cells)
+            continue
+        if header is not None:
+            yield header, rows
+        header, rows = None, []
+
+
+def yaml_block(text):
+    m = re.search(r"```yaml\n(.*?)```", text, re.S)
+    return yaml.safe_load(m.group(1)) if m else {}
+
+
+def split_states(value):
+    value = value.replace("∅ (إنشاء)", "∅")
+    return [s.strip() for s in value.split(",") if s.strip()]
+
+
+# ---------------------------------------------------------------- aggregates
+def load_aggregates():
+    aggs = {}
+    for path in sorted(CTX.glob("BC*/aggregates/AGG-*.md")):
+        text = path.read_text(encoding="utf-8")
+        fm = front_matter(text)
+        a = {"id": fm["id"], "bc": fm.get("bounded_context"), "path": path.relative_to(SPEC).as_posix(),
+             "sm": (fm.get("traces") or {}).get("state_machine", ""),
+             "reqs": set((fm.get("traces") or {}).get("satisfies") or []),
+             "allowed": {}, "create": {}, "rejected": {}, "sys": [], "trans": {}, "guard_errors": defaultdict(set)}
+        for header, rows in tables(text):
+            if header[:3] == ["من", "الأمر", "إلى"]:
+                for r in rows:
+                    for frm in split_states(r[0]):
+                        a["trans"][(frm, r[1])] = (r[2], r[4])
+                    if r[5] not in ("—", "-", ""):
+                        for code in re.findall(r"[A-Z][A-Z0-9_]{2,}", r[5]):
+                            a["guard_errors"][r[1]].add(code)
+            elif header and header[0].startswith("الحالة"):
+                cmds = header[1:]
+                for r in rows:
+                    state = r[0]
+                    for cmd, cell in zip(cmds, r[1:]):
+                        if not cmd.startswith("CMD-"):
+                            if cell.startswith("→"):
+                                a["sys"].append((state, cmd, cell[1:].strip()))
+                            continue
+                        if cell.startswith("→"):
+                            to = cell[1:].strip()
+                            event = a["trans"].get((state, cmd), (None, None))[1]
+                            (a["create"] if state == "∅" else a["allowed"])[
+                                (cmd,) if state == "∅" else (state, cmd)] = (to, event)
+                        elif cell.startswith("✗"):
+                            a["rejected"][(state, cmd)] = cell[1:].strip()
+        aggs[a["id"]] = a
+    return aggs
+
+
+def load_acceptance():
+    specs = {}
+    for path in sorted(ACC.glob("*/*-state-machine.md")):
+        text = path.read_text(encoding="utf-8")
+        fm = front_matter(text)
+        s = {"path": path.relative_to(SPEC).as_posix(), "from": fm.get("generated_from"),
+             "verifies": set((fm.get("traces") or {}).get("verifies") or []),
+             "allowed": {}, "create": {}, "rejected": {}, "sys": [], "text": text}
+        for header, rows in tables(text):
+            h = [c.lower() for c in header]
+            if h[:5] == ["aggregate", "from", "command", "to", "event"]:
+                for r in rows:
+                    target = s["sys"] if not r[2].startswith("CMD-") else None
+                    if target is not None:
+                        target.append((r[1], r[2], r[3]))
+                    else:
+                        s["allowed"][(r[1], r[2])] = (r[3], r[4])
+            elif h[:5] == ["aggregate", "from", "trigger", "to", "event"]:
+                for r in rows:
+                    s["sys"].append((r[1], "SYS:" + r[2], r[3]))
+            elif h[:4] == ["aggregate", "command", "to", "event"]:
+                for r in rows:
+                    s["create"][(r[1],)] = (r[2], r[3])
+            elif h[:4] == ["aggregate", "state", "command", "error"]:
+                for r in rows:
+                    s["rejected"][(r[1], r[2])] = r[3]
+        specs[path.stem.replace("-state-machine", "")] = s
+    return specs
+
+
+def v1(aggs, specs):
+    rows, issues, sys_gap = [], [], []
+    for aid in sorted(aggs):
+        a = aggs[aid]
+        key = a["sm"].replace("SM-", "").lower()
+        s = specs.get(key)
+        if not s:
+            issues.append(f"`{aid}`: لا ملف قبول مطابق لـ`{a['sm']}`")
+            rows.append((aid, a["bc"], "—", "✗ مفقود"))
+            continue
+        problems = []
+        if s["from"] != aid:
+            problems.append(f"generated_from = {s['from']}")
+        for label, exp, got in (("انتقال مسموح", a["allowed"], s["allowed"]),
+                                ("إنشاء", a["create"], s["create"]),
+                                ("رفض", a["rejected"], s["rejected"])):
+            missing = sorted(set(exp) - set(got))
+            extra = sorted(set(got) - set(exp))
+            wrong = sorted(k for k in set(exp) & set(got) if exp[k] != got[k]
+                           and not (label != "رفض" and exp[k][1] is None and exp[k][0] == got[k][0]))
+            if missing:
+                problems.append(f"{label} ناقص في القبول: " + "; ".join(" / ".join(k) for k in missing[:4])
+                                + (" …" if len(missing) > 4 else ""))
+            if extra:
+                problems.append(f"{label} زائد في القبول: " + "; ".join(" / ".join(k) for k in extra[:4]))
+            for k in wrong[:4]:
+                problems.append(f"{label} مختلف عند {' / '.join(k)}: المصفوفة {exp[k]} ≠ القبول {got[k]}")
+        miss_req = sorted(a["reqs"] - s["verifies"])
+        if miss_req:
+            problems.append("متطلبات لا يذكرها `traces.verifies`: " + ", ".join(miss_req))
+        if a["sys"]:
+            covered = {(f, t) for f, _, t in s["sys"]}
+            unc = [x for x in a["sys"] if (x[0], x[2]) not in covered
+                   and not re.search(rf"Then \S+ becomes {re.escape(x[2])}\b", s["text"])]
+            if unc:
+                sys_gap.append((aid, a["bc"], unc, s["path"]))
+        counts = f"{len(a['allowed'])}+{len(a['create'])} / {len(a['rejected'])}"
+        rows.append((aid, a["bc"], counts, "✅" if not problems else "✗ " + " · ".join(problems)))
+        if problems:
+            issues.append(f"`{aid}` ({s['path']}): " + " · ".join(problems))
+    return rows, issues, sys_gap
+
+
+# ---------------------------------------------------------------- contracts
+def load_catalog(kind, prefix, first_col):
+    items = {}
+    for path in sorted(CTX.glob(f"BC*/{kind}-*.md")):
+        for header, rows in tables(path.read_text(encoding="utf-8")):
+            if not header or header[0] != first_col:
+                continue
+            for r in rows:
+                if r[0].startswith(prefix) and len(r) == len(header):
+                    d = dict(zip(header, r))
+                    d["_file"] = path.relative_to(SPEC).as_posix()
+                    items[r[0]] = d
+    return items
+
+
+def load_openapi():
+    ops = {}
+    for path in sorted(CONTRACTS.glob("openapi-*.md")):
+        doc = yaml_block(path.read_text(encoding="utf-8"))
+        for p, methods in (doc.get("paths") or {}).items():
+            for method, op in methods.items():
+                if isinstance(op, dict) and op.get("operationId"):
+                    ops.setdefault(op["operationId"], []).append((method.upper(), p, path.name))
+    return ops
+
+
+def load_asyncapi():
+    msgs = defaultdict(list)
+    for path in sorted(CONTRACTS.glob("asyncapi-*.md")):
+        doc = yaml_block(path.read_text(encoding="utf-8"))
+        for name in ((doc.get("components") or {}).get("messages") or {}):
+            msgs[name].append(path.name)
+    return msgs
+
+
+def load_errors():
+    """Returns {slice_suffix: {code: (count, listed_cmds, truncated)}}; long lists end with '…' by design."""
+    out = defaultdict(dict)
+    for path in sorted(CONTRACTS.glob("errors-*.md")):
+        sfx = path.stem.replace("errors-", "")
+        for header, rows in tables(path.read_text(encoding="utf-8")):
+            if header and header[0] == "الرمز":
+                for r in rows:
+                    listed = set(re.findall(r"CMD-[A-Z0-9-]+(?=,|$)", r[-1].replace(" ", "")))
+                    out[sfx][r[0].strip("`")] = (int(r[3]) if r[3].isdigit() else None, listed, r[-1].endswith("…"))
+    return out
+
+
+def v2(cmds, qrys, ops):
+    issues = []
+    for cid, c in sorted(cmds.items()):
+        http = c["HTTP"].strip("`").split(" ", 1)
+        found = ops.get(cid)
+        if not found:
+            issues.append(("CMD", cid, f"لا عملية OpenAPI بـoperationId = {cid} (داخلي: {c['داخلي']}، `{c['_file']}`)"))
+        elif len(http) == 2 and not any(m == http[0] and p == http[1] for m, p, _ in found):
+            issues.append(("CMD", cid, f"المسار مختلف: الكتالوج `{' '.join(http)}` ≠ العقد " +
+                           ", ".join(f"`{m} {p}` ({f})" for m, p, f in found)))
+    for qid, q in sorted(qrys.items()):
+        http = q["HTTP"].strip("`").split(" ", 1)
+        found = ops.get(qid)
+        if not found:
+            issues.append(("QRY", qid, f"لا عملية OpenAPI بـoperationId = {qid} (`{q['_file']}`)"))
+        elif len(http) == 2 and not any(m == http[0] and p == http[1] for m, p, _ in found):
+            issues.append(("QRY", qid, f"المسار مختلف: الكتالوج `{' '.join(http)}` ≠ العقد " +
+                           ", ".join(f"`{m} {p}` ({f})" for m, p, f in found)))
+    orphans = sorted(o for o in ops if re.match(r"(CMD|QRY)-", o) and o not in cmds and o not in qrys)
+    dup = sorted(o for o, v in ops.items() if len(v) > 1)
+    return issues, orphans, dup
+
+
+def v3(evts, msgs):
+    missing = sorted(e for e in evts if e not in msgs)
+    orphans = sorted(m for m in msgs if m.startswith("EVT-") and m not in evts)
+    return missing, orphans
+
+
+def v4(cmds, codes, aggs):
+    not_in_catalog, guard_missing = [], []
+    creators = {k[0] for a in aggs.values() for k in a["create"]}
+    expected = defaultdict(lambda: defaultdict(set))
+    for cid, c in cmds.items():
+        sfx = re.search(r"-(slc[0-9a-z]+)\.md$", c["_file"]).group(1)
+        for code in (e.strip() for e in c["الأخطاء"].split(",")):
+            if code and code != "—":
+                expected[sfx][code].add(cid)
+    for sfx in sorted(expected):
+        for code, want in sorted(expected[sfx].items()):
+            count, listed, truncated = codes.get(sfx, {}).get(code, (0, set(), False))
+            if count != len(want):
+                not_in_catalog.append((sfx, code, f"العدد في الكتالوج {count} ≠ {len(want)} أمرًا يذكره"))
+            missing = sorted(want - listed) if not truncated else sorted(listed - want)
+            if missing and not truncated:
+                not_in_catalog.append((sfx, code, "غير مذكور: " + ", ".join(missing)))
+            elif missing:
+                not_in_catalog.append((sfx, code, "مذكور في الكتالوج دون أن يذكره الأمر: " + ", ".join(missing)))
+    for aid, a in sorted(aggs.items()):
+        for cid, gcodes in a["guard_errors"].items():
+            if cid not in cmds:
+                continue
+            listed = {e.strip() for e in cmds[cid]["الأخطاء"].split(",")}
+            for code in sorted(gcodes - listed):
+                guard_missing.append((aid, cid, code))
+    return not_in_catalog, guard_missing, creators
+
+
+def v5():
+    """Extracts the embedded tooling, regenerates every slice in a temp dir, diffs against the spec."""
+    try:
+        import openapi_spec_validator  # noqa: F401  (required by slice_contracts.py)
+    except ImportError:
+        return None, "openapi-spec-validator غير مثبَّت — تخطّي V5 (pip install openapi-spec-validator)"
+    tooling = SPEC / "13-verification" / "tooling"
+    tmp = Path(tempfile.mkdtemp(prefix="spec-roundtrip-"))
+    try:
+        for name in ("spec-tooling.md", "slice-sources.md"):
+            text = (tooling / name).read_text(encoding="utf-8")
+            for mod, code in re.findall(r"^## (\S+\.py)\s*\n.*?^```python\n(.*?)^```[ \t]*$", text, re.S | re.M):
+                (tmp / mod).write_text(code, encoding="utf-8")
+        (tmp / "work" / "05-contracts").mkdir(parents=True)
+        failures = []
+        for data in sorted(tmp.glob("slc*_data.py")):
+            for gen in ("slice_gen", "slice_contracts", "acc_gen"):
+                r = subprocess.run([sys.executable, f"{gen}.py", data.stem], cwd=tmp, capture_output=True, text=True)
+                if r.returncode:
+                    failures.append(f"{gen} {data.stem}: {r.stderr.strip().splitlines()[-1]}")
+        work = tmp / "work"
+        diffs, new = [], []
+        for f in sorted(work.rglob("*.md")):
+            rel = f.relative_to(work).as_posix()
+            target = SPEC / rel
+            if not target.exists():
+                new.append(rel)
+            elif f.read_bytes() != target.read_bytes():
+                diffs.append(rel)
+        return {"generated": len(list(work.rglob("*.md"))), "diffs": diffs, "new": new, "failures": failures}, None
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def v7(cmds):
+    defined = set()
+    for path in sorted((SPEC / "08-security").glob("policies-*.md")):
+        text = path.read_text(encoding="utf-8")
+        defined |= set(re.findall(r"^### (POL-[A-Z0-9-]+)", text, re.M))
+        defined |= set(re.findall(r"^\| (POL-[A-Z0-9-]+) \|", text, re.M))
+    missing, multi, used = [], [], defaultdict(list)
+    for cid, c in sorted(cmds.items()):
+        pols = re.findall(r"POL-[A-Z0-9-]+", c["السياسة"])
+        if len(pols) != 1:
+            multi.append((cid, c["السياسة"]))
+        for pol in pols:
+            used[pol].append(cid)
+            if pol not in defined:
+                missing.append((cid, pol))
+    shared = sorted((p, v) for p, v in used.items() if len(v) > 1)
+    return len(defined), missing, multi, shared
+
+
+def v6():
+    bad, n = [], 0
+    for path in sorted(SPEC.rglob("*.md")):
+        if "17-system-study" in path.parts:
+            continue
+        text = path.read_text(encoding="utf-8")
+        fm = re.match(r"---\n(.*?)\n---", text, re.S)
+        blocks = ([("front-matter", fm.group(1))] if fm else []) + \
+                 [("yaml", b) for b in re.findall(r"^```yaml\n(.*?)^```", text, re.S | re.M)]
+        for kind, b in blocks:
+            n += 1
+            try:
+                yaml.safe_load(b)
+            except yaml.YAMLError as e:
+                bad.append((path.relative_to(SPEC).as_posix(), kind, str(e).splitlines()[0]))
+    return n, bad
+
+
+# ---------------------------------------------------------------- report
+def main():
+    aggs = load_aggregates()
+    specs = load_acceptance()
+    cmds = load_catalog("commands", "CMD-", "الأمر")
+    qrys = load_catalog("queries", "QRY-", "الاستعلام")
+    evts = load_catalog("events", "EVT-", "الحدث")
+    ops, msgs, codes = load_openapi(), load_asyncapi(), load_errors()
+
+    v1_rows, v1_issues, sys_gap = v1(aggs, specs)
+    v2_issues, v2_orphans, v2_dup = v2(cmds, qrys, ops)
+    v3_missing, v3_orphans = v3(evts, msgs)
+    v4_catalog, v4_guard, _ = v4(cmds, codes, aggs)
+    rt, rt_skip = v5()
+    y_n, y_bad = v6()
+    p_n, p_missing, p_multi, p_shared = v7(cmds)
+    rt_known = {p for p in (rt or {}).get("diffs", []) + (rt or {}).get("new", []) if re.search(r"slc19|SLC-19|AGG-(EXERCISE|SCENARIO|SIMULATION)\.md", p)}
+    rt_real = sorted(set((rt or {}).get("diffs", []) + (rt or {}).get("new", [])) - rt_known)
+
+    L = ["---", "id: SYS-STUDY-VERIFICATION", "type: verification-report",
+         'title: "Phase 3.7 — تحقق آلي من اتساق المواصفات (قبول · عقود · أحداث · أخطاء)"',
+         "status: GENERATED", "generated_by: _build/verify_study.py", "---", "",
+         "# تحقق آلي من اتساق المواصفات", "",
+         "هذا الملف مولَّد بالكامل بواسطة `_build/verify_study.py` ولا يُحرَّر يدويًا. يغطي جولات التحقق التي "
+         "بقيت [Missing verification pass] في §20 من ملفات الـBC: مطابقة كل ملف قبول لمصفوفة الـAggregate سطرًا بسطر، "
+         "ومطابقة كل أمر واستعلام وحدث ورمز خطأ لعقده. كل فحص هنا **Explicit** (مقارنة جداول حرفية)؛ لا حكم دلالي.", "",
+         "## 1. الملخص", "",
+         "| الفحص | النطاق | النتيجة |", "|---|---|---|",
+         f"| V1 ملفات القبول ↔ مصفوفات الحالات | {len(aggs)} Aggregate، {len(specs)} ملف قبول | "
+         f"{sum(1 for r in v1_rows if r[3] == '✅')} مطابق، {len(v1_issues)} بفروق |",
+         f"| V1b انتقالات المجدول (`SYS:`) بلا سيناريو قبول | {sum(len(a['sys']) for a in aggs.values())} انتقالًا في "
+         f"{sum(1 for a in aggs.values() if a['sys'])} Aggregate | {sum(len(x[2]) for x in sys_gap)} بلا تغطية في {len(sys_gap)} Aggregate |",
+         f"| V2 الأوامر والاستعلامات ↔ OpenAPI | {len(cmds)} أمرًا، {len(qrys)} استعلامًا، {len(ops)} عملية | "
+         f"{len(v2_issues)} فرقًا؛ {len(v2_orphans)} عملية بلا كتالوج؛ {len(v2_dup)} operationId مكرر |",
+         f"| V3 الأحداث ↔ AsyncAPI | {len(evts)} حدثًا، {len(msgs)} رسالة | "
+         f"{len(v3_missing)} حدثًا بلا رسالة؛ {len(v3_orphans)} رسالة بلا كتالوج |",
+         f"| V4a أخطاء الأوامر ↔ كتالوج الأخطاء | {sum(len(c['الأخطاء'].split(',')) for c in cmds.values())} زوجًا (أمر، رمز) | "
+         f"{len(v4_catalog)} فرقًا |",
+         f"| V4b أخطاء الشروط (Guards) ↔ أخطاء الأمر | {sum(len(v) for a in aggs.values() for v in a['guard_errors'].values())} رمزًا | "
+         f"{len(v4_guard)} رمزًا لا يظهر في قائمة أخطاء الأمر |",
+         (f"| V5 ذهاب وإياب أدوات المواصفة | {rt['generated']} ملفًا مولَّدًا من 19 شريحة | "
+          f"{len(rt_real)} ملفًا يختلف عن مولِّده خارج SLC-19؛ SLC-19 مستثناة ({len(rt_known)} ملفًا مكتوبًا خارج الأدوات)؛ "
+          f"{len(rt['failures'])} فشل تشغيل |") if rt else f"| V5 ذهاب وإياب أدوات المواصفة | — | {rt_skip} |",
+         f"| V6 صلاحية كتل YAML المضمَّنة | {y_n} كتلة (front-matter + YAML) | {len(y_bad)} كتلة لا تُقرأ |",
+         f"| V7 سياسة لكل أمر (SL-02) | {len(cmds)} أمرًا، {p_n} سياسة معرَّفة | {len(p_missing)} سياسة غير معرَّفة؛ "
+         f"{len(p_multi)} أمرًا بغير سياسة واحدة؛ {len(p_shared)} سياسة يتشاركها أكثر من أمر |", ""]
+
+    L += ["## 2. V1 — ملفات القبول مقابل مصفوفات الحالات", "",
+          "لكل Aggregate: كل خلية `→ حالة` في مصفوفة الحالات × الأوامر يجب أن تظهر كانتقال مسموح (أو إنشاء من ∅) "
+          "بنفس الحالة الهدف والحدث، وكل خلية `✗ رمز` كرفض بنفس الرمز، ولا صف زائد في ملف القبول. "
+          "العمود «مسموح+إنشاء / رفض» عدد الخلايا في المصفوفة.", ""]
+    if v1_issues:
+        L += ["**الفروق:**", ""] + [f"- {i}" for i in v1_issues] + [""]
+    L += ["| Aggregate | BC | مسموح+إنشاء / رفض | النتيجة |", "|---|---|---|---|"]
+    L += [f"| {r[0]} | {r[1]} | {r[2]} | {r[3]} |" for r in v1_rows]
+    L += ["", "### 2.1 V1b — انتقالات المجدول بلا سيناريو قبول", "",
+          "مولِّد ملفات القبول في W6 يغطي أوامر الفاعلين فقط؛ الانتقالات التي يطلقها المجدول (`SYS:`، مثل انتهاء "
+          "الصلاحية) لا سيناريو لها إلا حيث كُتب يدويًا (SLC-19). هذه **فجوة تغطية اختبار** لا خطأ في التصميم: "
+          "الانتقالات موثَّقة في المصفوفات وتخضع لنفس الثوابت. منذ CR-72 يولِّد `acc_gen` سيناريو «system-triggered transition» "
+          "لكل انتقال مجدول؛ ويُحتسَب أيضًا السيناريو السردي المكتوب يدويًا (`Then … becomes <state>`) كما في SLC-19.", "",
+          "| Aggregate | BC | الانتقالات غير المغطاة |", "|---|---|---|"]
+    for aid, bc, unc, _ in sys_gap:
+        L.append(f"| {aid} | {bc} | " + "; ".join(f"{f} → {t} ({c})" for f, c, t in unc) + " |")
+    L += ["", "## 3. V2 — الأوامر والاستعلامات مقابل OpenAPI", ""]
+    if v2_issues:
+        L += ["| النوع | المعرّف | الفرق |", "|---|---|---|"] + [f"| {k} | {i} | {d} |" for k, i, d in v2_issues]
+    else:
+        L += ["كل أمر واستعلام له عملية OpenAPI بنفس الـoperationId والطريقة والمسار."]
+    known_orphans = {"QRY-LABEL-CHECK": "عقد OHS مشترك تنفّذه كل السياقات المالكة (POL-LABEL-CHECK في "
+                     "`08-security/policies-slc05.md`)؛ لا كتالوج استعلام له لأنه لا يملكه BC واحد — بالتصميم"}
+    L += ["", "**عمليات OpenAPI بلا أمر أو استعلام في الكتالوجات:** "
+          + ("; ".join(f"{o} — {known_orphans.get(o, '[Needs Review]')}" for o in v2_orphans) or "لا شيء"), "",
+          f"**operationId يظهر في أكثر من عقد:** {', '.join(v2_dup) or 'لا شيء'}", "",
+          "## 4. V3 — الأحداث مقابل AsyncAPI", "",
+          f"**أحداث بلا رسالة AsyncAPI:** {', '.join(v3_missing) or 'لا شيء'}", "",
+          f"**رسائل AsyncAPI بلا حدث في الكتالوجات:** {', '.join(v3_orphans) or 'لا شيء'}", "",
+          "## 5. V4 — رموز الأخطاء", "",
+          "### 5.1 V4a — قوائم أخطاء الأوامر مقابل `errors-slcNN.md`", "",
+          "لكل شريحة ورمز: عدد الأوامر في الكتالوج يساوي عدد الأوامر التي تذكر الرمز، وكل أمر مذكور بالاسم. "
+          "الكتالوج يقطع القوائم الطويلة بـ«…» عمدًا، فتُقارَن عندها الأعداد والأسماء الظاهرة فقط.", ""]
+    if v4_catalog:
+        L += ["| الشريحة | الرمز | الفرق |", "|---|---|---|"] + [f"| {a} | {b} | {c} |" for a, b, c in v4_catalog]
+    else:
+        L.append("لا فروق.")
+    L += ["", "### 5.2 V4b — خطأ شرط في جدول الانتقالات لا يظهر في قائمة أخطاء الأمر", ""]
+    if v4_guard:
+        L += ["| Aggregate | الأمر | الرمز |", "|---|---|---|"] + [f"| {a} | {c} | {e} |" for a, c, e in v4_guard]
+    else:
+        L.append("لا فروق.")
+    L += ["", "## 6. V5 — ذهاب وإياب أدوات المواصفة", "",
+          "`13-verification/tooling/spec-tooling.md` يعلن أن ملفات الـAggregates والكتالوجات والعقود وملفات القبول "
+          "**مولَّدة لا تُعدَّل يدويًا**، وأن استخراج الأدوات وإعادة التوليد يعطي ملفات مطابقة حرفيًا. هذا الفحص يستخرج "
+          "الأدوات من الملفين، يشغّل `slice_gen` ثم `slice_contracts` ثم `acc_gen` لكل شريحة في مجلد مؤقت، ويقارن كل ملف بايتًا ببايت.", ""]
+    if rt is None:
+        L.append(rt_skip)
+    else:
+        L += [f"- ملفات مولَّدة: {rt['generated']}",
+              f"- تختلف عن مولِّدها خارج SLC-19: {', '.join(f'`{p}`' for p in rt_real) or '**لا شيء — ذهاب وإياب تام**'}",
+              f"- فشل تشغيل: {'; '.join(rt['failures']) or 'لا شيء'}",
+              f"- **SLC-19 مستثناة ({len(rt_known)} ملفًا):** كُتبت خارج الأدوات (ترتيب أعمدة مختلف، ملاحظات يدوية، "
+              "وسيناريوهات قبول لانتقالات المجدول لا يولّدها `acc_gen`). إعادة توليدها كانت ستحذف تلك السيناريوهات، "
+              "فهي دَين تقني مسجَّل لا فرق يُصحَّح آليًا."]
+    L += ["", "## 7. V6 — صلاحية كتل YAML المضمَّنة", "",
+          "كثير من ملفات المواصفة تعلن أن كتلة YAML في آخرها هي «المصدر المعتمد» للملف؛ كتلة لا تُقرأ آليًا تُبطل هذا الادعاء.", "",
+          ("\n".join(f"- `{p}` ({k}): {e}" for p, k, e in y_bad) if y_bad else "كل الكتل تُقرأ بلا أخطاء.")]
+    L += ["", "## 8. V7 — سياسة واحدة معرَّفة لكل أمر (SL-02)", "",
+          (("**سياسات غير معرَّفة:** " + ", ".join(f"{c} → {p}" for c, p in p_missing)) if p_missing else "كل سياسة يسمّيها أمر معرَّفة في `08-security/policies-*.md`."),
+          "", (("**أوامر بغير سياسة واحدة:** " + ", ".join(f"{c} ({p})" for c, p in p_multi)) if p_multi else "كل أمر يسمّي سياسة واحدة بالضبط."),
+          "", (("**سياسات يتشاركها أكثر من أمر:** " + "; ".join(f"{p}: {', '.join(v)}" for p, v in p_shared)) if p_shared else "لا سياسة يتشاركها أمران.")]
+    OUT.write_text("\n".join(L) + "\n", encoding="utf-8")
+    print(f"V1 issues={len(v1_issues)} sys_gap={sum(len(x[2]) for x in sys_gap)} V2={len(v2_issues)} "
+          f"orphans={len(v2_orphans)} dup={len(v2_dup)} V3 missing={len(v3_missing)} orphans={len(v3_orphans)} "
+          f"V4a={len(v4_catalog)} V4b={len(v4_guard)} V5={'skipped' if rt is None else len(rt_real)} V6={len(y_bad)} V7={len(p_missing)}/{len(p_multi)}/{len(p_shared)}")
+
+
+if __name__ == "__main__":
+    main()

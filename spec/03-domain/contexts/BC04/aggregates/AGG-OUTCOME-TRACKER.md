@@ -50,7 +50,7 @@ traces:
 |---|---|---|---|---|---|
 | ∅ (إنشاء) | SYS:outcome baselined | ACTIVE | one tracker per (plan, outcome id); target copied from baseline | EVT-OUT-TRACKER-CREATED | — |
 | ACTIVE | SYS:target changed by new baseline | (بلا تغيير) | target history appended (valid time = baseline time) | EVT-OUT-TARGET-CHANGED | — |
-| ACTIVE | CMD-OUT-RECORD | (بلا تغيير) | value with unit convertible to metric unit (UCUM); measured_at; source = manual | task result | observation ref | EVT-OUT-MEASURED | MEASUREMENT_INVALID |
+| ACTIVE | CMD-OUT-RECORD | (بلا تغيير) | value with unit convertible to metric unit (UCUM); measured_at; source = manual \| task result \| observation ref | EVT-OUT-MEASURED | MEASUREMENT_INVALID |
 | ACTIVE | CMD-OUT-CORRECT | (بلا تغيير) | corrects a measurement: previous record closed (recorded_to), corrected record added — no overwrite | EVT-OUT-MEASUREMENT-CORRECTED | REASON_REQUIRED |
 | ACTIVE | SYS:plan closed or cancelled | CLOSED | system | EVT-OUT-TRACKER-CLOSED | — |
 

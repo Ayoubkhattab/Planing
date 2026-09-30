@@ -19,7 +19,7 @@ traces:
 
 # Acceptance — Attachment
 
-مولّدة من مصفوفة AGG-ATTACHMENT: 2 انتقالاً مسموحاً، 16 رفضاً.
+مولّدة من مصفوفة AGG-ATTACHMENT: 2 انتقالاً مسموحاً، 16 رفضاً، 3 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Attachment lifecycle (AGG-ATTACHMENT)
@@ -74,4 +74,17 @@ Feature: Attachment lifecycle (AGG-ATTACHMENT)
       | Attachment | ERASED | CMD-ATT-INITIATE-UPLOAD | ATTACHMENT_INVALID_STATE_TRANSITION |
       | Attachment | ERASED | CMD-ATT-COMPLETE-UPLOAD | ATTACHMENT_INVALID_STATE_TRANSITION |
       | Attachment | ERASED | CMD-ATT-ERASE | ATTACHMENT_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Attachment | PENDING | upload window 24 h elapsed | EXPIRED | EVT-ATT-EXPIRED |
+      | Attachment | SCANNING | scan passed | STORED | EVT-ATT-STORED |
+      | Attachment | SCANNING | scan failed | QUARANTINED | EVT-ATT-QUARANTINED |
 ```

@@ -17,7 +17,7 @@ notes: 'كل قائمة: مالك، إصدار، زمن سريان. locked = ل�
 
 ## code_lists
 
-_20 items_
+_26 items_ (6 categories added by CR-68 — cited as mandatory guards in BC04/BC05 but previously undefined; CONFLICT-03)
 
 | id | content | owner | scope | tenant_rule | versioned | effective_time |
 |---|---|---|---|---|---|---|
@@ -41,6 +41,12 @@ _20 items_
 | RD-TASK-TYPES | Task types with required competencies and completion criteria templates | BC04 | tenant | tenant-defined | yes | yes |
 | RD-ALERT-RULE-TYPES | Alert rule types | BC03 | platform | extend | yes | yes |
 | RD-COMPETENCIES | Competencies, qualifications, certifications | BC05 | tenant | tenant-defined | yes | yes |
+| RD-HAZARD-CATEGORIES | Hazard categories for Risk and Incident (category_ref). Platform seed [Explicit, risk-contingency-spec §1]: natural, technical, security, health, environmental, other; the tenant's actual catalog is loaded at tenant setup (CR-68) | BC04 | tenant | tenant-defined | yes | yes |
+| RD-ASSET-TYPES | Asset types (CMD-AST-REGISTER). Platform seed [Explicit, R2-Q1]: vehicles, equipment, facilities, consumable materials; actual types defined per tenant (CR-68) | BC05 | tenant | tenant-defined | yes | yes |
+| RD-RESOURCE-TYPES | Resource pool types (CMD-RPL-CREATE), each with a UCUM unit. Platform seed [Explicit, R2-Q1]: vehicles, equipment, facilities, consumable materials; actual types defined per tenant (CR-68) | BC05 | tenant | tenant-defined | yes | yes |
+| RD-LOGISTICS-ITEM-TYPES | Logistics item types, used as resource_type of the pool behind a logistics request [Explicit, logistics-spec §1]: open catalog, e.g. fuel, food, medical equipment, spare parts; items are resource types held in SLC-09 pools, no separate stock model (R3-Q3) (CR-68) | BC05 | tenant | tenant-defined | yes | yes |
+| RD-CONDITION-GRADES | Asset condition grades (CMD-AST-UPDATE-CONDITION); every grade carries a serviceable flag [Derived from AGG-ASSET guards: unserviceable grades require CMD-AST-MARK-UNSERVICEABLE, return to service requires a serviceable condition]; seed values to be confirmed by tenant workshop (CR-68) | BC05 | tenant | tenant-defined | yes | yes |
+| RD-EXERCISE-TYPES | Exercise types for training scenarios (exercise_type_ref in CMD-SCN-DEFINE); distinct from exercise purpose (drill, certification, assessment in CMD-EXR-PLAN). Examples [Inferred]: tabletop, drill, functional, full-scale; to be confirmed by tenant workshop (CR-68) | BC05 | tenant | tenant-defined | yes | yes |
 
 ## rules
 
@@ -190,6 +196,57 @@ code_lists:
   effective_time: true
 - id: RD-COMPETENCIES
   content: Competencies, qualifications, certifications
+  owner: BC05
+  scope: tenant
+  tenant_rule: tenant-defined
+  versioned: true
+  effective_time: true
+- id: RD-HAZARD-CATEGORIES
+  content: 'Hazard categories for Risk and Incident (category_ref). Platform seed [Explicit, risk-contingency-spec §1]: natural,
+    technical, security, health, environmental, other; the tenant''s actual catalog is loaded at tenant setup (CR-68)'
+  owner: BC04
+  scope: tenant
+  tenant_rule: tenant-defined
+  versioned: true
+  effective_time: true
+- id: RD-ASSET-TYPES
+  content: 'Asset types (CMD-AST-REGISTER). Platform seed [Explicit, R2-Q1]: vehicles, equipment, facilities, consumable materials;
+    actual types defined per tenant (CR-68)'
+  owner: BC05
+  scope: tenant
+  tenant_rule: tenant-defined
+  versioned: true
+  effective_time: true
+- id: RD-RESOURCE-TYPES
+  content: 'Resource pool types (CMD-RPL-CREATE), each with a UCUM unit. Platform seed [Explicit, R2-Q1]: vehicles, equipment,
+    facilities, consumable materials; actual types defined per tenant (CR-68)'
+  owner: BC05
+  scope: tenant
+  tenant_rule: tenant-defined
+  versioned: true
+  effective_time: true
+- id: RD-LOGISTICS-ITEM-TYPES
+  content: 'Logistics item types, used as resource_type of the pool behind a logistics request [Explicit, logistics-spec §1]:
+    open catalog, e.g. fuel, food, medical equipment, spare parts; items are resource types held in SLC-09 pools, no separate
+    stock model (R3-Q3) (CR-68)'
+  owner: BC05
+  scope: tenant
+  tenant_rule: tenant-defined
+  versioned: true
+  effective_time: true
+- id: RD-CONDITION-GRADES
+  content: 'Asset condition grades (CMD-AST-UPDATE-CONDITION); every grade carries a serviceable flag [Derived from AGG-ASSET
+    guards: unserviceable grades require CMD-AST-MARK-UNSERVICEABLE, return to service requires a serviceable condition];
+    seed values to be confirmed by tenant workshop (CR-68)'
+  owner: BC05
+  scope: tenant
+  tenant_rule: tenant-defined
+  versioned: true
+  effective_time: true
+- id: RD-EXERCISE-TYPES
+  content: 'Exercise types for training scenarios (exercise_type_ref in CMD-SCN-DEFINE); distinct from exercise purpose (drill,
+    certification, assessment in CMD-EXR-PLAN). Examples [Inferred]: tabletop, drill, functional, full-scale; to be confirmed
+    by tenant workshop (CR-68)'
   owner: BC05
   scope: tenant
   tenant_rule: tenant-defined

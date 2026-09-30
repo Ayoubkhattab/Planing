@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — Historical Reconstruction
 
-مولّدة من مصفوفة AGG-RECONSTRUCTION: 2 انتقالاً مسموحاً، 8 رفضاً.
+مولّدة من مصفوفة AGG-RECONSTRUCTION: 2 انتقالاً مسموحاً، 8 رفضاً، 3 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Historical Reconstruction lifecycle (AGG-RECONSTRUCTION)
@@ -64,4 +64,17 @@ Feature: Historical Reconstruction lifecycle (AGG-RECONSTRUCTION)
       | Historical Reconstruction | FAILED | CMD-REC-CANCEL | RECONSTRUCTION_INVALID_STATE_TRANSITION |
       | Historical Reconstruction | CANCELLED | CMD-REC-REQUEST | RECONSTRUCTION_INVALID_STATE_TRANSITION |
       | Historical Reconstruction | CANCELLED | CMD-REC-CANCEL | RECONSTRUCTION_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Historical Reconstruction | REQUESTED | worker started | RUNNING | EVT-REC-STARTED |
+      | Historical Reconstruction | RUNNING | completed | COMPLETED | EVT-REC-COMPLETED |
+      | Historical Reconstruction | RUNNING | failed | FAILED | EVT-REC-FAILED |
 ```

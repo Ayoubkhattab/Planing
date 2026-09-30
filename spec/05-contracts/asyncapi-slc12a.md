@@ -400,7 +400,7 @@ components:
             payload: *id001
       x-consumers:
       - Key manager (subject key destruction)
-      - BC01 / BC02 (scope + confirmation)
+      - BC01 / BC02 / BC05 (scope + confirmation)
       - Projections (purge)
       x-partition-key: tenant_id + aggregate.id
     EVT-ERS-SCOPED:
@@ -414,7 +414,7 @@ components:
             payload: *id001
       x-consumers:
       - Key manager (subject key destruction)
-      - BC01 / BC02 (scope + confirmation)
+      - BC01 / BC02 / BC05 (scope + confirmation)
       - Projections (purge)
       x-partition-key: tenant_id + aggregate.id
     EVT-ERS-APPROVED:
@@ -428,7 +428,7 @@ components:
             payload: *id001
       x-consumers:
       - Key manager (subject key destruction)
-      - BC01 / BC02 (scope + confirmation)
+      - BC01 / BC02 / BC05 (scope + confirmation)
       - Projections (purge)
       x-partition-key: tenant_id + aggregate.id
     EVT-ERS-REJECTED:
@@ -442,7 +442,7 @@ components:
             payload: *id001
       x-consumers:
       - Key manager (subject key destruction)
-      - BC01 / BC02 (scope + confirmation)
+      - BC01 / BC02 / BC05 (scope + confirmation)
       - Projections (purge)
       x-partition-key: tenant_id + aggregate.id
     EVT-ERS-BLOCKED:
@@ -456,7 +456,7 @@ components:
             payload: *id001
       x-consumers:
       - Key manager (subject key destruction)
-      - BC01 / BC02 (scope + confirmation)
+      - BC01 / BC02 / BC05 (scope + confirmation)
       - Projections (purge)
       x-partition-key: tenant_id + aggregate.id
     EVT-ERS-UNBLOCKED:
@@ -470,7 +470,7 @@ components:
             payload: *id001
       x-consumers:
       - Key manager (subject key destruction)
-      - BC01 / BC02 (scope + confirmation)
+      - BC01 / BC02 / BC05 (scope + confirmation)
       - Projections (purge)
       x-partition-key: tenant_id + aggregate.id
     EVT-ERS-EXECUTING:
@@ -484,7 +484,7 @@ components:
             payload: *id001
       x-consumers:
       - Key manager (subject key destruction)
-      - BC01 / BC02 (scope + confirmation)
+      - BC01 / BC02 / BC05 (scope + confirmation)
       - Projections (purge)
       x-partition-key: tenant_id + aggregate.id
     EVT-ERS-COMPLETED:
@@ -498,7 +498,7 @@ components:
             payload: *id001
       x-consumers:
       - Key manager (subject key destruction)
-      - BC01 / BC02 (scope + confirmation)
+      - BC01 / BC02 / BC05 (scope + confirmation)
       - Projections (purge)
       x-partition-key: tenant_id + aggregate.id
 ```

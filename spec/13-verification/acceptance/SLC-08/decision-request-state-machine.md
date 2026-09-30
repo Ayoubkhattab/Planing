@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — Decision Request
 
-مولّدة من مصفوفة AGG-DECISION-REQUEST: 7 انتقالاً مسموحاً، 13 رفضاً.
+مولّدة من مصفوفة AGG-DECISION-REQUEST: 7 انتقالاً مسموحاً، 13 رفضاً، 2 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Decision Request lifecycle (AGG-DECISION-REQUEST)
@@ -74,4 +74,16 @@ Feature: Decision Request lifecycle (AGG-DECISION-REQUEST)
       | Decision Request | WITHDRAWN | CMD-DRQ-CITE | DECISION_REQUEST_INVALID_STATE_TRANSITION |
       | Decision Request | WITHDRAWN | CMD-DRQ-OPEN | DECISION_REQUEST_INVALID_STATE_TRANSITION |
       | Decision Request | WITHDRAWN | CMD-DRQ-WITHDRAW | DECISION_REQUEST_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Decision Request | OPEN | deadline passed | OPEN | EVT-DRQ-ESCALATED |
+      | Decision Request | OPEN | decision recorded for this request | DECIDED | EVT-DRQ-DECIDED |
 ```

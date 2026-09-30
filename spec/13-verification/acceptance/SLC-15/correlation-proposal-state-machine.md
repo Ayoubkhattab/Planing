@@ -18,7 +18,7 @@ traces:
 
 # Acceptance — Correlation Proposal
 
-مولّدة من مصفوفة AGG-CORRELATION-PROPOSAL: 4 انتقالاً مسموحاً، 16 رفضاً.
+مولّدة من مصفوفة AGG-CORRELATION-PROPOSAL: 4 انتقالاً مسموحاً، 16 رفضاً، 2 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Correlation Proposal lifecycle (AGG-CORRELATION-PROPOSAL)
@@ -75,4 +75,16 @@ Feature: Correlation Proposal lifecycle (AGG-CORRELATION-PROPOSAL)
       | Correlation Proposal | EXPIRED | CMD-CRP-START-REVIEW | CORRELATION_PROPOSAL_INVALID_STATE_TRANSITION |
       | Correlation Proposal | EXPIRED | CMD-CRP-ACCEPT | CORRELATION_PROPOSAL_INVALID_STATE_TRANSITION |
       | Correlation Proposal | EXPIRED | CMD-CRP-REJECT | CORRELATION_PROPOSAL_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Correlation Proposal | ∅ | correlation rule score ≥ threshold | PROPOSED | EVT-CRP-PROPOSED |
+      | Correlation Proposal | PROPOSED | not reviewed within 30 days | EXPIRED | EVT-CRP-EXPIRED |
 ```

@@ -19,7 +19,7 @@ traces:
 
 # Acceptance — Role Assignment
 
-مولّدة من مصفوفة AGG-ROLE-ASSIGNMENT: 1 انتقالاً مسموحاً، 5 رفضاً.
+مولّدة من مصفوفة AGG-ROLE-ASSIGNMENT: 1 انتقالاً مسموحاً، 5 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Role Assignment lifecycle (AGG-ROLE-ASSIGNMENT)
@@ -62,4 +62,15 @@ Feature: Role Assignment lifecycle (AGG-ROLE-ASSIGNMENT)
       | Role Assignment | EXPIRED | CMD-RAS-REVOKE | ROLE_ASSIGNMENT_INVALID_STATE_TRANSITION |
       | Role Assignment | REVOKED | CMD-RAS-ASSIGN | ROLE_ASSIGNMENT_INVALID_STATE_TRANSITION |
       | Role Assignment | REVOKED | CMD-RAS-REVOKE | ROLE_ASSIGNMENT_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Role Assignment | ACTIVE | valid_to reached | EXPIRED | EVT-RAS-EXPIRED |
 ```

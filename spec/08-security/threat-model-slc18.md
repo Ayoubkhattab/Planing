@@ -38,7 +38,7 @@ threats:
   threat: a logistics request forced into APPROVED directly, bypassing the linked allocation's own commitment check
   likelihood: L
   impact: H
-  controls: no human command sets APPROVED; only SYS: transitions driven by SLC-09's own EVT-ALC-COMMITTED (INV-LGR-01); commitment still runs the unchanged SPEC-ALLOCATION §1 checks and capacity-ledger constraint
+  controls: 'no human command sets APPROVED; only SYS: transitions driven by SLC-09''s own EVT-ALC-COMMITTED (INV-LGR-01); commitment still runs the unchanged SPEC-ALLOCATION §1 checks and capacity-ledger constraint'
   residual_risk: L
 - id: THR-S18-02
   component: Delivery quantity

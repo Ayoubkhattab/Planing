@@ -19,7 +19,7 @@ traces:
 
 # Acceptance — Entity Resolution Case
 
-مولّدة من مصفوفة AGG-ER-CASE: 12 انتقالاً مسموحاً، 68 رفضاً.
+مولّدة من مصفوفة AGG-ER-CASE: 12 انتقالاً مسموحاً، 68 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Entity Resolution Case lifecycle (AGG-ER-CASE)
@@ -136,4 +136,15 @@ Feature: Entity Resolution Case lifecycle (AGG-ER-CASE)
       | Entity Resolution Case | WITHDRAWN | CMD-ER-CONFIRM-MATCH | ER_CASE_INVALID_STATE_TRANSITION |
       | Entity Resolution Case | WITHDRAWN | CMD-ER-SPLIT | ER_CASE_INVALID_STATE_TRANSITION |
       | Entity Resolution Case | WITHDRAWN | CMD-ER-WITHDRAW | ER_CASE_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Entity Resolution Case | ∅ | candidate generator score ≥ propose threshold | CANDIDATE | EVT-ER-PROPOSED |
 ```

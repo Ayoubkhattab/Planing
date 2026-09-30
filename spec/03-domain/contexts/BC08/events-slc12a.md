@@ -34,13 +34,13 @@ _25 events_
 | EVT-DSP-COMPLETED | AGG-DISPOSITION-RUN | SYS:all buckets processed | — | Key manager (bucket key destruction); Owner contexts (purge plaintext caches, projections); Audit | tenant_id + aggregate.id |
 | EVT-DSP-COMPLETED-WITH-EXCEPTIONS | AGG-DISPOSITION-RUN | SYS:some buckets failed | — | Key manager (bucket key destruction); Owner contexts (purge plaintext caches, projections); Audit | tenant_id + aggregate.id |
 | EVT-DSP-CANCELLED | AGG-DISPOSITION-RUN | CMD-DSP-CANCEL | — | Key manager (bucket key destruction); Owner contexts (purge plaintext caches, projections); Audit | tenant_id + aggregate.id |
-| EVT-ERS-RECEIVED | AGG-ERASURE-REQUEST | CMD-ERS-REGISTER | — | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
-| EVT-ERS-SCOPED | AGG-ERASURE-REQUEST | SYS:subject scope resolved | — | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
-| EVT-ERS-APPROVED | AGG-ERASURE-REQUEST | CMD-ERS-APPROVE | — | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
-| EVT-ERS-REJECTED | AGG-ERASURE-REQUEST | CMD-ERS-REJECT | — | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
-| EVT-ERS-BLOCKED | AGG-ERASURE-REQUEST | SYS:hold matches subject | — | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
-| EVT-ERS-UNBLOCKED | AGG-ERASURE-REQUEST | SYS:hold released | — | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
-| EVT-ERS-EXECUTING | AGG-ERASURE-REQUEST | SYS:execution started | — | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
-| EVT-ERS-COMPLETED | AGG-ERASURE-REQUEST | SYS:all contexts confirmed | — | Key manager (subject key destruction); BC01 / BC02 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
+| EVT-ERS-RECEIVED | AGG-ERASURE-REQUEST | CMD-ERS-REGISTER | — | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
+| EVT-ERS-SCOPED | AGG-ERASURE-REQUEST | SYS:subject scope resolved | — | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
+| EVT-ERS-APPROVED | AGG-ERASURE-REQUEST | CMD-ERS-APPROVE | — | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
+| EVT-ERS-REJECTED | AGG-ERASURE-REQUEST | CMD-ERS-REJECT | — | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
+| EVT-ERS-BLOCKED | AGG-ERASURE-REQUEST | SYS:hold matches subject | — | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
+| EVT-ERS-UNBLOCKED | AGG-ERASURE-REQUEST | SYS:hold released | — | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
+| EVT-ERS-EXECUTING | AGG-ERASURE-REQUEST | SYS:execution started | — | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
+| EVT-ERS-COMPLETED | AGG-ERASURE-REQUEST | SYS:all contexts confirmed | — | Key manager (subject key destruction); BC01 / BC02 / BC05 (scope + confirmation); Projections (purge) | tenant_id + aggregate.id |
 
 المخطط: `05-contracts/asyncapi-{SFX}.md`. التسليم at-least-once عبر outbox؛ المستهلكون idempotent عبر inbox (REQ-PLT-006).

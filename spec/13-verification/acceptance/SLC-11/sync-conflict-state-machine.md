@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — Sync Conflict
 
-مولّدة من مصفوفة AGG-SYNC-CONFLICT: 4 انتقالاً مسموحاً، 12 رفضاً.
+مولّدة من مصفوفة AGG-SYNC-CONFLICT: 4 انتقالاً مسموحاً، 12 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Sync Conflict lifecycle (AGG-SYNC-CONFLICT)
@@ -69,4 +69,15 @@ Feature: Sync Conflict lifecycle (AGG-SYNC-CONFLICT)
       | Sync Conflict | RESOLVED_MANUAL | CMD-SCF-REAPPLY | SYNC_CONFLICT_INVALID_STATE_TRANSITION |
       | Sync Conflict | RESOLVED_MANUAL | CMD-SCF-DISCARD | SYNC_CONFLICT_INVALID_STATE_TRANSITION |
       | Sync Conflict | RESOLVED_MANUAL | CMD-SCF-RESOLVE-MANUALLY | SYNC_CONFLICT_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Sync Conflict | ∅ | stale state-changing command | OPEN | EVT-SCF-OPENED |
 ```

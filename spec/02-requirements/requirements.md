@@ -84,7 +84,7 @@ _8 items_
 
 ## system_requirements
 
-_181 items_
+_210 items_ (header was stale at 181: the R3 requirements added in W1/W2-R3 on 2026-09-27 were not counted — corrected by CR-66)
 
 ### REQ-FND-001
 
@@ -1497,7 +1497,7 @@ _181 items_
 - **source:** PRJ§21; V5 A07
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-078
 - **quality:** QAS-REL-002
 - **release:** R1
 - **status:** APPROVED_DELEGATED
@@ -1988,7 +1988,7 @@ _181 items_
 - **source:** PRJ§30
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-075
 - **quality:** —
 - **release:** R2
 - **status:** APPROVED_DELEGATED
@@ -2002,7 +2002,7 @@ _181 items_
 - **source:** PRJ§31
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-075, UC-076
 - **quality:** QAS-AI-001, QAS-AI-002
 - **release:** R2
 - **status:** APPROVED_DELEGATED
@@ -2016,7 +2016,7 @@ _181 items_
 - **source:** W1 Q20, Q28
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-077
 - **quality:** —
 - **release:** R2
 - **status:** APPROVED_DELEGATED
@@ -2044,7 +2044,7 @@ _181 items_
 - **source:** DOM-23 AI Tool Registry
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-077
 - **quality:** —
 - **release:** R2
 - **status:** APPROVED_DELEGATED
@@ -2408,7 +2408,7 @@ _181 items_
 - **source:** DOM-17
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-140
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2422,7 +2422,7 @@ _181 items_
 - **source:** DOM-17
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-140
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2436,7 +2436,7 @@ _181 items_
 - **source:** DOM-17; mirrors INV-TASK-07
 - **priority:** should
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-140
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2450,7 +2450,7 @@ _181 items_
 - **source:** DOM-17
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-141
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2464,7 +2464,7 @@ _181 items_
 - **source:** DOM-17
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-141
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2478,7 +2478,7 @@ _181 items_
 - **source:** DOM-17
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-142
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2492,7 +2492,7 @@ _181 items_
 - **source:** DOM-17
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-142
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2506,7 +2506,7 @@ _181 items_
 - **source:** DOM-17
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-143
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2520,7 +2520,7 @@ _181 items_
 - **source:** DOM-17
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-143
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2534,7 +2534,7 @@ _181 items_
 - **source:** DOM-17
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-143
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2548,7 +2548,7 @@ _181 items_
 - **source:** DOM-17; anti-pattern lesson from SLC-09 (Silent Pre-emption)
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-144
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2562,7 +2562,7 @@ _181 items_
 - **source:** DOM-17
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-143
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2576,7 +2576,7 @@ _181 items_
 - **source:** DOM-17; CR-61
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-143
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2590,7 +2590,7 @@ _181 items_
 - **source:** DOM-17
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-140
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2604,7 +2604,7 @@ _181 items_
 - **source:** DOM-17
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-142
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2618,7 +2618,7 @@ _181 items_
 - **source:** DOM-17; R3-Q2; R3-Q4
 - **priority:** should
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-144
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2632,7 +2632,7 @@ _181 items_
 - **source:** DOM-16
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-150
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2646,7 +2646,7 @@ _181 items_
 - **source:** DOM-16; R3-Q3
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-150
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2660,7 +2660,7 @@ _181 items_
 - **source:** DOM-16
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-150
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2674,7 +2674,7 @@ _181 items_
 - **source:** DOM-16
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-151
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2688,7 +2688,7 @@ _181 items_
 - **source:** DOM-16
 - **priority:** should
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-151
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2702,7 +2702,7 @@ _181 items_
 - **source:** DOM-16
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-152
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2716,7 +2716,7 @@ _181 items_
 - **source:** DOM-16
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-152
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2730,7 +2730,7 @@ _181 items_
 - **source:** DOM-16
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-152
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2744,7 +2744,7 @@ _181 items_
 - **source:** DOM-16
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-152
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2758,7 +2758,7 @@ _181 items_
 - **source:** DOM-16
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-150
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2772,7 +2772,7 @@ _181 items_
 - **source:** DOM-16
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-151
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2786,7 +2786,7 @@ _181 items_
 - **source:** DOM-16
 - **priority:** should
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-151
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2800,7 +2800,7 @@ _181 items_
 - **source:** DOM-16; R2-Q1
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-150
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2814,7 +2814,7 @@ _181 items_
 - **source:** DOM-16; R3-Q3
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-150
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2828,7 +2828,7 @@ _181 items_
 - **source:** DOM-19; R3-Q4
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-160
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2842,7 +2842,7 @@ _181 items_
 - **source:** DOM-19; R3-Q4
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-160
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2856,7 +2856,7 @@ _181 items_
 - **source:** DOM-19; R3-Q4
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-161
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2870,7 +2870,7 @@ _181 items_
 - **source:** DOM-19; R3-Q4
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-161
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2884,7 +2884,7 @@ _181 items_
 - **source:** DOM-19; R3-Q4
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-162
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2898,7 +2898,7 @@ _181 items_
 - **source:** DOM-19; R3-Q4
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-162
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2912,7 +2912,7 @@ _181 items_
 - **source:** DOM-19; R3-Q4
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-161
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2926,7 +2926,7 @@ _181 items_
 - **source:** DOM-19; R3-Q4
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-162
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2940,7 +2940,7 @@ _181 items_
 - **source:** DOM-19; R3-Q4
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-162
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2954,7 +2954,7 @@ _181 items_
 - **source:** DOM-19; R3-Q4
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-162
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2968,7 +2968,7 @@ _181 items_
 - **source:** DOM-19; R3-Q4
 - **priority:** should
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-162
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2982,7 +2982,7 @@ _181 items_
 - **source:** DOM-18; R3-Q4
 - **priority:** should
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-163
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -2996,7 +2996,7 @@ _181 items_
 - **source:** DOM-19; R3-Q5; CR-63
 - **priority:** should
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-163
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -3010,7 +3010,7 @@ _181 items_
 - **source:** DOM-18; DOM-19
 - **priority:** must
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-161
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -3024,7 +3024,7 @@ _181 items_
 - **source:** DOM-19
 - **priority:** should
 - **verification_method:** test
-- **use_cases:** —
+- **use_cases:** UC-162
 - **quality:** —
 - **release:** R3
 - **status:** APPROVED_DELEGATED
@@ -4551,7 +4551,8 @@ system_requirements:
   source: PRJ§21; V5 A07
   priority: must
   verification_method: test
-  use_cases: []
+  use_cases:
+  - UC-078
   quality:
   - QAS-REL-002
   release: R1
@@ -5044,7 +5045,8 @@ system_requirements:
   source: PRJ§30
   priority: must
   verification_method: test
-  use_cases: []
+  use_cases:
+  - UC-075
   quality: []
   release: R2
   status: APPROVED_DELEGATED
@@ -5057,7 +5059,9 @@ system_requirements:
   source: PRJ§31
   priority: must
   verification_method: test
-  use_cases: []
+  use_cases:
+  - UC-075
+  - UC-076
   quality:
   - QAS-AI-001
   - QAS-AI-002
@@ -5073,7 +5077,8 @@ system_requirements:
   source: W1 Q20, Q28
   priority: must
   verification_method: test
-  use_cases: []
+  use_cases:
+  - UC-077
   quality: []
   release: R2
   status: APPROVED_DELEGATED
@@ -5100,7 +5105,8 @@ system_requirements:
   source: DOM-23 AI Tool Registry
   priority: must
   verification_method: test
-  use_cases: []
+  use_cases:
+  - UC-077
   quality: []
   release: R2
   status: APPROVED_DELEGATED
@@ -5463,7 +5469,8 @@ system_requirements:
   source: DOM-17
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-140
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5475,7 +5482,8 @@ system_requirements:
   source: DOM-17
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-140
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5487,7 +5495,8 @@ system_requirements:
   source: DOM-17; mirrors INV-TASK-07
   priority: should
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-140
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5499,7 +5508,8 @@ system_requirements:
   source: DOM-17
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-141
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5511,7 +5521,8 @@ system_requirements:
   source: DOM-17
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-141
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5523,7 +5534,8 @@ system_requirements:
   source: DOM-17
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-142
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5535,7 +5547,8 @@ system_requirements:
   source: DOM-17
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-142
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5547,7 +5560,8 @@ system_requirements:
   source: DOM-17
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-143
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5559,7 +5573,8 @@ system_requirements:
   source: DOM-17
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-143
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5571,7 +5586,8 @@ system_requirements:
   source: DOM-17
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-143
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5583,7 +5599,8 @@ system_requirements:
   source: DOM-17; anti-pattern lesson from SLC-09 (Silent Pre-emption)
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-144
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5595,7 +5612,8 @@ system_requirements:
   source: DOM-17
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-143
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5607,7 +5625,8 @@ system_requirements:
   source: DOM-17; CR-61
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-143
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5619,7 +5638,8 @@ system_requirements:
   source: DOM-17
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-140
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5631,7 +5651,8 @@ system_requirements:
   source: DOM-17
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-142
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5643,7 +5664,8 @@ system_requirements:
   source: DOM-17; R3-Q2; R3-Q4
   priority: should
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-144
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5655,7 +5677,8 @@ system_requirements:
   source: DOM-16
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-150
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5667,7 +5690,8 @@ system_requirements:
   source: DOM-16; R3-Q3
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-150
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5679,7 +5703,8 @@ system_requirements:
   source: DOM-16
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-150
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5691,7 +5716,8 @@ system_requirements:
   source: DOM-16
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-151
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5703,7 +5729,8 @@ system_requirements:
   source: DOM-16
   priority: should
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-151
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5715,7 +5742,8 @@ system_requirements:
   source: DOM-16
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-152
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5727,7 +5755,8 @@ system_requirements:
   source: DOM-16
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-152
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5739,7 +5768,8 @@ system_requirements:
   source: DOM-16
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-152
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5751,7 +5781,8 @@ system_requirements:
   source: DOM-16
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-152
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5763,7 +5794,8 @@ system_requirements:
   source: DOM-16
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-150
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5775,7 +5807,8 @@ system_requirements:
   source: DOM-16
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-151
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5787,7 +5820,8 @@ system_requirements:
   source: DOM-16
   priority: should
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-151
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5799,7 +5833,8 @@ system_requirements:
   source: DOM-16; R2-Q1
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-150
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5811,7 +5846,8 @@ system_requirements:
   source: DOM-16; R3-Q3
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-150
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5823,7 +5859,8 @@ system_requirements:
   source: DOM-19; R3-Q4
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-160
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5835,7 +5872,8 @@ system_requirements:
   source: DOM-19; R3-Q4
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-160
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5847,7 +5885,8 @@ system_requirements:
   source: DOM-19; R3-Q4
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-161
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5859,7 +5898,8 @@ system_requirements:
   source: DOM-19; R3-Q4
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-161
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5871,19 +5911,23 @@ system_requirements:
   source: DOM-19; R3-Q4
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-162
   quality: —
   release: R3
   status: APPROVED_DELEGATED
 - id: REQ-TRX-006
   capability: CAP-08.05
   pattern: constraint
-  statement: An exercise's terminal outcome (COMPLETED or ABORTED) shall be driven exclusively by its linked simulation's own outcome; no direct human command shall set either state.
-  acceptance_criteria: No command exists whose guard transitions an Exercise directly to COMPLETED or ABORTED; both are reachable only via the SYS: rows of the state × command matrix.
+  statement: An exercise's terminal outcome (COMPLETED or ABORTED) shall be driven exclusively by its linked simulation's
+    own outcome; no direct human command shall set either state.
+  acceptance_criteria: 'No command exists whose guard transitions an Exercise directly to COMPLETED or ABORTED; both are reachable
+    only via the SYS: rows of the state × command matrix.'
   source: DOM-19; R3-Q4
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-162
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5895,7 +5939,8 @@ system_requirements:
   source: DOM-19; R3-Q4
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-161
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5907,7 +5952,8 @@ system_requirements:
   source: DOM-19; R3-Q4
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-162
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5919,7 +5965,8 @@ system_requirements:
   source: DOM-19; R3-Q4
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-162
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5931,7 +5978,8 @@ system_requirements:
   source: DOM-19; R3-Q4
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-162
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5943,7 +5991,8 @@ system_requirements:
   source: DOM-19; R3-Q4
   priority: should
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-162
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5955,7 +6004,8 @@ system_requirements:
   source: DOM-18; R3-Q4
   priority: should
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-163
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5967,7 +6017,8 @@ system_requirements:
   source: DOM-19; R3-Q5; CR-63
   priority: should
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-163
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5979,7 +6030,8 @@ system_requirements:
   source: DOM-18; DOM-19
   priority: must
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-161
   quality: —
   release: R3
   status: APPROVED_DELEGATED
@@ -5991,7 +6043,8 @@ system_requirements:
   source: DOM-19
   priority: should
   verification_method: test
-  use_cases: —
+  use_cases:
+  - UC-162
   quality: —
   release: R3
   status: APPROVED_DELEGATED

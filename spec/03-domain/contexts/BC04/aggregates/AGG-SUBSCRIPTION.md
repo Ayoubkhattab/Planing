@@ -43,7 +43,7 @@ traces:
 
 | من | الأمر | إلى | الشرط (Guard) | الحدث | خطأ فشل الشرط |
 |---|---|---|---|---|---|
-| ∅ (إنشاء) | CMD-SUB-SUBSCRIBE | ACTIVE | target (situation | alert rule) visible to subscriber; channels ⊆ {in_app, push}; one ACTIVE per (user, target) | EVT-SUB-SUBSCRIBED | SUBSCRIPTION_EXISTS |
+| ∅ (إنشاء) | CMD-SUB-SUBSCRIBE | ACTIVE | target (situation \| alert rule) visible to subscriber; channels ⊆ {in_app, push}; one ACTIVE per (user, target) | EVT-SUB-SUBSCRIBED | SUBSCRIPTION_EXISTS |
 | ACTIVE, PAUSED | CMD-SUB-UPDATE-CHANNELS | (بلا تغيير) | channels valid; quiet hours valid (critical severity bypasses quiet hours) | EVT-SUB-CHANNELS-UPDATED | SUBSCRIPTION_INVALID |
 | ACTIVE | CMD-SUB-PAUSE | PAUSED | — | EVT-SUB-PAUSED | — |
 | PAUSED | CMD-SUB-RESUME | ACTIVE | target still visible | EVT-SUB-RESUMED | TARGET_NOT_VISIBLE |

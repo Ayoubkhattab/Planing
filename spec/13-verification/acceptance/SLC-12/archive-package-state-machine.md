@@ -19,7 +19,7 @@ traces:
 
 # Acceptance — Archive Package (AIP)
 
-مولّدة من مصفوفة AGG-ARCHIVE-PACKAGE: 4 انتقالاً مسموحاً، 20 رفضاً.
+مولّدة من مصفوفة AGG-ARCHIVE-PACKAGE: 4 انتقالاً مسموحاً، 20 رفضاً، 6 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Archive Package (AIP) lifecycle (AGG-ARCHIVE-PACKAGE)
@@ -79,4 +79,20 @@ Feature: Archive Package (AIP) lifecycle (AGG-ARCHIVE-PACKAGE)
       | Archive Package (AIP) | DISPOSED | CMD-ARC-REPAIR | ARCHIVE_PACKAGE_INVALID_STATE_TRANSITION |
       | Archive Package (AIP) | DISPOSED | CMD-ARC-MIGRATE-FORMAT | ARCHIVE_PACKAGE_INVALID_STATE_TRANSITION |
       | Archive Package (AIP) | DISPOSED | CMD-ARC-TRANSFER | ARCHIVE_PACKAGE_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Archive Package (AIP) | ∅ | disposition action ARCHIVE for a bucket or record set | INGESTING | EVT-ARC-INGEST-STARTED |
+      | Archive Package (AIP) | INGESTING | package validated | ARCHIVED | EVT-ARC-ARCHIVED |
+      | Archive Package (AIP) | INGESTING | validation failed | INGEST_FAILED | EVT-ARC-INGEST-FAILED |
+      | Archive Package (AIP) | ARCHIVED | integrity check failed | INTEGRITY_FAILED | EVT-ARC-INTEGRITY-FAILED |
+      | Archive Package (AIP) | ARCHIVED | disposition DESTROY executed for the package bucket | DISPOSED | EVT-ARC-DISPOSED |
+      | Archive Package (AIP) | INTEGRITY_FAILED | disposition DESTROY executed for the package bucket | DISPOSED | EVT-ARC-DISPOSED |
 ```

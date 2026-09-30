@@ -24,7 +24,7 @@ traces:
 
 # Acceptance — Incident
 
-مولّدة من مصفوفة AGG-INCIDENT: 21 انتقالاً مسموحاً، 29 رفضاً.
+مولّدة من مصفوفة AGG-INCIDENT: 21 انتقالاً مسموحاً، 29 رفضاً، 2 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Incident lifecycle (AGG-INCIDENT)
@@ -111,4 +111,16 @@ Feature: Incident lifecycle (AGG-INCIDENT)
       | Incident | RESOLVED | CMD-INC-CONTAIN | INCIDENT_INVALID_STATE_TRANSITION |
       | Incident | RESOLVED | CMD-INC-RESOLVE | INCIDENT_INVALID_STATE_TRANSITION |
       | Incident | RESOLVED | CMD-INC-CANCEL | INCIDENT_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Incident | REPORTED | response SLA elapsed without dispatch | REPORTED | EVT-INC-SLA-BREACHED |
+      | Incident | ASSESSED | response SLA elapsed without dispatch | ASSESSED | EVT-INC-SLA-BREACHED |
 ```

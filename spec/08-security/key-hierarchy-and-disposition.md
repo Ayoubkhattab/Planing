@@ -21,6 +21,7 @@ HSM / KMS (per cell)
      │    encrypts: record content of that class whose retention trigger falls in that month
      ├─ Subject DEK       (tenant, subject)     ← erasure unit
      │    encrypts: personal_data attributes about that subject (platform person, or information entity of type person)
+     │              — wherever stored, incl. BC05 qualification records of that person (CR-69)
      └─ Hold DEK          (tenant, hold)         ← re-wrap target for held records inside a bucket being destroyed
 ```
 - البيانات الشخصية مشفرة **مرتين**: بمفتاح الموضوع (للمحو) ومفتاح فئة-الحاوية (للإتلاف). إتلاف أيهما يجعلها غير مقروءة.

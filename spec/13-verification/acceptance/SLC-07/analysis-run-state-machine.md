@@ -20,7 +20,7 @@ traces:
 
 # Acceptance — Analysis Run
 
-مولّدة من مصفوفة AGG-ANALYSIS-RUN: 2 انتقالاً مسموحاً، 13 رفضاً.
+مولّدة من مصفوفة AGG-ANALYSIS-RUN: 2 انتقالاً مسموحاً، 13 رفضاً، 3 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Analysis Run lifecycle (AGG-ANALYSIS-RUN)
@@ -73,4 +73,17 @@ Feature: Analysis Run lifecycle (AGG-ANALYSIS-RUN)
       | Analysis Run | CANCELLED | CMD-RUN-SUBMIT | ANALYSIS_RUN_INVALID_STATE_TRANSITION |
       | Analysis Run | CANCELLED | CMD-RUN-REPRODUCE | ANALYSIS_RUN_INVALID_STATE_TRANSITION |
       | Analysis Run | CANCELLED | CMD-RUN-CANCEL | ANALYSIS_RUN_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Analysis Run | QUEUED | worker lease acquired | RUNNING | EVT-RUN-STARTED |
+      | Analysis Run | RUNNING | completed | SUCCEEDED | EVT-RUN-SUCCEEDED |
+      | Analysis Run | RUNNING | error or timeout | FAILED | EVT-RUN-FAILED |
 ```

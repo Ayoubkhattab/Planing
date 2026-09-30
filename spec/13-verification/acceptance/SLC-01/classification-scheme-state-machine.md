@@ -13,12 +13,13 @@ traces:
   - SL-05
   - AGG-CLASSIFICATION-SCHEME
   - REQ-GOV-001
+  - REQ-GOV-004
   - REQ-GOV-009
 ---
 
 # Acceptance — Classification Scheme Version
 
-مولّدة من مصفوفة AGG-CLASSIFICATION-SCHEME: 3 انتقالاً مسموحاً، 13 رفضاً.
+مولّدة من مصفوفة AGG-CLASSIFICATION-SCHEME: 3 انتقالاً مسموحاً، 13 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: Classification Scheme Version lifecycle (AGG-CLASSIFICATION-SCHEME)
@@ -71,4 +72,15 @@ Feature: Classification Scheme Version lifecycle (AGG-CLASSIFICATION-SCHEME)
       | Classification Scheme Version | DISCARDED | CMD-CLS-EDIT | CLASSIFICATION_SCHEME_INVALID_STATE_TRANSITION |
       | Classification Scheme Version | DISCARDED | CMD-CLS-ACTIVATE | CLASSIFICATION_SCHEME_INVALID_STATE_TRANSITION |
       | Classification Scheme Version | DISCARDED | CMD-CLS-DISCARD | CLASSIFICATION_SCHEME_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | Classification Scheme Version | ACTIVE | successor activated | SUPERSEDED | EVT-CLS-SUPERSEDED |
 ```

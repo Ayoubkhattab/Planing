@@ -17,7 +17,7 @@ traces:
 
 # Acceptance — CAP Message (outbound)
 
-مولّدة من مصفوفة AGG-CAP-MESSAGE: 4 انتقالاً مسموحاً، 12 رفضاً.
+مولّدة من مصفوفة AGG-CAP-MESSAGE: 4 انتقالاً مسموحاً، 12 رفضاً، 1 انتقالاً نظامياً (SYS).
 
 ```gherkin
 Feature: CAP Message (outbound) lifecycle (AGG-CAP-MESSAGE)
@@ -70,4 +70,15 @@ Feature: CAP Message (outbound) lifecycle (AGG-CAP-MESSAGE)
       | CAP Message (outbound) | CANCELLED | CMD-CAP-RELEASE | CAP_MESSAGE_INVALID_STATE_TRANSITION |
       | CAP Message (outbound) | CANCELLED | CMD-CAP-RETRY | CAP_MESSAGE_INVALID_STATE_TRANSITION |
       | CAP Message (outbound) | CANCELLED | CMD-CAP-CANCEL | CAP_MESSAGE_INVALID_STATE_TRANSITION |
+
+  Scenario Outline: system-triggered transition
+    Given a <aggregate> in state <from>
+    When the system trigger <trigger> occurs under a workload identity
+    Then the state becomes <to>
+    And exactly one <event> is written to the outbox
+    And the aggregate invariants hold exactly as for actor commands
+
+    Examples:
+      | aggregate | from | trigger | to | event |
+      | CAP Message (outbound) | PREPARED | delivery failed after retries | FAILED | EVT-CAP-FAILED |
 ```

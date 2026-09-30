@@ -64,6 +64,8 @@ notes: >
 
 **قصة CR-65 / إغلاق CONFLICT-01 نهائيًا [Explicit]:** الفحص الأخير المتبقي من CR-64's residual_note كان: هل يُفترض أن يُعلن `AGG-CLASSIFICATION-SCHEME.md` صراحة `satisfies: REQ-GOV-004`؟ التحقق المباشر من traces الملف يؤكد أن الإجابة نعم وأنها **مُطبَّقة فعليًا في المصدر** — `INV-CLS-04` ("تفعيل المخطط يزيد security_version لكل الفاعلين في المستأجر") هو آلية إنفاذ REQ-GOV-004 على مستوى المخطط بأكمله. هذا يُغلِق سلسلة ثلاث نقاط إنفاذ موثَّقة الآن جميعًا صراحة: (أ) نمط `CMD-*-RECLASSIFY` لكل كائن على حدة (BC02 وBC03)، (ب) `AGG-CLEARANCE` (BC01، CR-64، UC-089) لجانب تصريح المستخدم، (ج) `AGG-CLASSIFICATION-SCHEME` (BC08، CR-65) لجانب المخطط بأكمله. انظر §19 للتفصيل الكامل المرجعي.
 
+**Features (طبقة بين Capability وUse Case):** غير موجودة في المصادر — لا يوجد أي كيان `FEAT-*` في `spec/`، وملف `01-business/capabilities.md` ينتقل من Capability مباشرة إلى Use Case. لذلك تبدأ سلسلة هذا الـBC من CAP ثم UC. **[Missing في المصدر]** (السلسلة الكاملة لكل Aggregate في [02-relationship-index.md §21](02-relationship-index.md)).
+
 ## 3. Actors
 
 | Actor | الدور في BC08 | Evidence |

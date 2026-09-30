@@ -79,6 +79,8 @@ notes: >
 1. **BRL-003 مُطبَّقة حرفيًا مرتين في نفس الـBC:** مرة على مستوى الأفراد (AGG-DECISION، INV-DEC-02: لا قرار بلا AuthorityCheck ناجح ولقطة سلطة محفوظة) ومرة على مستوى المنظمات (AGG-COORDINATION-CASE، INV-CRD-03: لا مسؤولية "منجزة" تحتاج سلطة منظمة أخرى بلا قرار مسجَّل لتلك السلطة). نفس القاعدة الجوهرية بتطبيقين مستقلين على وحدتين مختلفتين من التحليل (فرد / منظمة).
 2. **تصحيح ملكية مُطبَّق فعليًا [مرجع CONFLICT-02، الصف الأول]:** أثناء دراسة BC04 هذه اكتُشِف أن `THR-S06-02` (تسريب محتوى حساس في شاشة القفل) و`THR-S06-07` (استمرار تسليم بعد إلغاء الاشتراك) — وكلاهما يعيش في ملف الشريحة `threat-model-slc06.md` المشترك مع BC03 (Situation/Alert) — يخصان فعليًا **BC04** (AGG-NOTIFICATION وAGG-SUBSCRIPTION) لأن `bounded_context:` في الـfront-matter الفعلي لكلا الـaggregate يقول BC04 لا BC03. التصحيح طُبِّق رجعيًا ومباشرة في `bc03-situational-awareness.md` (مؤكَّد بالقراءة هذه الجولة، §12 و§19 هناك)، ومُسجَّل رسميًا في `05-conflicts.md#CONFLICT-02` كالحالة الأولى من ثلاث.
 
+**Features (طبقة بين Capability وUse Case):** غير موجودة في المصادر — لا يوجد أي كيان `FEAT-*` في `spec/`، وملف `01-business/capabilities.md` ينتقل من Capability مباشرة إلى Use Case. لذلك تبدأ سلسلة هذا الـBC من CAP ثم UC. **[Missing في المصدر]** (السلسلة الكاملة لكل Aggregate في [02-relationship-index.md §21](02-relationship-index.md)).
+
 ## 3. Actors
 
 | Actor | الدور في BC04 | Evidence |

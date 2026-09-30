@@ -61,6 +61,8 @@ notes: >
 
 **Out of Scope:** تنفيذ الكتابة الفعلية للبيانات المستوعَبة (BC02 — AGG-CLAIM/OBSERVATION/ENTITY، إلخ)؛ تعريف مخطط التصنيف (BC08)؛ تحرير/اعتماد القرار الناتج عن اقتراح AI بعد قبوله (BC04/BC02 عبر أوامر المالك الفعلية، AGG-AI-RESULT يستدعيها فقط)؛ إدارة الجهاز الميداني نفسه (AGG-DEVICE **BC01**، وليس BC07، رغم أن AGG-SYNC-SESSION وAGG-PRELOAD-PACKAGE يعتمدان عليه مباشرة)؛ رسائل التنبيه CAP (AGG-CAP-MESSAGE **BC03**، رغم عيشها في نفس ملف `threat-model-slc16.md`/`policies-slc16.md`)؛ اقتراحات مزامنة HR (AGG-HR-SYNC-PROPOSAL **BC01**، رغم عيشها في نفس SLC-16 أيضًا).
 
+**Features (طبقة بين Capability وUse Case):** غير موجودة في المصادر — لا يوجد أي كيان `FEAT-*` في `spec/`، وملف `01-business/capabilities.md` ينتقل من Capability مباشرة إلى Use Case. لذلك تبدأ سلسلة هذا الـBC من CAP ثم UC. **[Missing في المصدر]** (السلسلة الكاملة لكل Aggregate في [02-relationship-index.md §21](02-relationship-index.md)).
+
 ## 3. Actors
 
 | Actor | الدور في BC07 | Evidence |

@@ -62,6 +62,8 @@ notes: >
 
 **نمط الإفصاح الصفري المتكرر للمرة الرابعة [Explicit، مؤكَّد]:** `INV-REC-03` ("العناصر المخفية تُحذف لا تُعلَّم") وَ`INV-DST-01` (المستلم غير المؤهَّل لا يستلم شيئًا إطلاقًا؛ `COMPLETED_WITH_EXCLUSIONS` لا يُظهر للمستلمين المستبعَدين أي أثر) وَ`INV-PRD-02` (المحتوى فوق تصنيف المنتج يُستبعَد دون أي علامة أو عداد) يكررون بالضبط نفس نمط `INV-ALR-02` (BC03) وPB-01 (BC01): **عدم الكشف عن وجود شيء محجوب هو قاعدة ثابتة عبر أكثر من 4 مواضع مختلفة في BC06 وحده** الآن (Product، Distribution، Reconstruction، وأيضًا PB الأساسي) — مبدأ تصميمي مركزي في كامل المنصة، لا خاصية معزولة بميزة واحدة. اختبار `TST-SLC12-INVARIANTS` (`Scenario: Content above the product label is excluded silently`) يؤكد هذا آليًا.
 
+**Features (طبقة بين Capability وUse Case):** غير موجودة في المصادر — لا يوجد أي كيان `FEAT-*` في `spec/`، وملف `01-business/capabilities.md` ينتقل من Capability مباشرة إلى Use Case. لذلك تبدأ سلسلة هذا الـBC من CAP ثم UC. **[Missing في المصدر]** (السلسلة الكاملة لكل Aggregate في [02-relationship-index.md §21](02-relationship-index.md)).
+
 ## 3. Actors
 
 | Actor | الدور في BC06 | Evidence |

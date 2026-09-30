@@ -57,6 +57,8 @@ notes: >
 1. **نمط RECLASSIFY الموحَّد.** سبعة من أصل 11 aggregate في مجموعة SLC-02 (Entity, Relationship, RealWorldEvent, Claim, Evidence, Observation, Source) تحمل أمر `CMD-*-RECLASSIFY` بنفس الحارس الحرفي: *"authority per tenant policy (REQ-GOV-004); new version; bumps object security_version"*. هذا يعني أن REQ-GOV-004 ليست مسؤولية aggregate واحد (لا BC08/Scheme، ولا BC01/Clearance فقط) بل نمط أمر متكرر عبر عشرات الـaggregates في كل الـBCs. هذا الاكتشاف — المُسجَّل في الجولة السابقة — أصبح جزءًا رسميًا من حل **CONFLICT-01** (انظر §19): REQ-GOV-004 متطلب واحد بثلاث آليات إنفاذ متكاملة (كائن فردي عبر RECLASSIFY، مخطط كامل عبر BC08، تصريح مستخدم عبر BC01/AGG-CLEARANCE)، وليس تعارضًا حقيقيًا.
 2. **الشريحة (Slice) ≠ السياق المحدود (Bounded Context).** ملفات `commands/events/queries/policies/threat-model-slcNN.md` مُنظَّمة حسب شريحة التطوير لا حسب BC، وقد تمتد شريحة واحدة عبر أكثر من BC. حالتان مؤكَّدتان داخل نطاق دراسة BC02: (أ) `AGG-ADAPTER` وسياساته/أوامره/أحداثه تظهر في ملفات باسم "slc02" لكنها تعيش فعليًا في `03-domain/contexts/**BC07**/`؛ (ب) `AGG-COORDINATION-CASE` (البند أعلاه) يعيش في نفس شريحة SLC-15 مع BC02 لكنه ملك **BC04**. هذا الاكتشاف أصبح جزءًا من **CONFLICT-02** المُغلَق مركزيًا (انظر §19)، مع ملاحظة أن الحالة (ب) لم تُدرَج بعد صراحة في جدول CONFLICT-02 المركزي — علَم يُرفَع للجلسة المنسِّقة (انظر ملخص التسليم).
 
+**Features (طبقة بين Capability وUse Case):** غير موجودة في المصادر — لا يوجد أي كيان `FEAT-*` في `spec/`، وملف `01-business/capabilities.md` ينتقل من Capability مباشرة إلى Use Case. لذلك تبدأ سلسلة هذا الـBC من CAP ثم UC. **[Missing في المصدر]** (السلسلة الكاملة لكل Aggregate في [02-relationship-index.md §21](02-relationship-index.md)).
+
 ## 3. Actors
 
 | Actor | الدور في BC02 | Evidence |

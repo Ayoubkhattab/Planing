@@ -110,7 +110,7 @@ flowchart LR
 
 ## 3. مسار الأمر (Command Pipeline)
 
-كل أمر، من أي مدخل، يمر بنفس الخط بنفس الترتيب. هذا ما يجعل الضمانات (نطاق المستأجر، التخويل قبل الاسترجاع، المعاملة الواحدة، عدم التكرار، التدقيق) خاصية بنيوية لا شيئًا يتذكره كل مطوّر. التخويل على خطوتين لأن كثيرًا من السياسات تحتاج سمات المورد (مثلًا `POL-TASK-COMPLETE` يحتاج حالة المهمة، و`POL-TASK-APPROVE-SOD` يحتاج المكلَّف بها — `authorization-model.md` §4)، بينما FIT-03 يمنع أي وصول للبيانات قبل قرار سياسة.
+كل أمر، من أي مدخل، يمر بنفس الخط بنفس الترتيب. هذا ما يجعل الضمانات (نطاق المستأجر، التخويل قبل الاسترجاع، المعاملة الواحدة، عدم التكرار، التدقيق) خاصية بنيوية لا شيئًا يتذكره كل مطوّر. فحص الإصدار (`If-Match`) يأتي **بعد** القرار الكامل عمدًا، حتى لا يعرف من لا يرى المورد أنه موجود أو ما إصداره (ADR-P06 §5). التخويل على خطوتين لأن كثيرًا من السياسات تحتاج سمات المورد (مثلًا `POL-TASK-COMPLETE` يحتاج حالة المهمة، و`POL-TASK-APPROVE-SOD` يحتاج المكلَّف بها — `authorization-model.md` §4)، بينما FIT-03 يمنع أي وصول للبيانات قبل قرار سياسة.
 
 ```mermaid
 sequenceDiagram
@@ -140,13 +140,17 @@ sequenceDiagram
     else same key, different payload
       P-->>H: IDEMPOTENCY_KEY_REUSED (422)
     else new key
-      P->>R: load(aggregate id, expected version)
-      R-->>P: aggregate at version v | VERSION_CONFLICT
+      P->>R: load(aggregate id) — current state, no version assertion yet
+      R-->>P: aggregate at version v | not found
       P->>Z: full check with resource attributes (labels, owner org, state, participants)
       Z->>D: DecisionRequest (resource as PIP input)
       D-->>Z: ALLOW + obligations | DENY | REQUIRE_APPROVAL
       Z-->>P: decision
-      alt ALLOW
+      alt DENY, invisible or not found
+        P-->>H: same not-found shape, or SEGREGATION_OF_DUTIES if visible (ADR-P06 §5)
+      else ALLOW
+        P->>P: satisfy pre-execution obligations (MFA step-up, approval) or reject
+        P->>P: compare If-Match with v, else VERSION_CONFLICT (409)
         P->>A: execute(command, guard inputs)
         A-->>P: new state + domain event(s) | domain error
         alt domain error
@@ -155,10 +159,8 @@ sequenceDiagram
           P->>R: commit(state, history, outbox event, audit record, idempotency record)
           Note over R: one database transaction (FIT-04)
           R-->>P: committed at version v+1
-          P-->>H: ResourceRef (id, version v+1) after obligations
+          P-->>H: ResourceRef (id, version v+1) after post-execution obligations
         end
-      else DENY
-        P-->>H: AUTHZ_DENIED or SEGREGATION_OF_DUTIES
       end
     end
   end
@@ -167,7 +169,7 @@ sequenceDiagram
 **حالات خاصة ضمن نفس الخط:**
 - **إنشاء مرتبط في نفس وحدة العمل** (نمط CR-62، طلب إمداد مع تخصيصه في BC05): مسموح **فقط** لـAggregates في نفس السياق؛ عبر السياقات يكون عبر حدث.
 - **الساغا الوحيدة** هي تهيئة المستأجر (AGG-TENANT): خطوات idempotent وقابلة للتعويض يديرها BC01، كل خطوة أمر مستقل يمر بنفس الخط.
-- **نتائج PDP غير ALLOW/DENY:** الالتزامات (تدقيق، علامة مائية، MFA) تُنفَّذ في الخط قبل الإرجاع. `REQUIRE_APPROVAL` و`CONDITIONAL` لأوامر تغيّر الحالة لا يوجد لهما مسار موحّد في المواصفات حاليًا **[Needs Review]**؛ يُثبَّت في `17-security-design.md` (المرحلة 4). في الاستعلامات: `REDACT` و`AGGREGATE` يطبّقهما معالج الاستعلام على النتائج (§4.1).
+- **الالتزامات:** ما يجب تحقيقه **قبل** التنفيذ (MFA، الموافقة) يُفرض قبل تنفيذ الانتقال، وإلا يُرفض الأمر؛ وما يُطبَّق على المخرج (تفاصيل التدقيق، العلامة المائية) يُطبَّق قبل الإرجاع. `REQUIRE_APPROVAL` و`CONDITIONAL` لأوامر تغيّر الحالة لا يوجد لهما مسار موحّد في المواصفات حاليًا **[Needs Review]**؛ يُثبَّت في `17-security-design.md` (المرحلة 4). في الاستعلامات: `REDACT` و`AGGREGATE` يطبّقهما معالج الاستعلام على النتائج (§4.1).
 
 ## 4. مسار الاستعلام، والحدث الوارد، والمحفِّزات النظامية
 
@@ -308,8 +310,8 @@ flowchart TB
 - **المحوّلات الخارجية (DU-11، ACL):** المحوّل يترجم نموذج النظام الخارجي ثم يستدعي أوامر BC02 عبر عقدها كأي عميل؛ لا يكتب في أي مخزن غير schema `integration` الخاص بـBC07 (context-map قاعدة 3).
 - **الذكاء الاصطناعي (DU-16، R2):** الاسترجاع عبر منفذ Read Model بتخويل المستخدم فقط (PB-12). **لا أدوات «كتابة» في R2**: أدوات «الاقتراح» تنشئ AI Results في BC07 فقط، ويقرر الإنسان ثم ينفّذ عبر أوامر السياق المالك بصلاحياته (`grounded-ai-spec.md` §6، AIL ≤ 3).
 - **بناة الإسقاطات (DU-09):** نمط «notify + fetch»: الحدث يشير فقط، ثم يُجلب أحدث محتوى من OHS السياق المالك بهوية عبء عمل الاكتشاف، ثم تُكتب الوثيقة بتسمياتها الأمنية؛ إعادة البناء الكاملة عبر واجهات تصدير بالمؤشر من كل مالك (`discovery-architecture.md`، REQ-SRC-004، UC-078).
-- **البلاطات (DU-12، بلا سياق):** TD-10 يولّد البلاطات من PostGIS مباشرة. للحفاظ على FIT-01 يُنشر مصدر كل طبقة من السياق المالك لها كدالة أو view للقراءة فقط داخل schema ذلك السياق، مع صلاحية قراءة صريحة لهوية خدمة البلاطات، ولا يقرأ DU-12 جداول أي سياق مباشرة **[Derived]**. قائمة الطبقات ومالكوها تُثبَّت في `16-database-schema.md` (المرحلة 2).
-- **إعادة البناء التاريخي (DU-15، R2):** `products-knowledge-archive-spec.md` يعيد بناء حالة Aggregate من `*_history`. عبر السياقات يجري ذلك باستعلام تاريخ منشور من السياق المالك (as-of)، لا بقراءة جداوله (FIT-01) **[Derived]**.
+- **البلاطات (DU-12، بلا سياق):** ميزات البلاطات **إسقاط** مثل البحث والرسم (ADR-P06 الخطوة 1: «tile feature»، وحد الثقة TB-04 في `trust-boundaries.md`). بناة الإسقاطات في DU-09 يكتبون إسقاط ميزات البلاطات بتسمياته الأمنية في مخزن إسقاطات BC07 داخل PostGIS بنمط notify + fetch، وDU-12 يولّد البلاطات منه (TD-10) بذاكرة مفتاحها نطاق الصلاحية (ADR-P06 الخطوة 6). هكذا لا يقرأ DU-12 أي schema لسياق مالك، ولا حاجة لاستثناء من FIT-01 **[Derived من ADR-P06 وTB-04]**. تفاصيل جداول الإسقاط في `16-database-schema.md` (المرحلة 2).
+- **إعادة البناء التاريخي (DU-15، R2):** `products-knowledge-archive-spec.md` يعيد بناء حالة Aggregate من `*_history`. عبر السياقات لا يجوز ذلك بقراءة جداول المالك (FIT-01)، ويلزم استعلام تاريخ منشور من كل سياق مالك. **[Missing]:** الاستعلام الوحيد المنشور من هذا النوع اليوم هو `QRY-TASK-HISTORY`؛ بقية الـAggregates التي تحتاجها إعادة البناء بلا استعلام تاريخ. تُسجَّل كفجوة في `14-api-design.md` (المرحلة 2).
 - **الادعاءات ثنائية الزمن (BC02):** `recorded_from/recorded_to` يحددها منفذ Clock في الخادم وحده؛ Domain يستقبل الزمن كمدخل ولا يقرأ الساعة.
 
 ## 9. الاختبار حسب الحلقة (ملخص)

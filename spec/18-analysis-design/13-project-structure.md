@@ -110,7 +110,7 @@ services/du-08-operations/
 │   │   ├── kafka/                     # مستهلكو الأحداث من BC02/BC03/BC05
 │   │   └── scheduler/                 # عمّال SYS: للمهام والخطط
 │   └── outbound/
-│       ├── postgres/                  # schema operations فقط
+│       ├── postgres/                  # schema operations (+ readiness في R1 فقط)
 │       ├── opa/                       # PEP
 │       └── clients/                   # BC01 AuthorityCheck، BC05 EligibilityCheck
 ├── config/                            # حدود المعدل، المهل، أحجام المجمّعات (لا أسرار)
@@ -132,7 +132,7 @@ services/du-08-operations/
 | du-09-discovery | bc07 | HTTP (بحث/رسم)، Kafka (بناة الإسقاطات) | OpenSearch، مخزن الإسقاطات في PostgreSQL (slc-05) | R1 |
 | du-10-field-sync | bc07 | بوابة المزامنة | PostgreSQL `field`، أوامر السياقات المالكة، S3 (الحزم) | R1 |
 | du-11-adapters | bc07 | موصلات الأنظمة الخارجية (ACL) | PostgreSQL `integration`، أوامر BC02 عبر العقد | R1 (+R2) |
-| du-12-tiles | — | OGC Tiles/Features | دوال/views طبقات منشورة من السياقات المالكة في PostGIS، قراءة فقط بنطاق الصلاحية (11 §8) | R1 |
+| du-12-tiles | — | OGC Tiles/Features | إسقاط ميزات البلاطات في مخزن إسقاطات BC07 (PostGIS)، S3 للخرائط الأساس (11 §8) | R1 |
 | du-13-analysis-jobs | — (صور `analysis-methods/`) | Kueue jobs | BC03 عبر العقد | R1 |
 | du-14-readiness | bc05 (كاملًا، ينتقل من DU-08) | HTTP، Kafka، scheduler | PostgreSQL `readiness` | R2 |
 | du-15-knowledge | bc06 | HTTP، Kafka، scheduler | PostgreSQL `knowledge`، S3 | R2 |
@@ -147,8 +147,8 @@ services/du-08-operations/
 | `AGG-<NAME>` | مجلد Domain بالاسم بحروف صغيرة وشرطات | `AGG-DECISION-REQUEST` → `domain/decision-request/` |
 | `CMD-<PFX>-<VERB>` | المعرّف بلا `CMD-`، بحروف صغيرة | `CMD-TASK-ADD-RESULT-ITEM` → `commands/task-add-result-item/` |
 | `QRY-<PFX>-<NAME>` | مجلد استعلام بنفس القاعدة | `QRY-AUT-CHECK` → `queries/aut-check/` |
-| حدث مستهلَك `EVT-<...>` | `processes/on-` + المعرّف بلا `EVT-` | `EVT-QUAL-RECORDED` → `processes/on-qual-recorded/` |
-| مُحفِّز `SYS:<trigger>` | `processes/<aggregate>/sys-` + نص المحفِّز بحروف صغيرة وشرطات (المحفِّز نفسه يتكرر في أكثر من Aggregate) | `SYS:valid_to reached` في AGG-CLEARANCE → `processes/clearance/sys-valid-to-reached/` |
+| حدث مستهلَك لا ينقل حالة Aggregate في السياق (إسقاط، إشعار، تقرير) | `processes/on-` + المعرّف بلا `EVT-` | `EVT-QUAL-RECORDED` → `processes/on-qual-recorded/` |
+| مُحفِّز `SYS:<trigger>` بكل أنواعه، ومنها المدفوع بحدث | `processes/<aggregate>/sys-` + نص المحفِّز بحروف صغيرة وشرطات؛ المحوّل الداخل يوجّه الحدث المسبِّب إليه مباشرة، بلا مجلد `on-` منفصل | `SYS:valid_to reached` في AGG-CLEARANCE → `processes/clearance/sys-valid-to-reached/`؛ `SYS:linked allocation committed` في AGG-LOGISTICS-REQUEST → `processes/logistics-request/sys-linked-allocation-committed/` |
 | رمز خطأ | تعداد مولَّد في `contracts/errors/` | `TASK_INVALID_STATE_TRANSITION` |
 | سياسة `POL-<...>` | لا كود؛ اسم الإجراء في DecisionRequest = رمز الأمر | `action = CMD-TASK-APPROVE` |
 | وحدة نشر `DU-NN` | `services/du-NN-<name>/` | `DU-08` → `services/du-08-operations/` |
@@ -174,11 +174,11 @@ services/du-08-operations/
 - أي تعديل في `shared-kernel/` أو `platform/` يحتاج مراجعة مالك المعمارية، لأنه يمس كل السياقات.
 - أي تعديل في `contracts/` يأتي من تعديل في `spec/05-contracts` مرتبط بـCR أو ADR.
 
-## 9. ممنوعات بنيوية (تُفحص آليًا — FIT-20)
+## 9. ممنوعات بنيوية (تُفحص آليًا — FIT-20 ما لم يُذكر غيره)
 
 1. `contexts/bcA/*` يستورد `contexts/bcB/*`.
 2. `services/du-X/*` يستورد `services/du-Y/*`.
-3. `contexts/*/domain/*` يستورد أي شيء خارج `shared-kernel/`.
+3. `contexts/*/domain/*` يستورد أي شيء خارج `shared-kernel/` — يفحصه FIT-10.
 4. `platform/*` يحتوي نوع أعمال من أي سياق.
-5. ملف في `contracts/` لا يطابق مخرجات المولِّد.
+5. ملف في `contracts/` لا يطابق مخرجات المولِّد (ضمن FIT-20).
 6. ترحيل في `deploy/migrations/<schema>/` يلمس schema أخرى.

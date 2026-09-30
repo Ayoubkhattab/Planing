@@ -58,11 +58,11 @@ The layout must let one bounded context's model be reused by several units witho
 | `contracts/` | generated from `spec/05-contracts` (OpenAPI, AsyncAPI, error catalogs); server stubs and clients | nothing |
 | `shared-kernel/` | pure value types shared by all contexts: ULID/URN (ADR-P13), bitemporal intervals (ADR-P01), LocalizedName (ADR-P15), security labels, error envelope | nothing |
 | `contexts/bcNN-<name>/` | one package per bounded context: `domain/`, `application/`, `ports/` (ADR-P17) | shared-kernel, contracts of *other* contexts only |
-| `platform/` | reusable adapter mechanisms: unit of work + outbox + audit outbox + inbox + idempotency record, PEP client, telemetry, lease-based scheduler — no context ports or business types | shared-kernel, contracts |
+| `platform/` | reusable adapter mechanisms: unit of work + outbox + audit outbox + inbox + idempotency record, PEP client, lease-based scheduler, encryption (subject keys), telemetry — no context ports or business types | shared-kernel, contracts |
 | `services/du-NN-<name>/` | one deployable per deployment unit: composition root, inbound and outbound adapters, configuration | contexts it runs, platform, contracts |
 | `deploy/` | cell manifests, Zarf bundle definition, forward-only migrations per schema | services |
 | `clients/` | web and field-mobile applications (`12-solution/ui-architecture.md`) | contracts |
-| `analysis-methods/` | Python analysis and raster/geo methods packaged as DU-13 job images (TD-15) | shared-kernel, contracts |
+| `analysis-methods/` | Python analysis and raster/geo methods packaged as DU-13 job images (TD-15) | contracts only (Python types generated from them; the TypeScript shared-kernel is not shared across languages) |
 | `tooling/` | contract generator from `spec/05-contracts`, architecture checks (FIT-10, FIT-20) | — |
 
 **Rules:**

@@ -77,17 +77,19 @@ The ratified design fixes *what* the platform is — 8 bounded contexts, 89 aggr
    1. establish the security context and set the **tenant scope** for the unit of work (row-level security session setting — ADR-P04, FIT-02);
    2. **coarse authorization** before any data access: tenant match, action on resource type within the caller's scope (FIT-03, fail-closed — FIT-16);
    3. idempotency check (`Idempotency-Key`);
-   4. load the aggregate at the expected version (`If-Match`);
-   5. **full authorization** with the loaded resource's attributes — labels, owning organisation, state, participants — as policy information (PIP); segregation-of-duties rules evaluated here; nothing about the resource is returned before this decision;
-   6. execute the transition in the domain;
-   7. persist state + history + outbox event + audit record + idempotency record in **one** unit of work (FIT-04);
-   8. apply decision obligations (audit, watermark, MFA) and return the `ResourceRef`.
+   4. load the aggregate's current state (no version assertion yet);
+   5. **full authorization** with the loaded resource's attributes — labels, owning organisation, state, participants — as policy information (PIP); segregation-of-duties rules evaluated here; a caller who may not see the resource gets the same not-found shape as for a missing one, and nothing about the resource — not even its existence or version — is returned before this decision (ADR-P06 §5);
+   6. satisfy **pre-execution obligations** (MFA step-up, approval): if they are not met, the command is rejected and nothing executes;
+   7. compare the expected version (`If-Match`) → `VERSION_CONFLICT` only now;
+   8. execute the transition in the domain;
+   9. persist state + history + outbox event + audit record + idempotency record in **one** unit of work (FIT-04);
+   10. apply **post-execution obligations** (audit detail, watermark on returned content) and return the `ResourceRef`.
 3. Queries never load aggregates. They read declared read models or projections, with the PDP's `allowed_scope` applied before scoring, counting or paging, and re-check returned items as amended by CR-47: subjects against the BC01 security-version store, objects through a batched `LabelCheck` per page (ADR-P06).
 4. Another context is reached only through its published contract: synchronous OHS client port, or events through the inbox. Never its tables (FIT-01).
 5. `SYS:` transitions — time-driven, condition-driven, event-driven or worker-driven — enter through the same pipeline under a workload identity, with the same invariants as actor commands.
 
 ## Rationale
-Drivers 1, 2, 3 and 5 are only fully met by Option 1; driver 4 is met by keeping the rings identical across all 16 units and by organising the application layer by use case, which removes the "service class" sprawl that makes hexagonal code feel heavy. The specification is already written in the hexagon's vocabulary (aggregates, commands, policies, events, projections), so the mapping adds no new concepts. The two-step authorization (rule 2.2 and 2.5) is required because many policies need resource attributes — e.g. `POL-TASK-COMPLETE` needs the task's state and `POL-TASK-APPROVE-SOD` its assignee (`08-security/authorization-model.md` §4) — while FIT-03 forbids data access without a prior policy decision.
+Drivers 1, 2, 3 and 5 are only fully met by Option 1; driver 4 is met by keeping the rings identical across all 16 units and by organising the application layer by use case, which removes the "service class" sprawl that makes hexagonal code feel heavy. The specification is already written in the hexagon's vocabulary (aggregates, commands, policies, events, projections), so the mapping adds no new concepts. The two-step authorization (rules 2.2 and 2.5), with the version check deliberately after the full decision (rule 2.7), is required because many policies need resource attributes — e.g. `POL-TASK-COMPLETE` needs the task's state and `POL-TASK-APPROVE-SOD` its assignee (`08-security/authorization-model.md` §4) — while FIT-03 forbids data access without a prior policy decision.
 
 ## Consequences
 

@@ -192,7 +192,7 @@ flowchart TB
   JOB -->|"run progress (SYS: transitions)"| INT
   JOB --> S3
   JOB --> REG
-  TIL -->|"published layer views"| PG
+  TIL -->|"tile-feature projection (BC07)"| PG
   TIL --> S3
   INF --> S3
   ING --> S3

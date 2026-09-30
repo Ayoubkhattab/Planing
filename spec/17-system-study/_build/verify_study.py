@@ -10,6 +10,7 @@ Checks:
   V5 embedded spec tooling regenerates every generated file byte-for-byte (round trip)
   V6 every front-matter and embedded YAML block in spec/ parses
   V7 every command names exactly one policy, and that policy is defined in 08-security/policies-*.md (SL-02)
+  V8 18-analysis-design: generated sections are current, every spec element is covered exactly once, links resolve
 """
 import re
 import shutil
@@ -26,6 +27,7 @@ CTX = SPEC / "03-domain" / "contexts"
 ACC = SPEC / "13-verification" / "acceptance"
 CONTRACTS = SPEC / "05-contracts"
 OUT = SPEC / "17-system-study" / "06-verification.md"
+AD = SPEC / "18-analysis-design"
 
 
 def front_matter(text):
@@ -347,6 +349,66 @@ def v6():
                 bad.append((path.relative_to(SPEC).as_posix(), kind, str(e).splitlines()[0]))
     return n, bad
 
+def v8(sys_trans):
+    """Analysis-design coverage. Freshness re-runs the generator and restores the files it changed."""
+    sys.path.insert(0, str(Path(__file__).parent))
+    import build_analysis_design as bad
+    aggs, ops = bad.load_aggregates(), bad.load_openapi()
+    cmds, qrys = bad.load_catalog("commands", "الأمر"), bad.load_catalog("queries", "الاستعلام")
+    evts = bad.load_catalog("events", "الحدث")
+    files = sorted(AD.rglob("*.md"))
+    before = {f: f.read_text(encoding="utf-8") for f in files}
+    r = subprocess.run([sys.executable, str(Path(__file__).parent / "build_analysis_design.py")], capture_output=True, text=True)
+    stale = [f.relative_to(SPEC).as_posix() for f in files if f.read_text(encoding="utf-8") != before[f]]
+    stale += [f.relative_to(SPEC).as_posix() for f in sorted(AD.rglob("*.md")) if f not in before]
+    for f, text in before.items():
+        f.write_text(text, encoding="utf-8")
+    if r.returncode:
+        stale.append("generator failed: " + (r.stderr.strip().splitlines() or ["?"])[-1])
+    us = "\n".join(p.read_text(encoding="utf-8") for p in sorted((AD / "05-user-stories").glob("us-bc*.md")))
+    heads = re.findall(r"^#### (US-BC0\d-[A-Z0-9-]+)", us, re.M)
+    gaps = []
+    counts = defaultdict(int)
+    for h in heads:
+        counts[h] += 1
+    for cid, c in cmds.items():
+        n = counts.get(f"US-{c['_bc']}-{cid[4:]}", 0)
+        if n != 1:
+            gaps.append(("05", cid, f"{n} قصة"))
+    for qid, q in qrys.items():
+        n = counts.get(f"US-{q['_bc']}-Q-{qid[4:]}", 0)
+        if n != 1:
+            gaps.append(("05", qid, f"{n} قصة"))
+    sys_stories = sum(1 for h in heads if "-S-" in h)
+    sys_rules = sum(1 for a in aggs.values() for t in a["trans"] if t["cmd"].startswith("SYS:"))
+    if sys_stories != sys_rules:
+        gaps.append(("05", "SYS:", f"{sys_stories} قصة لـ{sys_rules} قاعدة"))
+    dup = [h for h, n in counts.items() if n > 1]
+    docs = {n: (AD / n).read_text(encoding="utf-8") for n in
+            ("08-state-models.md", "09-business-rules.md", "14-api-design.md", "15-event-design.md")}
+    for aid in aggs:
+        if not re.search(rf"^### {aid}$", docs["08-state-models.md"], re.M):
+            gaps.append(("08", aid, "لا مخطط"))
+        if not re.search(rf"^#### {aid} — ", docs["09-business-rules.md"], re.M):
+            gaps.append(("09", aid, "لا قسم"))
+    for inv in sorted({i for a in aggs.values() for i in a["invs"]}):
+        if f"**{inv}**" not in docs["09-business-rules.md"]:
+            gaps.append(("09", inv, "ثابت غير مذكور"))
+    for oid in ops:
+        if f"| {oid} |" not in docs["14-api-design.md"]:
+            gaps.append(("14", oid, "عملية غير مذكورة"))
+    for eid in evts:
+        if f"| {eid} |" not in docs["15-event-design.md"]:
+            gaps.append(("15", eid, "حدث غير مذكور"))
+    broken = []
+    for f in files:
+        for target in re.findall(r"\]\((?!https?:|#)([^)#\s]+)", before[f]):
+            if not (f.parent / target).resolve().exists():
+                broken.append((f.relative_to(SPEC).as_posix(), target))
+    return {"stale": stale, "gaps": gaps, "dup": dup, "stories": len(heads), "sys_stories": sys_stories,
+            "sys_trans": sys_trans, "broken": broken, "files": len(files), "cmds": len(cmds), "qrys": len(qrys),
+            "ops": len(ops), "evts": len(evts), "aggs": len(aggs), "invs": sum(len(a["invs"]) for a in aggs.values())}
+
 
 # ---------------------------------------------------------------- report
 def main():
@@ -364,6 +426,7 @@ def main():
     rt, rt_skip = v5()
     y_n, y_bad = v6()
     p_n, p_missing, p_multi, p_shared = v7(cmds)
+    ad = v8(sum(len(a["sys"]) for a in aggs.values()))
     rt_known = {p for p in (rt or {}).get("diffs", []) + (rt or {}).get("new", []) if re.search(r"slc19|SLC-19|AGG-(EXERCISE|SCENARIO|SIMULATION)\.md", p)}
     rt_real = sorted(set((rt or {}).get("diffs", []) + (rt or {}).get("new", [])) - rt_known)
 
@@ -393,7 +456,10 @@ def main():
           f"{len(rt['failures'])} فشل تشغيل |") if rt else f"| V5 ذهاب وإياب أدوات المواصفة | — | {rt_skip} |",
          f"| V6 صلاحية كتل YAML المضمَّنة | {y_n} كتلة (front-matter + YAML) | {len(y_bad)} كتلة لا تُقرأ |",
          f"| V7 سياسة لكل أمر (SL-02) | {len(cmds)} أمرًا، {p_n} سياسة معرَّفة | {len(p_missing)} سياسة غير معرَّفة؛ "
-         f"{len(p_multi)} أمرًا بغير سياسة واحدة؛ {len(p_shared)} سياسة يتشاركها أكثر من أمر |", ""]
+         f"{len(p_multi)} أمرًا بغير سياسة واحدة؛ {len(p_shared)} سياسة يتشاركها أكثر من أمر |",
+         f"| V8 دراسة التحليل والتصميم (`18-analysis-design/`) | {ad['files']} ملفًا، {ad['stories']} قصة | "
+         f"{len(ad['stale'])} ملفًا مولَّدًا غير محدَّث؛ {len(ad['gaps'])} عنصرًا غير مغطى؛ {len(ad['dup'])} قصة مكررة؛ "
+         f"{len(ad['broken'])} رابطًا مكسورًا |", ""]
 
     L += ["## 2. V1 — ملفات القبول مقابل مصفوفات الحالات", "",
           "لكل Aggregate: كل خلية `→ حالة` في مصفوفة الحالات × الأوامر يجب أن تظهر كانتقال مسموح (أو إنشاء من ∅) "
@@ -457,10 +523,22 @@ def main():
           (("**سياسات غير معرَّفة:** " + ", ".join(f"{c} → {p}" for c, p in p_missing)) if p_missing else "كل سياسة يسمّيها أمر معرَّفة في `08-security/policies-*.md`."),
           "", (("**أوامر بغير سياسة واحدة:** " + ", ".join(f"{c} ({p})" for c, p in p_multi)) if p_multi else "كل أمر يسمّي سياسة واحدة بالضبط."),
           "", (("**سياسات يتشاركها أكثر من أمر:** " + "; ".join(f"{p}: {', '.join(v)}" for p, v in p_shared)) if p_shared else "لا سياسة يتشاركها أمران.")]
+    L += ["", "## 9. V8 — دراسة التحليل والتصميم", "",
+          "يعيد تشغيل `build_analysis_design.py` ويقارن ناتجه بالملفات (ثم يعيدها كما كانت)، ويتحقق من أن كل عنصر في "
+          "المواصفات يظهر مرة واحدة في موضعه: قصة لكل أمر واستعلام وقاعدة `SYS:`، مخطط وقسم قواعد لكل Aggregate، "
+          "كل ثابت في قواعد العمل، كل عملية OpenAPI في تصميم الواجهات، كل حدث في تصميم الأحداث؛ وأن كل رابط نسبي يُحلّ. "
+          "رسم مخططات Mermaid يُفحص بأداة منفصلة (mermaid-cli) لأنه يحتاج متصفحًا.", "",
+          f"- التغطية: {ad['cmds']} أمرًا + {ad['qrys']} استعلامًا + {ad['sys_stories']} قاعدة `SYS:` (تغطي {ad['sys_trans']} انتقالًا) = "
+          f"{ad['stories']} قصة؛ {ad['aggs']} Aggregate؛ {ad['invs']} ثابتًا؛ {ad['ops']} عملية؛ {ad['evts']} رسالة.",
+          f"- ملفات مولَّدة غير محدَّثة: {', '.join(f'`{x}`' for x in ad['stale']) or 'لا شيء'}",
+          f"- عناصر غير مغطاة: {'; '.join(f'{a} {b} ({c})' for a, b, c in ad['gaps']) or 'لا شيء'}",
+          f"- قصص مكررة: {', '.join(ad['dup']) or 'لا شيء'}",
+          f"- روابط مكسورة: {'; '.join(f'`{a}` → {b}' for a, b in ad['broken']) or 'لا شيء'}"]
     OUT.write_text("\n".join(L) + "\n", encoding="utf-8")
     print(f"V1 issues={len(v1_issues)} sys_gap={sum(len(x[2]) for x in sys_gap)} V2={len(v2_issues)} "
           f"orphans={len(v2_orphans)} dup={len(v2_dup)} V3 missing={len(v3_missing)} orphans={len(v3_orphans)} "
-          f"V4a={len(v4_catalog)} V4b={len(v4_guard)} V5={'skipped' if rt is None else len(rt_real)} V6={len(y_bad)} V7={len(p_missing)}/{len(p_multi)}/{len(p_shared)}")
+          f"V4a={len(v4_catalog)} V4b={len(v4_guard)} V5={'skipped' if rt is None else len(rt_real)} V6={len(y_bad)} V7={len(p_missing)}/{len(p_multi)}/{len(p_shared)} "
+          f"V8 stale={len(ad['stale'])} gaps={len(ad['gaps'])} dup={len(ad['dup'])} broken={len(ad['broken'])}")
 
 
 if __name__ == "__main__":

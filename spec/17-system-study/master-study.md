@@ -34,7 +34,7 @@ notes: >
 | Phase 5 | [05-conflicts.md](05-conflicts.md) | سجل التعارضات (5، كلها مُغلَقة بعد Phase 3.7) |
 | Phase 3.7 | [06-verification.md](06-verification.md) | تحقق آلي مولَّد (V1–V7): القبول، العقود، الأحداث، الأخطاء، ذهاب وإياب الأدوات، صلاحية YAML، السياسات |
 | Phase 6 | هذا الملف | الفهرس الأعلى |
-| أدوات | `_build/` | `phase2_extract.ps1`/`phase2_report.ps1` (Phase 2)، `build_relationships.py` (§21 من ملف العلاقات)، `verify_study.py` (06-verification.md) |
+| أدوات | `_build/` | `phase2_extract.ps1`/`phase2_report.ps1` (Phase 2)، `build_relationships.py` (§21 من ملف العلاقات)، `verify_study.py` (06-verification.md)، `build_analysis_design.py` + `ar_terms.py` (الأجزاء المولَّدة من `18-analysis-design/`) |
 
 ## 1. نظرة عامة على النظام (System Overview)
 
@@ -298,7 +298,7 @@ notes: >
 | Phase 4 — الأنماط العابرة | ✅ CLOSED |
 | Phase 5 — التعارضات | ✅ CLOSED — لا تعارضات مفتوحة |
 | Phase 6 — هذا الفهرس | ✅ CLOSED |
-| Phase 3.8 — دراسة التحليل والتصميم ([`18-analysis-design/`](../18-analysis-design/00-index.md)) | ⏳ جارية — المرحلة 1 (الأساس المعماري، ADR-P17/P18، FIT-20) مكتملة ومراجَعة |
+| Phase 3.8 — دراسة التحليل والتصميم ([`18-analysis-design/`](../18-analysis-design/00-index.md)) | ⏳ جارية — المرحلة 1 (الأساس المعماري، ADR-P17/P18، FIT-20) والمرحلة 2 (739 قصة مستخدم، 89 مخطط حالات، قواعد العمل، كتالوج 611 عملية و585 حدثًا، مخطط قاعدة البيانات؛ المولِّد `_build/build_analysis_design.py` والفحص V8) مكتملتان ومراجَعتان |
 
 ### 20.2 حالة كل BC (من §21 في ملفه)
 
@@ -366,5 +366,6 @@ notes: >
 
 1. أي تعديل على ملف مصدر في `spec/` (خارج `17-system-study/`) يُقابَله فحص: هل يمس رقمًا أو جدولاً هنا؟ إن كان كذلك، حدِّث ملف الـBC أو `04-cross-cutting.md` أو `05-conflicts.md` المعني مباشرة.
 2. أعِد توليد السلاسل: `python3 spec/17-system-study/_build/build_relationships.py` — يعيد كتابة §21 من [02-relationship-index.md](02-relationship-index.md) فقط، ويكشف أي فرق في أعداد الأوامر والأحداث والاستعلامات مقابل ملفات الـBC.
-3. أعِد التحقق: `python3 spec/17-system-study/_build/verify_study.py` (يتطلب `pip install pyyaml openapi-spec-validator`) — يعيد كتابة [06-verification.md](06-verification.md). أي فرق في V1–V7 بعد تعديل مصدر يعني أن التعديل لم يكتمل (مثلًا: تعديل يدوي لملف مولَّد بدل بيانات المولِّد).
+2b. أعِد توليد الأجزاء المولَّدة من دراسة التحليل والتصميم: `python3 spec/17-system-study/_build/build_analysis_design.py` — يعيد كتابة ما بين علامتي `GENERATED` فقط في `18-analysis-design/` (والملفات `05-user-stories/us-bcNN.md` كاملة)، ويترك النص المكتوب كما هو؛ الفحص V8 يكشف أي جزء غير محدَّث.
+3. أعِد التحقق: `python3 spec/17-system-study/_build/verify_study.py` (يتطلب `pip install pyyaml openapi-spec-validator`) — يعيد كتابة [06-verification.md](06-verification.md). أي فرق في V1–V8 بعد تعديل مصدر يعني أن التعديل لم يكتمل (مثلًا: تعديل يدوي لملف مولَّد بدل بيانات المولِّد).
 4. سجِّل كل تصحيح لخطأ سابق في مصدر كـCR جديد في `corrections.md`، لا تعديلاً صامتًا؛ والأخطاء الداخلية في ملفات الدراسة تُصحَّح في مكانها مع ملاحظة "تصحيح [Phase X]".

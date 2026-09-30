@@ -66,6 +66,8 @@ notes: >
 1. **BC05 هو المصدر الأكبر بلا منازع لفجوة RD-* من Phase 2.** ست فئات بيانات مرجعية مفقودة من `reference-data.md` مُستشهَد بها كحارس إلزامي عبر النظام؛ **خمس من الست** مصدرها BC05 وحده: `RD-ASSET-TYPES` (AGG-ASSET)، `RD-CONDITION-GRADES` (AGG-ASSET)، `RD-RESOURCE-TYPES` (AGG-RESOURCE-POOL)، `RD-LOGISTICS-ITEM-TYPES` (AGG-LOGISTICS-REQUEST)، `RD-EXERCISE-TYPES` (AGG-SCENARIO). السادسة (`RD-HAZARD-CATEGORIES`) من BC04. هذه الفجوة مسجَّلة رسميًا كـ **CONFLICT-03** في `05-conflicts.md` (OPEN) — انظر §19/§20.
 2. **نمط "الإنشاء المرتبط بنفس المعاملة" (CR-62) يتكرر 3 مرات داخل BC05 نفسه:** `AGG-LOGISTICS-REQUEST` ← ينشئ `AGG-ALLOCATION` تلقائيًا (CR-62 الأصلي، INV-LGR-01)؛ `AGG-SHIPMENT` ← يُنشأ من `CMD-LGR-DISPATCH`؛ `AGG-SIMULATION` ← يُنشأ آليًا من `CMD-EXR-START` (ملف AGG-SIMULATION نفسه يصفه بأنه "نمط CR-62 مكرَّر"). هذا يعني أن CR-62 لم يعد تصحيحًا لحالة واحدة بل **نمط تصميم معتمد رسميًا** يُطبَّق عمدًا لضمان عدم انفصال كيانين مرتبطين وجوديًا.
 
+**Features (طبقة بين Capability وUse Case):** غير موجودة في المصادر — لا يوجد أي كيان `FEAT-*` في `spec/`، وملف `01-business/capabilities.md` ينتقل من Capability مباشرة إلى Use Case. لذلك تبدأ سلسلة هذا الـBC من CAP ثم UC. **[Missing في المصدر]** (السلسلة الكاملة لكل Aggregate في [02-relationship-index.md §21](02-relationship-index.md)).
+
 ## 3. Actors
 
 | Actor | الدور في BC05 | Evidence |

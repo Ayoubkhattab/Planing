@@ -38,6 +38,8 @@ notes: >
 
 **Out of Scope:** تنفيذ القرار نفسه (BC04)، تعريف *مخطط* التصنيف نفسه بمستوياته وأقسامه (**BC08** — AGG-CLASSIFICATION-SCHEME)، منح استثناء أمني (**BC08** — AGG-SECURITY-EXCEPTION، تحقَّق منه: `03-domain/contexts/BC08/aggregates/AGG-SECURITY-EXCEPTION.md`)، مجموعات السياسات (**BC08** — AGG-POLICY-SET، تحقَّق منه أيضًا). **نمط مكتشَف [Explicit، مؤكَّد]:** ثلاث حالات استخدام على الأقل من نطاق "080-089" (UC-085, UC-086, UC-088) مُصنَّفة بفاعل Security Officer وCapability من CAP-01.04/CAP-13.01 — تبدو كأنها BC01 — لكن الـAggregate الفعلي المنفِّذ لكل منها موجود في **BC08** لا BC01. هذا ليس خطأ توثيقي بل نمط معماري متكرر: طبقة "الحوكمة والأمن" (BC08) توفّر التنفيذ الفعلي بينما تظهر واجهة المستخدم (UC) في نفس النطاق الرقمي المتقاطع مع BC01.
 
+**Features (طبقة بين Capability وUse Case):** غير موجودة في المصادر — لا يوجد أي كيان `FEAT-*` في `spec/`، وملف `01-business/capabilities.md` ينتقل من Capability مباشرة إلى Use Case. لذلك تبدأ سلسلة هذا الـBC من CAP ثم UC. **[Missing في المصدر]** (السلسلة الكاملة لكل Aggregate في [02-relationship-index.md §21](02-relationship-index.md)).
+
 ## 3. Actors
 
 | Actor | الدور في BC01 | Evidence |
@@ -268,7 +270,7 @@ stateDiagram-v2
     EXPIRED --> [*]
 ```
 
-## 7. Commands (58 إجمالًا عبر 11 Aggregate)
+## 7. Commands (67 إجمالًا عبر 11 Aggregate: 58 في SLC-01 عبر 9، و9 في SLC-11/16)
 
 | Aggregate | عدد الأوامر | القائمة |
 |---|---|---|
@@ -281,12 +283,16 @@ stateDiagram-v2
 | AGG-ROLE-ASSIGNMENT | 2 | ASSIGN, REVOKE (+ SYS:valid_to) |
 | AGG-AUTHORITY-GRANT | 7 | GRANT, APPROVE/REJECT-GRANT, DELEGATE, SUSPEND, RESUME, REVOKE |
 | AGG-CLEARANCE | 6 | GRANT, APPROVE, MODIFY, SUSPEND, REINSTATE, REVOKE |
+| AGG-DEVICE (SLC-11) | 7 | ENROLL, CONFIRM, ROTATE-KEY, SUSPEND, REINSTATE, REPORT-LOST, RETIRE |
+| AGG-HR-SYNC-PROPOSAL (SLC-16) | 2 | APPROVE, REJECT (الإنشاء عبر محوّل HRIS لا أمر مستخدم) |
 
 (AGG-DEVICE وAGG-HR-SYNC-PROPOSAL أوامرهما موثّقة في `commands-slc11.md`/`commands-slc16.md` — **خارج** `commands-slc01.md` رغم أنهما BC01، لأنهما slices مختلفة. تفصيل مهم لـTraceability: البحث عن "كل أوامر BC01" يتطلب فحص 3 ملفات commands-slc*.md لا ملفًا واحدًا.)
 
-**مشترك لكل الـ58 أمرًا:** `Idempotency-Key` إلزامي؛ `If-Match` إلزامي لغير الإنشاء؛ استجابة 202/201 بـ`ResourceRef`. [Explicit]
+**⚠️ تصحيح [Phase 3.6، مكتشَف بالتحقق الآلي في `02-relationship-index.md` §21]:** رأس هذا القسم ذكر سابقًا "58 إجمالًا عبر 11 Aggregate"، لكن الـ58 تخص `commands-slc01.md` وحده (9 aggregates). الإجمالي الفعلي لـBC01 هو 67 (58 + 7 DEVICE + 2 HR-SYNC)، وأُضيف الصفّان أعلاه. خطأ صياغة داخلي في هذا الملف، لا تعارض بين مصدرين، فلا يُسجَّل في `05-conflicts.md`.
 
-## 8. Queries (8 في SLC-01)
+**مشترك لكل الـ67 أمرًا:** `Idempotency-Key` إلزامي؛ `If-Match` إلزامي لغير الإنشاء؛ استجابة 202/201 بـ`ResourceRef`. [Explicit]
+
+## 8. Queries (10 إجمالًا: 8 في SLC-01 + QRY-DEV-LIST في SLC-11 + QRY-HRS-QUEUE في SLC-16)
 
 | Query | يعيد | من يحق له |
 |---|---|---|
@@ -297,10 +303,12 @@ stateDiagram-v2
 | QRY-AUT-CHECK | فحص التخويل عند زمن t | خدمات داخلية أو الذات |
 | QRY-AUT-LIST | منح السلطة | Executive/Administrator في النطاق أو الحامل |
 | QRY-CLR-GET | التصريح الحالي | Security Officer أو الذات |
+| QRY-DEV-LIST (SLC-11) | الأجهزة المسجَّلة | انظر `queries-slc11.md` |
+| QRY-HRS-QUEUE (SLC-16) | طابور مقترحات مزامنة HR | انظر `queries-slc16.md` |
 
-## 9. Events (61 في SLC-01، +THR-relevant EVT-SEC-VERSION-INCREMENTED)
+## 9. Events (73 حدث Aggregate إجمالًا: 60 في SLC-01 + 8 DEVICE + 5 HR-SYNC؛ إضافة للحدث المشتق EVT-SEC-VERSION-INCREMENTED)
 
-موزّعة: TEN(9)، ORG(7)، PER(5)، USR(9)، SVC(5)، ROL(3)، RAS(3)، AUT(8)، CLR(6)، +EVT-SEC-VERSION-INCREMENTED (مشتق، يُطلقه أي حدث "يؤثر أمنيًا" من كل ما سبق). **نمط ثابت [Explicit]:** كل حدث "يؤثر أمنيًا" يُستهلَك دائمًا من نفس 3 مستهلكين: Security-version service، PEP decision caches، Projection security-version table — إضافة لمستهلكين خاصين بالسياق (Notification لـAUT، إلخ).
+موزّعة: TEN(10)، ORG(8)، PER(5)، USR(10)، SVC(5)، ROL(4)، RAS(3)، AUT(8)، CLR(7) = 60 في SLC-01؛ DEV(8) في SLC-11؛ HRS(5) في SLC-16؛ +EVT-SEC-VERSION-INCREMENTED (مشتق، يُطلقه أي حدث "يؤثر أمنيًا" من كل ما سبق). **تصحيح [Phase 3.6]:** التوزيع السابق (TEN 9، ORG 7، USR 9، ROL 3، CLR 6) كان مجموعه 55 لا 60، وصُحِّح هنا بالعدّ الحرفي لعمود Aggregate في `events-slc01.md`. **نمط ثابت [Explicit]:** كل حدث "يؤثر أمنيًا" يُستهلَك دائمًا من نفس 3 مستهلكين: Security-version service، PEP decision caches، Projection security-version table — إضافة لمستهلكين خاصين بالسياق (Notification لـAUT، إلخ).
 
 ## 10. Business Rules / Invariants — أثرها
 
@@ -320,7 +328,7 @@ stateDiagram-v2
 
 **نمط عابر لكل الـ11 Aggregate [Explicit، مؤكَّد آليًا]:** Optimistic concurrency (`If-Match`) + Idempotency-Key + State+History+Outbox+AuditOutbox في معاملة واحدة (ADR-P02) — **بلا استثناء واحد**. هذا أقوى دليل على اتساق نمط CQRS/Event-Sourcing عبر كل BC01.
 
-## 11. Policies — 58 سياسة أمر (BC01 فقط) + 7 Platform Baselines
+## 11. Policies — 67 سياسة أمر (58 في SLC-01 + POL-DEV-* ×7 في SLC-11 + POL-HRS-* ×2 في SLC-16) + 7 Platform Baselines
 
 **Platform Baselines (PB-01..07) — تُطبَّق قبل أي سياسة مستأجر ولا يتجاوزها المستأجر (INV-POL-02):**
 
@@ -414,7 +422,7 @@ BC01 هو **مزوّد بنية تحتية** (Authority/Identity/Clearance/Audit
 | الفحص | الحالة |
 |---|---|
 | كل Aggregate له Purpose/States/Commands/Events؟ | ✅ 11/11 |
-| كل Command مرتبط بAggregate/Policy؟ | ✅ 58/58 (مؤكَّد من commands-slc01.md) |
+| كل Command مرتبط بAggregate/Policy؟ | ✅ 67/67 (مؤكَّد من commands-slc01/11/16.md؛ صُحِّح من 58/58 في Phase 3.6) |
 | كل Event له Producer وConsumer؟ | ✅ 61/61 |
 | كل Requirement مرتبط بUC (أو قرار صريح بعدم الحاجة)؟ | ✅ 26/26 (23 بـUC + 3 بقرار "لا UC بالتصميم"، OQ-034) |
 | Threat model مربوط؟ | ✅ 12/12 مع تصنيف STRIDE ومخاطرة متبقية |

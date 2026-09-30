@@ -54,6 +54,8 @@ notes: >
 
 **تصحيح مُطبَّق [مكتشَف أثناء دراسة BC04، محفوظ من الجولة السابقة]:** الجولة الأولى لهذا الملف نسبت لـBC03 كل الـaggregates التي تعيش في ملف شريحة SLC-06، بما فيها `AGG-NOTIFICATION` و`AGG-SUBSCRIPTION`. بالتحقق من `bounded_context:` في الـfront-matter الفعلي، الاثنان **BC04** لا BC03 (نفس نمط "الشريحة ≠ BC" المسجَّل في `05-conflicts.md#CONFLICT-02`، السطر الأول من جدوله). التصحيح انعكس هنا على §7/§9/§11/§12/§16 (الأوامر والأحداث والسياسات والتهديدات المستبعَدة).
 
+**Features (طبقة بين Capability وUse Case):** غير موجودة في المصادر — لا يوجد أي كيان `FEAT-*` في `spec/`، وملف `01-business/capabilities.md` ينتقل من Capability مباشرة إلى Use Case. لذلك تبدأ سلسلة هذا الـBC من CAP ثم UC. **[Missing في المصدر]** (السلسلة الكاملة لكل Aggregate في [02-relationship-index.md §21](02-relationship-index.md)).
+
 ## 3. Actors
 
 | Actor | الدور في BC03 | Evidence |

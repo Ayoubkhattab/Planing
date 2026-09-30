@@ -37,8 +37,8 @@ platform-repo/
 │   ├── bc06-knowledge/
 │   ├── bc07-platform/
 │   └── bc08-governance/
-├── platform/                      # مكتبات Adapters مشتركة — لا أنواع أعمال
-│   ├── unit-of-work/              # معاملة: state + history + outbox + audit + inbox
+├── platform/                      # آليات Adapters مشتركة — لا منافذ سياقات ولا أنواع أعمال
+│   ├── unit-of-work/              # معاملة: نطاق المستأجر + state + history + outbox + audit + inbox + سجل Idempotency
 │   ├── outbox/  inbox/  idempotency/
 │   ├── pep-client/                # OPA مدمج + ذاكرة القرار بـsecurity_version
 │   ├── scheduler/                 # سلال زمنية + lease (TD-13)
@@ -88,7 +88,8 @@ contexts/bc04-operations/
 │   │   └── ...                        # 21 استعلامًا
 │   └── processes/
 │       ├── on-qual-recorded/          # حدث مستهلَك: EVT-QUAL-RECORDED (إعادة فحص تعيين المهام)
-│       └── sys-due-passed-escalation-policy/   # مُحفِّز SYS: في AGG-TASK
+│       └── task/
+│           └── sys-due-passed-escalation-policy/   # مُحفِّز SYS: تحت مجلد الـAggregate صاحبه
 └── ports/
     ├── task-repository                # + لكل Aggregate
     ├── eligibility-client             # OHS BC05 (fail-closed)
@@ -105,7 +106,7 @@ services/du-08-operations/
 ├── composition-root                   # ربط المنافذ بالمحوّلات، بدء التشغيل
 ├── adapters/
 │   ├── inbound/
-│   │   ├── http/                      # stubs مولَّدة من contracts/openapi/*-slc03,06,08,15,17
+│   │   ├── http/                      # stubs مولَّدة من contracts/openapi/*-slc03,06,08,15,17 + تحويل إلى أنواع التطبيق
 │   │   ├── kafka/                     # مستهلكو الأحداث من BC02/BC03/BC05
 │   │   └── scheduler/                 # عمّال SYS: للمهام والخطط
 │   └── outbound/
@@ -127,15 +128,15 @@ services/du-08-operations/
 | du-05-ingestion | bc02 | HTTP عالي المعدل، استيراد، ماسح | PostgreSQL `information`، S3 | R1 |
 | du-06-intelligence | bc03 | HTTP، Kafka | PostgreSQL `intelligence`، OPA، BC02 as-of | R1 |
 | du-07-evaluators | bc03 | Kafka (تدفقي، ≤ 5 ث) | PostgreSQL `intelligence`، إشعارات | R1 |
-| du-08-operations | bc04 | HTTP، Kafka، scheduler | PostgreSQL `operations`، BC05 Eligibility، BC01 Authority | R1 |
+| du-08-operations | bc04 (+ جزء bc05 في R1: التأهيل والأهلية، SLC-03) | HTTP، Kafka، scheduler | PostgreSQL `operations` (+ `readiness` في R1)، BC05 Eligibility، BC01 Authority | R1 |
 | du-09-discovery | bc07 | HTTP (بحث/رسم)، Kafka (بناة الإسقاطات) | OpenSearch، مخزن الإسقاطات في PostgreSQL (slc-05) | R1 |
 | du-10-field-sync | bc07 | بوابة المزامنة | PostgreSQL `field`، أوامر السياقات المالكة، S3 (الحزم) | R1 |
 | du-11-adapters | bc07 | موصلات الأنظمة الخارجية (ACL) | PostgreSQL `integration`، أوامر BC02 عبر العقد | R1 (+R2) |
-| du-12-tiles | — | OGC Tiles/Features | PostGIS (قراءة بنطاق الصلاحية) | R1 |
+| du-12-tiles | — | OGC Tiles/Features | دوال/views طبقات منشورة من السياقات المالكة في PostGIS، قراءة فقط بنطاق الصلاحية (11 §8) | R1 |
 | du-13-analysis-jobs | — (صور `analysis-methods/`) | Kueue jobs | BC03 عبر العقد | R1 |
-| du-14-readiness | bc05 | HTTP، Kafka، scheduler | PostgreSQL `readiness` | R2 |
+| du-14-readiness | bc05 (كاملًا، ينتقل من DU-08) | HTTP، Kafka، scheduler | PostgreSQL `readiness` | R2 |
 | du-15-knowledge | bc06 | HTTP، Kafka، scheduler | PostgreSQL `knowledge`، S3 | R2 |
-| du-16-ai-serving | bc07 | HTTP | PostgreSQL `ai`، vLLM، OpenSearch k-NN، أوامر السياقات المالكة | R2 |
+| du-16-ai-serving | bc07 | HTTP | PostgreSQL `ai`، vLLM، OpenSearch k-NN؛ لا أوامر كتابة في R2 — أدوات الاقتراح تنشئ AI Results فقط | R2 |
 
 أسماء الـschemas مأخوذة من `06-data/logical-model/`. مخزن الإسقاطات في slc-05 لا يحمل اسم schema صريحًا **[Missing]**، ويُثبَّت في `16-database-schema.md` (المرحلة 2).
 
@@ -147,17 +148,18 @@ services/du-08-operations/
 | `CMD-<PFX>-<VERB>` | المعرّف بلا `CMD-`، بحروف صغيرة | `CMD-TASK-ADD-RESULT-ITEM` → `commands/task-add-result-item/` |
 | `QRY-<PFX>-<NAME>` | مجلد استعلام بنفس القاعدة | `QRY-AUT-CHECK` → `queries/aut-check/` |
 | حدث مستهلَك `EVT-<...>` | `processes/on-` + المعرّف بلا `EVT-` | `EVT-QUAL-RECORDED` → `processes/on-qual-recorded/` |
-| مُحفِّز `SYS:<trigger>` | `processes/sys-` + نص المحفِّز بحروف صغيرة وشرطات | `SYS:valid_to reached` → `processes/sys-valid-to-reached/` |
+| مُحفِّز `SYS:<trigger>` | `processes/<aggregate>/sys-` + نص المحفِّز بحروف صغيرة وشرطات (المحفِّز نفسه يتكرر في أكثر من Aggregate) | `SYS:valid_to reached` في AGG-CLEARANCE → `processes/clearance/sys-valid-to-reached/` |
 | رمز خطأ | تعداد مولَّد في `contracts/errors/` | `TASK_INVALID_STATE_TRANSITION` |
 | سياسة `POL-<...>` | لا كود؛ اسم الإجراء في DecisionRequest = رمز الأمر | `action = CMD-TASK-APPROVE` |
 | وحدة نشر `DU-NN` | `services/du-NN-<name>/` | `DU-08` → `services/du-08-operations/` |
 
-**القاعدة:** كل معرّف في `spec/` يمكن العثور على مكانه في المستودع بقاعدة تحويل واحدة، والعكس. مصفوفة التتبع الكاملة في `25-traceability-matrix.md` (المرحلة 5).
+**القاعدة:** كل معرّف في `spec/` يتحول إلى مكان واحد في المستودع بقاعدة تحويل واحدة. الاتجاه العكسي ليس تحويلًا نصيًا دائمًا (يضيع الترميز والشرطات السفلية في أسماء المحفِّزات)، لذلك يُحفظ في مصفوفة التتبع `25-traceability-matrix.md` (المرحلة 5).
 
 ## 6. العقود المولَّدة
 
 - `contracts/` تُولَّد من `spec/05-contracts` بأداة داخل `tooling/`، بنفس مبدأ أدوات المواصفة: **مولَّد لا يُحرَّر يدويًا** (راجع CR-71 لما يحدث حين يُخالَف هذا المبدأ).
-- تغيير عقد = تعديل المواصفة، ثم إعادة التوليد، ثم تحديث المنتجين والمستهلكين في **نفس** الـcommit (ADR-P18 الدافع 3).
+- تغيير عقد متوافق = تعديل المواصفة، ثم إعادة التوليد، ثم تحديث المنتجين والمستهلكين في **نفس** الـcommit (ADR-P18 الدافع 3).
+- تغيير عقد كاسر = إصدار رئيسي جديد يعيش بجانب السابق **6 أشهر على الأقل** (QAS-EVO-001، FIT-14): `contracts/openapi/<file>/v<N>/`، والخادم يقدّم الإصدارين؛ هذا ما يسمح للأجهزة الميدانية غير المتصلة بالعمل بإصدار أقدم.
 - فحص V2/V3 في `verify_study.py` يضمن أن كل أمر واستعلام وحدث في الكتالوجات له عقد مطابق قبل التوليد.
 
 ## 7. قاعدة البيانات والترحيل

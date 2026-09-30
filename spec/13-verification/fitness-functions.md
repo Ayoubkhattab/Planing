@@ -39,7 +39,7 @@ _20 items_ (FIT-20 added with ADR-P17/P18, 2026-09-30)
 | FIT-17 | Aggregates with > 7 internal entities need ADR | SL-24 | model lint | WARNING |
 | FIT-18 | No new infrastructure component without workload evidence + ADR | SR-10 | dependency manifest review | WARNING |
 | FIT-19 | Restore gate: after any key-store restore, every key in the destruction log is unusable before services start | CR-51; QAS-PRV-002 | scheduled restore drill | ERROR |
-| FIT-20 | Hexagonal dependency rules: domain imports nothing outside shared-kernel; no contexts→contexts, services→services or cross-schema migration dependencies; commands reach aggregates only through the command pipeline | ADR-P17; ADR-P18 | static dependency analysis in CI over the module graph + migration path lint | ERROR |
+| FIT-20 | Module-boundary rules (complements FIT-10): no contexts→contexts or services→services imports; platform holds no context ports or business types; migrations touch only their own schema; command handlers reach repositories and the PDP only through the command pipeline | ADR-P17; ADR-P18 | static dependency analysis in CI over the module graph + migration path lint | ERROR |
 
 ---
 
@@ -144,8 +144,9 @@ fitness_functions:
   verification: scheduled restore drill
   severity: ERROR
 - id: FIT-20
-  rule: 'Hexagonal dependency rules: domain imports nothing outside shared-kernel; no contexts→contexts, services→services
-    or cross-schema migration dependencies; commands reach aggregates only through the command pipeline'
+  rule: 'Module-boundary rules (complements FIT-10): no contexts→contexts or services→services imports; platform holds no
+    context ports or business types; migrations touch only their own schema; command handlers reach repositories and the PDP
+    only through the command pipeline'
   from: ADR-P17; ADR-P18
   verification: static dependency analysis in CI over the module graph + migration path lint
   severity: ERROR

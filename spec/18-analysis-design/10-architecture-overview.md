@@ -27,6 +27,7 @@ sources: [12-solution/c4-context.md, 12-solution/c4-containers.md, 12-solution/d
 | الخصوصية | المحو يصل إلى النسخ الاحتياطية | إتلاف بالمفتاح (ADR-P08) |
 | البيئة | معزولة عن الإنترنت، سيادية، ولاية واحدة لكل خلية | حزم موقَّعة offline (TD-17)؛ منع كل خروج شبكي |
 | الفريق | بساطة تشغيلية كقيد ملزم (system-definition §6) | نمط داخلي واحد لكل الوحدات (ADR-P17)؛ مستودع واحد (ADR-P18) |
+| التطور | الإصدار الرئيسي السابق للعقد مدعوم ≥ 6 أشهر (QAS-EVO-001) | إصدارات عقود متجاورة (FIT-14)؛ أجهزة ميدانية بإصدارات أقدم |
 
 **المفاضلات المقبولة صراحة** (المراجعة المعمارية §3): الأمن يفشل مغلقًا ولو على حساب التوفر؛ النتائج تختلف لكل مستخدم فتقل فعالية الذاكرات المشتركة؛ ثنائية الزمن تضاعف حجم بيانات T1؛ بصمة تشغيلية كبيرة (8 خدمات ذات حالة لكل خلية).
 
@@ -56,7 +57,7 @@ flowchart LR
     DU["services/du-NN<br/>composition root + adapters"]
   end
   subgraph L3["المستوى 3: داخل الوحدة (Hexagon)"]
-    HEX["domain ← application ← ports ← adapters"]
+    HEX["adapters → application → domain<br/>(ports owned by application)"]
   end
   CELL -->|"runs"| DU
   DU -->|"composes"| HEX
@@ -126,7 +127,7 @@ flowchart TB
     ING["DU-05 Ingestion · BC02"]
     INT["DU-06 Intelligence · BC03"]
     EVA["DU-07 Evaluators · BC03"]
-    OPS["DU-08 Operations · BC04"]
+    OPS["DU-08 Operations · BC04<br/>(+ BC05 R1 portion)"]
     DIS["DU-09 Discovery · BC07"]
     FLD["DU-10 Field sync · BC07"]
     ADP["DU-11 Adapters · BC07"]
@@ -134,7 +135,7 @@ flowchart TB
     JOB["DU-13 Analysis jobs"]
   end
   subgraph R2["R2 units (designed, G6 held)"]
-    RDY["DU-14 Readiness · BC05"]
+    RDY["DU-14 Readiness · BC05<br/>(all of BC05 from R2)"]
     KNW["DU-15 Knowledge · BC06"]
     AIS["DU-16 AI serving · BC07"]
   end
@@ -146,12 +147,15 @@ flowchart TB
     S3[("Object storage<br/>+ Object Lock")]
     KMS[("OpenBao + HSM")]
     KC[("Keycloak")]
+    REG[("Harbor registry")]
   end
   WEB --> GW
   MOB --> GW
-  MOB --> FLD
   GW --> FND
+  GW --> GOV
   GW --> INF
+  GW --> ING
+  GW --> FLD
   GW --> INT
   GW --> OPS
   GW --> DIS
@@ -169,6 +173,10 @@ flowchart TB
   RDY --> PG
   KNW --> PG
   AIS --> PG
+  EVA --> PG
+  FLD --> PG
+  ADP --> PG
+  DIS -->|"projection store, graph tables"| PG
   PG -->|"outbox via CDC"| KF
   KF --> EVA
   KF --> DIS
@@ -176,13 +184,16 @@ flowchart TB
   KF --> OPS
   KF --> RDY
   KF --> KNW
+  KF --> FLD
   DIS --> OS
   AIS --> OS
   ADP -->|"BC02 commands"| INF
   KF -->|"EVT-RUN-QUEUED"| JOB
   JOB -->|"run progress (SYS: transitions)"| INT
   JOB --> S3
-  TIL --> PG
+  JOB --> REG
+  TIL -->|"published layer views"| PG
+  TIL --> S3
   INF --> S3
   ING --> S3
   KNW --> S3

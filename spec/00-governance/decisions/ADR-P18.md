@@ -58,19 +58,22 @@ The layout must let one bounded context's model be reused by several units witho
 | `contracts/` | generated from `spec/05-contracts` (OpenAPI, AsyncAPI, error catalogs); server stubs and clients | nothing |
 | `shared-kernel/` | pure value types shared by all contexts: ULID/URN (ADR-P13), bitemporal intervals (ADR-P01), LocalizedName (ADR-P15), security labels, error envelope | nothing |
 | `contexts/bcNN-<name>/` | one package per bounded context: `domain/`, `application/`, `ports/` (ADR-P17) | shared-kernel, contracts of *other* contexts only |
-| `platform/` | reusable adapter libraries: unit of work + outbox + audit outbox, inbox, idempotency store, PEP client, telemetry, lease-based scheduler | shared-kernel, contracts |
+| `platform/` | reusable adapter mechanisms: unit of work + outbox + audit outbox + inbox + idempotency record, PEP client, telemetry, lease-based scheduler — no context ports or business types | shared-kernel, contracts |
 | `services/du-NN-<name>/` | one deployable per deployment unit: composition root, inbound and outbound adapters, configuration | contexts it runs, platform, contracts |
-| `deploy/` | cell manifests, Zarf bundle definition, forward-only migrations per context schema | services |
+| `deploy/` | cell manifests, Zarf bundle definition, forward-only migrations per schema | services |
+| `clients/` | web and field-mobile applications (`12-solution/ui-architecture.md`) | contracts |
+| `analysis-methods/` | Python analysis and raster/geo methods packaged as DU-13 job images (TD-15) | shared-kernel, contracts |
+| `tooling/` | contract generator from `spec/05-contracts`, architecture checks (FIT-10, FIT-20) | — |
 
 **Rules:**
 1. `contexts/*` never import another `contexts/*`; a context reaches another only through `contracts/` (generated client or event types).
 2. `services/*` never import another `services/*`.
 3. Each database schema is owned by exactly one context, which alone migrates it (FIT-01, TD-01). A context may own several schemas: BC07 owns `integration`, `field`, `ai` and the projection store (`06-data/logical-model/slc-02, 05, 10, 11`).
-4. One repository tag = one platform version = one Zarf bundle for all units of a cell.
+4. One repository tag = one platform version = one Zarf bundle for all units of a cell. Contracts keep the previous major version alongside its successor for at least 6 months (QAS-EVO-001, FIT-14), so offline field clients on an older version keep working.
 5. Ownership is declared per `contexts/*` and `services/*` folder.
 
 ## Rationale
-Separating *context packages* (model boundary) from *services* (operational boundary) is the only layout in which the ratified many-to-one mapping between units and contexts needs no duplication and no cross-repository versioning. It also keeps a future unit split — such as the BC-BOUNDARY-TEST candidates DU-05 and DU-07 — to a new `services/` folder, with no model change.
+Separating *context packages* (model boundary) from *services* (operational boundary) is the only layout in which the ratified many-to-one mapping between units and contexts needs no duplication and no cross-repository versioning. It also keeps any unit split to a new `services/` folder with no model change — as already happened for BC02 ingestion (DU-05) and BC03 evaluators (DU-07), and as remains possible for BC04 emergencies, the last BC-BOUNDARY-TEST candidate (`03-domain/bc-boundary-test.md`).
 
 ## Consequences
 

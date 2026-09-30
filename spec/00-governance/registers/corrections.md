@@ -15,7 +15,7 @@ consumers: []
 
 ## corrections
 
-_72 items_ (CR-66..CR-72 added in Phase 3.7 — automated verification and owner-delegated decisions of 2026-09-30)
+_73 items_ (CR-66..CR-72 added in Phase 3.7; CR-73 in Phase 3.8 — 18-analysis-design)
 
 ### CR-01
 
@@ -594,6 +594,14 @@ _72 items_ (CR-66..CR-72 added in Phase 3.7 — automated verification and owner
 - **origin:** Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated decisions of 2026-09-30
 - **status:** APPLIED
 
+### CR-73
+
+- **issue:** ADR-P16 (Canonical CRS) was APPROVED_DELEGATED and its decision applied in 04-information/spatial-model.md, but its Decision Outcome section still read 'TBD — formal in W3'.
+- **correction:** Decision Outcome states option 1 (canonical EPSG:4326 + original CRS and coordinates preserved), citing spatial-model.md and REQ-INF-029. Found during Phase 3.8 exploration (18-analysis-design).
+- **target_wave:** W3 (editorial, post-hoc)
+- **origin:** Phase 3.8 — 18-analysis-design exploration
+- **status:** APPLIED
+
 ---
 
 <details>
@@ -1122,6 +1130,14 @@ corrections:
   target_wave: W6 acceptance (post-hoc)
   origin: Dynamic Discovery Phase 3.7 — automated verification (spec/17-system-study/_build/verify_study.py) and owner-delegated
     decisions of 2026-09-30
+  status: APPLIED
+- id: CR-73
+  issue: ADR-P16 (Canonical CRS) was APPROVED_DELEGATED and its decision applied in 04-information/spatial-model.md, but its
+    Decision Outcome section still read 'TBD — formal in W3'.
+  correction: Decision Outcome states option 1 (canonical EPSG:4326 + original CRS and coordinates preserved), citing spatial-model.md
+    and REQ-INF-029. Found during Phase 3.8 exploration (18-analysis-design).
+  target_wave: W3 (editorial, post-hoc)
+  origin: Phase 3.8 — 18-analysis-design exploration
   status: APPLIED
 ```
 

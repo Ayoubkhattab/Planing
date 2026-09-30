@@ -49,7 +49,9 @@ ratified_at: '2026-09-27'
 | ADR-P13 | Identifiers | APPROVED_DELEGATED |
 | ADR-P14 | Reference Data Governance | APPROVED_DELEGATED |
 | ADR-P15 | Language & Entity Matching | APPROVED_DELEGATED |
-| ADR-P16 | Canonical CRS | APPROVED_DELEGATED |
+| ADR-P16 | Canonical CRS | APPROVED_DELEGATED (Decision Outcome text completed by CR-73) |
+| ADR-P17 | Internal Service Architecture (Hexagonal) | APPROVED_DELEGATED (Phase 3.8، 2026-09-30 — النمط اختاره المالك) |
+| ADR-P18 | Repository and Module Structure | APPROVED_DELEGATED (Phase 3.8، 2026-09-30) |
 
 ## 3. قرارات W1 (الإجابات المفوّضة)
 

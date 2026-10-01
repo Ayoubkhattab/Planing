@@ -2358,12 +2358,17 @@ def build_roadmap(aggs, cmds, qrys, ops, story_ids):
     deps = {sl: re.findall(r"SLC-\d+a?", rec.get("depends_on", "")) for sl, rec in slices.items()}
     rel_of = lambda sl: (re.match(r"R\d", slices[sl].get("release", "")) or [None])[0]  # noqa: E731  "R1 (observation capture …)" → R1
     epics = [sl for sl in slices if rows.get(sl)]
+    plan = (SPEC / "14-slices" / "slices.md").read_text(encoding="utf-8").split("<details>")[0]
+    stated = {}  # explicit release order in the slice plan (r2_order, r3_order)
+    for m in re.finditer(r"\*\*r\d_order:\*\* ([^(\n]*)", plan):
+        for i, sl in enumerate(re.findall(r"SLC-\d+a?", m.group(1))):
+            stated[sl] = i
     order, done = [], set()
     while len(order) < len(epics):
         ready = [sl for sl in epics if sl not in done and all(d in done or d not in epics for d in deps.get(sl, []))]
         if not ready:  # dependency cycle: fall back to release order
             ready = [sl for sl in epics if sl not in done]
-        nxt = min(ready, key=lambda sl: (REL_ORDER.get(rel_of(sl), 9), slice_key(sl)))
+        nxt = min(ready, key=lambda sl: (REL_ORDER.get(rel_of(sl), 9), stated.get(sl, 99), slice_key(sl)))
         order.append(nxt)
         done.add(nxt)
     L = [BEGIN, "", "### 4.1 الشرائح واعتمادياتها", "", "```mermaid", "flowchart LR"]
@@ -2379,7 +2384,7 @@ def build_roadmap(aggs, cmds, qrys, ops, story_ids):
             if d in epics:
                 L.append(f"  {d.replace('-', '_')} --> {sl.replace('-', '_')}")
     L += ["```", "", "### 4.2 الـEpics بترتيب التنفيذ", "",
-          "الترتيب: الإصدار أولًا، ثم الاعتماديات (`depends_on` في `14-slices/slices.md`)، ثم رقم الشريحة.", "",
+          "الترتيب: الإصدار أولًا، ثم الاعتماديات (`depends_on`)، ثم الترتيب المعلن في الخطة (`r2_order`، `r3_order` في `14-slices/slices.md`)، ثم رقم الشريحة.", "",
           "| # | Epic | الإصدار | يعتمد على | المحتوى | الـAggregates | قصص أمر / جلب / نظام | العمليات | الوحدات | الاختبارات | G6 |",
           "|---|---|---|---|---|---|---|---|---|---|---|"]
     for i, sl in enumerate(order, 1):

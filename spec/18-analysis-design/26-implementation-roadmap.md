@@ -4,11 +4,75 @@ type: implementation-roadmap
 title: "خارطة التنفيذ — الـEpics والـBacklog بترتيب الشرائح والإصدارات"
 status: DRAFT
 phase: "Phase 3.8 — 18-analysis-design (المرحلة 5)"
-sources: [14-slices/slices.md, 14-slices/SLC-*/readiness.md, 01-business/system-definition.md, 01-business/release-2-scope.md, 01-business/release-3-scope.md, 00-governance/RATIFICATION-PACKAGE.md, 18-analysis-design/05-user-stories/]
+sources: [14-slices/slices.md, 14-slices/SLC-*/readiness.md, 16-reports/IMPLEMENTATION-READINESS-R1.md, 01-business/release-2-scope.md, 01-business/release-3-scope.md, 00-governance/RATIFICATION-PACKAGE.md, 00-governance/registers/assumptions.md, 18-analysis-design/05-user-stories/]
 generator: 17-system-study/_build/build_analysis_design.py
 ---
 
 # خارطة التنفيذ
+
+من الدراسة إلى البناء: بأي ترتيب تُبنى الشرائح، وما الذي يسبقها، وأي بوابة تفصل بين المراحل. الـBacklog في §4 مولَّد من القصص (739 قصة). كل Epic شريحة، وكل ميزة Aggregate داخلها. لا تقديرات زمنية ولا جهد هنا: الإصدارات «تُعرَّف بالنطاق لا بالتاريخ» (W1-answers)، وحجم الفريق والجدول مفتوحان (UNK-012).
+
+## 1. المبادئ
+
+| المبدأ | القاعدة | المصدر |
+|---|---|---|
+| الشريحة وحدة البناء | الشريحة قابلة للبناء والاختبار خلال دورة تطوير واحدة محدودة؛ إن تجاوزت ذلك تُقسَّم | V6 §11.3 |
+| الاعتماديات قبل الرقم | لا تبدأ شريحة قبل اعتمادياتها (`depends_on`)؛ وفي R2 وR3 الترتيب المعلن في الخطة | `14-slices/slices.md` |
+| المولَّد لا يُعدَّل يدويًا | تغيير السلوك يبدأ من بيانات الشريحة ← إعادة التوليد ← الفحص ← المراجعة | `16-reports/ENGINEERING-BASELINE-R1.md` |
+| البوابة تحكم الإصدار التالي | لا G6 لشرائح R2 قبل مراجعة Pilot R1 (RSK-027)، ولا G6 لشرائح R3 قبل مراجعة Pilot R2 أيضًا (RSK-028) | `slices.md`؛ `release-3-scope.md` |
+| الأرقام فرضيات | كل رقم في R2 وR3 موسوم «تُعاد معايرته بعد Pilot»؛ والأداء يُقاس قبل الإنتاج | `release-2-scope.md`؛ `performance-test-strategy.md` |
+| الفريق | فريق هندسي واحد من 6–10 مهندسين في R1، قابل للتوسع إلى 8 فرق (افتراض ASM-009)؛ التقدير لكل شريحة **[Missing]** | `assumptions.md`؛ UNK-012 |
+
+## 2. الخطوة 0: هيكل المنصة
+
+قبل أي شريحة (`16-reports/IMPLEMENTATION-READINESS-R1.md`، الخطوة 0): المستودع بهيكل ADR-P18، وCI يشغّل فحص المواصفة والتحقق من العقود والمولِّدات، وبيئة بناء معزولة (FIT-12). المحتوى المقترح **[Derived]**، وهو ما يحتاجه كل سياق قبل أول Aggregate:
+
+| العنصر | لماذا أولًا | المرجع |
+|---|---|---|
+| `contracts/` مولَّد من `05-contracts/`، وعملاء وخوادم مولَّدة | كل وحدة تبدأ من العقد | ADR-P18؛ TD-15 |
+| خط الأوامر ذو الخطوات العشر في `platform/` (Unit of Work، outbox، audit outbox، idempotency، inbox) | كل أمر في كل شريحة يمر به | ADR-P17؛ `11-hexagonal-reference.md` §3 |
+| PEP مع OPA مضمَّن وحزمة سياسات أساسية | لا مسار استرجاع دون قرار (FIT-03) | TD-08 |
+| فحوص البنية في CI: FIT-10، FIT-20، FIT-02، FIT-13، FIT-14 | تكسر البناء من اليوم الأول | `fitness-functions.md` |
+| المراقبة: OpenTelemetry وcorrelation_id | QAS-OBS-001 من أول طلب | TD-14 |
+| مسار طرف إلى طرف واحد: البوابة ← DU-02 ← أمر إنشاء ← حدث في Kafka ← سجل تدقيق | يثبت أن الحلقات متصلة قبل توسيع النطاق | `19-runtime-scenarios.md` |
+
+مراجعة المنهجية تقترح أن تصير هذه الخطوة شريحة منصة صريحة «SLC-00P» (`16-reports/METHODOLOGY-RETROSPECTIVE.md`). والمعيار المقترح لإغلاقها: المسار الطرفي يمر، وكل فحص في CI يعمل ويكسر البناء عند المخالفة **[Derived]**.
+
+## 3. ترتيب R1 والبوابات
+
+ترتيب البناء المعتمد لـR1 (`IMPLEMENTATION-READINESS-R1.md`) مع ما يمكن تنفيذه بالتوازي:
+
+| الخطوة | الشرائح | ملاحظة المصدر |
+|---|---|---|
+| 0 | هيكل المنصة | §2 |
+| 1 | SLC-01 | المستأجرون والهوية والتخويل والتدقيق |
+| 2 | SLC-02 | مكتبة نواة الادعاءات الزمنية **أولًا**، مع مجموعة oracle من 500 حالة (QAS-TMP-001) |
+| 3 | SLC-03 ∥ SLC-04 | بالتوازي؛ تطبيق الجوال يبدأ من هنا بالتوازي |
+| 4 | SLC-05 | مع مجموعة اختبارات عدم الاستدلال |
+| 5 | SLC-06 ∥ SLC-07 | بالتوازي |
+| 6 | SLC-08 | |
+| 7 | SLC-11 | الالتقاط دون اتصال وحالة المهام فقط في R1 |
+| 8 | SLC-12a | مع بوابة الاستعادة (FIT-19) |
+| 9 | حملة الأداء والتعافي ← Pilot ← أدلة G7/G8 | `performance-test-strategy.md`؛ `dr-and-continuity.md` |
+
+```mermaid
+flowchart LR
+  G6R1["G6 R1 — مصادَق (HAP-10)"] --> G7["G7 البناء: فريق البناء (UNK-012)، بيئة معزولة، CI (FIT-12)"]
+  G7 --> B0["الخطوة 0: هيكل المنصة"] --> R1["شرائح R1 (الخطوات 1–8)"]
+  R1 --> PERF["حملة الأداء والتعافي + اختبار الاختراق"] --> G8["G8 الإنتاج: UNK-002، مراجعة التراخيص، HSM/MDM، فريق التشغيل"]
+  G8 --> P1["Pilot R1"] --> RV1["مراجعة Pilot R1 (RSK-027)"]
+  RV1 --> G6R2["G6 لشرائح R2"] --> R2["R2: SLC-09 ← 12 ← 10 ← 14 ← 15 ← 16"]
+  R2 --> P2["Pilot R2"] --> RV2["مراجعة Pilot R2 (RSK-028)"] --> G6R3["G6 لشرائح R3"] --> R3["R3: SLC-17 ← 18 ← 19"]
+```
+
+| البوابة | تعني | شروطها في المصادر |
+|---|---|---|
+| G6-SLC | جاهزية الشريحة | بنود الـAggregate الأحد عشر، لا خطأ في فحص المواصفة، نموذج التهديد وFMEA، تغطية القبول، لا مجهول حاجب، مراجعة مستقلة (V6 §20) |
+| G6 | جاهزية الإصدار | كل شرائحه G6-SLC، ومصفوفات التتبع مولَّدة، وكل متطلب يصل إلى اختبار — لـR1 مصادَق (HAP-10)؛ ومصفوفة `25-traceability-matrix.md` تحقق الشرط الأخير |
+| G7 | البناء | خارج مرحلة الدراسة؛ يحتاج فريق البناء (UNK-012) وبيئة بناء معزولة بـCI (FIT-12) |
+| G8 | الإنتاج | الإطار القانوني (UNK-002)، مراجعة التراخيص (DEP-HUM-004)، حجم فريق التشغيل، نجاح اختبارات الأداء والتعافي (FIT-19، تمارين DR)، اختبار الاختراق ومجموعة عدم الاستدلال تحت الحمل، HSM وMDM |
+
+ملاحظة: `performance-test-strategy.md` يساوي G7 بالإنتاج، بينما `RATIFICATION-PACKAGE.md` يجعل G7 البناء وG8 الإنتاج. هذا الملف يتبع الثاني، وأي اختبار «قبل G7» يُقرأ «قبل الإنتاج» **[Needs Review]** (S-31).
 
 ## 4. الـBacklog المولَّد
 
@@ -32,8 +96,8 @@ flowchart LR
   end
   subgraph R2["R2"]
     SLC_09["SLC-09<br/>Assets, Resources, Allocation, Reservation"]
-    SLC_10["SLC-10<br/>Grounded AI: retrieval, context packages, "]
     SLC_12["SLC-12<br/>Products, Knowledge & Lessons, Archive pac"]
+    SLC_10["SLC-10<br/>Grounded AI: retrieval, context packages, "]
     SLC_14["SLC-14<br/>Collection requirements & planning (CAP-02"]
     SLC_15["SLC-15<br/>Coordination cases & correlation/fusion (C"]
     SLC_16["SLC-16<br/>Enterprise integrations (ERP, HRIS, DMS, s"]
@@ -58,9 +122,9 @@ flowchart LR
   SLC_03 --> SLC_12a
   SLC_03 --> SLC_09
   SLC_01 --> SLC_09
-  SLC_05 --> SLC_10
   SLC_07 --> SLC_12
   SLC_08 --> SLC_12
+  SLC_05 --> SLC_10
   SLC_02 --> SLC_14
   SLC_03 --> SLC_14
   SLC_04 --> SLC_15
@@ -77,7 +141,7 @@ flowchart LR
 
 ### 4.2 الـEpics بترتيب التنفيذ
 
-الترتيب: الإصدار أولًا، ثم الاعتماديات (`depends_on` في `14-slices/slices.md`)، ثم رقم الشريحة.
+الترتيب: الإصدار أولًا، ثم الاعتماديات (`depends_on`)، ثم الترتيب المعلن في الخطة (`r2_order`، `r3_order` في `14-slices/slices.md`)، ثم رقم الشريحة.
 
 | # | Epic | الإصدار | يعتمد على | المحتوى | الـAggregates | قصص أمر / جلب / نظام | العمليات | الوحدات | الاختبارات | G6 |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -92,8 +156,8 @@ flowchart LR
 | 9 | **SLC-11** | R1 (observation capture + task status only) | SLC-02, SLC-04 | Offline Field Capture + Sync | 4 | 16 / 5 / 10 | 21 | DU-02, DU-10 | 6 | READY (delegated) 2026-09-24 |
 | 10 | **SLC-12a** | R1 | SLC-01, SLC-03 | Retention schedules & legal hold (R1 portion of SLC-12) | 4 | 15 / 5 / 10 | 20 | DU-03 | 6 | READY (delegated; legal values pending UNK-002) 2026-09-24 |
 | 11 | **SLC-09** | R2 | SLC-03, SLC-01 | Assets, Resources, Allocation, Reservations, Readiness (full) | 7 | 39 / 6 / 8 | 45 | DU-14 | 9 | DESIGN_COMPLETE — G6 held until R1 pilot review (RSK-027) |
-| 12 | **SLC-10** | R2 | SLC-05 | Grounded AI: retrieval, context packages, drafting, extraction, trans… | 6 | 27 / 7 / 11 | 34 | DU-16 | 8 | DESIGN_COMPLETE — G6 held until R1 pilot review and first passing model evaluation |
-| 13 | **SLC-12** | R2 | SLC-07, SLC-08 | Products, Knowledge & Lessons, Archive packages, Historical Retrieval… | 6 | 29 / 8 / 14 | 37 | DU-15 | 8 | DESIGN_COMPLETE — G6 held until R1 pilot review (RSK-027) |
+| 12 | **SLC-12** | R2 | SLC-07, SLC-08 | Products, Knowledge & Lessons, Archive packages, Historical Retrieval… | 6 | 29 / 8 / 14 | 37 | DU-15 | 8 | DESIGN_COMPLETE — G6 held until R1 pilot review (RSK-027) |
+| 13 | **SLC-10** | R2 | SLC-05 | Grounded AI: retrieval, context packages, drafting, extraction, trans… | 6 | 27 / 7 / 11 | 34 | DU-16 | 8 | DESIGN_COMPLETE — G6 held until R1 pilot review and first passing model evaluation |
 | 14 | **SLC-14** | R2 | SLC-02, SLC-03 | Collection requirements & planning (CAP-02.01) | 2 | 14 / 4 / 3 | 18 | DU-04 | 4 | DESIGN_COMPLETE — G6 held until R1 pilot review (RSK-027) |
 | 15 | **SLC-15** | R2 | SLC-04, SLC-08 | Coordination cases & correlation/fusion (CAP-06.03, CAP-04.04) | 3 | 17 / 4 / 3 | 21 | DU-04, DU-08 | 5 | DESIGN_COMPLETE — G6 held until R1 pilot review (RSK-027) |
 | 16 | **SLC-16** | R2 | SLC-02, SLC-01 | Enterprise integrations (ERP, HRIS, DMS, sensors, CAP alerts) | 4 | 18 / 4 / 7 | 22 | DU-02, DU-06, DU-11 | 6 | DESIGN_COMPLETE — G6 held until R1 pilot review and UNK-021 |
@@ -230,6 +294,17 @@ flowchart LR
 | `AGG-ROLE-REQUIREMENT` | SLC-09 | 4 | 0 | 0 | US-BC05-RRQ-ACTIVATE … US-BC05-RRQ-RETIRE | DU-14 | TST-ROLE-REQUIREMENT-SM |
 | استعلامات عابرة | — | 0 | 1 | 0 | US-BC05-Q-READINESS | — | — |
 
+#### SLC-12 — Products, Knowledge & Lessons, Archive packages, Historical Retrieval & Reconstruction
+
+| الميزة (Aggregate) | شريحته | أمر | جلب | نظام | القصص | الوحدة | اختبار القبول |
+|---|---|---|---|---|---|---|---|
+| `AGG-ARCHIVE-PACKAGE` | SLC-12 | 4 | 2 | 5 | US-BC06-ARC-MIGRATE-FORMAT … US-BC06-S-ARCHIVE-PACKAGE-05 | DU-15 | TST-ARCHIVE-PACKAGE-SM |
+| `AGG-DISTRIBUTION` | SLC-12 | 2 | 0 | 2 | US-BC06-DST-CANCEL … US-BC06-S-DISTRIBUTION-02 | DU-15 | TST-DISTRIBUTION-SM |
+| `AGG-KNOWLEDGE-OBJECT` | SLC-12 | 9 | 2 | 1 | US-BC06-KNO-DISCARD … US-BC06-S-KNOWLEDGE-OBJECT-01 | DU-15 | TST-KNOWLEDGE-OBJECT-SM |
+| `AGG-PRODUCT` | SLC-12 | 8 | 3 | 3 | US-BC06-PRD-APPROVE … US-BC06-S-PRODUCT-03 | DU-15 | TST-PRODUCT-SM |
+| `AGG-PRODUCT-TEMPLATE` | SLC-12 | 4 | 0 | 0 | US-BC06-PTM-ACTIVATE … US-BC06-PTM-RETIRE | DU-15 | TST-PRODUCT-TEMPLATE-SM |
+| `AGG-RECONSTRUCTION` | SLC-12 | 2 | 1 | 3 | US-BC06-Q-REC-REPORT … US-BC06-S-RECONSTRUCTION-03 | DU-15 | TST-RECONSTRUCTION-SM |
+
 #### SLC-10 — Grounded AI: retrieval, context packages, drafting, extraction, translation, model lifecycle, tool registry, vector projection
 
 | الميزة (Aggregate) | شريحته | أمر | جلب | نظام | القصص | الوحدة | اختبار القبول |
@@ -241,17 +316,6 @@ flowchart LR
 | `AGG-EVAL-SUITE` | SLC-10 | 3 | 0 | 1 | US-BC07-EVS-ACTIVATE … US-BC07-S-EVAL-SUITE-01 | DU-16 | TST-EVAL-SUITE-SM |
 | `AGG-MODEL-VERSION` | SLC-10 | 9 | 1 | 1 | US-BC07-MDL-APPROVE … US-BC07-S-MODEL-VERSION-01 | DU-16 | TST-MODEL-VERSION-SM |
 | استعلامات عابرة | — | 0 | 1 | 0 | US-BC07-Q-AI-USAGE | — | — |
-
-#### SLC-12 — Products, Knowledge & Lessons, Archive packages, Historical Retrieval & Reconstruction
-
-| الميزة (Aggregate) | شريحته | أمر | جلب | نظام | القصص | الوحدة | اختبار القبول |
-|---|---|---|---|---|---|---|---|
-| `AGG-ARCHIVE-PACKAGE` | SLC-12 | 4 | 2 | 5 | US-BC06-ARC-MIGRATE-FORMAT … US-BC06-S-ARCHIVE-PACKAGE-05 | DU-15 | TST-ARCHIVE-PACKAGE-SM |
-| `AGG-DISTRIBUTION` | SLC-12 | 2 | 0 | 2 | US-BC06-DST-CANCEL … US-BC06-S-DISTRIBUTION-02 | DU-15 | TST-DISTRIBUTION-SM |
-| `AGG-KNOWLEDGE-OBJECT` | SLC-12 | 9 | 2 | 1 | US-BC06-KNO-DISCARD … US-BC06-S-KNOWLEDGE-OBJECT-01 | DU-15 | TST-KNOWLEDGE-OBJECT-SM |
-| `AGG-PRODUCT` | SLC-12 | 8 | 3 | 3 | US-BC06-PRD-APPROVE … US-BC06-S-PRODUCT-03 | DU-15 | TST-PRODUCT-SM |
-| `AGG-PRODUCT-TEMPLATE` | SLC-12 | 4 | 0 | 0 | US-BC06-PTM-ACTIVATE … US-BC06-PTM-RETIRE | DU-15 | TST-PRODUCT-TEMPLATE-SM |
-| `AGG-RECONSTRUCTION` | SLC-12 | 2 | 1 | 3 | US-BC06-Q-REC-REPORT … US-BC06-S-RECONSTRUCTION-03 | DU-15 | TST-RECONSTRUCTION-SM |
 
 #### SLC-14 — Collection requirements & planning (CAP-02.01)
 

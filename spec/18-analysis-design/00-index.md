@@ -66,10 +66,10 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 
 | # | الملف | المحتوى | النوع | المرحلة | الحالة |
 |---|---|---|---|---|---|
-| 24 | `24-testing-strategy.md` | من سيناريوهات القبول إلى الاختبارات؛ العقود؛ Fitness functions (ومنها FIT-20 الجديد)؛ الأداء | مكتوب | 5 | ⏳ |
-| 25 | `25-traceability-matrix.md` | REQ ← UC ← US ← API ← جدول ← مكوّن ← اختبار | مولَّد | 5 | ⏳ |
-| 26 | `26-implementation-roadmap.md` | Backlog: Epics وقصص مرتبة حسب الشريحة والإصدار والاعتماديات | مولَّد + مكتوب | 5 | ⏳ |
-| 27 | `27-engineering-standards.md` | التسمية، الفروع، مراجعة الكود، DoR / DoD | مكتوب | 5 | ⏳ |
+| 24 | [24-testing-strategy.md](24-testing-strategy.md) | المحفظة (وحدة، خصائص، قبول، خط الأوامر، محوّلات، عقود، بنية، أمن، أداء، فوضى، تعافٍ، ميدان، ذكاء اصطناعي، وصول)، تحويل Gherkin إلى اختبار، الهرم، خط CI، توقيت سيناريوهات الجودة، الاختبارات الناقصة، بيانات الاختبار | مكتوب | 5 | ✅ |
+| 25 | [25-traceability-matrix.md](25-traceability-matrix.md) | REQ ← UC ← Aggregate ← قصة ← API ← جدول ← وحدة نشر ← اختبار، مع تحقق المصدر للمتطلبات بلا مواصفة قبول | مولَّد + مكتوب | 5 | ✅ |
+| 26 | [26-implementation-roadmap.md](26-implementation-roadmap.md) | المبادئ، هيكل المنصة (الخطوة 0)، ترتيب R1 والبوابات، الـEpics بترتيب الإصدار والاعتماديات، الـBacklog لكل Epic (739 قصة) | مولَّد + مكتوب | 5 | ✅ |
+| 27 | [27-engineering-standards.md](27-engineering-standards.md) | المواصفة والكود، التسمية، المستودع، الفروع والـcommits، المراجعة، DoR، DoD، التقنية، الوثائق | مكتوب | 5 | ✅ |
 
 ### قرارات جديدة في سجل القرارات
 
@@ -161,6 +161,10 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 | S-27 | رموز تذكرها المواصفات وليست في كتالوج الأخطاء: `ELIGIBILITY_UNAVAILABLE`، `CERTIFICATION_EXPIRED`، `CLASSIFICATION_REQUIRED`، `GEOMETRY_INVALID`، `POLICY_DENIED`، `SOURCE_REQUIRED`؛ ولا رموز لأخطاء البوابة وفشل الاعتماد (CR-78) | `05-contracts/errors-*.md` | `18-error-handling.md` §8–§9 |
 | S-28 | 12 من 44 أمرًا لها قاعدة فصل مهام لا تعلن `SEGREGATION_OF_DUTIES` في قائمة أخطائها (CR-75)؛ ومفتاح الموضوع يشمل ادعاءات الكيانات من نوع شخص بينما AGG-CLAIM وAGG-ENTITY معلَّمان `personal_data: false`؛ وقائمة رموز أسباب الرفض (`reason_code`) غير معرَّفة | `commands-*.md`، `key-hierarchy-and-disposition.md`، `authorization-model.md` | `17-security-design.md` §12.4، §12.7؛ ADR-P19 |
 | S-29 | فحص التخصيص 6 في `allocation-readiness-spec.md` §1 يرفض بـ`POLICY_DENIED` ويذكر `REQUIRE_APPROVAL` مثالًا، بينما مصفوفة AGG-ALLOCATION ترسل الطلب إلى `PENDING_APPROVAL`؛ ورموز أسباب الرفض غير المتزامن (`GEOGRAPHY_MISMATCH`…) غير مصنفة | `allocation-readiness-spec.md`، `AGG-ALLOCATION.md` | `18-error-handling.md` §8، §9.1 |
+| S-30 | QAS-OPS-002 (التصعيد ≤ 60 ث) وQAS-OPS-003 (صندوق الوارد) مربوطان بطريقة تحقق «air-gapped install/upgrade/rollback rehearsal» لا تخصهما | `15-traceability/quality-verification-matrix.md` | `24-testing-strategy.md` §9 |
+| S-31 | `performance-test-strategy.md` يساوي G7 بالإنتاج، بينما `RATIFICATION-PACKAGE.md` يجعل G7 البناء وG8 الإنتاج | `07-quality/performance-test-strategy.md` | `24-testing-strategy.md` §9؛ `26-implementation-roadmap.md` §3 |
+| S-32 | وثائق التحقق المخططة في V6 §8 (`verification-strategy.md`، `security-verification.md`، `ai-evaluation.md`) وخطة التحقق W9 غير موجودة؛ و69 نمط فشل في FMEA بلا حقل اختبار رغم SL-18 | `13-verification/`، `08-security/`، `09-reliability/fmea-slc*.md` | `24-testing-strategy.md` §6، §9 |
+| S-33 | ADR-P17 يذكر «89 ملف قبول» والمجموع 108 مع ملفات الثوابت؛ و`ENGINEERING-BASELINE-R1.md` يذكر 19 Fitness function والعدد 20 بعد FIT-20 | `ADR-P17.md`، `16-reports/ENGINEERING-BASELINE-R1.md` | `24-testing-strategy.md` §9 |
 
 **ما حُسم بعد التسجيل:** S-07 بـADR-P19 (الذي يعدّل البند 5 من ADR-P06) وCR-75؛ S-08 بـCR-76 (قرار مالك المشروع)؛ S-09 باعتماد الأوامر الاثني عشر دون اتصال (CR-79، قرار مالك المشروع)؛ S-16 جزئيًا بحسم فاعل الأوامر الـ26 (CR-77)؛ S-27 جزئيًا بـCR-78 (`ELIGIBILITY_UNAVAILABLE`) وفصل رموز الأسباب عن رموز الأخطاء؛ فجوة DLQ في `15-event-design.md` §5 بـADR-P20. **طُبِّق كله في جولة تصحيح المصادر**، ومعه CR-81 للبنود الآلية: S-01، S-02، S-12، S-13، S-14، S-18، S-19، S-25. المحلولة كليًا الآن: S-01، S-02، S-07، S-08، S-09، S-12، S-13، S-14، S-18، S-19، S-25؛ وجزئيًا: S-16 (الأوامر الـ26)، S-27 (بقيت ثلاثة رموز في `requirements.md`)، S-28 (بقي تعارض البيانات الشخصية وقائمة `reason_code`). الباقي يحتاج قرار تصميم أو محتوى.
 

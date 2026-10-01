@@ -57,7 +57,7 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 | 17 | [17-security-design.md](17-security-design.md) | المصادقة، التخويل وقراراته، مصفوفة الدور × نوع الصلاحية، حسم فاعل 26 أمرًا، التصنيف، المفاتيح، التدقيق، نموذج التهديدات الموحَّد | مولَّد + مكتوب | 4 | ✅ |
 | 18 | [18-error-handling.md](18-error-handling.md) | نموذج الخطأ، الفئات وHTTP، أولوية الأخطاء بترتيب خط الأوامر، إعادة المحاولة، كتالوج 306 رموز | مولَّد + مكتوب | 4 | ✅ |
 | 19 | [19-runtime-scenarios.md](19-runtime-scenarios.md) | 12 مخطط تسلسل للمسارات الحرجة: الأمر، المصادقة المعززة، البحث المؤمَّن، الملاحظة إلى التنبيه، سحب الصلاحية، المزامنة، القرار إلى المهام، المحو، الإتلاف، تهيئة المستأجر، AI، بوابة الاستعادة | مكتوب | 4 | ✅ |
-| 20 | [20-integration-design.md](20-integration-design.md) | المبادئ، خريطة التكامل، المحوّل وطبقة مكافحة الفساد، الهوية والموارد البشرية، إصدار CAP، المزامنة الميدانية، قرار الأوامر دون اتصال (S-09) | مكتوب | 4 | ✅ |
+| 20 | [20-integration-design.md](20-integration-design.md) | المبادئ، خريطة التكامل، المحوّل وطبقة مكافحة الفساد، الهوية والموارد البشرية، إصدار CAP، المزامنة الميدانية، الأوامر دون اتصال (S-09، CR-79) | مكتوب | 4 | ✅ |
 | 21 | `21-ui-design.md` | قائمة الشاشات، التنقل، الشاشات حسب الدور، RTL | مكتوب | 4 | ⏳ |
 | 22 | `22-deployment-design.md` | الخلية، Kubernetes، خط التثبيت المعزول، البيئات | مكتوب | 4 | ⏳ |
 | 23 | `23-crosscutting.md` | تعدد المستأجرين، التزامن، عدم التكرار، المراقبة، الزمن، اللغة، الإعدادات | مكتوب | 4 | ⏳ |
@@ -78,6 +78,7 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 | [ADR-P17](../00-governance/decisions/ADR-P17.md) | المعمارية الداخلية Hexagonal / Ports & Adapters | ✅ APPROVED_DELEGATED |
 | [ADR-P18](../00-governance/decisions/ADR-P18.md) | هيكلية المستودع: حزم سياقات تُركَّب في وحدات نشر | ✅ APPROVED_DELEGATED |
 | [ADR-P19](../00-governance/decisions/ADR-P19.md) | نتائج التخويل: 403 للمورد المرئي، 401 للمصادقة المعززة، 403 `APPROVAL_REQUIRED` | ✅ APPROVED (مالك المشروع) |
+| [ADR-P20](../00-governance/decisions/ADR-P20.md) | إعادة محاولة مستهلكي الأحداث: 5 محاولات ثم DLQ، مع إيقاف مفتاح الـAggregate وحده | ✅ APPROVED (مالك المشروع) |
 
 ## 3. تصنيف العمليات (أساس قصص المستخدم)
 
@@ -157,9 +158,9 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 | S-24 | مراجع بين السياقات خارج خريطة السياقات المعتمدة: IMPORT-BATCH → ADAPTER (BC02→BC07)، CAP-MESSAGE → INTEGRATION-CONNECTION (BC03→BC07)، COLLECTION-PLAN → TASK-TYPE (BC02→BC04)، ASSET/QUALIFICATION-RECORD/SHIPMENT → EVIDENCE (BC05→BC02) | `03-domain/context-map.md`، `06-data/logical-model/` | `07-domain-model.md` §3.2 |
 | S-25 | ترويسة `quality-scenarios.md` تقول 91 عنصرًا وفيه 95 | `02-requirements/quality-scenarios.md` | `03-requirements-analysis.md` |
 | S-26 | 5 Aggregates من شرائح R3 بلا قاعدة اشتقاق تسمية (EXERCISE، LOGISTICS-REQUEST، SCENARIO، SHIPMENT، SIMULATION) رغم القاعدة SL-29 | `08-security/label-derivation-rules.md` | `17-security-design.md` §12.7 |
-
 | S-27 | رموز تذكرها المواصفات وليست في كتالوج الأخطاء: `ELIGIBILITY_UNAVAILABLE`، `CERTIFICATION_EXPIRED`، `CLASSIFICATION_REQUIRED`، `GEOMETRY_INVALID`، `POLICY_DENIED`، `SOURCE_REQUIRED`؛ ولا رموز لأخطاء البوابة وفشل الاعتماد (CR-78) | `05-contracts/errors-*.md` | `18-error-handling.md` §8–§9 |
-
 | S-28 | 12 من 44 أمرًا لها قاعدة فصل مهام لا تعلن `SEGREGATION_OF_DUTIES` في قائمة أخطائها (CR-75)؛ ومفتاح الموضوع يشمل ادعاءات الكيانات من نوع شخص بينما AGG-CLAIM وAGG-ENTITY معلَّمان `personal_data: false`؛ وقائمة رموز أسباب الرفض (`reason_code`) غير معرَّفة | `commands-*.md`، `key-hierarchy-and-disposition.md`، `authorization-model.md` | `17-security-design.md` §12.4، §12.7؛ ADR-P19 |
-**ما حُسم بعد التسجيل:** S-07 بـADR-P19 (الذي يعدّل البند 5 من ADR-P06) وCR-75؛ S-08 بـCR-76 (قرار مالك المشروع)؛ S-16 جزئيًا بحسم فاعل الأوامر الـ26 (CR-77). التطبيق على ملفات المصدر في جولة تصحيح المصادر.
+| S-29 | فحص التخصيص 6 في `allocation-readiness-spec.md` §1 يرفض بـ`POLICY_DENIED` ويذكر `REQUIRE_APPROVAL` مثالًا، بينما مصفوفة AGG-ALLOCATION ترسل الطلب إلى `PENDING_APPROVAL`؛ ورموز أسباب الرفض غير المتزامن (`GEOGRAPHY_MISMATCH`…) غير مصنفة | `allocation-readiness-spec.md`، `AGG-ALLOCATION.md` | `18-error-handling.md` §8، §9.1 |
+
+**ما حُسم بعد التسجيل:** S-07 بـADR-P19 (الذي يعدّل البند 5 من ADR-P06) وCR-75؛ S-08 بـCR-76 (قرار مالك المشروع)؛ S-09 باعتماد الأوامر الاثني عشر دون اتصال (CR-79، قرار مالك المشروع)؛ S-16 جزئيًا بحسم فاعل الأوامر الـ26 (CR-77)؛ S-27 جزئيًا بـCR-78 (`ELIGIBILITY_UNAVAILABLE`) وفصل رموز الأسباب عن رموز الأخطاء؛ فجوة DLQ في `15-event-design.md` §5 بـADR-P20. التطبيق على ملفات المصدر في جولة تصحيح المصادر.
 

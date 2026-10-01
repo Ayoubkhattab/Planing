@@ -153,7 +153,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | مدة الرموز وسياسة الجلسة بالأرقام | **[Missing]** — «رموز قصيرة العمر» دون رقم (TB-01) |
 | آلية break-glass بالتفصيل (من يوافق، المدة القصوى، الإشعار) | **[Missing]** — مبدأ في TB-09 فقط؛ تُفصَّل في `22-deployment-design.md` |
 | تصدير جماعي يحتاج موافقة | **[Missing]** — Aggregate صريح لاحقًا (ADR-P19) |
-| عدد الأوامر المسموحة دون اتصال (6 أو 12) | **[Needs Review]** — S-09، يُحسم في `20-integration-design.md` |
+| عدد الأوامر المسموحة دون اتصال (6 أو 12) | محسوم: 12 (قرار مالك المشروع، CR-79، `20-integration-design.md` §7) |
 
 ## 11. التطبيق في الكود
 

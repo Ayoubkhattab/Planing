@@ -4,7 +4,7 @@ type: design-document
 title: "10 — نظرة عامة على المعمارية (الأنماط، المستويات، القرارات)"
 status: DRAFT
 phase: "Phase 3.8 — 18-analysis-design, المرحلة 1"
-decided_by: [ADR-P01..ADR-P19, TD-01..TD-19]
+decided_by: [ADR-P01..ADR-P20, TD-01..TD-19]
 sources: [12-solution/c4-context.md, 12-solution/c4-containers.md, 12-solution/deployment-units.md, 12-solution/cell-architecture.md, 03-domain/context-map.md, 16-reports/ARCHITECTURE-REVIEW-R1.md]
 ---
 
@@ -240,6 +240,7 @@ flowchart TB
 | **ADR-P17** | المعمارية الداخلية Hexagonal | كل وحدة نشر |
 | **ADR-P18** | هيكلية المستودع | `contracts/`، `contexts/`، `platform/`، `services/` |
 | **ADR-P19** | نتائج التخويل (يعدّل البند 5 من ADR-P06) | 403 للمورد المرئي، `401 MFA_STEP_UP_REQUIRED`، `403 APPROVAL_REQUIRED` — `17-security-design.md` §3 |
+| **ADR-P20** | إعادة محاولة مستهلكي الأحداث | 5 محاولات ثم DLQ، إيقاف مفتاح الـAggregate، إيقاف المستهلك عند انقطاع البنية — `23-crosscutting.md` §6 |
 | TD-01..TD-19 | التقنيات (PostgreSQL، Kafka، OpenSearch، OPA، Keycloak، OpenBao، Kubernetes...) | المحوّلات الخارجة |
 
 ## 8. ما لم يتغيّر وما أُضيف

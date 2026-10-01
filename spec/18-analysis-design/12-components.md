@@ -32,12 +32,12 @@ generator: 17-system-study/_build/build_analysis_design.py
 | السياق | التوزيع | المبرر |
 |---|---|---|
 | BC02 | DU-05: OBSERVATION، IMPORT-BATCH، ATTACHMENT؛ DU-04: الباقي | DU-05 «استقبال الملاحظات عالي المعدل، الاستيراد، الماسح» (WL-06a) |
-| BC03 | DU-06: كل الـAggregates؛ DU-07: معالجات العملية لقواعد ALERT وSITUATION المدفوعة بحدث أو الشرطية | DU-07 «مقيّمو العضوية والتنبيه (تدفقي)» ≤ 5 ثوانٍ؛ يكتب عبر خط أوامر DU-06 نفسه |
-| BC05 | R1: AGG-QUALIFICATION-RECORD والأهلية داخل DU-08؛ R2: كل BC05 في DU-14 | `11-hexagonal-reference.md` §7 |
+| BC03 | DU-06: كل الـAggregates؛ DU-07: معالجات العملية لقواعد ALERT وSITUATION المدفوعة بحدث أو الشرطية (شرطها على بيانات سياقات أخرى فيصلها حدثًا) | DU-07 «مقيّمو العضوية والتنبيه (تدفقي)» ≤ 5 ثوانٍ؛ يكتب عبر خط أوامر DU-06 نفسه |
+| BC05 | R1: AGG-QUALIFICATION-RECORD و`QRY-ELIG-CHECK` داخل DU-08 (schema `readiness`)؛ R2: كل BC05 في DU-14، ومعه Aggregates الإمداد والتمارين (SLC-18/19، R3) **[Derived]** | `11-hexagonal-reference.md` §7؛ `deployment-units.md` لا يذكر SLC-18/19 لـDU-14 (§5) |
 | BC07 | DU-09: PROJECTION-VERSION والبحث والرسم؛ DU-10: SYNC-SESSION، SYNC-CONFLICT، PRELOAD-PACKAGE؛ DU-11: ADAPTER، INTEGRATION-CONNECTION، SENSOR-STREAM؛ DU-16: الذكاء الاصطناعي (6 Aggregates) | مسؤوليات DU-09/10/11/16 |
-| الاستعلامات | حسب مسار العقد: `/discovery` ← DU-09، `/field` ← DU-10، `/integration` ← DU-11، `/ai` ← DU-16؛ وإلا وحدة الـAggregate صاحب المورد | `14-api-design.md` §1 |
+| الاستعلامات | حسب مسار العقد: `/discovery` ← DU-09، `/field` ← DU-10، `/integration` ← DU-11، `/ai` ← DU-16؛ البلاطات (`QRY-SIT-TILE`، `QRY-BASE-TILE`) ← DU-12 من الإسقاط؛ وإلا وحدة الـAggregate صاحب المورد | `14-api-design.md` §1؛ ADR-P06؛ `11-hexagonal-reference.md` §8 |
 
-المقيِّم التدفقي في DU-07 لا يملك بيانات: يقرأ الأحداث ويصدر أوامر داخلية على عقد DU-06، فيبقى حفظ الحالة في وحدة واحدة **[Derived]**.
+المقيِّم التدفقي في DU-07 لا يملك بيانات: يقرأ الأحداث (وschema `intelligence` قراءةً فقط، كما في `13-project-structure.md` §4) ويصدر أوامر داخلية على عقد DU-06، فيبقى حفظ الحالة والـoutbox في وحدة واحدة **[Derived]**. لذلك لا يظهر في مخططه خط أوامر ولا ناقل outbox (§7.2).
 
 ## 3. الوحدات بلا سياق
 
@@ -83,9 +83,9 @@ flowchart LR
 | Event Consumer + Inbox | كل وحدة لها قواعد `SYS:` مدفوعة بحدث، وDU-07، وبناة الإسقاطات في DU-09 |
 | Scheduler / Worker | كل وحدة لها قواعد زمنية أو مدفوعة بعامل (§7.1) |
 | Read Model، Result Re-check | كل وحدة لها استعلامات |
-| Other-context Client | DU-04، DU-06، DU-07، DU-08، DU-10، DU-11 (§7.2) |
+| Other-context Client | DU-04، DU-06، DU-07 (عقد DU-06)، DU-08، DU-09 (إشعار وجلب من OHS المالك)، DU-10، DU-11، DU-13 (تقارير BC03)، DU-14 وDU-15 (`AuthorityCheck`، واستعلامات تاريخ المالكين لإعادة البناء)، DU-16 (أوامر المالك عند قبول AI-RESULT باسم المراجع — ليست أداة كتابة للنموذج) (§7.2) |
 | Encryption / Keys | الوحدات ذات Aggregates ببيانات شخصية (`17-security-design.md` §12.7) |
-| Object Storage | DU-03، DU-04، DU-05، DU-10، DU-15 (مثبتات التدقيق، الأدلة، المرفقات، الحزم، الأرشيف، المنتجات) |
+| Object Storage | DU-03، DU-04، DU-05، DU-10، DU-12، DU-15 (مثبتات التدقيق، الأدلة، المرفقات، الحزم، الخرائط الأساس PMTiles، الأرشيف، المنتجات) |
 
 ## 5. فجوات
 
@@ -94,6 +94,8 @@ flowchart LR
 | طوارئ BC04 (DOM-17، R3: RISK، INCIDENT) «مرشحة لوحدة مستقلة عند تصميمها» | **[Needs Review]** — في هذا الملف ضمن DU-08 كما هو حاليًا (`deployment-units.md`، ملاحظة) |
 | اسم schema مخزن الإسقاطات في DU-09 | **[Missing]** (S-11) |
 | توزيع BC02 بين DU-04 وDU-05 على مستوى الـAggregate | **[Derived]** — المصدر يوزع بالمسؤولية لا بالـAggregate |
+| Aggregates الإمداد والتمارين (LOGISTICS-REQUEST، SHIPMENT، EXERCISE، SCENARIO، SIMULATION — SLC-18/19، R3) في DU-14 | **[Derived]** من ملكية BC05 — `deployment-units.md` لا يذكرها لـDU-14 |
+| وحدات تحمل Aggregates من إصدار لاحق (DU-08: SLC-15، SLC-17؛ DU-11: SLC-16) | عمود الإصدار في §7.1 يعرضها؛ النشر يفعّل مساراتها بإصدارها (أعلام الميزات، `23-crosscutting.md`) |
 
 ## 6. قراءة الجداول
 
@@ -108,21 +110,23 @@ flowchart LR
 | الوحدة | الـAggregates | أوامر | استعلامات | قواعد `SYS:` (زمني / شرطي / حدث / عامل) | الـschemas | الإصدار |
 |---|---|---|---|---|---|---|
 | DU-01 Gateway/BFF | — | — | — | — | — | R1 |
-| DU-02 Foundation | 11 | 67 | 10 | 4 / 1 / 2 / 0 | `foundation` | R1 |
+| DU-02 Foundation | 11 | 67 | 10 | 4 / 1 / 2 / 0 | `foundation` | R1 + R2 (1) |
 | DU-03 Governance | 7 | 28 | 11 | 4 / 3 / 7 / 0 | `governance` | R1 |
-| DU-04 Information | 15 | 79 | 23 | 2 / 5 / 3 / 0 | `information` | R1 |
+| DU-04 Information | 15 | 79 | 23 | 2 / 5 / 3 / 0 | `information` | R1 + R2 (4) |
 | DU-05 Ingestion | 3 | 13 | 4 | 1 / 3 / 0 / 3 | `information` | R1 |
-| DU-06 Intelligence | 9 | 52 | 17 | 1 / 1 / 1 / 3 | `intelligence` | R1 |
+| DU-06 Intelligence | 9 | 52 | 15 | 1 / 1 / 1 / 3 | `intelligence` | R1 + R2 (1) |
 | DU-07 Evaluators | 0 | 0 | 0 | 0 / 3 / 0 / 0 | — | R1 |
-| DU-08 Operations | 12 | 82 | 21 | 6 / 4 / 13 / 0 | `operations` | R1 |
+| DU-08 Operations | 13 | 87 | 21 | 7 / 4 / 13 / 0 | `operations`, `readiness` | R1 + R2 (1) + R3 (2) |
 | DU-09 Discovery | 1 | 4 | 5 | 2 / 1 / 0 / 1 | — | R1 |
 | DU-10 Field sync | 3 | 9 | 4 | 2 / 5 / 0 / 2 | `field` | R1 |
-| DU-11 Adapters | 3 | 18 | 3 | 1 / 2 / 0 / 0 | `integration` | R1 |
-| DU-12 Tiles | — | — | — | — | — | R1 |
+| DU-11 Adapters | 3 | 18 | 3 | 1 / 2 / 0 / 0 | `integration` | R1 + R2 (2) |
+| DU-12 Tiles | 0 | 0 | 2 | 0 / 0 / 0 / 0 | — | R1 |
 | DU-13 Analysis jobs | — | — | — | — | — | R1 |
-| DU-14 Readiness (R2) | 13 | 69 | 20 | 5 / 2 / 11 / 0 | `readiness` | R2 |
+| DU-14 Readiness (R2) | 12 | 64 | 20 | 4 / 2 / 11 / 0 | `readiness` | R2 + R3 (5) |
 | DU-15 Knowledge (R2) | 6 | 29 | 8 | 0 / 2 / 6 / 6 | `knowledge` | R2 |
 | DU-16 AI Serving (R2) | 6 | 27 | 7 | 0 / 7 / 3 / 1 | `ai` | R2 |
+
+عمود الإصدار: إصدار الوحدة، وبين قوسين عدد الـAggregates التي تصل في إصدار لاحق (من شريحة كل Aggregate، `01-business/system-definition.md` §4).
 
 ### 7.2 المكوّنات لكل وحدة
 
@@ -140,6 +144,7 @@ flowchart LR
     PIPE["Command pipeline (ADR-P17)"]
     CH["Command handlers (67)"]
     QH["Query handlers (10)"]
+    POST["تقييم شرطي بعد الأمر — 1 قاعدة"]
     PH["Process handlers (7)"]
   end
   subgraph DOM["Domain"]
@@ -168,6 +173,8 @@ flowchart LR
   PIPE --> XOUT0
   PIPE --> XOUT1
   HTTP --> PIPE
+  CH --> POST
+  POST --> PH
   KAFKA --> PH
   SCHED --> PH
   PIPE --> CH
@@ -218,6 +225,7 @@ flowchart LR
     PIPE["Command pipeline (ADR-P17)"]
     CH["Command handlers (28)"]
     QH["Query handlers (11)"]
+    POST["تقييم شرطي بعد الأمر — 3 قاعدة"]
     PH["Process handlers (14)"]
   end
   subgraph DOM["Domain"]
@@ -241,6 +249,8 @@ flowchart LR
   PIPE --> XOUT0
   PIPE --> XOUT1
   HTTP --> PIPE
+  CH --> POST
+  POST --> PH
   KAFKA --> PH
   SCHED --> PH
   PIPE --> CH
@@ -285,6 +295,7 @@ flowchart LR
     PIPE["Command pipeline (ADR-P17)"]
     CH["Command handlers (79)"]
     QH["Query handlers (23)"]
+    POST["تقييم شرطي بعد الأمر — 5 قاعدة"]
     PH["Process handlers (10)"]
   end
   subgraph DOM["Domain"]
@@ -314,6 +325,8 @@ flowchart LR
   end
   PIPE --> XOUT0
   HTTP --> PIPE
+  CH --> POST
+  POST --> PH
   KAFKA --> PH
   SCHED --> PH
   PIPE --> CH
@@ -360,7 +373,6 @@ flowchart LR
   subgraph IN["Inbound adapters"]
     XIN0["Bulk import + scanner"]
     HTTP["HTTP API — 13 أمرًا، 4 استعلامًا"]
-    KAFKA["Kafka consumer + inbox — 0 قاعدة حدث"]
     SCHED["Scheduler — 1 قاعدة زمنية"]
     WORK["Worker reports — 3 قاعدة"]
   end
@@ -368,6 +380,7 @@ flowchart LR
     PIPE["Command pipeline (ADR-P17)"]
     CH["Command handlers (13)"]
     QH["Query handlers (4)"]
+    POST["تقييم شرطي بعد الأمر — 3 قاعدة"]
     PH["Process handlers (7)"]
   end
   subgraph DOM["Domain"]
@@ -384,7 +397,8 @@ flowchart LR
   end
   XIN0 --> PIPE
   HTTP --> PIPE
-  KAFKA --> PH
+  CH --> POST
+  POST --> PH
   SCHED --> PH
   WORK --> PH
   PIPE --> CH
@@ -415,7 +429,7 @@ flowchart LR
 ```mermaid
 flowchart LR
   subgraph IN["Inbound adapters"]
-    HTTP["HTTP API — 52 أمرًا، 17 استعلامًا"]
+    HTTP["HTTP API — 52 أمرًا، 15 استعلامًا"]
     KAFKA["Kafka consumer + inbox — 1 قاعدة حدث"]
     SCHED["Scheduler — 1 قاعدة زمنية"]
     WORK["Worker reports — 3 قاعدة"]
@@ -423,7 +437,8 @@ flowchart LR
   subgraph APP["Application"]
     PIPE["Command pipeline (ADR-P17)"]
     CH["Command handlers (52)"]
-    QH["Query handlers (17)"]
+    QH["Query handlers (15)"]
+    POST["تقييم شرطي بعد الأمر — 1 قاعدة"]
     PH["Process handlers (6)"]
   end
   subgraph DOM["Domain"]
@@ -446,6 +461,8 @@ flowchart LR
   end
   PIPE --> XOUT0
   HTTP --> PIPE
+  CH --> POST
+  POST --> PH
   KAFKA --> PH
   SCHED --> PH
   WORK --> PH
@@ -469,9 +486,9 @@ flowchart LR
 | `AGG-ASSESSMENT` | 7 | 2 |
 | `AGG-CAP-MESSAGE` | 4 | 1 |
 | `AGG-FINDING` | 4 | 1 |
-| `AGG-SITUATION` | 7 | 5 |
+| `AGG-SITUATION` | 7 | 4 |
 
-**استعلامات بلا Aggregate في الوحدة:** `QRY-BASE-TILE`, `QRY-SCN-COMPARE`
+**استعلامات بلا Aggregate في الوحدة:** `QRY-SCN-COMPARE`
 
 **قواعد `SYS:` (زمني):** ALERT: unacknowledged beyond escalation delay
 
@@ -483,46 +500,37 @@ flowchart LR
 
 #### DU-07 Evaluators
 
+لا تملك بيانات ولا خط أوامر: تستهلك الأحداث تدفقيًا، وتقيّم قواعد العضوية والتنبيه، وتصدر أوامر داخلية على عقد DU-06 الذي ينفذها بخط أوامره ويكتب الـoutbox في معاملته (§2). شرط التنبيه يقع على بيانات سياقات أخرى، فـ«الأمر الذي يمس الشرط» (ضابط C-SYS) يصل إليها حدثًا؛ لذا تُقيَّم هنا القواعد المصنفة «شرطي بعد أمر» أيضًا.
+
 ```mermaid
 flowchart LR
-  subgraph IN["Inbound adapters"]
-    KAFKA["Kafka consumer + inbox — 0 قاعدة حدث"]
-  end
-  subgraph APP["Application"]
-    PIPE["Command pipeline (ADR-P17)"]
-    PH["Process handlers (3)"]
-  end
-  subgraph OUT["Outbound adapters"]
-    OPA["OPA embedded PDP"]
-    BUS["Kafka outbox relay (CDC)"]
-    XOUT0["Notifications — BC04"]
-  end
-  PIPE --> XOUT0
-  KAFKA --> PH
-  PH --> PIPE
-  PIPE --> OPA
-  PIPE --> BUS
+  KAFKA["Kafka consumer + inbox"] --> EV["Streaming evaluators — القواعد: 3"]
+  EV --> RD[("PostgreSQL intelligence — قراءة فقط")]
+  EV --> CMD["DU-06 — عقد الأوامر الداخلية (Idempotency-Key مشتق من الحدث)"]
+  EV --> NOTE["Notifications — BC04"]
 ```
 
-| الـAggregate | الأوامر | الاستعلامات |
-|---|---|---|
-
-**قواعد `SYS:` (شرطي بعد أمر):** ALERT: rule condition met؛ ALERT: condition met again within dedupe window؛ ALERT: condition cleared and rule auto_resolve
+| القاعدة (Aggregate: المحفز) |
+|---|
+| ALERT: rule condition met |
+| ALERT: condition met again within dedupe window |
+| ALERT: condition cleared and rule auto_resolve |
 
 #### DU-08 Operations
 
 ```mermaid
 flowchart LR
   subgraph IN["Inbound adapters"]
-    HTTP["HTTP API — 82 أمرًا، 21 استعلامًا"]
+    HTTP["HTTP API — 87 أمرًا، 21 استعلامًا"]
     KAFKA["Kafka consumer + inbox — 13 قاعدة حدث"]
-    SCHED["Scheduler — 6 قاعدة زمنية"]
+    SCHED["Scheduler — 7 قاعدة زمنية"]
   end
   subgraph APP["Application"]
     PIPE["Command pipeline (ADR-P17)"]
-    CH["Command handlers (82)"]
+    CH["Command handlers (87)"]
     QH["Query handlers (21)"]
-    PH["Process handlers (23)"]
+    POST["تقييم شرطي بعد الأمر — 4 قاعدة"]
+    PH["Process handlers (24)"]
   end
   subgraph DOM["Domain"]
     AGG_COORDINATION_CASE["COORDINATION-CASE"]
@@ -533,6 +541,7 @@ flowchart LR
     AGG_OUTCOME_TRACKER["OUTCOME-TRACKER"]
     AGG_PLAN["PLAN"]
     AGG_PLAN_VERSION["PLAN-VERSION"]
+    AGG_QUALIFICATION_RECORD["QUALIFICATION-RECORD"]
     AGG_RISK["RISK"]
     AGG_SUBSCRIPTION["SUBSCRIPTION"]
     AGG_TASK["TASK"]
@@ -540,8 +549,10 @@ flowchart LR
   end
   subgraph OUT["Outbound adapters"]
     DB_operations[("PostgreSQL operations")]
+    DB_readiness[("PostgreSQL readiness")]
     OPA["OPA embedded PDP"]
     RECHECK["Result re-check: security_version + LabelCheck"]
+    KMS["OpenBao / HSM — subject keys"]
     BUS["Kafka outbox relay (CDC)"]
     XOUT0["BC05 OHS — EligibilityCheck"]
     XOUT1["BC01 OHS — AuthorityCheck"]
@@ -549,6 +560,8 @@ flowchart LR
   PIPE --> XOUT0
   PIPE --> XOUT1
   HTTP --> PIPE
+  CH --> POST
+  POST --> PH
   KAFKA --> PH
   SCHED --> PH
   PIPE --> CH
@@ -556,8 +569,10 @@ flowchart LR
   PH --> PIPE
   CH --> DOM
   DOM --> DB_operations
+  DOM --> DB_readiness
   PIPE --> OPA
   QH --> RECHECK
+  DOM --> KMS
   PIPE --> BUS
 ```
 
@@ -571,12 +586,13 @@ flowchart LR
 | `AGG-OUTCOME-TRACKER` | 2 | 1 |
 | `AGG-PLAN` | 7 | 2 |
 | `AGG-PLAN-VERSION` | 8 | 2 |
+| `AGG-QUALIFICATION-RECORD` | 5 | 0 |
 | `AGG-RISK` | 5 | 2 |
 | `AGG-SUBSCRIPTION` | 5 | 0 |
 | `AGG-TASK` | 24 | 3 |
 | `AGG-TASK-TYPE` | 4 | 1 |
 
-**قواعد `SYS:` (زمني):** DECISION-REQUEST: deadline passed؛ INCIDENT: response SLA elapsed without dispatch؛ NOTIFICATION: TTL (30 d) elapsed؛ TASK: follow-up window (7 d) elapsed without open follow-ups؛ TASK: due passed and task type expires_on_due؛ TASK: due passed (escalation policy)
+**قواعد `SYS:` (زمني):** DECISION-REQUEST: deadline passed؛ INCIDENT: response SLA elapsed without dispatch؛ NOTIFICATION: TTL (30 d) elapsed؛ TASK: follow-up window (7 d) elapsed without open follow-ups؛ TASK: due passed and task type expires_on_due؛ TASK: due passed (escalation policy)؛ QUALIFICATION-RECORD: valid_to reached
 
 **قواعد `SYS:` (شرطي بعد أمر):** NOTIFICATION: recipient no longer authorized at delivery؛ NOTIFICATION: delivery failed after retries؛ OUTCOME-TRACKER: target changed by new baseline؛ TASK: all completion criteria satisfied
 
@@ -590,7 +606,6 @@ flowchart LR
 flowchart LR
   subgraph IN["Inbound adapters"]
     HTTP["HTTP API — 4 أمرًا، 5 استعلامًا"]
-    KAFKA["Kafka consumer + inbox — 0 قاعدة حدث"]
     SCHED["Scheduler — 2 قاعدة زمنية"]
     WORK["Worker reports — 1 قاعدة"]
   end
@@ -598,6 +613,7 @@ flowchart LR
     PIPE["Command pipeline (ADR-P17)"]
     CH["Command handlers (4)"]
     QH["Query handlers (5)"]
+    POST["تقييم شرطي بعد الأمر — 1 قاعدة"]
     PH["Process handlers (4)"]
   end
   subgraph DOM["Domain"]
@@ -609,11 +625,14 @@ flowchart LR
     BUS["Kafka outbox relay (CDC)"]
     XOUT0["OpenSearch — وثائق البحث"]
     XOUT1["مخزن إسقاطات BC07 (اسم الـschema [Missing])"]
+    XOUT2["OHS المالكين — إشعار وجلب (11 §8)"]
   end
   PIPE --> XOUT0
   PIPE --> XOUT1
+  PIPE --> XOUT2
   HTTP --> PIPE
-  KAFKA --> PH
+  CH --> POST
+  POST --> PH
   SCHED --> PH
   WORK --> PH
   PIPE --> CH
@@ -644,7 +663,6 @@ flowchart LR
   subgraph IN["Inbound adapters"]
     XIN0["Sync gateway — CommandEnvelope من الأجهزة"]
     HTTP["HTTP API — 9 أمرًا، 4 استعلامًا"]
-    KAFKA["Kafka consumer + inbox — 0 قاعدة حدث"]
     SCHED["Scheduler — 2 قاعدة زمنية"]
     WORK["Worker reports — 2 قاعدة"]
   end
@@ -652,6 +670,7 @@ flowchart LR
     PIPE["Command pipeline (ADR-P17)"]
     CH["Command handlers (9)"]
     QH["Query handlers (4)"]
+    POST["تقييم شرطي بعد الأمر — 5 قاعدة"]
     PH["Process handlers (9)"]
   end
   subgraph DOM["Domain"]
@@ -670,7 +689,8 @@ flowchart LR
   XIN0 --> PIPE
   PIPE --> XOUT0
   HTTP --> PIPE
-  KAFKA --> PH
+  CH --> POST
+  POST --> PH
   SCHED --> PH
   WORK --> PH
   PIPE --> CH
@@ -703,13 +723,13 @@ flowchart LR
   subgraph IN["Inbound adapters"]
     XIN0["Connectors — الأنظمة الخارجية (ACL)"]
     HTTP["HTTP API — 18 أمرًا، 3 استعلامًا"]
-    KAFKA["Kafka consumer + inbox — 0 قاعدة حدث"]
     SCHED["Scheduler — 1 قاعدة زمنية"]
   end
   subgraph APP["Application"]
     PIPE["Command pipeline (ADR-P17)"]
     CH["Command handlers (18)"]
     QH["Query handlers (3)"]
+    POST["تقييم شرطي بعد الأمر — 2 قاعدة"]
     PH["Process handlers (3)"]
   end
   subgraph DOM["Domain"]
@@ -727,7 +747,8 @@ flowchart LR
   XIN0 --> PIPE
   PIPE --> XOUT0
   HTTP --> PIPE
-  KAFKA --> PH
+  CH --> POST
+  POST --> PH
   SCHED --> PH
   PIPE --> CH
   PIPE --> QH
@@ -749,22 +770,53 @@ flowchart LR
 
 **قواعد `SYS:` (شرطي بعد أمر):** INTEGRATION-CONNECTION: health restored؛ SENSOR-STREAM: no data beyond stale-after
 
-#### DU-14 Readiness (R2)
-
-في R1 يعمل جزء BC05 الخاص بالتأهيل والأهلية (AGG-QUALIFICATION-RECORD، `QRY-ELIG-CHECK`، SLC-03) داخل DU-08، وينتقل مع بقية BC05 إلى هذه الوحدة في R2 (`11-hexagonal-reference.md` §7).
+#### DU-12 Tiles
 
 ```mermaid
 flowchart LR
   subgraph IN["Inbound adapters"]
-    HTTP["HTTP API — 69 أمرًا، 20 استعلامًا"]
+    HTTP["HTTP API — 0 أمرًا، 2 استعلامًا"]
+  end
+  subgraph APP["Application"]
+    PIPE["Query pipeline — authz + re-check"]
+    QH["Query handlers (2)"]
+  end
+  subgraph OUT["Outbound adapters"]
+    OPA["OPA embedded PDP"]
+    RECHECK["Result re-check: security_version + LabelCheck"]
+    XOUT0["مخزن إسقاطات BC07 — ميزات البلاطات (PostGIS)"]
+    XOUT1["S3 — الخرائط الأساس (PMTiles)"]
+  end
+  PIPE --> XOUT0
+  PIPE --> XOUT1
+  HTTP --> PIPE
+  PIPE --> QH
+  PIPE --> OPA
+  QH --> RECHECK
+```
+
+| الـAggregate | الأوامر | الاستعلامات |
+|---|---|---|
+
+**استعلامات بلا Aggregate في الوحدة:** `QRY-BASE-TILE`, `QRY-SIT-TILE`
+
+#### DU-14 Readiness (R2)
+
+تعرض هذه الوحدة حالتها في R2. في R1 يعمل جزء BC05 الخاص بالتأهيل والأهلية (AGG-QUALIFICATION-RECORD، `QRY-ELIG-CHECK`، SLC-03) داخل DU-08 بـschema `readiness`، وينتقل مع بقية BC05 إلى هذه الوحدة في R2 (`11-hexagonal-reference.md` §7). وتضم أيضًا Aggregates الإمداد والتمارين (SLC-18، SLC-19، R3) التي لا يذكرها `deployment-units.md` لـDU-14 — إسناد **[Derived]** من ملكية BC05 (§5).
+
+```mermaid
+flowchart LR
+  subgraph IN["Inbound adapters"]
+    HTTP["HTTP API — 64 أمرًا، 20 استعلامًا"]
     KAFKA["Kafka consumer + inbox — 11 قاعدة حدث"]
-    SCHED["Scheduler — 5 قاعدة زمنية"]
+    SCHED["Scheduler — 4 قاعدة زمنية"]
   end
   subgraph APP["Application"]
     PIPE["Command pipeline (ADR-P17)"]
-    CH["Command handlers (69)"]
+    CH["Command handlers (64)"]
     QH["Query handlers (20)"]
-    PH["Process handlers (18)"]
+    POST["تقييم شرطي بعد الأمر — 2 قاعدة"]
+    PH["Process handlers (17)"]
   end
   subgraph DOM["Domain"]
     AGG_ALLOCATION["ALLOCATION"]
@@ -774,7 +826,6 @@ flowchart LR
     AGG_EXERCISE["EXERCISE"]
     AGG_LOGISTICS_REQUEST["LOGISTICS-REQUEST"]
     AGG_MAINTENANCE_ORDER["MAINTENANCE-ORDER"]
-    AGG_QUALIFICATION_RECORD["QUALIFICATION-RECORD"]
     AGG_RESOURCE_POOL["RESOURCE-POOL"]
     AGG_ROLE_REQUIREMENT["ROLE-REQUIREMENT"]
     AGG_SCENARIO["SCENARIO"]
@@ -785,10 +836,15 @@ flowchart LR
     DB_readiness[("PostgreSQL readiness")]
     OPA["OPA embedded PDP"]
     RECHECK["Result re-check: security_version + LabelCheck"]
-    KMS["OpenBao / HSM — subject keys"]
     BUS["Kafka outbox relay (CDC)"]
+    XOUT0["BC01 OHS — AuthorityCheck"]
+    XOUT1["استعلامات تاريخ المالكين — إعادة البناء"]
   end
+  PIPE --> XOUT0
+  PIPE --> XOUT1
   HTTP --> PIPE
+  CH --> POST
+  POST --> PH
   KAFKA --> PH
   SCHED --> PH
   PIPE --> CH
@@ -798,7 +854,6 @@ flowchart LR
   DOM --> DB_readiness
   PIPE --> OPA
   QH --> RECHECK
-  DOM --> KMS
   PIPE --> BUS
 ```
 
@@ -811,16 +866,15 @@ flowchart LR
 | `AGG-EXERCISE` | 4 | 2 |
 | `AGG-LOGISTICS-REQUEST` | 3 | 2 |
 | `AGG-MAINTENANCE-ORDER` | 5 | 1 |
-| `AGG-QUALIFICATION-RECORD` | 5 | 1 |
 | `AGG-RESOURCE-POOL` | 5 | 0 |
 | `AGG-ROLE-REQUIREMENT` | 4 | 0 |
 | `AGG-SCENARIO` | 4 | 2 |
 | `AGG-SHIPMENT` | 7 | 3 |
 | `AGG-SIMULATION` | 7 | 3 |
 
-**استعلامات بلا Aggregate في الوحدة:** `QRY-ELIG-CHECK`, `QRY-POL-TIMELINE`, `QRY-READINESS`
+**استعلامات بلا Aggregate في الوحدة:** `QRY-ELIG-CHECK`, `QRY-POL-TIMELINE`, `QRY-QUAL-LIST`, `QRY-READINESS`
 
-**قواعد `SYS:` (زمني):** ALLOCATION: checks passed, policy requires approval؛ ALLOCATION: provisional hold (1 h) elapsed؛ ASSET-RESERVATION: hold expiry (24 h) reached؛ LOGISTICS-REQUEST: linked allocation rejected؛ QUALIFICATION-RECORD: valid_to reached
+**قواعد `SYS:` (زمني):** ALLOCATION: checks passed, policy requires approval؛ ALLOCATION: provisional hold (1 h) elapsed؛ ASSET-RESERVATION: hold expiry (24 h) reached؛ LOGISTICS-REQUEST: linked allocation rejected
 
 **قواعد `SYS:` (شرطي بعد أمر):** ALLOCATION: all checks passed؛ ALLOCATION: a check failed
 
@@ -841,6 +895,7 @@ flowchart LR
     PIPE["Command pipeline (ADR-P17)"]
     CH["Command handlers (29)"]
     QH["Query handlers (8)"]
+    POST["تقييم شرطي بعد الأمر — 2 قاعدة"]
     PH["Process handlers (14)"]
   end
   subgraph DOM["Domain"]
@@ -857,8 +912,14 @@ flowchart LR
     RECHECK["Result re-check: security_version + LabelCheck"]
     S3[("Object storage")]
     BUS["Kafka outbox relay (CDC)"]
+    XOUT0["BC01 OHS — AuthorityCheck"]
+    XOUT1["استعلامات تاريخ المالكين — إعادة البناء"]
   end
+  PIPE --> XOUT0
+  PIPE --> XOUT1
   HTTP --> PIPE
+  CH --> POST
+  POST --> PH
   KAFKA --> PH
   WORK --> PH
   PIPE --> CH
@@ -900,6 +961,7 @@ flowchart LR
     PIPE["Command pipeline (ADR-P17)"]
     CH["Command handlers (27)"]
     QH["Query handlers (7)"]
+    POST["تقييم شرطي بعد الأمر — 7 قاعدة"]
     PH["Process handlers (11)"]
   end
   subgraph DOM["Domain"]
@@ -917,10 +979,14 @@ flowchart LR
     BUS["Kafka outbox relay (CDC)"]
     XOUT0["vLLM — النماذج"]
     XOUT1["OpenSearch k-NN — المتجهات"]
+    XOUT2["أوامر المالكين عند قبول AI-RESULT — باسم المراجع"]
   end
   PIPE --> XOUT0
   PIPE --> XOUT1
+  PIPE --> XOUT2
   HTTP --> PIPE
+  CH --> POST
+  POST --> PH
   KAFKA --> PH
   WORK --> PH
   PIPE --> CH

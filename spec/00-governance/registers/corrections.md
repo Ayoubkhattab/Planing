@@ -15,7 +15,7 @@ consumers: []
 
 ## corrections
 
-_78 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-78 in Phase 3.8 — 18-analysis-design)
+_80 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-80 in Phase 3.8 — 18-analysis-design)
 
 ### CR-01
 
@@ -637,9 +637,25 @@ _78 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-78 in Phase 3.8 — 18-an
 ### CR-78
 
 - **issue:** The contracts define no code for a missing or expired token (401), an oversized request (413), an unsupported media type (415) or a fail-closed dependency call to another context; no Retry-After header for 429/503 (18-analysis-design/18-error-handling.md §8).
-- **correction:** Add platform-wide codes UNAUTHENTICATED (401), PAYLOAD_TOO_LARGE (413), UNSUPPORTED_MEDIA_TYPE (415) and DEPENDENCY_UNAVAILABLE (503, retryable), keep specific dependency codes the specs already name (ELIGIBILITY_UNAVAILABLE), and declare Retry-After on 429 and 503 responses; applied through the spec tooling.
+- **correction:** Add platform-wide codes UNAUTHENTICATED (401), PAYLOAD_TOO_LARGE (413), UNSUPPORTED_MEDIA_TYPE (415) and DEPENDENCY_UNAVAILABLE (503, retryable); add ELIGIBILITY_UNAVAILABLE (503, retryable), which eligibility-rules.md and invariants-slc03.md already name, to errors-slc03 and to the error lists of CMD-TASK-ASSIGN and CMD-TASK-REASSIGN; declare Retry-After on 429 and on retryable 503 responses (not on AUDIT_UNAVAILABLE while it is not retryable); applied through the spec tooling. Amended 2026-10-01 after the independent review, before application.
 - **target_wave:** Phase 3.8 — source-correction round
 - **origin:** 18-error-handling.md §8; S-27
+- **status:** APPROVED_DELEGATED — pending application
+
+### CR-79
+
+- **issue:** No contract operation outside SLC-03 carries x-offline-capable, yet field-sync-protocol.md §1/§3, CommandEnvelope.target_command in openapi-field-slc11.md and REQ-OFF-001 all assume offline capture of observations, evidence and attachments (source issue S-09).
+- **correction:** Mark the six SLC-02 operations CMD-OBS-RECORD, CMD-OBS-AMEND, CMD-OBS-ATTACH-EVIDENCE, CMD-EVD-REGISTER, CMD-ATT-INITIATE-UPLOAD and CMD-ATT-COMPLETE-UPLOAD x-offline-capable: true, so that the offline set is the 12 commands CommandEnvelope accepts; applied through the spec tooling (slice_contracts).
+- **target_wave:** Phase 3.8 — source-correction round
+- **origin:** Project owner decision 2026-10-01; 18-analysis-design/20-integration-design.md §7; S-09
+- **status:** APPROVED — pending application
+
+### CR-80
+
+- **issue:** idempotency_keys is keyed (tenant_id, key) in 06-data/logical-model/slc-01.md, so another caller in the same tenant who reuses a key receives the stored ResourceRef or IDEMPOTENCY_KEY_REUSED at pipeline step 3, before full authorization (ADR-P17 2.5).
+- **correction:** Scope the idempotency key to the caller: key (tenant_id, principal_id, key), and match a stored response only for the same principal; the pipeline order is unchanged.
+- **target_wave:** Phase 3.8 — source-correction round
+- **origin:** 18-analysis-design/18-error-handling.md §4; independent review 2026-10-01
 - **status:** APPROVED_DELEGATED — pending application
 
 ---
@@ -1225,10 +1241,31 @@ corrections:
     type (415) or a fail-closed dependency call to another context; no Retry-After header for 429/503 (18-analysis-design/18-error-handling.md
     §8).
   correction: Add platform-wide codes UNAUTHENTICATED (401), PAYLOAD_TOO_LARGE (413), UNSUPPORTED_MEDIA_TYPE (415) and DEPENDENCY_UNAVAILABLE
-    (503, retryable), keep specific dependency codes the specs already name (ELIGIBILITY_UNAVAILABLE), and declare Retry-After
-    on 429 and 503 responses; applied through the spec tooling.
+    (503, retryable); add ELIGIBILITY_UNAVAILABLE (503, retryable), which eligibility-rules.md and invariants-slc03.md already
+    name, to errors-slc03 and to the error lists of CMD-TASK-ASSIGN and CMD-TASK-REASSIGN; declare Retry-After on 429 and
+    on retryable 503 responses (not on AUDIT_UNAVAILABLE while it is not retryable); applied through the spec tooling. Amended
+    2026-10-01 after the independent review, before application.
   target_wave: Phase 3.8 — source-correction round
   origin: 18-error-handling.md §8; S-27
+  status: APPROVED_DELEGATED — pending application
+- id: CR-79
+  issue: No contract operation outside SLC-03 carries x-offline-capable, yet field-sync-protocol.md §1/§3, CommandEnvelope.target_command
+    in openapi-field-slc11.md and REQ-OFF-001 all assume offline capture of observations, evidence and attachments (source
+    issue S-09).
+  correction: 'Mark the six SLC-02 operations CMD-OBS-RECORD, CMD-OBS-AMEND, CMD-OBS-ATTACH-EVIDENCE, CMD-EVD-REGISTER, CMD-ATT-INITIATE-UPLOAD
+    and CMD-ATT-COMPLETE-UPLOAD x-offline-capable: true, so that the offline set is the 12 commands CommandEnvelope accepts;
+    applied through the spec tooling (slice_contracts).'
+  target_wave: Phase 3.8 — source-correction round
+  origin: Project owner decision 2026-10-01; 18-analysis-design/20-integration-design.md §7; S-09
+  status: APPROVED — pending application
+- id: CR-80
+  issue: idempotency_keys is keyed (tenant_id, key) in 06-data/logical-model/slc-01.md, so another caller in the same tenant
+    who reuses a key receives the stored ResourceRef or IDEMPOTENCY_KEY_REUSED at pipeline step 3, before full authorization
+    (ADR-P17 2.5).
+  correction: 'Scope the idempotency key to the caller: key (tenant_id, principal_id, key), and match a stored response only
+    for the same principal; the pipeline order is unchanged.'
+  target_wave: Phase 3.8 — source-correction round
+  origin: 18-analysis-design/18-error-handling.md §4; independent review 2026-10-01
   status: APPROVED_DELEGATED — pending application
 ```
 

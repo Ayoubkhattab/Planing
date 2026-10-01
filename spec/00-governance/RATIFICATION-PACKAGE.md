@@ -53,6 +53,7 @@ ratified_at: '2026-09-27'
 | ADR-P17 | Internal Service Architecture (Hexagonal) | APPROVED_DELEGATED (Phase 3.8، 2026-09-30 — النمط اختاره المالك) |
 | ADR-P18 | Repository and Module Structure | APPROVED_DELEGATED (Phase 3.8، 2026-09-30) |
 | ADR-P19 | Handling of Authorization Outcomes (403 vs 404، MFA step-up، approval-required) — يعدّل البند 5 من ADR-P06 | APPROVED (اختيار مالك المشروع، 2026-10-01) |
+| ADR-P20 | Event Consumer Retry and Dead-Letter Policy (5 محاولات ثم DLQ) | APPROVED (اختيار مالك المشروع، 2026-10-01) |
 
 ## 3. قرارات W1 (الإجابات المفوّضة)
 

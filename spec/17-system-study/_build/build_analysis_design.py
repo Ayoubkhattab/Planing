@@ -2233,6 +2233,22 @@ def load_trace_verification():
     return ver
 
 
+CTX_PKG = {"BC01": "bc01-foundation", "BC02": "bc02-information", "BC03": "bc03-intelligence", "BC04": "bc04-operations",
+           "BC05": "bc05-readiness", "BC06": "bc06-knowledge", "BC07": "bc07-platform", "BC08": "bc08-governance"}  # 11-hexagonal-reference.md §7
+
+
+def load_trace_design():
+    """design_elements of the ratified trace files (15-traceability/trace-slc*.md): requirement → AGG/QRY/CMD/SPEC ids."""
+    des = defaultdict(set)
+    for f in sorted((SPEC / "15-traceability").glob("trace-slc*.md")):
+        for header, rows in tables(f.read_text(encoding="utf-8")):
+            if header[:1] == ["requirement"] and "design_elements" in header:
+                i = header.index("design_elements")
+                for r in rows:
+                    des[r[0]] |= set(re.findall(r"\b(?:AGG|QRY|CMD|SPEC|LIB)-[A-Z0-9-]+", r[i]))
+    return des
+
+
 def build_traceability(aggs, cmds, qrys, reqs, ucs, ops, story_ids):
     tabs = load_ldm()[0]
     bc_schemas = defaultdict(set)
@@ -2261,65 +2277,90 @@ def build_traceability(aggs, cmds, qrys, reqs, ucs, ops, story_ids):
     for aid, a in aggs.items():
         t = main_table(aid, tabs, bc_schemas[a["bc"]])
         a_tab[aid] = f"{t['schema']}.{t['name']}" if t else None
-    req_aggs = defaultdict(list)
+    sat = defaultdict(set)  # traces.satisfies — the design link
     for aid, a in aggs.items():
         for r in a["reqs"]:
-            req_aggs[r].append(aid)
+            sat[r].add(aid)
+    q_req = defaultdict(set)  # query catalogs, column المتطلب
+    for qid, q in qrys.items():
+        for r in re.findall(r"REQ-[A-Z]+-\d+", q.get("المتطلب", "")):
+            q_req[r].add(qid)
+    des = load_trace_design()
     req_ucs = {rid: re.findall(r"UC-\d+", r.get("use_cases", "")) for rid, r in reqs.items()}
 
     def chain(rid):
-        ag = sorted(req_aggs.get(rid, []))
-        direct = sorted(set(t_req.get(rid, [])))
-        via = sorted({x for a in ag for x in t_agg.get(a, [])} - set(direct))
-        return {"uc": req_ucs.get(rid, []), "agg": ag, "st": sum(len(stories[a]) for a in ag), "op": sum(len(a_ops[a]) for a in ag),
-                "tab": sorted({a_tab[a] for a in ag if a_tab.get(a)}), "du": sorted({du_of(a, aggs) for a in ag}), "direct": direct, "via": via}
+        ag = sat.get(rid, set()) | {x for x in des.get(rid, set()) if x in aggs}
+        qs = q_req.get(rid, set()) | {x for x in des.get(rid, set()) if x in qrys}
+        st = {x for a in ag for x in stories[a]} | {story_ids[q] for q in qs if q in story_ids}
+        op = {x for a in ag for x in a_ops[a]} | {q for q in qs if q in ops}
+        tabs_ = {a_tab[a] for a in ag if a_tab.get(a)} | {a_tab[q_agg[q]] for q in qs if q_agg.get(q) and a_tab.get(q_agg[q])}
+        dus = {du_of(a, aggs) for a in ag} | {du_of(q_agg[q], aggs) for q in qs if q_agg.get(q)}
+        spec = sorted(x for x in des.get(rid, set()) if x.startswith(("SPEC-", "LIB-")))
+        return {"uc": req_ucs.get(rid, []), "agg": sorted(ag), "extra_agg": sorted(ag - sat.get(rid, set())), "qry": sorted(qs),
+                "spec": spec, "st": len(st), "op": len(op), "tab": sorted(tabs_), "du": sorted(dus), "test": sorted(set(t_req.get(rid, [])))}
     ch = {rid: chain(rid) for rid in reqs}
     rels = ["R1", "R2", "R3"]
     rel = lambda rid: reqs[rid].get("release", "—")  # noqa: E731
-    links = [("المتطلبات", lambda c: True), ("← حالة استخدام", lambda c: c["uc"]), ("← Aggregate (تصميم)", lambda c: c["agg"]),
-             ("← قصة مستخدم", lambda c: c["st"]), ("← عملية API", lambda c: c["op"]), ("← جدول", lambda c: c["tab"]),
-             ("← وحدة نشر", lambda c: c["du"]), ("← اختبار قبول (مباشر أو عبر الـAggregate)", lambda c: c["direct"] or c["via"]),
-             ("← اختبار قبول يسمّي المتطلب مباشرة", lambda c: c["direct"])]
+    links = [("المتطلبات", lambda c: True), ("← حالة استخدام", lambda c: c["uc"]),
+             ("← عنصر تصميم (Aggregate أو استعلام)", lambda c: c["agg"] or c["qry"]), ("← قصة مستخدم", lambda c: c["st"]),
+             ("← عملية API", lambda c: c["op"]), ("← جدول", lambda c: c["tab"]), ("← وحدة نشر", lambda c: c["du"]),
+             ("← اختبار قبول يسمّي المتطلب", lambda c: c["test"])]
     L = [BEGIN, "", "### 4.1 التغطية", "", "| الحلقة | " + " | ".join(rels) + " | المجموع |", "|---|" + "---|" * (len(rels) + 1)]
     for name, f in links:
         cnt = [sum(1 for r in reqs if rel(r) == x and f(ch[r])) for x in rels]
         L.append(f"| {name} | " + " | ".join(str(n) for n in cnt) + f" | {sum(1 for r in reqs if f(ch[r]))} |")
-    no_design = sorted(r for r in reqs if not ch[r]["agg"])
-    no_test = sorted(r for r in reqs if not (ch[r]["direct"] or ch[r]["via"]))
+    by_query = sorted(r for r in reqs if not ch[r]["agg"] and ch[r]["qry"])
+    by_trace = sorted(r for r in reqs if ch[r]["extra_agg"])
+    platform = sorted(r for r in reqs if not ch[r]["agg"] and not ch[r]["qry"])
+    no_test = sorted(r for r in reqs if not ch[r]["test"])
     tver = load_trace_verification()
     other = {r: [v for v in tver.get(r, []) if not re.fullmatch(r"(TST-[A-Z0-9-]+(, )?)+", v)] for r in no_test}
     unverified = [r for r in no_test if not other[r]]
-    L += ["", f"**بلا Aggregate ({len(no_design)}):** " + (", ".join(no_design) or "لا شيء") +
-          " — متطلبات منصة أو جودة تتحقق في `platform/` أو بـFitness functions والقياس (`24-testing-strategy.md` §4).", "",
-          f"**بلا مواصفة قبول ({len(no_test)})** — وطريقة تحققها في ملفات التتبع المعتمدة (`15-traceability/`):", "",
-          "| المتطلب | التحقق في المصدر |", "|---|---|"] + [f"| {r} | {esc('؛ '.join(dict.fromkeys(other[r]))) or '**[Missing]**'} |" for r in no_test] + ["",
+    L += ["", "**عنصر التصميم:** `traces.satisfies` في الـAggregates، وعمود «المتطلب» في كتالوجات الاستعلامات، وما يسميه عمود `design_elements` في `15-traceability/trace-slc*.md` من Aggregates واستعلامات.", "",
+          f"- **يحققه استعلام فقط ({len(by_query)}):** " + (", ".join(by_query) or "لا شيء") + ".",
+          f"- **Aggregate يسميه ملف التتبع ولا يذكر المتطلب في `traces.satisfies` ({len(by_trace)}):** " + (", ".join(by_trace) or "لا شيء") + " (S-22).",
+          f"- **بلا Aggregate ولا استعلام ({len(platform)}):** " + (", ".join(f"{r}" + (f" ({', '.join(ch[r]['spec'])})" if ch[r]["spec"] else "") for r in platform) or "لا شيء") +
+          " — متطلبات منصة وجودة تتحقق في `platform/` وبـFitness functions والقياس، أو بمكتبة/مواصفة مسماة بين القوسين (`24-testing-strategy.md` §4).", "",
+          f"**بلا مواصفة قبول تسميه ({len(no_test)})** — وطريقة تحققها في ملفات التتبع المعتمدة (`15-traceability/`):", "",
+          "| المتطلب | الإصدار | التحقق في المصدر |", "|---|---|---|"] + \
+         [f"| {r} | {rel(r)} | {esc('؛ '.join(dict.fromkeys(other[r]))) or '**[Missing]**'} |" for r in no_test] + ["",
           f"**بلا أي تحقق مسمّى ({len(unverified)}):** " + (", ".join(unverified) or "لا شيء") + ".", "",
           f"الاختبارات: {sum(1 for t in tests if t['id'].startswith('TST-'))} مواصفة قبول في `13-verification/acceptance/` "
-          f"و{sum(1 for t in tests if t['id'].startswith('PROP-'))} ملف خصائص ثوابت (`invariant-properties-*.md`).", "",
+          f"و{sum(1 for t in tests if t['id'].startswith('PROP-'))} ملف خصائص ثوابت (`invariant-properties-*.md`). "
+          "مواصفة آلة الحالة (`TST-<AGG>-SM`) ترث متطلبات الـAggregate من `traces.satisfies`، فالدليل المستقل على المستوى المتطلب هو مواصفات الثوابت `TST-SLCnn-INVARIANTS`.", "",
           "### 4.2 لكل متطلب", "",
-          "القصص والعمليات بالعدد (تفاصيلها في `05-user-stories/` و`14-api-design.md`)؛ الاختبارات: المباشرة ثم «/» ثم ما يأتي عبر الـAggregate.", ""]
+          "القصص والعمليات بالعدد، وهي كل قصص وعمليات عناصر التصميم المرتبطة (الـAggregate كله لا الجزء الذي يخص المتطلب وحده)؛ تفاصيلها في `05-user-stories/` و`14-api-design.md`.", ""]
     by_cap = defaultdict(list)
     for rid in sorted(reqs):
         by_cap[(reqs[rid].get("capability") or "—")[:6]].append(rid)
     for cap in sorted(by_cap):
-        L += [f"#### {cap}", "", "| المتطلب | الإصدار | حالات الاستخدام | الـAggregates | قصص | عمليات | الجداول | الوحدات | الاختبارات |",
-              "|---|---|---|---|---|---|---|---|---|"]
+        L += [f"#### {cap}", "", "| المتطلب | الإصدار | حالات الاستخدام | الـAggregates | الاستعلامات | قصص | عمليات | الجداول | الوحدات | الاختبارات |",
+              "|---|---|---|---|---|---|---|---|---|---|"]
         for rid in by_cap[cap]:
             c = ch[rid]
-            tst = ", ".join(c["direct"]) + (" / " + ", ".join(c["via"]) if c["via"] else "")
-            L.append(f"| {rid} | {rel(rid)} | {', '.join(c['uc']) or '—'} | {', '.join(x[4:] for x in c['agg']) or '—'} | {c['st'] or '—'} | "
-                     f"{c['op'] or '—'} | {', '.join(f'`{x}`' for x in c['tab']) or '—'} | {', '.join(c['du']) or '—'} | {tst or '—'} |")
+            L.append(f"| {rid} | {rel(rid)} | {', '.join(c['uc']) or '—'} | {', '.join(x[4:] for x in c['agg']) or '—'} | {', '.join(c['qry']) or '—'} | "
+                     f"{c['st'] or '—'} | {c['op'] or '—'} | {', '.join(f'`{x}`' for x in c['tab']) or '—'} | {', '.join(c['du']) or '—'} | {', '.join(c['test']) or '—'} |")
         L.append("")
-    L += ["### 4.3 لكل Aggregate", "", "| الـAggregate | الشريحة | المتطلبات | القصص | العمليات | الجدول | الوحدة | اختبار القبول | خصائص الثوابت |",
-          "|---|---|---|---|---|---|---|---|---|"]
+    a_req = defaultdict(list)
+    for rid in sorted(reqs):
+        for aid in ch[rid]["agg"]:
+            a_req[aid].append(rid)
+    L += ["### 4.3 لكل Aggregate", "",
+          "مكان الكود بقاعدة `13-project-structure.md` §5 داخل حزمة السياق (`11-hexagonal-reference.md` §7)؛ الأوامر والاستعلامات في `commands/` و`queries/` من الحزمة نفسها.", "",
+          "| الـAggregate | الشريحة | المتطلبات | القصص | العمليات | الجدول | الوحدة | مكان الكود | مواصفة آلة الحالة | مواصفة الثوابت + خصائص الشريحة |",
+          "|---|---|---|---|---|---|---|---|---|---|"]
     for aid in sorted(aggs):
         a = aggs[aid]
         sl = a["slice"]
-        L.append(f"| `{aid}` | {sl} | {len(a['reqs'])} | {len(stories[aid])} | {len(a_ops[aid])} | {('`' + a_tab[aid] + '`') if a_tab[aid] else '—'} | "
-                 f"{du_of(aid, aggs)} | {', '.join(sorted(t_agg.get(aid, []))) or '—'} | {', '.join(sorted(t_slice.get(sl, []))) or '—'} |")
-    orphan_ops = sorted(o for o in ops if not (o in cmds or q_agg.get(o)))
-    L += ["", f"**عمليات بلا Aggregate ({len(orphan_ops)}):** " + (", ".join(f"`{o}`" for o in orphan_ops) or "لا شيء") +
-          " — استعلامات عابرة (`05-user-stories/`، «استعلامات عابرة للـAggregates»).", "", END]
+        L.append(f"| `{aid}` | {sl} | {', '.join(a_req[aid]) or '—'} | {len(stories[aid])} | {len(a_ops[aid])} | {('`' + a_tab[aid] + '`') if a_tab[aid] else '—'} | "
+                 f"{du_of(aid, aggs)} | `contexts/{CTX_PKG[a['bc']]}/domain/{aid[4:].lower()}/` | {', '.join(sorted(t_agg.get(aid, []))) or '—'} | "
+                 f"{', '.join(sorted(t_slice.get(sl, []))) or '—'} |")
+    cross = sorted(o for o in ops if o not in cmds and o in story_ids and not q_agg.get(o))
+    nocat = sorted(o for o in ops if o not in cmds and o not in story_ids)
+    L += ["", f"**عمليات بلا Aggregate ({len(cross)}):** " + (", ".join(f"`{o}`" for o in cross) or "لا شيء") +
+          " — استعلامات عابرة (`05-user-stories/`، «استعلامات عابرة للـAggregates»).", "",
+          f"**عمليات بلا كتالوج ولا قصة ({len(nocat)}):** " + (", ".join(f"`{o}`" for o in nocat) or "لا شيء") +
+          " — `QRY-LABEL-CHECK` عقد عابر للسياقات يقدمه كل سياق يملك موارد معلَّمة (CR-47، `14-api-design.md` §7)، وهو الوحيد الذي يعدّه V2 يتيمًا.", "", END]
     write_generated(OUT / "25-traceability-matrix.md", None, "\n".join(L))
     return len(reqs), len(no_test)
 
@@ -2377,7 +2418,9 @@ def build_roadmap(aggs, cmds, qrys, ops, story_ids):
         if members:
             L.append(f'  subgraph {rel}["{rel}"]')
             for sl in members:
-                L.append(f'    {sl.replace("-", "_")}["{sl}<br/>{slices[sl].get("content", "")[:42].replace(chr(34), "")}"]')
+                txt = slices[sl].get("content", "").replace(chr(34), "")
+                txt = txt if len(txt) <= 42 else txt[:42].rsplit(" ", 1)[0] + " …"
+                L.append(f'    {sl.replace("-", "_")}["{sl}<br/>{txt}"]')
             L.append("  end")
     for sl in order:
         for d in deps.get(sl, []):
@@ -2385,7 +2428,7 @@ def build_roadmap(aggs, cmds, qrys, ops, story_ids):
                 L.append(f"  {d.replace('-', '_')} --> {sl.replace('-', '_')}")
     L += ["```", "", "### 4.2 الـEpics بترتيب التنفيذ", "",
           "الترتيب: الإصدار أولًا، ثم الاعتماديات (`depends_on`)، ثم الترتيب المعلن في الخطة (`r2_order`، `r3_order` في `14-slices/slices.md`)، ثم رقم الشريحة.", "",
-          "| # | Epic | الإصدار | يعتمد على | المحتوى | الـAggregates | قصص أمر / جلب / نظام | العمليات | الوحدات | الاختبارات | G6 |",
+          "| # | Epic | الإصدار | يعتمد على | المحتوى | الـAggregates | قصص أمر / جلب / نظام | العمليات | الوحدات | مواصفات القبول + ملف الخصائص | G6 |",
           "|---|---|---|---|---|---|---|---|---|---|---|"]
     for i, sl in enumerate(order, 1):
         rec, r = slices[sl], rows[sl]
@@ -2397,21 +2440,20 @@ def build_roadmap(aggs, cmds, qrys, ops, story_ids):
         L.append(f"| {i} | **{sl}** | {rec.get('release', '—')} | {', '.join(deps.get(sl, [])) or '—'} | {esc(short(rec.get('content', ''), 70))} | {len(own)} | "
                  f"{n('cmd')} / {n('qry')} / {n('sys')} | {nops} | {', '.join(dus)} | {len(tst)} | {esc(rec.get('g6_slc', '—'))} |")
     rest = [sl for sl in slices if sl not in epics]
-    L += ["", "شرائح بلا قصص: " + "، ".join(f"{sl} ({esc(slices[sl].get('content', ''))}، {slices[sl].get('status', '—')})" for sl in rest) + ".", "",
+    L += ["", "مجموع العمليات 610 من 611: `QRY-LABEL-CHECK` عقد عابر للسياقات بلا كتالوج ولا شريحة (`25-traceability-matrix.md` §4.3).", "",
+          "شرائح بلا قصص: " + "، ".join(f"{sl} ({esc(slices[sl].get('content', ''))}، {slices[sl].get('status', '—')})" for sl in rest) + ".", "",
           "### 4.3 الـBacklog لكل Epic", "",
-          "كل صف ميزة (Feature) = Aggregate داخل الـEpic؛ القصص في `05-user-stories/` بمعرّفاتها. صف Aggregate من شريحة أخرى يعني أن الـEpic يضيف أوامر أو استعلامات إليه.", ""]
+          "كل صف ميزة (Feature) = Aggregate داخل الـEpic، وقصصه في `05-user-stories/` تحت عنوان الـAggregate. صف Aggregate من شريحة أخرى يعني أن الـEpic يضيف إليه أوامر أو استعلامات.", ""]
     for sl in order:
         L += [f"#### {sl} — {esc(slices[sl].get('content', ''))}", "",
-              "| الميزة (Aggregate) | شريحته | أمر | جلب | نظام | القصص | الوحدة | اختبار القبول |", "|---|---|---|---|---|---|---|---|"]
+              "| الميزة (Aggregate) | شريحته | أمر | جلب | نظام | الوحدة | اختبار القبول |", "|---|---|---|---|---|---|---|"]
         t_agg = {t["agg"]: t["id"] for t in tests if t["agg"]}
         for aid in sorted(rows[sl], key=lambda a: (a not in aggs or aggs[a]["slice"] != sl, a)):
             x = rows[sl][aid]
-            ids = sorted(x["ids"])
-            rng = ids[0] if len(ids) == 1 else f"{ids[0]} … {ids[-1]}"
             if aid in aggs:
-                L.append(f"| `{aid}` | {aggs[aid]['slice']} | {x['cmd']} | {x['qry']} | {x['sys']} | {rng} | {du_of(aid, aggs)} | {t_agg.get(aid, '—')} |")
+                L.append(f"| `{aid}` | {aggs[aid]['slice']} | {x['cmd']} | {x['qry']} | {x['sys']} | {du_of(aid, aggs)} | {t_agg.get(aid, '—')} |")
             else:
-                L.append(f"| استعلامات عابرة | — | 0 | {x['qry']} | 0 | {rng} | — | — |")
+                L.append(f"| استعلامات عابرة: {', '.join(sorted(k for k in key_of.values() if story_ids.get(k) in x['ids']))} | — | 0 | {x['qry']} | 0 | — | — |")
         L.append("")
     L.append(END)
     write_generated(OUT / "26-implementation-roadmap.md", None, "\n".join(L))

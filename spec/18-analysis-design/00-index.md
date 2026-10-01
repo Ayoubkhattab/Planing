@@ -35,7 +35,7 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 |---|---|---|---|---|---|
 | 01 | [01-system-overview.md](01-system-overview.md) | المشكلة، الأهداف، النطاق، حدود النظام، الأنظمة الخارجية؛ مخطط السياق (DFD 0) | مكتوب | 3 | ✅ |
 | 02 | [02-actors-roles.md](02-actors-roles.md) | 15 فاعلًا أعمال + أدوار المنصة والسلطة والعلاقة بالمورد والفاعلون النظاميون؛ مصفوفات الفاعل × السياق × نوع العملية؛ حقوق القرار | مولَّد + مكتوب | 3 | ✅ |
-| 03 | [03-requirements-analysis.md](03-requirements-analysis.md) | 210 متطلبًا وظيفيًا حسب القدرة، 95 سيناريو جودة (91 منها في مصفوفة التحقق)، الأولويات، التغطية | مولَّد + مكتوب | 3 | ✅ |
+| 03 | [03-requirements-analysis.md](03-requirements-analysis.md) | 210 متطلبًا وظيفيًا حسب القدرة، 95 سيناريو جودة (95 منها في مصفوفة التحقق)، الأولويات، التغطية | مولَّد + مكتوب | 3 | ✅ |
 | 04 | [04-use-cases.md](04-use-cases.md) | 101 حالة استخدام بفاعلين ومسار رئيسي وبدائل (مشتقة حيث يتركها المصدر TBD)؛ مخطط حالات استخدام لكل BC | مولَّد + مكتوب | 3 | ✅ |
 | 05 | [05-user-stories/](05-user-stories/00-guide.md) | 739 قصة مستخدم: قصة لكل أمر (477) واستعلام (133) وقاعدة انتقال تلقائي (129 تغطي 175 انتقالًا)، مصنفة حسب نوع العملية وفئة المجال، مع ضوابط قبول لكل نوع | مولَّد + مكتوب | 2 | ✅ |
 | 06 | [06-process-models.md](06-process-models.md) | تيارات القيمة السبعة؛ Activity وSwimlane وDFD 1 | مكتوب | 3 | ✅ |
@@ -128,7 +128,7 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 
 ## 6. مشكلات في المصادر المعتمدة كشفتها الدراسة
 
-كشفتها المولِّدات والمراجعات المستقلة (S-01..S-11 في المرحلة 2، وما بعدها في المرحلة 3). طُبِّقت جولة تصحيح المصادر (CR-75..CR-81، 2026-10-01) على ما يُحسم آليًا أو بقرار متخذ؛ والباقي ما زال في المصادر، والملفات المولَّدة تعرضه وتعلّمه. كل بند يصبح CR في `00-governance/corrections.md` عند تصحيحه.
+كشفتها المولِّدات والمراجعات المستقلة (S-01..S-11 في المرحلة 2، وS-12..S-29 في المرحلتين 3 و4، وS-30..S-33 في المرحلة 5). طُبِّقت جولة تصحيح المصادر (CR-75..CR-81، 2026-10-01) على ما يُحسم آليًا أو بقرار متخذ؛ والباقي ما زال في المصادر، والملفات المولَّدة تعرضه وتعلّمه. كل بند يصبح CR في `00-governance/corrections.md` عند تصحيحه.
 
 | # | المشكلة | المصدر | أين تظهر |
 |---|---|---|---|
@@ -152,7 +152,7 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 | S-18 | 4 سيناريوهات جودة بلا طريقة تحقق (QAS-LOG-001/002، QAS-TRX-001/002)؛ وترويسة مصفوفة التحقق تقول 74 وفيها 91 | `15-traceability/quality-verification-matrix.md` | `03-requirements-analysis.md` |
 | S-19 | تغطية VS04 وVS05 ما زالت «none — CR-09» بينما UC-140..144 وUC-160..163 (CR-70) وAggregates R3 تحققهما | `01-business/value-streams.md` | `06-process-models.md` |
 | S-20 | لا حدث يحمل إجراء الإتلاف `ARCHIVE` من BC08 إلى BC06 (`SYS:disposition action ARCHIVE…` في AGG-ARCHIVE-PACKAGE، ومستهلكو `EVT-DSP-*` لا يذكرون BC06) | `BC06/aggregates/AGG-ARCHIVE-PACKAGE.md`، `BC08/events-slc12a.md` | `06-process-models.md` |
-| S-21 | مراحل تيارات قيمة بلا تحقيق: عتبة الخطر (VS04)، خطة التدريب BP42 (VS05)، الذاكرة المؤسسية (VS07)؛ ولا انتقال من التنبيه أو الموقف (VS01) إلى الحادثة (VS04) — `EVT-ALR-RAISED` بلا مستهلك في BC04 | `AGG-RISK`، `processes.md`، `events-slc06.md` | `06-process-models.md` |
+| S-21 | مراحل تيارات قيمة بلا تحقيق: عتبة الخطر (VS04)، خطة التدريب BP42 (VS05)، الذاكرة المؤسسية (VS07)؛ ولا انتقال من التنبيه أو الموقف (VS01) إلى الحادثة (VS04) — مستهلك `EVT-ALR-RAISED` في BC04 هو الإشعارات وحدها، ولا مستهلك يقود إلى `CMD-INC-REPORT` | `AGG-RISK`، `processes.md`، `events-slc06.md` | `06-process-models.md` |
 | S-22 | 12 متطلبًا يختلف تتبعها بين `traces.satisfies` في الـAggregates وعمود `design_elements` في ملفات التتبع (أشدها REQ-LOG-014: LOGISTICS-REQUEST مقابل ALLOCATION) | Aggregates BC04/BC05، `15-traceability/trace-*.md` | `03-requirements-analysis.md` §3.4 |
 | S-23 | عناصر مجالات يملكها Aggregate في سياق آخر (Correlation، Distribution، Legal Hold، Evaluation) | `03-domain/domains.md` | `07-domain-model.md` §3.1 |
 | S-24 | مراجع بين السياقات خارج خريطة السياقات المعتمدة: IMPORT-BATCH → ADAPTER (BC02→BC07)، CAP-MESSAGE → INTEGRATION-CONNECTION (BC03→BC07)، COLLECTION-PLAN → TASK-TYPE (BC02→BC04)، ASSET/QUALIFICATION-RECORD/SHIPMENT → EVIDENCE (BC05→BC02) | `03-domain/context-map.md`، `06-data/logical-model/` | `07-domain-model.md` §3.2 |
@@ -162,7 +162,7 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 | S-28 | 12 من 44 أمرًا لها قاعدة فصل مهام لا تعلن `SEGREGATION_OF_DUTIES` في قائمة أخطائها (CR-75)؛ ومفتاح الموضوع يشمل ادعاءات الكيانات من نوع شخص بينما AGG-CLAIM وAGG-ENTITY معلَّمان `personal_data: false`؛ وقائمة رموز أسباب الرفض (`reason_code`) غير معرَّفة | `commands-*.md`، `key-hierarchy-and-disposition.md`، `authorization-model.md` | `17-security-design.md` §12.4، §12.7؛ ADR-P19 |
 | S-29 | فحص التخصيص 6 في `allocation-readiness-spec.md` §1 يرفض بـ`POLICY_DENIED` ويذكر `REQUIRE_APPROVAL` مثالًا، بينما مصفوفة AGG-ALLOCATION ترسل الطلب إلى `PENDING_APPROVAL`؛ ورموز أسباب الرفض غير المتزامن (`GEOGRAPHY_MISMATCH`…) غير مصنفة | `allocation-readiness-spec.md`، `AGG-ALLOCATION.md` | `18-error-handling.md` §8، §9.1 |
 | S-30 | QAS-OPS-002 (التصعيد ≤ 60 ث) وQAS-OPS-003 (صندوق الوارد) مربوطان بطريقة تحقق «air-gapped install/upgrade/rollback rehearsal» لا تخصهما | `15-traceability/quality-verification-matrix.md` | `24-testing-strategy.md` §9 |
-| S-31 | `performance-test-strategy.md` يساوي G7 بالإنتاج، بينما `RATIFICATION-PACKAGE.md` يجعل G7 البناء وG8 الإنتاج | `07-quality/performance-test-strategy.md` | `24-testing-strategy.md` §9؛ `26-implementation-roadmap.md` §3 |
+| S-31 | `performance-test-strategy.md` يساوي G7 بالإنتاج، بينما `RATIFICATION-PACKAGE.md` يجعل G7 البناء وG8 الإنتاج؛ ووسم «pre-G7» يتكرر في 35 صفًا من مصفوفة التحقق | `07-quality/performance-test-strategy.md`، `15-traceability/quality-verification-matrix.md` | `24-testing-strategy.md` §5، §9؛ `26-implementation-roadmap.md` §3؛ `22-deployment-design.md` §8 |
 | S-32 | وثائق التحقق المخططة في V6 §8 (`verification-strategy.md`، `security-verification.md`، `ai-evaluation.md`) وخطة التحقق W9 غير موجودة؛ و69 نمط فشل في FMEA بلا حقل اختبار رغم SL-18 | `13-verification/`، `08-security/`، `09-reliability/fmea-slc*.md` | `24-testing-strategy.md` §6، §9 |
 | S-33 | ADR-P17 يذكر «89 ملف قبول» والمجموع 108 مع ملفات الثوابت؛ و`ENGINEERING-BASELINE-R1.md` يذكر 19 Fitness function والعدد 20 بعد FIT-20 | `ADR-P17.md`، `16-reports/ENGINEERING-BASELINE-R1.md` | `24-testing-strategy.md` §9 |
 

@@ -18,21 +18,21 @@ sources: [00-governance/decisions/ADR-P13.md, 00-governance/decisions/ADR-P17.md
 | المواصفة مصدر الحقيقة | كل معرّف في `spec/` يتحول إلى مكان واحد في المستودع بقاعدة تحويل واحدة | `13-project-structure.md` §5 |
 | لا تعديل يدوي على المولَّد | العقود في `contracts/` مطابقة لمخرج المولِّد (FIT-20)؛ وتغيير سلوك Aggregate يبدأ من بيانات الشريحة ← إعادة التوليد ← الفحص (`w9_check` + lint) ← المراجعة ← الاعتماد | ADR-P18؛ `ENGINEERING-BASELINE-R1.md` |
 | تغيير العقد | يُحدَّث المنتج والمستهلك في **نفس** الـcommit؛ التغيير الكاسر في `contracts/openapi/<file>/v<N>/`، والإصدار السابق مدعوم 6 أشهر على الأقل | `13-project-structure.md` §6؛ QAS-EVO-001؛ FIT-14 |
-| تغيير العقد أو المواصفة مربوط بقرار | كل تغيير في العقود أو في `spec/` يذكر CR أو ADR | `13-project-structure.md` §8 |
+| تغيير العقد مربوط بقرار | كل تغيير في `contracts/` يذكر CR أو ADR (المصدر)؛ وتوسيع القاعدة إلى كل `spec/` مقترح **[Derived]** | `13-project-structure.md` §8 |
 | فحص المواصفة | مخالفة أي قاعدة SL-* بمستوى ERROR تمنع G6-SLC؛ وذهاب وإياب المولِّدات (V5) صفر فروق قبل أي G6 | `spec-lint-rules.md`؛ `METHODOLOGY-RETROSPECTIVE.md` |
 
 ## 2. التسمية
 
 | العنصر | القاعدة | مثال | المصدر |
 |---|---|---|---|
-| المعرّفات | ULID داخلي + URN `urn:<namespace>:<type>:<ulid>`؛ الهوية تُحسم بروابط same-as لا بإعادة كتابة المعرّف | `urn:ops:task:01J…` | ADR-P13؛ FIT-07 |
+| المعرّفات | ULID داخلي + URN `urn:<namespace>:<type>:<ulid>`؛ الهوية تُحسم بروابط same-as لا بإعادة كتابة المعرّف | `urn:<namespace>:task:01J…` (namespace = المنصة أو namespace المستأجر) | ADR-P13؛ FIT-07 |
 | مسار الأمر | `POST /api/v1/{context}/{resource}/{id}/actions/{action}`؛ الإنشاء `POST /api/v1/{context}/{resource}` | `…/tasks/{id}/actions/add-result-item` | المولِّد (`spec-tooling.md`) |
 | السياسة | `POL-` + اسم الأمر | `POL-TASK-ASSIGN` | المولِّد |
 | رمز رفض الانتقال | `<AGG>_INVALID_STATE_TRANSITION` | `TASK_INVALID_STATE_TRANSITION` | المولِّد |
-| الحدث | `EVT-<PREFIX>-<PAST-TENSE>` باسم برمجي PascalCase، وحدث التكامل منفصل `EVT-INT-…` | `EVT-TASK-COMPLETED` / `TaskCompleted` | V6 §13 |
+| الحدث | `EVT-<PREFIX>-<PAST-TENSE>` باسم برمجي PascalCase | `EVT-TASK-COMPLETED` / `TaskCompleted` | الكتالوجات (585 رسالة)؛ V6 §13 (قالب V6 يقترح أيضًا حدث تكامل منفصلًا `EVT-INT-…` لا يستعمله أي كتالوج معتمد) |
 | موضوع Kafka | `{cell}.<domain>.events`، والميتة `….dlq` | `{cell}.operations.events` | `asyncapi-*.md`؛ ADR-P20 |
-| مجلدات الكود | `domain/<agg>/`، `commands/<cmd>/`، `processes/on-<event>/`، `processes/<agg>/sys-<trigger>/`، `services/du-NN-<name>/` | `commands/task-add-result-item/` | `13-project-structure.md` §5 |
-| الجداول | schema لكل سياق؛ `tenant_id` أول عمود في كل مفتاح | `operations.tasks` | `16-database-schema.md`؛ FIT-02 |
+| مجلدات الكود | `domain/<agg>/`، `commands/<cmd>/`، `queries/<qry>/`، `processes/on-<event>/`، `processes/<agg>/sys-<trigger>/`، `services/du-NN-<name>/` | `commands/task-add-result-item/` | `13-project-structure.md` §5 |
+| الجداول | لكل schema سياق مالك واحد، وقد يملك السياق أكثر من schema (BC07: `integration`، `field`، `ai`)؛ `tenant_id` أول عمود في كل مفتاح | `operations.tasks` | `16-database-schema.md`؛ FIT-02 |
 | المقاييس | `<area>.<name>_<unit>{labels}` **[Derived]** | `projection.lag_s{kind}` | `23-crosscutting.md` §7 |
 
 ## 3. المستودع والاعتماديات
@@ -40,7 +40,7 @@ sources: [00-governance/decisions/ADR-P13.md, 00-governance/decisions/ADR-P17.md
 قواعد ADR-P18 (يتحقق منها FIT-01 وFIT-20):
 
 1. `contexts/*` لا يستورد `contexts/*` آخر، و`services/*` لا يستورد `services/*` آخر.
-2. مالك schema واحد لكل سياق؛ الترحيل يمس schema سياقه فقط.
+2. لكل schema سياق مالك واحد يرحّلها وحده؛ وقد يملك السياق أكثر من schema.
 3. `platform/` محوّلات بنية فقط بلا أنواع أعمال؛ وأي إضافة إلى `shared-kernel/` تحتاج تعديل ADR.
 4. وسم واحد للمستودع = إصدار واحد للمنصة = حزمة Zarf واحدة.
 5. ملكية معلنة لكل مجلد في `contexts/*` و`services/*`.
@@ -67,7 +67,7 @@ sources: [00-governance/decisions/ADR-P13.md, 00-governance/decisions/ADR-P17.md
 | `shared-kernel/` أو `platform/` | مالك المعمارية | `13-project-structure.md` §8 |
 | العقود و`spec/` | مالك السياق، مع CR أو ADR مرتبط؛ والمولَّد يُراجع بمصدره لا بمخرجه | `13-project-structure.md` §8؛ `ENGINEERING-BASELINE-R1.md` |
 | إعدادات المنصة (موارد، إصدارات، شبكة) | شخصان، عبر Git المحلي وArgo CD | `release-configuration-migration.md` |
-| السياسات وجداول القرار | المعتمِد ≠ المؤلف، واختبارات الجدول تمر قبل المراجعة (INV-POL-04) | AGG-POLICY-SET |
+| السياسات وجداول القرار | المعتمِد ≠ المؤلف (INV-POL-03)، واختبارات الجدول تمر قبل المراجعة (INV-POL-04) | AGG-POLICY-SET |
 | ما يمس الأمن (المصادقة، التخويل، التشفير، التدقيق) | مراجعة أمنية إضافية **[Derived]** من سلسلة المراجعة في V6 §21.7 | V6 §21.7 |
 
 **قائمة المراجع المقترحة [Derived]:** هل يحترم التغيير حلقات ADR-P17 (المجال بلا بنية، والمعالج عبر خط الأوامر)؟ هل يمر كل استرجاع بالـPEP (FIT-03)؟ هل يكتب الحالة والـoutbox والتدقيق في معاملة واحدة (FIT-04)؟ هل يحمل كل مفتاح `tenant_id` (FIT-02)؟ هل الاختبارات تغطي الخلايا الجديدة في المصفوفة؟ هل الرسائل والنصوص بالعربية والإنجليزية؟
@@ -76,7 +76,7 @@ sources: [00-governance/decisions/ADR-P13.md, 00-governance/decisions/ADR-P17.md
 
 المصادر لا تعرّف DoR بالاسم. الأقرب: معايير G6-SLC للشريحة (V6 §20) وبنود الـAggregate الأحد عشر (V6 §2.2). المقترح **[Derived]**، القصة جاهزة حين:
 
-1. شريحتها G6-SLC (READY)، أو أن القصة في الخطوة 0 (`26-implementation-roadmap.md` §2).
+1. شريحتها G6-SLC (READY). عناصر الخطوة 0 (`26-implementation-roadmap.md` §2) ليست قصصًا في الـBacklog، وتُدار بقائمة الخطوة نفسها.
 2. لها في `05-user-stories/` معيار قبول كامل: سيناريو النجاح وسيناريو الرفض بكل رموزه.
 3. الأمر أو الاستعلام في العقد المولَّد، وسياسته في `08-security/policies-*.md`.
 4. لا مجهول (UNK) مفتوح يحجبها (SL-22)، ولا قرار مطلوب من المالك.
@@ -86,21 +86,21 @@ sources: [00-governance/decisions/ADR-P13.md, 00-governance/decisions/ADR-P17.md
 
 المقترح **[Derived]** من V6 §2 («أن يعرف متى انتهى»)، ومن `24-testing-strategy.md` §8:
 
-1. صفوف القصة في مواصفة القبول تمر بمحوّلات في الذاكرة، ثم بمحوّلات حقيقية في البناء الليلي.
-2. خصائص ثوابت الشريحة وكل Fitness function بمستوى ERROR تمر.
+1. صفوف القصة في مواصفة القبول التنفيذية تمر بمحوّلات في الذاكرة (`24-testing-strategy.md` §8).
+2. خصائص ثوابت الشريحة وكل Fitness function بمستوى ERROR تعمل في كل commit تمر (§4 في `24-testing-strategy.md`).
 3. لا تعديل يدوي على ملف مولَّد؛ وأي تغيير في المواصفة أعيد توليده ومرّ فحصه.
 4. المقاييس والتتبع (correlation_id، spans) موجودة للمسار الجديد.
 5. النصوص بالعربية والإنجليزية، والواجهة تحترم RTL وWCAG 2.2 AA لما يمسه التغيير.
 6. الـcommit يذكر المعرّف المنفَّذ، فتظهر القصة في التتبع.
 7. مراجعة مكتملة حسب §5.
 
-**اكتمال الشريحة:** كل قصصها مكتملة، ومواصفات قبولها وخصائصها تمر بمحوّلات حقيقية، ولا مخالفة ERROR، ومصفوفة التتبع بلا متطلب بلا تحقق لها.
+**اكتمال الشريحة:** كل قصصها مكتملة، ومواصفات قبولها وخصائصها تمر بمحوّلات حقيقية في البناء الليلي، والفحوص الليلية والمجدولة (FIT-03، 04، 05، 11، 15، 16، 19) تمر، ولا مخالفة ERROR، ومصفوفة التتبع بلا متطلب بلا تحقق له.
 
 ## 8. التقنية والجودة
 
 | البند | القاعدة | المصدر |
 |---|---|---|
-| اللغات | TypeScript على Node.js للخدمات؛ Python لطرق التحليل والمعالجة الجغرافية والنقطية؛ Go مسموح للمسارات الساخنة خلف العقود نفسها | TD-15 |
+| اللغات | TypeScript على Node.js للخدمات؛ Python لطرق التحليل والمعالجة الجغرافية والنقطية؛ Go فقط إن فشلت المسارات الساخنة في QAS-PERF-001/013 في Pilot، خلف العقود نفسها (محفِّز مراجعة في TD-15) | TD-15 |
 | العملاء والخوادم | مولَّدة من العقود | TD-15 |
 | سلسلة التوريد | صور موقعة (cosign) ومثبتة بالـdigest، SBOM (Syft)، Harbor داخلي، حزم Zarf، ترحيلات أمامية فقط (expand/contract) | TD-12؛ TD-17 |
 | الأسرار | OpenBao فقط؛ لا أسرار في Git أو الصور | `release-configuration-migration.md` |

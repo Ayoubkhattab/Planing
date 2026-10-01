@@ -19,7 +19,7 @@ sources: [01-business/value-streams.md, 01-business/processes.md, 01-business/st
 | الإصدار | إصدار الشريحة المالكة للـAggregate (`14-slices/slices.md`): R1 = SLC-01..08 و11 (جزئيًا) و12a؛ R2 = SLC-09 و10 و12 و14 و15 و16؛ R3 = SLC-17 و18 و19 |
 | مخطط النشاط (Activity) | `flowchart TD`: البداية والنهاية عقد بيضاوية، والنشاط أمر (`CMD-*`) أو انتقال تلقائي (`SYS:`)، والمعيّن قرار مأخوذ من شرط انتقال أو من انتقالين بديلين من الحالة نفسها. تسمية السهم هي الحدث (`EVT-*`) الذي يحمل التسليم |
 | مخطط المسارات (Swimlane) | `flowchart LR` بمسار (`subgraph`) لكل فاعل بشري، بأسماء الفاعلين كما وردت في عمود «الفاعل» بكتالوج الأوامر، ومعرّف `ACT-*` حيث يطابق الاسم `stakeholders.md`. ومسارات «النظام» للمجدول والعمال والسياقات المالكة |
-| وسوم المعرفة | **[Derived]** تجميع أو ربط مشتق من المصدر · **[Missing]** لا يحقق المرحلة أي Aggregate أو أمر · **[Needs Review]** تعارض بين مصدرين، مع المسارات. لم يُستخدم **[Inferred]** |
+| وسوم المعرفة | **[Derived]** تجميع أو ربط مشتق من المصدر · **[Missing]** لا يحقق المرحلة أي Aggregate أو أمر · **[Needs Review]** تعارض بين مصدرين، مع المسارات. و**[Inferred]** لإسناد أدوار الموافقة إلى ACT-* حيث لا يسميها المصدر (§3 هنا، و`02-actors-roles.md` §3) |
 
 ### 0.1 ملخص التغطية
 
@@ -64,7 +64,7 @@ flowchart TD
   A4["CMD-CPL-CREATE ثم CMD-CPL-ADD-ACTIVITY"]
   A5["CMD-CPL-ACTIVATE"]
   A6["BC04: CMD-TASK-CREATE<br/>مهمة ميدانية لكل نشاط - CR-59"]
-  A8["BC07: CMD-SYN-UPLOAD-BATCH<br/>أو CMD-IMP-SUBMIT أو تدفق حساس"]
+  A8["BC07: CMD-SYN-UPLOAD-BATCH من الجهاز الميداني<br/>وخارج المهمة: BC02 CMD-IMP-SUBMIT من محوّل أو مسؤول، أو تدفق حساس"]
   A0["CMD-SRC-REGISTER<br/>و CMD-SRC-RATE-RELIABILITY"]
   A7["CMD-OBS-RECORD"]
   D2{"التحقق: Analyst غير المراقِب<br/>أو تحقق آلي لمصدر حساس A أو B"}
@@ -100,7 +100,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-  S0(["من VS01-أ: EVT-OBS-VALIDATED<br/>ومطالبات CMD-CLM-ASSERT"])
+  S0(["من VS01-أ: كيانات CMD-ENT-REGISTER (EVT-ENT-REGISTERED)<br/>ومطالبات CMD-CLM-ASSERT (EVT-CLM-ASSERTED)"])
   B1["SYS: candidate generator score<br/>أو CMD-ER-PROPOSE - AGG-ER-CASE CANDIDATE"]
   B2["CMD-ER-START-REVIEW"]
   D1{"قرار المراجع في ER"}
@@ -123,13 +123,15 @@ flowchart TD
   M4["CMD-CLM-ASSESS - الثقة BP09"]
   M5["QRY-SIT-COP و QRY-SRCH-QUERY"]
   E1(["نهاية: فهم - إلى VS02"])
-  S0 --> B1 --> B2 --> D1
+  S0 -->|"EVT-ENT-REGISTERED ← ER candidate generator"| B1
+  B1 --> B2 --> D1
   D1 -->|"مطابقة"| B3
   D1 -->|"ليست مطابقة"| B4
   D1 -->|"أدلة غير كافية"| B5
   B5 -->|"أدلة جديدة"| D1
   B3 -->|"EVT-ER-MATCHED"| C1
-  S0 --> C1 --> C2 --> D2
+  S0 -->|"EVT-CLM-ASSERTED ← Conflict detector"| C1
+  C1 --> C2 --> D2
   D2 -->|"ادعاء مفضَّل"| C3
   D2 -->|"قبول كتعارض"| C4
   S0 --> R1 --> D3
@@ -137,7 +139,7 @@ flowchart TD
   D3 -->|"رفض"| R3
   C3 -->|"EVT-CNF-RESOLVED"| M1
   C4 -->|"EVT-CNF-ACCEPTED"| M1
-  R2 -->|"EVT-CRP-ACCEPTED"| M1
+  R2 -->|"EVT-CRP-ACCEPTED ← أوامر المالك، ثم أحداثها"| M1
   B4 --> M1
   M1 --> D4
   D4 -->|"نعم"| M2
@@ -146,7 +148,7 @@ flowchart TD
   M3 --> M4 --> M5 --> E1
 ```
 
-`CMD-ER-DECIDE-MATCH` يستهلك EVT-ER-MATCHED بمكوّنَين: «Cluster maintainer» و«Conflict detector (re-run on cluster change)». لهذا يعاد تشغيل كشف التعارض بعد كل دمج (`03-domain/contexts/BC02/events-slc04.md`).
+`CMD-ER-DECIDE-MATCH` ينتج EVT-ER-MATCHED، ويستهلكه «Cluster maintainer» و«Conflict detector (re-run on cluster change)» وإسقاطات البحث والرسم وعضوية المواقف. لهذا يعاد تشغيل كشف التعارض بعد كل دمج (`03-domain/contexts/BC02/events-slc04.md`). أما EVT-OBS-VALIDATED فلا يطلق المطابقة ولا كشف التعارض: مستهلكوه معالج المطالبات المشتقة وعضوية المواقف والبحث (`events-slc02.md`).
 
 ### 1.4 مخطط المسارات
 
@@ -164,6 +166,7 @@ flowchart LR
   end
   subgraph LCP["collection planner"]
     s3["CMD-CPL-CREATE و CMD-CPL-ACTIVATE"]
+    s4b["Planner/Manager: CMD-TASK-MARK-READY ثم CMD-TASK-ASSIGN"]
   end
   subgraph LFU["Field User ACT-06"]
     s5["CMD-TASK-ACCEPT و CMD-TASK-START"]
@@ -185,11 +188,12 @@ flowchart LR
   s1 -->|"EVT-CRQ-SUBMITTED"| s2
   s2 -->|"EVT-CRQ-APPROVED"| s3
   s3 -->|"EVT-CPL-ACTIVATED"| s4
-  s4 -->|"EVT-TASK-ASSIGNED"| s5
+  s4 -->|"EVT-TASK-CREATED"| s4b
+  s4b -->|"EVT-TASK-ASSIGNED"| s5
   s5 --> s6 --> s7
   s7 -->|"EVT-OBS-RECORDED"| s8
-  s8 -->|"EVT-OBS-VALIDATED"| s10
-  s8 -->|"EVT-OBS-VALIDATED"| s11
+  s8 -->|"EVT-OBS-VALIDATED (المطابِق ليس في قائمة المستهلكين — Needs Review)"| s10
+  s8 -->|"CMD-ENT-REGISTER و CMD-CLM-ASSERT ← EVT-ENT-REGISTERED و EVT-CLM-ASSERTED"| s11
   s11 -->|"EVT-ER-PROPOSED و EVT-CNF-DETECTED"| s12
   s14 -->|"EVT-SIT-ACTIVATED"| s13
   s12 -->|"EVT-ER-MATCHED"| s13
@@ -312,7 +316,7 @@ flowchart LR
   a11 -->|"EVT-DRQ-ESCALATED"| a8
 ```
 
-المسؤوليات في الجدول المقابل مطابقة لـ`decision_rights` في `stakeholders.md`: «Business Decision» (R = Manager / Executive حسب Authority؛ A = صاحب السلطة المسجل في BC01) و«Assessment publication» (R = Analyst؛ A = Analysis lead / Manager).
+المسؤوليات في الجدول المقابل مطابقة لـ`decision_rights` في `stakeholders.md` إلا إسناد اعتماد الخطة والمهمة ونشر التقييم إلى Manager: سياسات الأوامر تسمي «approver with plan-approval authority ≠ author» لا Manager، فالإسناد **[Inferred]** (`02-actors-roles.md` §3): «Business Decision» (R = Manager / Executive حسب Authority؛ A = صاحب السلطة المسجل في BC01) و«Assessment publication» (R = Analyst؛ A = Analysis lead / Manager).
 
 ---
 
@@ -436,7 +440,7 @@ flowchart LR
     p4["CMD-OUT-RECORD"]
     p5["CMD-PLN-COMPLETE و CMD-PLN-CLOSE"]
   end
-  subgraph LAP["approver بسلطة plan-approval: Manager ACT-02"]
+  subgraph LAP["approver بسلطة plan-approval (Manager ACT-02 — Inferred)"]
     p6["CMD-PLV-APPROVE أو RETURN أو REJECT"]
   end
   subgraph LRM["Resource Manager ACT-07 أو allocation authority - R2"]
@@ -549,7 +553,7 @@ flowchart TD
   I7 -->|"EVT-INC-CLOSED"| K1 --> E3
 ```
 
-`CMD-INC-ESCALATE` و`CMD-INC-DE-ESCALATE` و`CMD-INC-ACTIVATE-CONTINGENCY` مسموحة من كل حالة غير نهائية (`*NT` في جدول الانتقالات). وُضعت في المخطط بعد الإرسال لتبقى الصورة مقروءة فقط. لإغلاق الحادثة لا يلزم إغلاق خطة الاستمرارية المرتبطة (FM-S17-02، `risk-contingency-spec.md` §4). **S-01** (قائمة `states` في AGG-INCIDENT لا تذكر CLOSED وCANCELLED) مسجّل أصلًا في `00-index.md` §6.
+`CMD-INC-ESCALATE` و`CMD-INC-DE-ESCALATE` و`CMD-INC-ACTIVATE-CONTINGENCY` مسموحة من كل حالة غير نهائية (`*NT` في جدول الانتقالات). وُضعت في المخطط بعد الإرسال لتبقى الصورة مقروءة فقط. لإغلاق الحادثة لا يلزم إغلاق خطة الاستمرارية المرتبطة (FM-S17-02، `risk-contingency-spec.md` §4). **S-01** (قائمة `states` في AGG-INCIDENT لا تذكر CLOSED وCANCELLED) حُسم بـCR-81؛ مسجَّل في `00-index.md` §6.
 
 ### 4.3 مخطط المسارات
 
@@ -678,9 +682,10 @@ flowchart LR
   subgraph LED["Exercise Director"]
     v3["CMD-SCN-ACTIVATE"]
     v4["CMD-EXR-PLAN و CMD-EXR-SCHEDULE"]
+    v5["CMD-EXR-START (Director / Training Manager — commands-slc19؛ UC-162 يقول Controller، Needs Review)"]
   end
   subgraph LEC["Exercise Controller"]
-    v5["CMD-EXR-START و DELIVER-INJECT"]
+    v5b["CMD-SIM-DELIVER-INJECT"]
     v6["CMD-SIM-COMPLETE أو CMD-SIM-ABORT"]
   end
   subgraph LEV["Evaluator"]
@@ -703,14 +708,15 @@ flowchart LR
   v3 -->|"EVT-SCN-ACTIVATED"| v4
   v4 -->|"EVT-EXR-SCHEDULED"| v5
   v5 --> v10
-  v10 -->|"EVT-SIM-STARTED"| v7
+  v10 -->|"EVT-SIM-STARTED"| v5b
+  v5b --> v7
   v7 -->|"EVT-SIM-EVALUATION-RECORDED"| v6
   v6 -->|"EVT-SIM-COMPLETED"| v11
-  v11 -->|"EVT-EXR-COMPLETED"| v8
+  v7 -->|"EVT-SIM-EVALUATION-RECORDED ← مصدر دليل اختياري للتأهيل"| v8
   v8 -->|"EVT-QUAL-RECORDED"| v9
 ```
 
-الفاعلون مأخوذون من `commands-slc19.md` و`commands-slc03.md` و`commands-slc09.md` في BC05، ومن UC-163. أما «Exercise Director» و«Exercise Controller» و«Evaluator» فلا معرّف `ACT-*` لها (NR-02). `CMD-SIM-START` داخلي (`داخلي = نعم`، مسجَّل S-08).
+الفاعلون مأخوذون من `commands-slc19.md` و`commands-slc03.md` و`commands-slc09.md` في BC05، ومن UC-163. أما «Exercise Director» و«Exercise Controller» و«Evaluator» فلا معرّف `ACT-*` لها (NR-02). `CMD-SIM-START` داخلي (`داخلي = نعم`، مسجَّل S-08، حُسم بـCR-76).
 
 ---
 
@@ -737,6 +743,7 @@ flowchart LR
 flowchart TD
   S1(["مهمة: CMD-TASK-SUBMIT"])
   T1["CMD-TASK-START-REVIEW ثم CMD-TASK-APPROVE"]
+  TC["SYS: all completion criteria satisfied<br/>أو CMD-TASK-COMPLETE"]
   T2["CMD-TASK-CLOSE"]
   S2(["خطة: CMD-PLN-CLOSE"])
   S3(["حادثة: CMD-INC-CLOSE"])
@@ -755,8 +762,9 @@ flowchart TD
   K9["CMD-KNO-DISCARD"]
   E3(["نهاية: DISCARDED"])
   S1 --> T1
-  T1 -->|"EVT-TASK-APPROVED"| T2
-  T2 -->|"EVT-TASK-CLOSED"| K1
+  T1 -->|"EVT-TASK-APPROVED"| TC
+  TC -->|"EVT-TASK-COMPLETED"| T2
+  T2 -->|"EVT-TASK-CLOSED — مصدر URN للمسودة، لا مستهلك في BC06 (Derived)"| K1
   S2 -->|"EVT-PLN-CLOSED"| K1
   S3 -->|"EVT-INC-CLOSED"| K1
   S4 -->|"EVT-SIM-COMPLETED - CR-63"| K1
@@ -803,7 +811,7 @@ flowchart LR
     k9["Knowledge suggestion index<br/>و SYS: newer version published"]
   end
   k1 -->|"EVT-TASK-SUBMITTED"| k2
-  k2 -->|"EVT-TASK-APPROVED"| k8
+  k2 -->|"EVT-TASK-APPROVED ثم COMPLETE ثم CLOSE"| k8
   k8 --> k3
   k3 --> k4
   k4 -->|"EVT-KNO-SUBMITTED"| k5
@@ -933,9 +941,14 @@ flowchart LR
   subgraph EXT["الكيانات الخارجية"]
     U["E1 المستخدمون ACT-01..15<br/>عبر DU-01"]
     IDP["E2 Identity Provider<br/>OIDC و SAML و SCIM"]
-    EXS["E3 GIS و Weather و Sensors<br/>و ERP و HRIS و DMS"]
+    EXS["E3 GIS و Weather"]
+    EXR2["E3b R2: Sensors و ERP و DMS و CMMS و CAP وارد"]
+    HRIS["E3c R2: HRIS"]
     DEV["E4 الأجهزة الميدانية"]
-    CAPX["E5 مستقبِل CAP 1.2"]
+    CAPX["E5 مستقبِل CAP 1.2 - R2"]
+    MDM["E6 MDM / push relay"]
+    HSM["E7 Site HSM"]
+    OPR["E8 Platform Operator"]
   end
   P1("1 BC01 Foundation")
   P8("8 BC08 Governance")
@@ -964,11 +977,18 @@ flowchart LR
   U -->|"F01"| P8
   IDP -->|"F02 federation و SCIM"| P1
   EXS -->|"F03 adapters ACL"| P7
+  EXR2 -.->|"F03 adapters ACL - R2"| P7
+  HRIS -.->|"F03 HR sync proposals - R2"| P1
+  P4 -->|"F23 push عبر المرحِّل"| MDM
+  MDM -->|"F23 wipe و حالة الجهاز"| P1
+  P8 -->|"F24 PKCS#11 مفاتيح"| HSM
+  OPR -->|"F12b مستوى المشغل: المستأجرون والحصص"| P1
   DEV <-->|"F04 CMD-SYN-UPLOAD-BATCH و F05 delta"| P7
-  P7 -->|"F06 CAP 1.2 outbound"| CAPX
+  P7 -.->|"F06 CAP 1.2 outbound - R2"| CAPX
   P1 -->|"F07 OHS SecurityContext و AuthorityCheck"| CORE
   P8 <-->|"F08 PolicyDecision و F20 audit outbox"| CORE
   P8 -->|"F08"| P1
+  P1 -->|"F20 audit outbox"| P8
   P2 -->|"F09 OHS as-of و EVT-OBS-* و EVT-ER-MATCHED"| P3
   P2 -->|"F10 OHS و CMD-TASK-CREATE من EVT-CPL-ACTIVATED"| P4
   P3 -->|"F11 Assessment refs و EVT-ASM-PUBLISHED"| P4
@@ -1081,7 +1101,7 @@ flowchart LR
 | H10 | VS06 ← VS03 | إعادة استخدام المعرفة في التخطيط | `QRY-KNO-SUGGEST` (نوع المهمة، الخطة، المنطقة) ← `CMD-KNO-RECORD-REUSE` (OUT-06) | `products-knowledge-archive-spec.md` §3 |
 | H11 | VS03 وVS04 ← VS07 | السجلات المغلقة تدخل الاحتفاظ والإتلاف أو الأرشفة | الحالات النهائية (`CMD-PLN-CLOSE`، `CMD-TASK-CLOSE`، `CMD-INC-CLOSE`) مع محفز الاحتفاظ `closed`، ثم `SYS:scheduled evaluation (daily)` **[Derived]** | AGG-RETENTION-SCHEDULE؛ AGG-DISPOSITION-RUN |
 | H12 | VS07 ← VS02 | «ماذا كنا نعرف لحظة القرار» | `QRY-DEC-BASIS`؛ `CMD-REC-REQUEST` (scope يشمل «decision basis»؛ purpose ∈ {audit, legal, lessons}) | AGG-RECONSTRUCTION؛ `queries-slc08.md` |
-| — | VS01 ← VS04 | تنبيه أو موقف يطلق حادثة | **[Missing]**: لا ربط بين AGG-ALERT أو AGG-SITUATION وبين `CMD-INC-REPORT`، ولا مستهلك لـEVT-ALR-RAISED في BC04 | `BC03/events-slc06.md`؛ AGG-INCIDENT |
+| — | VS01 ← VS04 | تنبيه أو موقف يطلق حادثة | **[Missing]**: لا ربط بين AGG-ALERT أو AGG-SITUATION وبين `CMD-INC-REPORT`؛ مستهلك EVT-ALR-RAISED في BC04 هو الإشعارات وحدها، ولا مستهلك يقود إلى `CMD-INC-REPORT` (S-21) | `BC03/events-slc06.md`؛ AGG-INCIDENT |
 
 ---
 
@@ -1089,13 +1109,13 @@ flowchart LR
 
 | # | الوسم | البند | المسارات |
 |---|---|---|---|
-| NR-01 | محسوم (CR-81) | كان `use_case_coverage` لـVS04 وVS05 «none — CR-09»، بينما هناك UC-140..144 وUC-160..163 (CR-70) وAggregates في R3 تحقق التيارين | `01-business/value-streams.md`؛ `02-requirements/use-cases.md` (UC-140..163، جدول `gaps`) |
-| NR-02 | **[Needs Review]** | فاعلون في عمود «الفاعل» بكتالوجات الأوامر ليس لهم معرّف `ACT-*` بين الخمسة عشر، ومنهم: collection manager، collection planner، Analysis lead، reviewer، authority holder، محدِّد الخطر، مقيّم، موافق المعالجة، أي مُبلِّغ مخوَّل، مقيّم الحادثة، قائد الحادثة، Exercise Director، Exercise Controller، Evaluator، dispatcher / carrier operator، Legal/Compliance authority، release authority، integration engineer، AI platform engineer. يُحسم الربط في `02-actors-roles.md` | `01-business/stakeholders.md`؛ `03-domain/contexts/BC*/commands-*.md` |
-| NR-03 | **[Needs Review]** | الحدث الحامل لإجراء ARCHIVE من BC08 إلى BC06 غير مسمّى، ومستهلكو EVT-DSP-* لا يذكرون BC06 | `BC06/aggregates/AGG-ARCHIVE-PACKAGE.md`؛ `BC08/events-slc12a.md`؛ `BC08/aggregates/AGG-DISPOSITION-RUN.md` |
-| M-01 | **[Missing]** | VS04 «Threshold»: لا عتبة ولا انتقال تلقائي على `risk_score` | `BC04/aggregates/AGG-RISK.md`؛ `BC04/risk-contingency-spec.md` |
-| M-02 | **[Missing]** | VS05 BP42 «Training Plan»: لا كائن يربط فجوة شخص بتمرين أو سيناريو | `BC05/training-exercise-spec.md` §1؛ `01-business/processes.md` |
-| M-03 | **[Missing]** | VS07 «Institutional Memory»: لا أمر ولا استعلام يجمع الأرشيف والمعرفة تحت هذه المرحلة | `01-business/value-streams.md`؛ `BC06/` |
-| M-04 | **[Missing]** | لا تسليم من VS01 (تنبيه أو موقف) إلى VS04 (حادثة) | `BC03/events-slc06.md`؛ `BC04/aggregates/AGG-INCIDENT.md` |
+| NR-01 | محسوم (CR-81، S-19) | كان `use_case_coverage` لـVS04 وVS05 «none — CR-09»، بينما هناك UC-140..144 وUC-160..163 (CR-70) وAggregates في R3 تحقق التيارين | `01-business/value-streams.md`؛ `02-requirements/use-cases.md` (UC-140..163، جدول `gaps`) |
+| NR-02 | **[Needs Review]** (S-16) | فاعلون في عمود «الفاعل» بكتالوجات الأوامر ليس لهم معرّف `ACT-*` بين الخمسة عشر، ومنهم: collection manager، collection planner، Analysis lead، reviewer، authority holder، محدِّد الخطر، مقيّم، موافق المعالجة، أي مُبلِّغ مخوَّل، مقيّم الحادثة، قائد الحادثة، Exercise Director، Exercise Controller، Evaluator، dispatcher / carrier operator، Legal/Compliance authority، release authority، integration engineer، AI platform engineer. الإسناد إلى مجموعات الأدوار محسوم في `02-actors-roles.md` §6.5 (collection manager ← ACT-02، collection planner ← ACT-03، Analysis lead ← ACT-04، Exercise Director/Controller/Evaluator ← ACT-10، أدوار الحادثة ← REL-INCIDENT، Legal ← AUTH-LEGAL)؛ يبقى إضافتها إلى `stakeholders.md` (S-16) | `01-business/stakeholders.md`؛ `03-domain/contexts/BC*/commands-*.md` |
+| NR-03 | **[Needs Review]** (S-20) | الحدث الحامل لإجراء ARCHIVE من BC08 إلى BC06 غير مسمّى، ومستهلكو EVT-DSP-* لا يذكرون BC06 | `BC06/aggregates/AGG-ARCHIVE-PACKAGE.md`؛ `BC08/events-slc12a.md`؛ `BC08/aggregates/AGG-DISPOSITION-RUN.md` |
+| M-01 | **[Missing]** (S-21) | VS04 «Threshold»: لا عتبة ولا انتقال تلقائي على `risk_score` | `BC04/aggregates/AGG-RISK.md`؛ `BC04/risk-contingency-spec.md` |
+| M-02 | **[Missing]** (S-21) | VS05 BP42 «Training Plan»: لا كائن يربط فجوة شخص بتمرين أو سيناريو | `BC05/training-exercise-spec.md` §1؛ `01-business/processes.md` |
+| M-03 | **[Missing]** (S-21) | VS07 «Institutional Memory»: لا أمر ولا استعلام يجمع الأرشيف والمعرفة تحت هذه المرحلة | `01-business/value-streams.md`؛ `BC06/` |
+| M-04 | **[Missing]** (S-21) | لا تسليم من VS01 (تنبيه أو موقف) إلى VS04 (حادثة) | `BC03/events-slc06.md`؛ `BC04/aggregates/AGG-INCIDENT.md` |
 | D-01 | **[Derived]** | مراحل بلا أمر خاص وتتحقق بتجميع: VS01 BP10 (عبر الإسقاطات)، وVS02 «Impact» (حقل)، وVS03 «Work Packages» (أنشطة `task_generating`)، وVS04 «Hazard» (بيانات مرجعية، قرار صريح)، وVS07 «Operational Record» و«Closure» | الأقسام 1.1، 2.1، 3.1، 4.1، 7.1 |
 | D-02 | **[Derived]** | مراحل بلا BP بالاسم: VS01 «Source» و«Context»، وVS02 «Assumptions» و«Impact»، وVS03 «Schedule»، وVS05 «Assignment»، وVS06 «Execution» إلى «Review»، وVS07 «Closure» و«Institutional Memory». السبب أن `processes.md` أسماء فقط («name only — W1/W4») | `01-business/processes.md` |
 | — | مسجَّل سابقًا | S-01 وS-08 محسومان (CR-81، CR-76)؛ S-11 (اسم schema الإسقاطات) ما زال مفتوحًا | `00-index.md` §6 |

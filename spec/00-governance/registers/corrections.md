@@ -15,7 +15,7 @@ consumers: []
 
 ## corrections
 
-_74 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-74 in Phase 3.8 — 18-analysis-design)
+_77 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-77 in Phase 3.8 — 18-analysis-design)
 
 ### CR-01
 
@@ -610,6 +610,30 @@ _74 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-74 in Phase 3.8 — 18-an
 - **origin:** ADR-P17, ADR-P18; independent review of Phase 3.8 stage 1
 - **status:** APPLIED
 
+### CR-75
+
+- **issue:** No operation in the 28 OpenAPI contracts declares 403, although every errors-*.md header allows it for a visible resource; no error code exists for an unmet MFA obligation (ADR-P17 step 6) or a REQUIRE_APPROVAL decision (source issue S-07).
+- **correction:** Per ADR-P19: declare 401 and 403 responses on every command operation; add MFA_STEP_UP_REQUIRED (401, retryable after step-up) and APPROVAL_REQUIRED (403, not retryable) as platform-wide codes in the error catalogs; ApiError.details.approver for APPROVAL_REQUIRED. Applied through the spec tooling (slice_contracts) so that V5 round trip stays exact.
+- **target_wave:** Phase 3.8 — source-correction round
+- **origin:** ADR-P19; 18-analysis-design/00-index.md §6 S-07
+- **status:** APPROVED — pending application
+
+### CR-76
+
+- **issue:** CMD-SIM-START is system-issued (x-internal: true, catalog داخلي = نعم) but is published in the public readiness contract openapi-readiness-slc19.md (source issue S-08).
+- **correction:** Move CMD-SIM-START to an internal readiness contract (as openapi-foundation-internal-slc01.md does for BC01) so that the gateway never exposes it; keep x-internal.
+- **target_wave:** Phase 3.8 — source-correction round
+- **origin:** Project owner decision 2026-10-01; S-08
+- **status:** APPROVED — pending application
+
+### CR-77
+
+- **issue:** 26 command policies list several roles with verb lists, none of which names the command's verb, so the issuing role is undefined (18-analysis-design/02-actors-roles.md §6.6).
+- **correction:** Name the issuing role in each of the 26 policy subjects as resolved in 18-analysis-design/17-security-design.md §5 (resolution by the paired verb in the same policy: resume↔pause/suspend, enable↔disable, retire↔deprecate/define, maintenance↔condition).
+- **target_wave:** Phase 3.8 — source-correction round
+- **origin:** 17-security-design.md §5; S-16
+- **status:** APPROVED_DELEGATED — pending application
+
 ---
 
 <details>
@@ -985,28 +1009,28 @@ corrections:
   origin: SLC-14
   status: APPLIED
 - id: CR-60
-  issue: SLC-17's continuity/contingency plans need a Plan (SLC-08) triggered by a risk or incident, not a decision
-    or objective (R3-Q2 reuse decision); Plan identity carried no notion of kind or trigger
-  correction: AGG-PLAN gains plan_kind (OPERATIONS, CONTINGENCY; INV-PLN-04) and an optional triggered_by reference;
-    CMD-PLN-CREATE accepts a risk_ref/incident_ref trigger for plan_kind=CONTINGENCY as an alternative to implementing
-    a decision or objective; SLC-08 source updated and regenerated
+  issue: SLC-17's continuity/contingency plans need a Plan (SLC-08) triggered by a risk or incident, not a decision or objective
+    (R3-Q2 reuse decision); Plan identity carried no notion of kind or trigger
+  correction: AGG-PLAN gains plan_kind (OPERATIONS, CONTINGENCY; INV-PLN-04) and an optional triggered_by reference; CMD-PLN-CREATE
+    accepts a risk_ref/incident_ref trigger for plan_kind=CONTINGENCY as an alternative to implementing a decision or objective;
+    SLC-08 source updated and regenerated
   target_wave: SLC-17
   origin: SLC-17
   status: APPLIED
 - id: CR-61
-  issue: SLC-17's incident response tasks need to be created directly under an Incident without a plan, but AGG-TASK's
-    creation guard only accepted a plan_ref or an ad_hoc_reason (CR-59)
+  issue: SLC-17's incident response tasks need to be created directly under an Incident without a plan, but AGG-TASK's creation
+    guard only accepted a plan_ref or an ad_hoc_reason (CR-59)
   correction: CMD-TASK-CREATE gains an incident_ref alternative to plan_ref; SLC-03 source updated and regenerated
   target_wave: SLC-17
   origin: SLC-17
   status: APPLIED
 - id: CR-62
-  issue: SLC-18's logistics requests need to commit inventory quantity through SLC-09's existing Allocation (R3-Q3
-    reuse decision) rather than a second capacity-reservation engine, but AGG-ALLOCATION's creation guard described
-    target as task/activity only (the payload field target!:urn itself was already generic)
-  correction: CMD-ALC-REQUEST's guard text is broadened to accept a logistics-request reference as a third alternative
-    to task/activity; no payload schema change; SLC-09 source updated and regenerated — round-trip confirmed only
-    the guard-text lines changed, with OpenAPI/AsyncAPI/errors/acceptance byte-identical to the prior baseline
+  issue: SLC-18's logistics requests need to commit inventory quantity through SLC-09's existing Allocation (R3-Q3 reuse decision)
+    rather than a second capacity-reservation engine, but AGG-ALLOCATION's creation guard described target as task/activity
+    only (the payload field target!:urn itself was already generic)
+  correction: CMD-ALC-REQUEST's guard text is broadened to accept a logistics-request reference as a third alternative to
+    task/activity; no payload schema change; SLC-09 source updated and regenerated — round-trip confirmed only the guard-text
+    lines changed, with OpenAPI/AsyncAPI/errors/acceptance byte-identical to the prior baseline
   target_wave: SLC-18
   origin: SLC-18
   status: APPLIED
@@ -1158,6 +1182,32 @@ corrections:
   target_wave: Phase 3.8 (18-analysis-design)
   origin: ADR-P17, ADR-P18; independent review of Phase 3.8 stage 1
   status: APPLIED
+- id: CR-75
+  issue: No operation in the 28 OpenAPI contracts declares 403, although every errors-*.md header allows it for a visible
+    resource; no error code exists for an unmet MFA obligation (ADR-P17 step 6) or a REQUIRE_APPROVAL decision (source issue
+    S-07).
+  correction: 'Per ADR-P19: declare 401 and 403 responses on every command operation; add MFA_STEP_UP_REQUIRED (401, retryable
+    after step-up) and APPROVAL_REQUIRED (403, not retryable) as platform-wide codes in the error catalogs; ApiError.details.approver
+    for APPROVAL_REQUIRED. Applied through the spec tooling (slice_contracts) so that V5 round trip stays exact.'
+  target_wave: Phase 3.8 — source-correction round
+  origin: ADR-P19; 18-analysis-design/00-index.md §6 S-07
+  status: APPROVED — pending application
+- id: CR-76
+  issue: 'CMD-SIM-START is system-issued (x-internal: true, catalog داخلي = نعم) but is published in the public readiness
+    contract openapi-readiness-slc19.md (source issue S-08).'
+  correction: Move CMD-SIM-START to an internal readiness contract (as openapi-foundation-internal-slc01.md does for BC01)
+    so that the gateway never exposes it; keep x-internal.
+  target_wave: Phase 3.8 — source-correction round
+  origin: Project owner decision 2026-10-01; S-08
+  status: APPROVED — pending application
+- id: CR-77
+  issue: 26 command policies list several roles with verb lists, none of which names the command's verb, so the issuing role
+    is undefined (18-analysis-design/02-actors-roles.md §6.6).
+  correction: 'Name the issuing role in each of the 26 policy subjects as resolved in 18-analysis-design/17-security-design.md
+    §5 (resolution by the paired verb in the same policy: resume↔pause/suspend, enable↔disable, retire↔deprecate/define, maintenance↔condition).'
+  target_wave: Phase 3.8 — source-correction round
+  origin: 17-security-design.md §5; S-16
+  status: APPROVED_DELEGATED — pending application
 ```
 
 </details>

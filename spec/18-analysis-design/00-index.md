@@ -54,7 +54,7 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 | 14 | [14-api-design.md](14-api-design.md) | اصطلاحات الواجهات وكتالوج كامل لـ611 عملية | مولَّد + مكتوب | 2 | ✅ |
 | 15 | [15-event-design.md](15-event-design.md) | 584 حدث مجال (585 رسالة AsyncAPI مع الحدث المشتق `EVT-SEC-VERSION-INCREMENTED`): الـtopics، الغلاف، المستهلكون، الترتيب، إعادة المحاولة، DLQ | مولَّد + مكتوب | 2 | ✅ |
 | 16 | [16-database-schema.md](16-database-schema.md) | 10 schemas للمستأجر + مخزن المفاتيح لكل خلية، و166 جدولًا بأعمدتها ومفاتيحها وقيودها؛ ERD لكل schema؛ مخزن الإسقاطات والمخزن الميداني؛ الترحيل | مولَّد + مكتوب | 2 | ✅ |
-| 17 | `17-security-design.md` | المصادقة، التخويل، مصفوفة الدور × العملية، التصنيف، المفاتيح، التدقيق | مولَّد + مكتوب | 4 | ⏳ |
+| 17 | [17-security-design.md](17-security-design.md) | المصادقة، التخويل وقراراته، مصفوفة الدور × نوع الصلاحية، حسم فاعل 26 أمرًا، التصنيف، المفاتيح، التدقيق، نموذج التهديدات الموحَّد | مولَّد + مكتوب | 4 | ✅ |
 | 18 | `18-error-handling.md` | كتالوج الأخطاء، التحويل إلى HTTP، إعادة المحاولة | مولَّد + مكتوب | 4 | ⏳ |
 | 19 | `19-runtime-scenarios.md` | Sequence diagrams للمسارات الحرجة | مكتوب | 4 | ⏳ |
 | 20 | `20-integration-design.md` | المحوّلات، ACL، المزامنة الميدانية، الأنظمة الخارجية | مكتوب | 4 | ⏳ |
@@ -77,6 +77,7 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 |---|---|---|
 | [ADR-P17](../00-governance/decisions/ADR-P17.md) | المعمارية الداخلية Hexagonal / Ports & Adapters | ✅ APPROVED_DELEGATED |
 | [ADR-P18](../00-governance/decisions/ADR-P18.md) | هيكلية المستودع: حزم سياقات تُركَّب في وحدات نشر | ✅ APPROVED_DELEGATED |
+| [ADR-P19](../00-governance/decisions/ADR-P19.md) | نتائج التخويل: 403 للمورد المرئي، 401 للمصادقة المعززة، 403 `APPROVAL_REQUIRED` | ✅ APPROVED (مالك المشروع) |
 
 ## 3. تصنيف العمليات (أساس قصص المستخدم)
 
@@ -155,4 +156,7 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 | S-23 | عناصر مجالات يملكها Aggregate في سياق آخر (Correlation، Distribution، Legal Hold، Evaluation) | `03-domain/domains.md` | `07-domain-model.md` §3.1 |
 | S-24 | مراجع بين السياقات خارج خريطة السياقات المعتمدة: IMPORT-BATCH → ADAPTER (BC02→BC07)، CAP-MESSAGE → INTEGRATION-CONNECTION (BC03→BC07)، COLLECTION-PLAN → TASK-TYPE (BC02→BC04)، ASSET/QUALIFICATION-RECORD/SHIPMENT → EVIDENCE (BC05→BC02) | `03-domain/context-map.md`، `06-data/logical-model/` | `07-domain-model.md` §3.2 |
 | S-25 | ترويسة `quality-scenarios.md` تقول 91 عنصرًا وفيه 95 | `02-requirements/quality-scenarios.md` | `03-requirements-analysis.md` |
+| S-26 | 5 Aggregates من شرائح R3 بلا قاعدة اشتقاق تسمية (EXERCISE، LOGISTICS-REQUEST، SCENARIO، SHIPMENT، SIMULATION) رغم القاعدة SL-29 | `08-security/label-derivation-rules.md` | `17-security-design.md` §12.7 |
+
+**ما حُسم بعد التسجيل:** S-07 بـADR-P19 وCR-75؛ S-08 بـCR-76 (قرار مالك المشروع)؛ S-16 جزئيًا بحسم فاعل الأوامر الـ26 (CR-77). التطبيق على ملفات المصدر في جولة تصحيح المصادر.
 

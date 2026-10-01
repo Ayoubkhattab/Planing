@@ -416,6 +416,17 @@ def v8(sys_trans):
     for aid in aggs:
         if f"| {aid} |" not in p3["07-domain-model.md"]:
             gaps.append(("07", aid, "Aggregate غير مذكور"))
+    sec = (AD / "17-security-design.md").read_text(encoding="utf-8") if (AD / "17-security-design.md").exists() else ""
+    for qid in qrys:
+        if f"| `{qid}` |" not in sec:
+            gaps.append(("17", qid, "سياسة استعلام غير مذكورة"))
+    for cid in bad.ACTOR_RESOLUTION:
+        if f"| `{cid}` |" not in sec:
+            gaps.append(("17", cid, "حسم فاعل غير مذكور"))
+    for f in sorted((SPEC / "08-security").glob("threat-model*.md")):
+        for tid in re.findall(r"^\| (THR-[A-Z0-9-]+) \|", f.read_text(encoding="utf-8"), re.M):
+            if f"| {tid} |" not in sec:
+                gaps.append(("17", tid, "تهديد غير مذكور"))
     actor_lists = p3["02-actors-roles.md"].split("### 6.4")[-1]
     for oid in list(cmds) + list(qrys):
         if f"`{oid}`" not in actor_lists:

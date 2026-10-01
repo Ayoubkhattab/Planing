@@ -63,7 +63,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 |---|---|
 | حقوق القرار لمجموعات أصحاب المصلحة (`decision_rights: UNKNOWN` لـ SH-01..05) | **[Missing]** في المصدر |
 | أدوار تستخدمها السياسات وليست ضمن ACT-01..15: Platform Operator، AI platform engineer، AI governance authority، integration engineer، Legal/Compliance authority، Privacy officer؛ وأدوار مكافأة لـACT بالتصنيف (dispatcher، carrier operator، Exercise Director/Controller، Evaluator، technician، collection manager… — §6.5) | **[Needs Review]** — تُضاف إلى `stakeholders.md` أو تُعرَّف كأدوار في AGG-ROLE |
-| أوامر يذكر مصدرها أدوارًا لا يشمل أيٌّ منها فعل الأمر (القائمة في §6.6) | معلَّمة **[Needs Review]** في قصصها؛ تُحسم في `17-security-design.md` (المرحلة 4) |
+| 26 أمرًا يذكر مصدرها أدوارًا لا يشمل أيٌّ منها فعل الأمر | محسومة في `17-security-design.md` §5 وتُنقل إلى السياسات بـCR-77 |
 | وصف «finance» في سياسة `QRY-AI-USAGE` | دور غير معرَّف (§2.5) **[Needs Review]** |
 
 ## 6. الكتالوج والمصفوفات
@@ -72,34 +72,34 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 ### 6.1 كتالوج الفاعلين والأدوار
 
-العدّ على 451 أمرًا حُسم فاعلها و133 استعلامًا؛ الأوامر الـ26 التي لم يُحسم فاعلها في §6.6. العملية تُحسب مرة لكل دور تنسب إليه، فمجموع الأعمدة أكبر من عدد العمليات.
+العدّ على 477 أمرًا حُسم فاعلها و133 استعلامًا؛ الأوامر الـ0 التي لم يُحسم فاعلها في §6.6. العملية تُحسب مرة لكل دور تنسب إليه، فمجموع الأعمدة أكبر من عدد العمليات.
 
 #### (A) الفاعلون الأعمال (ACT-01..15 — `01-business/stakeholders.md`)
 
 | الفاعل / الدور | الوصف | أوامر | استعلامات | السياقات |
 |---|---|---|---|---|
 | ACT-01 Executive — القيادي التنفيذي | القيادة (SH-01) | 2 | 1 | BC01 |
-| ACT-02 Manager — المدير | القيادة (SH-01) | 39 | 4 | BC02, BC03, BC04, BC05, BC06 |
+| ACT-02 Manager — المدير | القيادة (SH-01) | 40 | 4 | BC02, BC03, BC04, BC05, BC06 |
 | ACT-03 Planner — المخطِّط | المستخدمون التشغيليون (SH-02) | 59 | 2 | BC02, BC04, BC05, BC06, BC07 |
-| ACT-04 Analyst — المحلل | مستخدمو المعلومات والتحليل (SH-03) | 116 | 11 | BC02, BC03, BC04, BC06, BC07 |
+| ACT-04 Analyst — المحلل | مستخدمو المعلومات والتحليل (SH-03) | 128 | 11 | BC02, BC03, BC04, BC06, BC07 |
 | ACT-05 Operator — المشغِّل | المستخدمون التشغيليون (SH-02) | 3 | 0 | BC03 |
 | ACT-06 Field User — المستخدم الميداني | المستخدمون التشغيليون (SH-02) | 6 | 2 | BC02, BC07 |
-| ACT-07 Resource Manager — مدير الموارد | المستخدمون التشغيليون (SH-02) | 27 | 1 | BC05 |
+| ACT-07 Resource Manager — مدير الموارد | المستخدمون التشغيليون (SH-02) | 32 | 1 | BC05 |
 | ACT-08 Logistics User — مستخدم الإمداد | المستخدمون التشغيليون (SH-02) | 9 | 0 | BC05 |
 | ACT-09 Risk Manager — مدير المخاطر | المستخدمون التشغيليون (SH-02) | 1 | 1 | BC04 |
 | ACT-10 Training Manager — مدير التدريب | المستخدمون التشغيليون (SH-02) | 23 | 1 | BC05 |
-| ACT-11 Knowledge Manager — مدير المعرفة | مستخدمو المعلومات والتحليل (SH-03) | 6 | 0 | BC06 |
+| ACT-11 Knowledge Manager — مدير المعرفة | مستخدمو المعلومات والتحليل (SH-03) | 7 | 0 | BC06 |
 | ACT-12 Archivist — أمين الأرشيف | الحوكمة (SH-04) | 8 | 4 | BC06, BC08 |
-| ACT-13 Security Officer — مسؤول الأمن | الحوكمة (SH-04) | 31 | 9 | BC01, BC02, BC03, BC04, BC05, BC06, BC07, BC08 |
+| ACT-13 Security Officer — مسؤول الأمن | الحوكمة (SH-04) | 33 | 9 | BC01, BC02, BC03, BC04, BC05, BC06, BC07, BC08 |
 | ACT-14 Auditor — المدقِّق | الحوكمة (SH-04) | 2 | 14 | BC03, BC06, BC07, BC08 |
-| ACT-15 Administrator — مسؤول الإدارة | فرق المنصة (SH-05) | 56 | 10 | BC01, BC02, BC03, BC04, BC05, BC07 |
+| ACT-15 Administrator — مسؤول الإدارة | فرق المنصة (SH-05) | 60 | 10 | BC01, BC02, BC03, BC04, BC05, BC07 |
 
 #### (B) أدوار المنصة
 
 | الفاعل / الدور | الوصف | أوامر | استعلامات | السياقات |
 |---|---|---|---|---|
 | PLT-OPS — مشغّل المنصة | Platform Operator — فرق المنصة (SH-05) | 11 | 2 | BC01, BC07 |
-| PLT-AI — مهندس/حوكمة الذكاء الاصطناعي | AI platform engineer، AI governance authority | 14 | 3 | BC07 |
+| PLT-AI — مهندس/حوكمة الذكاء الاصطناعي | AI platform engineer، AI governance authority | 15 | 3 | BC07 |
 | PLT-INT — مهندس التكامل | integration engineer | 8 | 2 | BC07 |
 
 #### (C) أدوار السلطة والاعتماد
@@ -118,36 +118,36 @@ generator: 17-system-study/_build/build_analysis_design.py
 | REL-RECIPIENT — المستلم والمشترك | recipient، subscriber | 5 | 1 | BC03, BC04 |
 | REL-INCIDENT — أدوار الحادثة | المُبلِّغ، مقيّم الحادثة، قائد الحادثة | 10 | 1 | BC04 |
 | REL-RISK — أدوار الخطر | محدِّد الخطر، المقيّم، موافق المعالجة، مالك النطاق — أدوار منفصلة بفصل المهام (INV-RIS-01: المقيّم ≠ المحدِّد) | 4 | 1 | BC04 |
-| REL-PEER — الشخص الثاني | second Analyst / Administrator، peer Analyst — لفصل المهام | 4 | 0 | BC02, BC03, BC07 |
-| ANY-USER — أي مستخدم مخوَّل | أي مستخدم ضمن `allowed_scope` أو مصرَّح له بعلامة المورد | 9 | 74 | BC01, BC02, BC03, BC04, BC05, BC06, BC07, BC08 |
+| REL-PEER — الشخص الثاني | second Analyst / Administrator، peer Analyst — لفصل المهام | 5 | 0 | BC02, BC03, BC07 |
+| ANY-USER — أي مستخدم مخوَّل | أي مستخدم ضمن `allowed_scope` أو مصرَّح له بعلامة المورد | 10 | 74 | BC01, BC02, BC03, BC04, BC05, BC06, BC07, BC08 |
 
 #### (E) الفاعلون النظاميون
 
 | الفاعل / الدور | الوصف | أوامر | استعلامات | السياقات |
 |---|---|---|---|---|
-| SYS — هويات النظام والخدمات | adapter/SCIM service accounts، workload identities، analysis-run identity، internal PEPs | 33 | 6 | BC01, BC02, BC05, BC08 |
+| SYS — هويات النظام والخدمات | adapter/SCIM service accounts، workload identities، analysis-run identity، internal PEPs | 35 | 6 | BC01, BC02, BC05, BC08 |
 
 ### 6.2 مصفوفة الفاعل × السياق (عدد الأوامر / الاستعلامات)
 
 | الفاعل / الدور | BC01 | BC02 | BC03 | BC04 | BC05 | BC06 | BC07 | BC08 |
 |---|---|---|---|---|---|---|---|---|
 | ACT-01 Executive — القيادي التنفيذي | 2 / 1 | — | — | — | — | — | — | — |
-| ACT-02 Manager — المدير | — | 3 / 1 | 11 / 0 | 22 / 0 | 0 / 3 | 3 / 0 | — | — |
+| ACT-02 Manager — المدير | — | 3 / 1 | 12 / 0 | 22 / 0 | 0 / 3 | 3 / 0 | — | — |
 | ACT-03 Planner — المخطِّط | — | 6 / 1 | — | 33 / 0 | 10 / 1 | 6 / 0 | 4 / 0 | — |
-| ACT-04 Analyst — المحلل | — | 59 / 9 | 39 / 1 | 5 / 0 | — | 9 / 0 | 4 / 1 | — |
+| ACT-04 Analyst — المحلل | — | 67 / 9 | 42 / 1 | 5 / 0 | — | 10 / 0 | 4 / 1 | — |
 | ACT-05 Operator — المشغِّل | — | — | 3 / 0 | — | — | — | — | — |
 | ACT-06 Field User — المستخدم الميداني | — | 1 / 0 | — | — | — | — | 5 / 2 | — |
-| ACT-07 Resource Manager — مدير الموارد | — | — | — | — | 27 / 1 | — | — | — |
+| ACT-07 Resource Manager — مدير الموارد | — | — | — | — | 32 / 1 | — | — | — |
 | ACT-08 Logistics User — مستخدم الإمداد | — | — | — | — | 9 / 0 | — | — | — |
 | ACT-09 Risk Manager — مدير المخاطر | — | — | — | 1 / 1 | — | — | — | — |
 | ACT-10 Training Manager — مدير التدريب | — | — | — | — | 23 / 1 | — | — | — |
-| ACT-11 Knowledge Manager — مدير المعرفة | — | — | — | — | — | 6 / 0 | — | — |
+| ACT-11 Knowledge Manager — مدير المعرفة | — | — | — | — | — | 7 / 0 | — | — |
 | ACT-12 Archivist — أمين الأرشيف | — | — | — | — | — | 3 / 0 | — | 5 / 4 |
-| ACT-13 Security Officer — مسؤول الأمن | 9 / 2 | 2 / 0 | 2 / 0 | 1 / 0 | 1 / 0 | 0 / 1 | 4 / 3 | 12 / 3 |
+| ACT-13 Security Officer — مسؤول الأمن | 9 / 2 | 2 / 0 | 2 / 0 | 1 / 0 | 1 / 0 | 0 / 1 | 6 / 3 | 12 / 3 |
 | ACT-14 Auditor — المدقِّق | — | — | 0 / 1 | — | — | 2 / 2 | 0 / 3 | 0 / 8 |
-| ACT-15 Administrator — مسؤول الإدارة | 35 / 6 | 5 / 2 | 1 / 0 | 4 / 0 | 4 / 0 | — | 7 / 2 | — |
+| ACT-15 Administrator — مسؤول الإدارة | 36 / 6 | 5 / 2 | 1 / 0 | 4 / 0 | 4 / 0 | — | 10 / 2 | — |
 | PLT-OPS — مشغّل المنصة | 7 / 1 | — | — | — | — | — | 4 / 1 | — |
-| PLT-AI — مهندس/حوكمة الذكاء الاصطناعي | — | — | — | — | — | — | 14 / 3 | — |
+| PLT-AI — مهندس/حوكمة الذكاء الاصطناعي | — | — | — | — | — | — | 15 / 3 | — |
 | PLT-INT — مهندس التكامل | — | — | — | — | — | — | 8 / 2 | — |
 | AUTH-LEGAL — السلطة القانونية والامتثال | — | — | — | — | — | 2 / 0 | — | 10 / 4 |
 | AUTH-GRANT — صاحب سلطة أو معتمِد ثانٍ | 5 / 1 | 1 / 0 | 2 / 1 | 6 / 0 | 5 / 0 | 2 / 0 | 2 / 0 | — |
@@ -156,31 +156,31 @@ generator: 17-system-study/_build/build_analysis_design.py
 | REL-RECIPIENT — المستلم والمشترك | — | — | 4 / 0 | 1 / 1 | — | — | — | — |
 | REL-INCIDENT — أدوار الحادثة | — | — | — | 10 / 1 | — | — | — | — |
 | REL-RISK — أدوار الخطر | — | — | — | 4 / 1 | — | — | — | — |
-| REL-PEER — الشخص الثاني | — | 2 / 0 | 1 / 0 | — | — | — | 1 / 0 | — |
-| ANY-USER — أي مستخدم مخوَّل | 2 / 1 | 0 / 14 | 0 / 15 | 0 / 17 | 0 / 16 | 4 / 6 | 2 / 4 | 1 / 1 |
-| SYS — هويات النظام والخدمات | 8 / 1 | 24 / 2 | — | — | 1 / 1 | — | — | 0 / 2 |
+| REL-PEER — الشخص الثاني | — | 2 / 0 | 1 / 0 | — | — | — | 2 / 0 | — |
+| ANY-USER — أي مستخدم مخوَّل | 3 / 1 | 0 / 14 | 0 / 15 | 0 / 17 | 0 / 16 | 4 / 6 | 2 / 4 | 1 / 1 |
+| SYS — هويات النظام والخدمات | 8 / 1 | 26 / 2 | — | — | 1 / 1 | — | — | 0 / 2 |
 
 ### 6.3 مصفوفة الفاعل × نوع العملية
 
 | الفاعل / الدور | إنشاء | تعديل | سير عمل | حذف / إنهاء | نظام | جلب |
 |---|---|---|---|---|---|---|
 | ACT-01 Executive — القيادي التنفيذي | — | — | 1 | 1 | — | 1 |
-| ACT-02 Manager — المدير | 6 | 13 | 11 | 9 | — | 4 |
+| ACT-02 Manager — المدير | 6 | 13 | 12 | 9 | — | 4 |
 | ACT-03 Planner — المخطِّط | 11 | 18 | 13 | 17 | — | 2 |
-| ACT-04 Analyst — المحلل | 26 | 33 | 32 | 25 | — | 11 |
+| ACT-04 Analyst — المحلل | 26 | 34 | 38 | 30 | — | 11 |
 | ACT-05 Operator — المشغِّل | 1 | — | 1 | 1 | — | — |
 | ACT-06 Field User — المستخدم الميداني | 3 | — | 2 | 1 | — | 2 |
-| ACT-07 Resource Manager — مدير الموارد | 6 | 6 | 7 | 8 | — | 1 |
+| ACT-07 Resource Manager — مدير الموارد | 6 | 6 | 12 | 8 | — | 1 |
 | ACT-08 Logistics User — مستخدم الإمداد | 2 | 1 | 2 | 4 | — | — |
 | ACT-09 Risk Manager — مدير المخاطر | — | — | — | 1 | — | 1 |
 | ACT-10 Training Manager — مدير التدريب | 4 | 5 | 8 | 6 | — | 1 |
-| ACT-11 Knowledge Manager — مدير المعرفة | 1 | 1 | 2 | 2 | — | — |
+| ACT-11 Knowledge Manager — مدير المعرفة | 1 | 1 | 2 | 3 | — | — |
 | ACT-12 Archivist — أمين الأرشيف | 1 | 2 | 3 | 2 | — | 4 |
-| ACT-13 Security Officer — مسؤول الأمن | 3 | 9 | 12 | 7 | — | 9 |
+| ACT-13 Security Officer — مسؤول الأمن | 3 | 9 | 13 | 8 | — | 9 |
 | ACT-14 Auditor — المدقِّق | 1 | — | — | 1 | — | 14 |
-| ACT-15 Administrator — مسؤول الإدارة | 10 | 14 | 18 | 14 | — | 10 |
+| ACT-15 Administrator — مسؤول الإدارة | 10 | 15 | 20 | 15 | — | 10 |
 | PLT-OPS — مشغّل المنصة | 2 | 1 | 6 | 2 | — | 2 |
-| PLT-AI — مهندس/حوكمة الذكاء الاصطناعي | 4 | 2 | 6 | 2 | — | 3 |
+| PLT-AI — مهندس/حوكمة الذكاء الاصطناعي | 4 | 2 | 6 | 3 | — | 3 |
 | PLT-INT — مهندس التكامل | 2 | 1 | 4 | 1 | — | 2 |
 | AUTH-LEGAL — السلطة القانونية والامتثال | 3 | 1 | 5 | 3 | — | 4 |
 | AUTH-GRANT — صاحب سلطة أو معتمِد ثانٍ | 3 | — | 10 | 10 | — | 2 |
@@ -189,9 +189,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | REL-RECIPIENT — المستلم والمشترك | 1 | — | 1 | 3 | — | 1 |
 | REL-INCIDENT — أدوار الحادثة | 1 | 3 | 4 | 2 | — | 1 |
 | REL-RISK — أدوار الخطر | 1 | — | 3 | — | — | 1 |
-| REL-PEER — الشخص الثاني | — | — | 3 | 1 | — | — |
-| ANY-USER — أي مستخدم مخوَّل | 4 | 1 | 2 | 2 | — | 74 |
-| SYS — هويات النظام والخدمات | 8 | 7 | 9 | 3 | 6 | 6 |
+| REL-PEER — الشخص الثاني | — | — | 4 | 1 | — | — |
+| ANY-USER — أي مستخدم مخوَّل | 4 | 2 | 2 | 2 | — | 74 |
+| SYS — هويات النظام والخدمات | 8 | 9 | 9 | 3 | 6 | 6 |
 
 ### 6.4 عمليات كل فاعل
 
@@ -204,7 +204,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 #### ACT-02 Manager — المدير
 
 - **BC02:** `CMD-CRQ-AMEND`, `CMD-CRQ-APPROVE`, `CMD-CRQ-REJECT`, `QRY-CRQ-EVIDENCE`
-- **BC03:** `CMD-ARL-ACTIVATE`, `CMD-ARL-DEFINE`, `CMD-ARL-DISABLE`, `CMD-ARL-EDIT`, `CMD-ARL-ENABLE`, `CMD-ARL-RETIRE`, `CMD-SIT-ACTIVATE`, `CMD-SIT-CLOSE`, `CMD-SIT-CREATE`, `CMD-SIT-EDIT-DEFINITION`, `CMD-SIT-PAUSE`
+- **BC03:** `CMD-ARL-ACTIVATE`, `CMD-ARL-DEFINE`, `CMD-ARL-DISABLE`, `CMD-ARL-EDIT`, `CMD-ARL-ENABLE`, `CMD-ARL-RETIRE`, `CMD-SIT-ACTIVATE`, `CMD-SIT-CLOSE`, `CMD-SIT-CREATE`, `CMD-SIT-EDIT-DEFINITION`, `CMD-SIT-PAUSE`, `CMD-SIT-RESUME`
 - **BC04:** `CMD-CRD-ACTIVATE`, `CMD-CRD-ADD-PARTICIPANT`, `CMD-CRD-ASSIGN-RESPONSIBILITY`, `CMD-CRD-CANCEL`, `CMD-CRD-CLOSE`, `CMD-CRD-OPEN`, `CMD-CRD-REMOVE-PARTICIPANT`, `CMD-DRQ-ADD-OPTION`, `CMD-DRQ-CITE`, `CMD-DRQ-CREATE`, `CMD-DRQ-OPEN`, `CMD-DRQ-WITHDRAW`, `CMD-TASK-ASSIGN`, `CMD-TASK-CANCEL`, `CMD-TASK-CREATE`, `CMD-TASK-EDIT`, `CMD-TASK-MARK-READY`, `CMD-TASK-REASSIGN`, `CMD-TASK-RECLASSIFY`, `CMD-TASK-SET-DUE`, `CMD-TASK-SUSPEND`, `CMD-TASK-UNSUSPEND`
 - **BC05:** `QRY-ELIG-CHECK`, `QRY-QUAL-LIST`, `QRY-READINESS`
 - **BC06:** `CMD-DST-CANCEL`, `CMD-DST-DISTRIBUTE`, `CMD-PRD-WITHDRAW`
@@ -219,10 +219,10 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 #### ACT-04 Analyst — المحلل
 
-- **BC02:** `CMD-CLM-ASSERT`, `CMD-CLM-CORRECT`, `CMD-CLM-RECLASSIFY`, `CMD-CLM-RECORD-CHANGE`, `CMD-CLM-RETRACT`, `CMD-CNF-ACCEPT`, `CMD-CNF-ASSIGN`, `CMD-CNF-RAISE`, `CMD-CNF-REOPEN`, `CMD-CNF-RESOLVE`, `CMD-CNF-START-REVIEW`, `CMD-CRP-ACCEPT`, `CMD-CRP-PROPOSE`, `CMD-CRP-REJECT`, `CMD-CRP-START-REVIEW`, `CMD-CRQ-CANCEL`, `CMD-CRQ-DRAFT`, `CMD-CRQ-EDIT`, `CMD-CRQ-MARK-SATISFIED`, `CMD-CRQ-SUBMIT`, `CMD-CRR-DEFINE`, `CMD-CRR-EDIT`, `CMD-ENT-CHANGE-TYPE`, `CMD-ENT-RECLASSIFY`, `CMD-ENT-REGISTER`, `CMD-ENT-REINSTATE`, `CMD-ENT-RETIRE`, `CMD-ER-CONFIRM-MATCH`, `CMD-ER-DECIDE-MATCH`, `CMD-ER-DECIDE-NOT-MATCH`, `CMD-ER-PROPOSE`, `CMD-ER-REQUEST-SPLIT`, `CMD-ER-SPLIT`, `CMD-ER-START-REVIEW`, `CMD-EVD-RECLASSIFY`, `CMD-EVD-REGISTER`, `CMD-EVD-SEAL`, `CMD-EVD-UPDATE-LOCATOR`, `CMD-EVD-WITHDRAW`, `CMD-EVL-LINK`, `CMD-EVL-UNLINK`, `CMD-EXT-END`, `CMD-EXT-MAP`, `CMD-MRS-DRAFT`, `CMD-MRS-EDIT`, `CMD-OBS-REJECT`, `CMD-OBS-VALIDATE`, `CMD-REL-RECLASSIFY`, `CMD-REL-REGISTER`, `CMD-REL-REINSTATE`, `CMD-REL-RETIRE`, `CMD-RWE-CHANGE-TYPE`, `CMD-RWE-RECLASSIFY`, `CMD-RWE-REGISTER`, `CMD-RWE-REINSTATE`, `CMD-RWE-RETIRE`, `CMD-SRC-RATE-RELIABILITY`, `CMD-SRC-REGISTER`, `CMD-SRC-UPDATE-PROFILE`, `QRY-CLUSTER-GET`, `QRY-CNF-GET`, `QRY-CNF-LIST`, `QRY-CRP-QUEUE`, `QRY-ER-GET`, `QRY-ER-QUEUE`, `QRY-EXT-RESOLVE`, `QRY-MRS-GET`, `QRY-SRC-GET`
-- **BC03:** `CMD-ACS-ADD-ASSUMPTION`, `CMD-ACS-ADD-HYPOTHESIS`, `CMD-ACS-CANCEL`, `CMD-ACS-CLOSE`, `CMD-ACS-CREATE`, `CMD-ACS-DEFINE`, `CMD-ACS-DEFINE-SCENARIO`, `CMD-ACS-DESELECT-EVIDENCE`, `CMD-ACS-OPEN`, `CMD-ACS-REOPEN`, `CMD-ACS-RETIRE-ASSUMPTION`, `CMD-ACS-SELECT-EVIDENCE`, `CMD-ACS-UPDATE-HYPOTHESIS`, `CMD-AMT-REGISTER`, `CMD-ARL-ACTIVATE`, `CMD-ARL-DEFINE`, `CMD-ARL-DISABLE`, `CMD-ARL-EDIT`, `CMD-ARL-ENABLE`, `CMD-ARL-RETIRE`, `CMD-ASM-DISCARD`, `CMD-ASM-DRAFT`, `CMD-ASM-EDIT`, `CMD-ASM-PUBLISH`, `CMD-ASM-RETURN`, `CMD-ASM-SUBMIT`, `CMD-ASM-WITHDRAW`, `CMD-FND-ACCEPT`, `CMD-FND-EDIT`, `CMD-FND-RECORD`, `CMD-FND-WITHDRAW`, `CMD-RUN-CANCEL`, `CMD-RUN-REPRODUCE`, `CMD-RUN-SUBMIT`, `CMD-SIT-ACTIVATE`, `CMD-SIT-CLOSE`, `CMD-SIT-CREATE`, `CMD-SIT-EDIT-DEFINITION`, `CMD-SIT-PAUSE`, `QRY-AMT-LIST`
+- **BC02:** `CMD-CLM-ASSERT`, `CMD-CLM-CORRECT`, `CMD-CLM-RECLASSIFY`, `CMD-CLM-RECORD-CHANGE`, `CMD-CLM-RETRACT`, `CMD-CNF-ACCEPT`, `CMD-CNF-ASSIGN`, `CMD-CNF-RAISE`, `CMD-CNF-REOPEN`, `CMD-CNF-RESOLVE`, `CMD-CNF-START-REVIEW`, `CMD-CRP-ACCEPT`, `CMD-CRP-PROPOSE`, `CMD-CRP-REJECT`, `CMD-CRP-START-REVIEW`, `CMD-CRQ-CANCEL`, `CMD-CRQ-DRAFT`, `CMD-CRQ-EDIT`, `CMD-CRQ-MARK-SATISFIED`, `CMD-CRQ-SUBMIT`, `CMD-CRR-DEFINE`, `CMD-CRR-EDIT`, `CMD-CRR-RETIRE`, `CMD-ENT-CHANGE-TYPE`, `CMD-ENT-RECLASSIFY`, `CMD-ENT-REGISTER`, `CMD-ENT-REINSTATE`, `CMD-ENT-RETIRE`, `CMD-ER-CONFIRM-MATCH`, `CMD-ER-DECIDE-MATCH`, `CMD-ER-DECIDE-NOT-MATCH`, `CMD-ER-PARK`, `CMD-ER-PROPOSE`, `CMD-ER-REQUEST-SPLIT`, `CMD-ER-RESUME`, `CMD-ER-SPLIT`, `CMD-ER-START-REVIEW`, `CMD-ER-WITHDRAW`, `CMD-EVD-RECLASSIFY`, `CMD-EVD-REGISTER`, `CMD-EVD-SEAL`, `CMD-EVD-UPDATE-LOCATOR`, `CMD-EVD-WITHDRAW`, `CMD-EVL-LINK`, `CMD-EVL-UNLINK`, `CMD-EXT-END`, `CMD-EXT-MAP`, `CMD-MRS-DRAFT`, `CMD-MRS-EDIT`, `CMD-OBS-RECLASSIFY`, `CMD-OBS-REJECT`, `CMD-OBS-VALIDATE`, `CMD-REL-RECLASSIFY`, `CMD-REL-REGISTER`, `CMD-REL-REINSTATE`, `CMD-REL-RETIRE`, `CMD-RWE-CHANGE-TYPE`, `CMD-RWE-RECLASSIFY`, `CMD-RWE-REGISTER`, `CMD-RWE-REINSTATE`, `CMD-RWE-RETIRE`, `CMD-SRC-RATE-RELIABILITY`, `CMD-SRC-REGISTER`, `CMD-SRC-REINSTATE`, `CMD-SRC-RETIRE`, `CMD-SRC-SUSPEND`, `CMD-SRC-UPDATE-PROFILE`, `QRY-CLUSTER-GET`, `QRY-CNF-GET`, `QRY-CNF-LIST`, `QRY-CRP-QUEUE`, `QRY-ER-GET`, `QRY-ER-QUEUE`, `QRY-EXT-RESOLVE`, `QRY-MRS-GET`, `QRY-SRC-GET`
+- **BC03:** `CMD-ACS-ADD-ASSUMPTION`, `CMD-ACS-ADD-HYPOTHESIS`, `CMD-ACS-CANCEL`, `CMD-ACS-CLOSE`, `CMD-ACS-CREATE`, `CMD-ACS-DEFINE`, `CMD-ACS-DEFINE-SCENARIO`, `CMD-ACS-DESELECT-EVIDENCE`, `CMD-ACS-OPEN`, `CMD-ACS-REOPEN`, `CMD-ACS-RETIRE-ASSUMPTION`, `CMD-ACS-SELECT-EVIDENCE`, `CMD-ACS-UPDATE-HYPOTHESIS`, `CMD-AMT-DEPRECATE`, `CMD-AMT-REGISTER`, `CMD-AMT-RETIRE`, `CMD-ARL-ACTIVATE`, `CMD-ARL-DEFINE`, `CMD-ARL-DISABLE`, `CMD-ARL-EDIT`, `CMD-ARL-ENABLE`, `CMD-ARL-RETIRE`, `CMD-ASM-DISCARD`, `CMD-ASM-DRAFT`, `CMD-ASM-EDIT`, `CMD-ASM-PUBLISH`, `CMD-ASM-RETURN`, `CMD-ASM-SUBMIT`, `CMD-ASM-WITHDRAW`, `CMD-FND-ACCEPT`, `CMD-FND-EDIT`, `CMD-FND-RECORD`, `CMD-FND-WITHDRAW`, `CMD-RUN-CANCEL`, `CMD-RUN-REPRODUCE`, `CMD-RUN-SUBMIT`, `CMD-SIT-ACTIVATE`, `CMD-SIT-CLOSE`, `CMD-SIT-CREATE`, `CMD-SIT-EDIT-DEFINITION`, `CMD-SIT-PAUSE`, `CMD-SIT-RESUME`, `QRY-AMT-LIST`
 - **BC04:** `CMD-DRQ-ADD-OPTION`, `CMD-DRQ-CITE`, `CMD-DRQ-CREATE`, `CMD-DRQ-OPEN`, `CMD-DRQ-WITHDRAW`
-- **BC06:** `CMD-PRD-CREATE`, `CMD-PRD-DISCARD`, `CMD-PRD-EDIT-NARRATIVE`, `CMD-PRD-GENERATE`, `CMD-PRD-SUBMIT`, `CMD-PTM-DEFINE`, `CMD-PTM-EDIT`, `CMD-REC-CANCEL`, `CMD-REC-REQUEST`
+- **BC06:** `CMD-PRD-CREATE`, `CMD-PRD-DISCARD`, `CMD-PRD-EDIT-NARRATIVE`, `CMD-PRD-GENERATE`, `CMD-PRD-SUBMIT`, `CMD-PTM-DEFINE`, `CMD-PTM-EDIT`, `CMD-PTM-RETIRE`, `CMD-REC-CANCEL`, `CMD-REC-REQUEST`
 - **BC07:** `CMD-SCF-ASSIGN`, `CMD-SCF-DISCARD`, `CMD-SCF-REAPPLY`, `CMD-SCF-RESOLVE-MANUALLY`, `QRY-SNS-LIST`
 
 #### ACT-05 Operator — المشغِّل
@@ -236,7 +236,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 #### ACT-07 Resource Manager — مدير الموارد
 
-- **BC05:** `CMD-ASG-ASSIGN`, `CMD-ASG-CANCEL`, `CMD-ASG-RETURN`, `CMD-AST-REGISTER`, `CMD-AST-REPORT-LOST`, `CMD-AST-SET-CERTIFICATION`, `CMD-AST-TRANSFER-CUSTODY`, `CMD-AST-UPDATE-CONDITION`, `CMD-MNT-CANCEL`, `CMD-MNT-COMPLETE`, `CMD-MNT-PLAN`, `CMD-MNT-RESCHEDULE`, `CMD-MNT-START`, `CMD-QUAL-RECORD`, `CMD-QUAL-REINSTATE`, `CMD-QUAL-RENEW`, `CMD-QUAL-REVOKE`, `CMD-QUAL-SUSPEND`, `CMD-RPL-ADJUST-CAPACITY`, `CMD-RPL-CLOSE`, `CMD-RPL-CREATE`, `CMD-RPL-RESUME`, `CMD-RPL-SUSPEND`, `CMD-RSV-CANCEL`, `CMD-RSV-CONFIRM`, `CMD-RSV-HOLD`, `CMD-RSV-RELEASE`, `QRY-QUAL-LIST`
+- **BC05:** `CMD-ASG-ASSIGN`, `CMD-ASG-CANCEL`, `CMD-ASG-RETURN`, `CMD-AST-FAIL-MAINTENANCE`, `CMD-AST-MARK-UNSERVICEABLE`, `CMD-AST-RECOVER`, `CMD-AST-REGISTER`, `CMD-AST-REPORT-LOST`, `CMD-AST-RETURN-TO-SERVICE`, `CMD-AST-SET-CERTIFICATION`, `CMD-AST-START-MAINTENANCE`, `CMD-AST-TRANSFER-CUSTODY`, `CMD-AST-UPDATE-CONDITION`, `CMD-MNT-CANCEL`, `CMD-MNT-COMPLETE`, `CMD-MNT-PLAN`, `CMD-MNT-RESCHEDULE`, `CMD-MNT-START`, `CMD-QUAL-RECORD`, `CMD-QUAL-REINSTATE`, `CMD-QUAL-RENEW`, `CMD-QUAL-REVOKE`, `CMD-QUAL-SUSPEND`, `CMD-RPL-ADJUST-CAPACITY`, `CMD-RPL-CLOSE`, `CMD-RPL-CREATE`, `CMD-RPL-RESUME`, `CMD-RPL-SUSPEND`, `CMD-RSV-CANCEL`, `CMD-RSV-CONFIRM`, `CMD-RSV-HOLD`, `CMD-RSV-RELEASE`, `QRY-QUAL-LIST`
 
 #### ACT-08 Logistics User — مستخدم الإمداد
 
@@ -252,7 +252,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 #### ACT-11 Knowledge Manager — مدير المعرفة
 
-- **BC06:** `CMD-KNO-PUBLISH`, `CMD-KNO-REJECT`, `CMD-KNO-RETIRE`, `CMD-KNO-RETURN`, `CMD-PTM-DEFINE`, `CMD-PTM-EDIT`
+- **BC06:** `CMD-KNO-PUBLISH`, `CMD-KNO-REJECT`, `CMD-KNO-RETIRE`, `CMD-KNO-RETURN`, `CMD-PTM-DEFINE`, `CMD-PTM-EDIT`, `CMD-PTM-RETIRE`
 
 #### ACT-12 Archivist — أمين الأرشيف
 
@@ -267,7 +267,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 - **BC04:** `CMD-PLN-RECLASSIFY`
 - **BC05:** `CMD-AST-RECLASSIFY`
 - **BC06:** `QRY-DST-LOG`
-- **BC07:** `CMD-CON-ACTIVATE`, `CMD-PKG-REVOKE`, `CMD-TOL-ACTIVATE`, `CMD-TOL-DISABLE`, `QRY-CON-LIST`, `QRY-RTG-ACTIVE`, `QRY-TOL-LIST`
+- **BC07:** `CMD-CON-ACTIVATE`, `CMD-PKG-REVOKE`, `CMD-TOL-ACTIVATE`, `CMD-TOL-DISABLE`, `CMD-TOL-ENABLE`, `CMD-TOL-RETIRE`, `QRY-CON-LIST`, `QRY-RTG-ACTIVE`, `QRY-TOL-LIST`
 - **BC08:** `CMD-CLS-ACTIVATE`, `CMD-CLS-DISCARD`, `CMD-CLS-DRAFT`, `CMD-CLS-EDIT`, `CMD-EXC-APPROVE`, `CMD-EXC-REJECT`, `CMD-EXC-REVOKE`, `CMD-POL-APPROVE`, `CMD-POL-DRAFT`, `CMD-POL-EDIT`, `CMD-POL-REJECT`, `CMD-POL-SUBMIT`, `QRY-AUD-SEARCH`, `QRY-EXC-LIST`, `QRY-POL-GET`
 
 #### ACT-14 Auditor — المدقِّق
@@ -279,12 +279,12 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 #### ACT-15 Administrator — مسؤول الإدارة
 
-- **BC01:** `CMD-DEV-CONFIRM`, `CMD-DEV-REINSTATE`, `CMD-DEV-RETIRE`, `CMD-DEV-SUSPEND`, `CMD-HRS-APPROVE`, `CMD-HRS-REJECT`, `CMD-ORG-ADD-UNIT`, `CMD-ORG-CREATE`, `CMD-ORG-DEACTIVATE`, `CMD-ORG-DEACTIVATE-UNIT`, `CMD-ORG-MOVE-UNIT`, `CMD-ORG-REACTIVATE`, `CMD-ORG-RENAME`, `CMD-ORG-RENAME-UNIT`, `CMD-PER-DEACTIVATE`, `CMD-PER-ERASE`, `CMD-PER-REACTIVATE`, `CMD-PER-REGISTER`, `CMD-PER-UPDATE-DETAILS`, `CMD-RAS-ASSIGN`, `CMD-RAS-REVOKE`, `CMD-ROL-ACTIVATE`, `CMD-ROL-DEFINE`, `CMD-ROL-RETIRE`, `CMD-ROL-SET-PERMISSIONS`, `CMD-SVC-CLOSE`, `CMD-SVC-CREATE`, `CMD-SVC-DISABLE`, `CMD-SVC-ENABLE`, `CMD-SVC-ROTATE-CREDENTIAL`, `CMD-USR-CLOSE`, `CMD-USR-LINK-IDENTITY`, `CMD-USR-LINK-PERSON`, `CMD-USR-PROVISION`, `CMD-USR-UNLINK-IDENTITY`, `QRY-AUT-LIST`, `QRY-DEV-LIST`, `QRY-HRS-QUEUE`, `QRY-TEN-GET`, `QRY-USR-GET`, `QRY-USR-LIST`
+- **BC01:** `CMD-DEV-CONFIRM`, `CMD-DEV-REINSTATE`, `CMD-DEV-RETIRE`, `CMD-DEV-ROTATE-KEY`, `CMD-DEV-SUSPEND`, `CMD-HRS-APPROVE`, `CMD-HRS-REJECT`, `CMD-ORG-ADD-UNIT`, `CMD-ORG-CREATE`, `CMD-ORG-DEACTIVATE`, `CMD-ORG-DEACTIVATE-UNIT`, `CMD-ORG-MOVE-UNIT`, `CMD-ORG-REACTIVATE`, `CMD-ORG-RENAME`, `CMD-ORG-RENAME-UNIT`, `CMD-PER-DEACTIVATE`, `CMD-PER-ERASE`, `CMD-PER-REACTIVATE`, `CMD-PER-REGISTER`, `CMD-PER-UPDATE-DETAILS`, `CMD-RAS-ASSIGN`, `CMD-RAS-REVOKE`, `CMD-ROL-ACTIVATE`, `CMD-ROL-DEFINE`, `CMD-ROL-RETIRE`, `CMD-ROL-SET-PERMISSIONS`, `CMD-SVC-CLOSE`, `CMD-SVC-CREATE`, `CMD-SVC-DISABLE`, `CMD-SVC-ENABLE`, `CMD-SVC-ROTATE-CREDENTIAL`, `CMD-USR-CLOSE`, `CMD-USR-LINK-IDENTITY`, `CMD-USR-LINK-PERSON`, `CMD-USR-PROVISION`, `CMD-USR-UNLINK-IDENTITY`, `QRY-AUT-LIST`, `QRY-DEV-LIST`, `QRY-HRS-QUEUE`, `QRY-TEN-GET`, `QRY-USR-GET`, `QRY-USR-LIST`
 - **BC02:** `CMD-IMP-ACCEPT-QUARANTINE`, `CMD-IMP-CANCEL`, `CMD-IMP-REPROCESS-QUARANTINE`, `CMD-IMP-SUBMIT`, `CMD-MRS-ACTIVATE`, `QRY-IMP-GET`, `QRY-MRS-GET`
 - **BC03:** `CMD-AMT-ACTIVATE`
 - **BC04:** `CMD-TTY-ACTIVATE`, `CMD-TTY-DEFINE`, `CMD-TTY-EDIT`, `CMD-TTY-RETIRE`
 - **BC05:** `CMD-RRQ-ACTIVATE`, `CMD-RRQ-DEFINE`, `CMD-RRQ-EDIT`, `CMD-RRQ-RETIRE`
-- **BC07:** `CMD-ADP-ACTIVATE`, `CMD-ADP-REGISTER`, `CMD-ADP-UPDATE-MAPPING`, `CMD-CON-RESUME`, `CMD-CON-RETIRE`, `CMD-CON-SUSPEND`, `CMD-PKG-REVOKE`, `QRY-ADP-GET`, `QRY-AI-USAGE`
+- **BC07:** `CMD-ADP-ACTIVATE`, `CMD-ADP-REGISTER`, `CMD-ADP-RESUME`, `CMD-ADP-RETIRE`, `CMD-ADP-SUSPEND`, `CMD-ADP-UPDATE-MAPPING`, `CMD-CON-RESUME`, `CMD-CON-RETIRE`, `CMD-CON-SUSPEND`, `CMD-PKG-REVOKE`, `QRY-ADP-GET`, `QRY-AI-USAGE`
 
 #### PLT-OPS — مشغّل المنصة
 
@@ -293,7 +293,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 #### PLT-AI — مهندس/حوكمة الذكاء الاصطناعي
 
-- **BC07:** `CMD-EVS-DRAFT`, `CMD-EVS-EDIT`, `CMD-MDL-APPROVE`, `CMD-MDL-DEPRECATE`, `CMD-MDL-FAIL-EVALUATION`, `CMD-MDL-PROMOTE`, `CMD-MDL-REGISTER`, `CMD-MDL-REINSTATE`, `CMD-MDL-STAGE`, `CMD-MDL-START-EVALUATION`, `CMD-RTG-DISCARD`, `CMD-RTG-DRAFT`, `CMD-RTG-EDIT`, `CMD-TOL-REGISTER`, `QRY-MDL-LIST`, `QRY-RTG-ACTIVE`, `QRY-TOL-LIST`
+- **BC07:** `CMD-EVS-DRAFT`, `CMD-EVS-EDIT`, `CMD-MDL-APPROVE`, `CMD-MDL-DEPRECATE`, `CMD-MDL-FAIL-EVALUATION`, `CMD-MDL-PROMOTE`, `CMD-MDL-REGISTER`, `CMD-MDL-REINSTATE`, `CMD-MDL-RETIRE`, `CMD-MDL-STAGE`, `CMD-MDL-START-EVALUATION`, `CMD-RTG-DISCARD`, `CMD-RTG-DRAFT`, `CMD-RTG-EDIT`, `CMD-TOL-REGISTER`, `QRY-MDL-LIST`, `QRY-RTG-ACTIVE`, `QRY-TOL-LIST`
 
 #### PLT-INT — مهندس التكامل
 
@@ -349,11 +349,11 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 - **BC02:** `CMD-ER-CONFIRM-MATCH`, `CMD-ER-SPLIT`
 - **BC03:** `CMD-FND-ACCEPT`
-- **BC07:** `CMD-ADP-ACTIVATE`
+- **BC07:** `CMD-ADP-ACTIVATE`, `CMD-ADP-RESUME`
 
 #### ANY-USER — أي مستخدم مخوَّل
 
-- **BC01:** `CMD-DEV-ENROLL`, `CMD-DEV-REPORT-LOST`, `QRY-ORG-TREE`
+- **BC01:** `CMD-DEV-ENROLL`, `CMD-DEV-REPORT-LOST`, `CMD-DEV-ROTATE-KEY`, `QRY-ORG-TREE`
 - **BC02:** `QRY-ATT-DOWNLOAD`, `QRY-CLM-GET`, `QRY-CRQ-BOARD`, `QRY-CRQ-GET`, `QRY-ENT-CLAIMS`, `QRY-ENT-LIST`, `QRY-ENT-POSITIONS`, `QRY-ENT-RESOLVED`, `QRY-EVD-GET`, `QRY-LIN-TRACE`, `QRY-OBS-GET`, `QRY-OBS-LIST`, `QRY-REL-LIST`, `QRY-RWE-GET`
 - **BC03:** `QRY-ACS-GET`, `QRY-ACS-LIST`, `QRY-ALR-LIST`, `QRY-ASM-GET`, `QRY-ASM-VERSIONS`, `QRY-BASE-TILE`, `QRY-FND-LIST`, `QRY-RUN-ARTIFACT`, `QRY-RUN-GET`, `QRY-SCN-COMPARE`, `QRY-SIT-CHANGES`, `QRY-SIT-COP`, `QRY-SIT-GET`, `QRY-SIT-LIST`, `QRY-SIT-TILE`
 - **BC04:** `QRY-CRD-LIST`, `QRY-DEC-BASIS`, `QRY-DEC-GET`, `QRY-DRQ-GET`, `QRY-DRQ-LIST`, `QRY-INC-GET`, `QRY-INC-LIST`, `QRY-OUT-SERIES`, `QRY-PLN-GET`, `QRY-PLN-PROGRESS`, `QRY-PLV-DIFF`, `QRY-PLV-LIST`, `QRY-RIS-REGISTER`, `QRY-TASK-GET`, `QRY-TASK-HISTORY`, `QRY-TASK-LIST`, `QRY-TTY-GET`
@@ -365,7 +365,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 #### SYS — هويات النظام والخدمات
 
 - **BC01:** `CMD-TEN-COMPLETE-CELL-MIGRATION`, `CMD-TEN-COMPLETE-DECOMMISSION`, `CMD-TEN-COMPLETE-PROVISIONING`, `CMD-TEN-FAIL-PROVISIONING`, `CMD-USR-DISABLE`, `CMD-USR-ENABLE`, `CMD-USR-PROVISION`, `CMD-USR-RECORD-FIRST-SIGN-IN`, `QRY-AUT-CHECK`
-- **BC02:** `CMD-CLM-ASSERT`, `CMD-CLM-ASSESS`, `CMD-CLM-RECLASSIFY`, `CMD-ENT-CHANGE-TYPE`, `CMD-ENT-RECLASSIFY`, `CMD-ENT-REGISTER`, `CMD-ENT-REINSTATE`, `CMD-ENT-RETIRE`, `CMD-EXT-END`, `CMD-EXT-MAP`, `CMD-IMP-ACCEPT-QUARANTINE`, `CMD-IMP-CANCEL`, `CMD-IMP-REPROCESS-QUARANTINE`, `CMD-IMP-SUBMIT`, `CMD-OBS-RECORD`, `CMD-REL-RECLASSIFY`, `CMD-REL-REGISTER`, `CMD-REL-REINSTATE`, `CMD-REL-RETIRE`, `CMD-RWE-CHANGE-TYPE`, `CMD-RWE-RECLASSIFY`, `CMD-RWE-REGISTER`, `CMD-RWE-REINSTATE`, `CMD-RWE-RETIRE`, `QRY-EXT-RESOLVE`, `QRY-IMP-GET`
+- **BC02:** `CMD-CLM-ASSERT`, `CMD-CLM-ASSESS`, `CMD-CLM-RECLASSIFY`, `CMD-ENT-CHANGE-TYPE`, `CMD-ENT-RECLASSIFY`, `CMD-ENT-REGISTER`, `CMD-ENT-REINSTATE`, `CMD-ENT-RETIRE`, `CMD-EXT-END`, `CMD-EXT-MAP`, `CMD-IMP-ACCEPT-QUARANTINE`, `CMD-IMP-CANCEL`, `CMD-IMP-REPROCESS-QUARANTINE`, `CMD-IMP-SUBMIT`, `CMD-OBS-AMEND`, `CMD-OBS-ATTACH-EVIDENCE`, `CMD-OBS-RECORD`, `CMD-REL-RECLASSIFY`, `CMD-REL-REGISTER`, `CMD-REL-REINSTATE`, `CMD-REL-RETIRE`, `CMD-RWE-CHANGE-TYPE`, `CMD-RWE-RECLASSIFY`, `CMD-RWE-REGISTER`, `CMD-RWE-REINSTATE`, `CMD-RWE-RETIRE`, `QRY-EXT-RESOLVE`, `QRY-IMP-GET`
 - **BC05:** `CMD-SIM-START`, `QRY-ELIG-CHECK`
 - **BC08:** `QRY-LHD-CHECK`, `QRY-PDP-DECIDE`
 
@@ -541,32 +541,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 | الأمر | الأدوار المذكورة في السياسة |
 |---|---|
-| `CMD-ADP-RESUME` | Administrator · second Administrator |
-| `CMD-ADP-RETIRE` | Administrator · second Administrator |
-| `CMD-ADP-SUSPEND` | Administrator · second Administrator |
-| `CMD-AMT-DEPRECATE` | Analysis lead · second lead or Administrator |
-| `CMD-AMT-RETIRE` | Analysis lead · second lead or Administrator |
-| `CMD-AST-FAIL-MAINTENANCE` | Resource Manager · disposal authority · Security Officer |
-| `CMD-AST-MARK-UNSERVICEABLE` | Resource Manager · disposal authority · Security Officer |
-| `CMD-AST-RECOVER` | Resource Manager · disposal authority · Security Officer |
-| `CMD-AST-RETURN-TO-SERVICE` | Resource Manager · disposal authority · Security Officer |
-| `CMD-AST-START-MAINTENANCE` | Resource Manager · disposal authority · Security Officer |
-| `CMD-CRR-RETIRE` | Analyst lead · second approver |
-| `CMD-DEV-ROTATE-KEY` | user · Administrator / MDM policy · Security Officer |
-| `CMD-ER-PARK` | Analyst · second Analyst |
-| `CMD-ER-RESUME` | Analyst · second Analyst |
-| `CMD-ER-WITHDRAW` | Analyst · second Analyst |
-| `CMD-MDL-RETIRE` | AI platform engineer · AI governance authority |
-| `CMD-OBS-AMEND` | Field User / Operator / Analyst / adapter service account · Analyst |
-| `CMD-OBS-ATTACH-EVIDENCE` | Field User / Operator / Analyst / adapter service account · Analyst |
-| `CMD-OBS-RECLASSIFY` | Field User / Operator / Analyst / adapter service account · Analyst |
-| `CMD-PTM-RETIRE` | Knowledge Manager / Analysis lead · second approver |
-| `CMD-SIT-RESUME` | Analyst / Manager · Security Officer |
-| `CMD-SRC-REINSTATE` | Analyst · Security Officer |
-| `CMD-SRC-RETIRE` | Analyst · Security Officer |
-| `CMD-SRC-SUSPEND` | Analyst · Security Officer |
-| `CMD-TOL-ENABLE` | AI platform engineer · Security Officer |
-| `CMD-TOL-RETIRE` | AI platform engineer · Security Officer |
+| — | لا شيء: الأوامر الـ26 التي لم يحسمها المصدر محسومة في `17-security-design.md` §5 (CR-77) |
 
 ### 6.7 أوصاف لم تُصنَّف
 

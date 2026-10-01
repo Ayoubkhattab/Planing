@@ -104,9 +104,9 @@ Scenario Outline: CMD-ADP-REGISTER is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | تكامل | Administrator · second Administrator **[Needs Review]** | `POST /api/v1/integration/adapters/{id}/actions/resume` | POL-ADP-RESUME |
+| سير عمل | تكامل | second Administrator (محسوم: `17-security-design.md` §5) | `POST /api/v1/integration/adapters/{id}/actions/resume` | POL-ADP-RESUME |
 
-**القصة:** بصفتي **Administrator · second Administrator**، أريد **استئناف المحوّل**، لكي يتحقق غرض المحوّل: محول تكامل مسجل بمصدر وحساب خدمة وإصدار تحويل
+**القصة:** بصفتي **second Administrator**، أريد **استئناف المحوّل**، لكي يتحقق غرض المحوّل: محول تكامل مسجل بمصدر وحساب خدمة وإصدار تحويل
 
 - **الشروط المسبقة:** الحالة الحالية: SUSPENDED؛ لا شروط إضافية
 - **المدخلات:** لا حمولة — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -118,7 +118,7 @@ Scenario Outline: CMD-ADP-REGISTER is rejected
 ```gherkin
 Scenario: CMD-ADP-RESUME succeeds
   Given AGG-ADAPTER in state SUSPENDED and every guard holds
-  When an authorized actor (Administrator or second Administrator) sends CMD-ADP-RESUME with a valid payload, a new Idempotency-Key and a matching If-Match
+  When second Administrator sends CMD-ADP-RESUME with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes ACTIVE
   And EVT-ADP-RESUMED is written to the outbox with one audit record in the same transaction
 
@@ -139,9 +139,9 @@ Scenario Outline: CMD-ADP-RESUME is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| حذف / إنهاء | تكامل | Administrator · second Administrator **[Needs Review]** | `POST /api/v1/integration/adapters/{id}/actions/retire` | POL-ADP-RETIRE |
+| حذف / إنهاء | تكامل | Administrator (محسوم: `17-security-design.md` §5) | `POST /api/v1/integration/adapters/{id}/actions/retire` | POL-ADP-RETIRE |
 
-**القصة:** بصفتي **Administrator · second Administrator**، أريد **إحالة المحوّل إلى التقاعد**، لكي يتحقق غرض المحوّل: محول تكامل مسجل بمصدر وحساب خدمة وإصدار تحويل
+**القصة:** بصفتي **Administrator**، أريد **إحالة المحوّل إلى التقاعد**، لكي يتحقق غرض المحوّل: محول تكامل مسجل بمصدر وحساب خدمة وإصدار تحويل
 
 - **الشروط المسبقة:** الحالة الحالية: DRAFT, ACTIVE, SUSPENDED؛ reason
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -153,7 +153,7 @@ Scenario Outline: CMD-ADP-RESUME is rejected
 ```gherkin
 Scenario: CMD-ADP-RETIRE succeeds
   Given AGG-ADAPTER in state DRAFT or ACTIVE or SUSPENDED and every guard holds
-  When an authorized actor (Administrator or second Administrator) sends CMD-ADP-RETIRE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Administrator sends CMD-ADP-RETIRE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes RETIRED
   And EVT-ADP-RETIRED is written to the outbox with one audit record in the same transaction
 
@@ -175,9 +175,9 @@ Scenario Outline: CMD-ADP-RETIRE is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | تكامل | Administrator · second Administrator **[Needs Review]** | `POST /api/v1/integration/adapters/{id}/actions/suspend` | POL-ADP-SUSPEND |
+| سير عمل | تكامل | Administrator (محسوم: `17-security-design.md` §5) | `POST /api/v1/integration/adapters/{id}/actions/suspend` | POL-ADP-SUSPEND |
 
-**القصة:** بصفتي **Administrator · second Administrator**، أريد **تعليق المحوّل**، لكي يتحقق غرض المحوّل: محول تكامل مسجل بمصدر وحساب خدمة وإصدار تحويل
+**القصة:** بصفتي **Administrator**، أريد **تعليق المحوّل**، لكي يتحقق غرض المحوّل: محول تكامل مسجل بمصدر وحساب خدمة وإصدار تحويل
 
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE؛ reason
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -189,7 +189,7 @@ Scenario Outline: CMD-ADP-RETIRE is rejected
 ```gherkin
 Scenario: CMD-ADP-SUSPEND succeeds
   Given AGG-ADAPTER in state ACTIVE and every guard holds
-  When an authorized actor (Administrator or second Administrator) sends CMD-ADP-SUSPEND with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Administrator sends CMD-ADP-SUSPEND with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes SUSPENDED
   And EVT-ADP-SUSPENDED is written to the outbox with one audit record in the same transaction
 
@@ -947,9 +947,9 @@ Scenario Outline: CMD-TOL-DISABLE is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | حوكمة وأمن | AI platform engineer · Security Officer **[Needs Review]** | `POST /api/v1/ai/tools/{id}/actions/enable` | POL-TOL-ENABLE |
+| سير عمل | حوكمة وأمن | Security Officer (محسوم: `17-security-design.md` §5) | `POST /api/v1/ai/tools/{id}/actions/enable` | POL-TOL-ENABLE |
 
-**القصة:** بصفتي **AI platform engineer · Security Officer**، أريد **تمكين أداة الذكاء الاصطناعي**، لكي يتحقق غرض أداة الذكاء الاصطناعي: أداة يمكن لتشغيل AI استدعاؤها، بصلاحية وأثر ومستوى استقلالية
+**القصة:** بصفتي **Security Officer**، أريد **تمكين أداة الذكاء الاصطناعي**، لكي يتحقق غرض أداة الذكاء الاصطناعي: أداة يمكن لتشغيل AI استدعاؤها، بصلاحية وأثر ومستوى استقلالية
 
 - **الشروط المسبقة:** الحالة الحالية: DISABLED؛ لا شروط إضافية
 - **المدخلات:** لا حمولة — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -961,7 +961,7 @@ Scenario Outline: CMD-TOL-DISABLE is rejected
 ```gherkin
 Scenario: CMD-TOL-ENABLE succeeds
   Given AGG-AI-TOOL in state DISABLED and every guard holds
-  When an authorized actor (AI platform engineer or Security Officer) sends CMD-TOL-ENABLE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Security Officer sends CMD-TOL-ENABLE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes ACTIVE
   And EVT-TOL-ENABLED is written to the outbox with one audit record in the same transaction
 
@@ -1017,9 +1017,9 @@ Scenario Outline: CMD-TOL-REGISTER is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| حذف / إنهاء | حوكمة وأمن | AI platform engineer · Security Officer **[Needs Review]** | `POST /api/v1/ai/tools/{id}/actions/retire` | POL-TOL-RETIRE |
+| حذف / إنهاء | حوكمة وأمن | Security Officer (محسوم: `17-security-design.md` §5) | `POST /api/v1/ai/tools/{id}/actions/retire` | POL-TOL-RETIRE |
 
-**القصة:** بصفتي **AI platform engineer · Security Officer**، أريد **إحالة أداة الذكاء الاصطناعي إلى التقاعد**، لكي يتحقق غرض أداة الذكاء الاصطناعي: أداة يمكن لتشغيل AI استدعاؤها، بصلاحية وأثر ومستوى استقلالية
+**القصة:** بصفتي **Security Officer**، أريد **إحالة أداة الذكاء الاصطناعي إلى التقاعد**، لكي يتحقق غرض أداة الذكاء الاصطناعي: أداة يمكن لتشغيل AI استدعاؤها، بصلاحية وأثر ومستوى استقلالية
 
 - **الشروط المسبقة:** الحالة الحالية: DRAFT, ACTIVE, DISABLED؛ reason
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -1031,7 +1031,7 @@ Scenario Outline: CMD-TOL-REGISTER is rejected
 ```gherkin
 Scenario: CMD-TOL-RETIRE succeeds
   Given AGG-AI-TOOL in state DRAFT or ACTIVE or DISABLED and every guard holds
-  When an authorized actor (AI platform engineer or Security Officer) sends CMD-TOL-RETIRE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Security Officer sends CMD-TOL-RETIRE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes RETIRED
   And EVT-TOL-RETIRED is written to the outbox with one audit record in the same transaction
 
@@ -1728,9 +1728,9 @@ Scenario Outline: CMD-MDL-REINSTATE is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| حذف / إنهاء | حوكمة وأمن | AI platform engineer · AI governance authority **[Needs Review]** | `POST /api/v1/ai/models/{id}/actions/retire` | POL-MDL-RETIRE |
+| حذف / إنهاء | حوكمة وأمن | AI governance authority (محسوم: `17-security-design.md` §5) | `POST /api/v1/ai/models/{id}/actions/retire` | POL-MDL-RETIRE |
 
-**القصة:** بصفتي **AI platform engineer · AI governance authority**، أريد **إحالة إصدار النموذج إلى التقاعد**، لكي يتحقق غرض إصدار النموذج: نسخة نموذج بدورة حياة من التسجيل حتى التقاعد (PRJ§30)
+**القصة:** بصفتي **AI governance authority**، أريد **إحالة إصدار النموذج إلى التقاعد**، لكي يتحقق غرض إصدار النموذج: نسخة نموذج بدورة حياة من التسجيل حتى التقاعد (PRJ§30)
 
 - **الشروط المسبقة:** الحالة الحالية: DEPRECATED؛ weights archived (cold) if referenced by lineage of accepted results; record kept
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -1742,7 +1742,7 @@ Scenario Outline: CMD-MDL-REINSTATE is rejected
 ```gherkin
 Scenario: CMD-MDL-RETIRE succeeds
   Given AGG-MODEL-VERSION in state DEPRECATED and every guard holds
-  When an authorized actor (AI platform engineer or AI governance authority) sends CMD-MDL-RETIRE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When AI governance authority sends CMD-MDL-RETIRE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes RETIRED
   And EVT-MDL-RETIRED is written to the outbox with one audit record in the same transaction
 

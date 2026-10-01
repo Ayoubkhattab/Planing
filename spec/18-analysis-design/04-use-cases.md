@@ -1494,7 +1494,7 @@ flowchart LR
 - **المسار الرئيسي** **[Derived]** — مسار لكل Aggregate رئيسي؛ ترتيب الـAggregates وتداخلها في `06-process-models.md`:
   - **AGG-ASSET:**
     1. Resource Manager: `CMD-AST-REGISTER` (∅ → IN_SERVICE) ⇐ `EVT-AST-REGISTERED`
-    2. Resource Manager · disposal authority · Security Officer: `CMD-AST-START-MAINTENANCE` (IN_SERVICE, UNSERVICEABLE → UNDER_MAINTENANCE) ⇐ `EVT-AST-MAINTENANCE-STARTED`
+    2. Resource Manager: `CMD-AST-START-MAINTENANCE` (IN_SERVICE, UNSERVICEABLE → UNDER_MAINTENANCE) ⇐ `EVT-AST-MAINTENANCE-STARTED`
 - **مسارات بديلة (إلغاء، رفض، إرجاع، إنهاء…):** `CMD-AST-MARK-UNSERVICEABLE` → UNSERVICEABLE، `CMD-AST-RETURN-TO-SERVICE` → IN_SERVICE، `CMD-AST-FAIL-MAINTENANCE` → UNSERVICEABLE، `CMD-AST-REPORT-LOST` → LOST، `CMD-AST-RECOVER` → UNSERVICEABLE، `CMD-AST-DISPOSE` → DISPOSED
 - **الاستثناءات:** رموز الرفض لكل خطوة في قصة أمرها (`05-user-stories/`، Scenario Outline «is rejected»).
 
@@ -1539,7 +1539,7 @@ flowchart LR
 - **المسار الرئيسي** **[Derived]** — مسار لكل Aggregate رئيسي؛ ترتيب الـAggregates وتداخلها في `06-process-models.md`:
   - **AGG-ASSET:**
     1. Resource Manager: `CMD-AST-REGISTER` (∅ → IN_SERVICE) ⇐ `EVT-AST-REGISTERED`
-    2. Resource Manager · disposal authority · Security Officer: `CMD-AST-START-MAINTENANCE` (IN_SERVICE, UNSERVICEABLE → UNDER_MAINTENANCE) ⇐ `EVT-AST-MAINTENANCE-STARTED`
+    2. Resource Manager: `CMD-AST-START-MAINTENANCE` (IN_SERVICE, UNSERVICEABLE → UNDER_MAINTENANCE) ⇐ `EVT-AST-MAINTENANCE-STARTED`
   - **AGG-ASSET-ASSIGNMENT:**
     1. Resource Manager / Planner: `CMD-ASG-ASSIGN` (∅ → ACTIVE) ⇐ `EVT-ASG-ASSIGNED`
 - **مسارات بديلة (إلغاء، رفض، إرجاع، إنهاء…):** `CMD-AST-MARK-UNSERVICEABLE` → UNSERVICEABLE، `CMD-AST-RETURN-TO-SERVICE` → IN_SERVICE، `CMD-AST-FAIL-MAINTENANCE` → UNSERVICEABLE، `CMD-AST-REPORT-LOST` → LOST، `CMD-AST-RECOVER` → UNSERVICEABLE، `CMD-AST-DISPOSE` → DISPOSED، `CMD-ASG-RETURN` → RETURNED، `CMD-ASG-CANCEL` → CANCELLED

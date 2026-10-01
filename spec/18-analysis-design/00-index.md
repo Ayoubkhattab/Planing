@@ -78,7 +78,7 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 | [ADR-P17](../00-governance/decisions/ADR-P17.md) | المعمارية الداخلية Hexagonal / Ports & Adapters | ✅ APPROVED_DELEGATED |
 | [ADR-P18](../00-governance/decisions/ADR-P18.md) | هيكلية المستودع: حزم سياقات تُركَّب في وحدات نشر | ✅ APPROVED_DELEGATED |
 | [ADR-P19](../00-governance/decisions/ADR-P19.md) | نتائج التخويل: 403 للمورد المرئي، 401 للمصادقة المعززة، 403 `APPROVAL_REQUIRED` | ✅ APPROVED (مالك المشروع) |
-| [ADR-P20](../00-governance/decisions/ADR-P20.md) | إعادة محاولة مستهلكي الأحداث: 5 محاولات ثم DLQ، مع إيقاف مفتاح الـAggregate وحده | ✅ APPROVED (مالك المشروع) |
+| [ADR-P20](../00-governance/decisions/ADR-P20.md) | إعادة محاولة مستهلكي الأحداث: 5 إعادات ثم DLQ، مع إيقاف مفتاح الـAggregate وحده (عدا موضوع نسخ الأمن) | ✅ APPROVED (مالك المشروع) |
 
 ## 3. تصنيف العمليات (أساس قصص المستخدم)
 

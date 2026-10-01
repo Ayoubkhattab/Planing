@@ -240,7 +240,7 @@ flowchart TB
 | **ADR-P17** | المعمارية الداخلية Hexagonal | كل وحدة نشر |
 | **ADR-P18** | هيكلية المستودع | `contracts/`، `contexts/`، `platform/`، `services/` |
 | **ADR-P19** | نتائج التخويل (يعدّل البند 5 من ADR-P06) | 403 للمورد المرئي، `401 MFA_STEP_UP_REQUIRED`، `403 APPROVAL_REQUIRED` — `17-security-design.md` §3 |
-| **ADR-P20** | إعادة محاولة مستهلكي الأحداث | 5 محاولات ثم DLQ، إيقاف مفتاح الـAggregate، إيقاف المستهلك عند انقطاع البنية — `23-crosscutting.md` §6 |
+| **ADR-P20** | إعادة محاولة مستهلكي الأحداث | 5 إعادات ثم DLQ، إيقاف مفتاح الـAggregate، إيقاف المستهلك عند انقطاع البنية — `23-crosscutting.md` §6 |
 | TD-01..TD-19 | التقنيات (PostgreSQL، Kafka، OpenSearch، OPA، Keycloak، OpenBao، Kubernetes...) | المحوّلات الخارجة |
 
 ## 8. ما لم يتغيّر وما أُضيف

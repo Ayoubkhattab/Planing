@@ -150,7 +150,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | الحالة |
 |---|---|
 | 5 Aggregates بلا قاعدة اشتقاق تسمية: EXERCISE، LOGISTICS-REQUEST، SCENARIO، SHIPMENT، SIMULATION (شرائح R3) | **[Missing]** — S-26 في `00-index.md` §6 |
-| مدة الرموز وسياسة الجلسة بالأرقام | **[Missing]** — «رموز قصيرة العمر» دون رقم (TB-01) |
+| مدة الرموز وسياسة الجلسة بالأرقام | رمز الجلسة الخارجي ≤ 15 دقيقة مع تجديد، وSecurityContext ≤ 60 ث (`security-context.md`؛ `ui-architecture.md`) |
 | آلية break-glass بالتفصيل (من يوافق، المدة القصوى، الإشعار) | **[Missing]** — مبدأ في TB-09 فقط؛ تُفصَّل في `22-deployment-design.md` |
 | تصدير جماعي يحتاج موافقة | **[Missing]** — Aggregate صريح لاحقًا (ADR-P19) |
 | عدد الأوامر المسموحة دون اتصال (6 أو 12) | محسوم: 12 (قرار مالك المشروع، CR-79، `20-integration-design.md` §7) |

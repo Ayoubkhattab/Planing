@@ -15,7 +15,7 @@ consumers: []
 
 ## corrections
 
-_81 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-81 in Phase 3.8 — 18-analysis-design)
+_82 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-82 in Phase 3.8 — 18-analysis-design)
 
 ### CR-01
 
@@ -666,6 +666,14 @@ _81 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-81 in Phase 3.8 — 18-an
 - **origin:** 18-analysis-design/00-index.md §6 S-01, S-02, S-12, S-13, S-14, S-18, S-19, S-25
 - **status:** APPLIED (Phase 3.8 source-correction round): approved under the project owner's delegation (APPROVED_DELEGATED) and applied in the same round
 
+### CR-82
+
+- **issue:** Mechanical inconsistencies found by the study's stage 5 (18-analysis-design/00-index.md §6): S-30 QAS-OPS-002/003 mapped to an unrelated verification method (air-gapped install rehearsal); S-31 performance-test-strategy.md equated G7 with production, while RATIFICATION-PACKAGE.md makes G7 the build gate and G8 production; S-33 ADR-P17 counted 89 acceptance files (state machines only, total 108) and ENGINEERING-BASELINE-R1 counted 19 fitness functions (20 since FIT-20).
+- **correction:** QAS-OPS-002 verified by the task-timer escalation acceptance (TST-SLC03-INVARIANTS) plus scheduler latency measurement, QAS-OPS-003 by notification delivery with the push gateway down (TST-SLC06-INVARIANTS), both CI + pre-G8 (markdown and YAML); performance-test-strategy.md reads G8 for production and explains the pre-G7 label of the matrix; ADR-P17 and ENGINEERING-BASELINE-R1 counts corrected.
+- **target_wave:** Phase 3.8 — study closure
+- **origin:** 18-analysis-design/00-index.md §6 S-30, S-31, S-33
+- **status:** APPLIED (Phase 3.8 study closure): approved under the project owner's delegation (APPROVED_DELEGATED) and applied in the same round
+
 ---
 
 <details>
@@ -1298,6 +1306,19 @@ corrections:
   target_wave: Phase 3.8 — source-correction round
   origin: 18-analysis-design/00-index.md §6 S-01, S-02, S-12, S-13, S-14, S-18, S-19, S-25
   status: 'APPLIED (Phase 3.8 source-correction round): approved under the project owner''s delegation (APPROVED_DELEGATED) and applied in the same round'
+- id: CR-82
+  issue: 'Mechanical inconsistencies found by the study''s stage 5 (18-analysis-design/00-index.md §6): S-30 QAS-OPS-002/003
+    mapped to an unrelated verification method (air-gapped install rehearsal); S-31 performance-test-strategy.md equated G7
+    with production, while RATIFICATION-PACKAGE.md makes G7 the build gate and G8 production; S-33 ADR-P17 counted 89 acceptance
+    files (state machines only, total 108) and ENGINEERING-BASELINE-R1 counted 19 fitness functions (20 since FIT-20).'
+  correction: QAS-OPS-002 verified by the task-timer escalation acceptance (TST-SLC03-INVARIANTS) plus scheduler latency measurement,
+    QAS-OPS-003 by notification delivery with the push gateway down (TST-SLC06-INVARIANTS), both CI + pre-G8 (markdown and
+    YAML); performance-test-strategy.md reads G8 for production and explains the pre-G7 label of the matrix; ADR-P17 and ENGINEERING-BASELINE-R1
+    counts corrected.
+  target_wave: Phase 3.8 — study closure
+  origin: 18-analysis-design/00-index.md §6 S-30, S-31, S-33
+  status: 'APPLIED (Phase 3.8 study closure): approved under the project owner''s delegation (APPROVED_DELEGATED) and applied
+    in the same round'
 ```
 
 </details>

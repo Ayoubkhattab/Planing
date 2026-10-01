@@ -536,8 +536,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 | QAS-OFF-002 | security | H/H | user's clearance reduced while device offline | packages revoked and purged on next contact; commands evaluated under current authorization | WL-12 | field sync tests with interruption injection + device tests | CI + field pilot |
 | QAS-OFF-003 | scalability | H/H | 5,000 devices reconnect within 10 min | all sessions complete ≤ 30 min; oldest-offline devices first; no data loss | WL-12 | field sync tests with interruption injection + device tests | CI + field pilot |
 | QAS-OPS-001 | operability | H/M | installs or upgrades in an air-gapped site | offline bundle only; rollback ≤ 1 h | — | air-gapped install/upgrade/rollback rehearsal | pre-G8 |
-| QAS-OPS-002 | timeliness | H/M | task reaches due_at | escalation event ≤ 60 s after due | WL-01 | air-gapped install/upgrade/rollback rehearsal | pre-G8 |
-| QAS-OPS-003 | operability | H/M | push gateway unavailable (air-gapped) | in-app inbox current; polling fallback ≤ 60 s | WL-06 | air-gapped install/upgrade/rollback rehearsal | pre-G8 |
+| QAS-OPS-002 | timeliness | H/M | task reaches due_at | escalation event ≤ 60 s after due | WL-01 | task timer escalation acceptance (TST-SLC03-INVARIANTS) + scheduler latency measurement | CI + pre-G8 |
+| QAS-OPS-003 | operability | H/M | push gateway unavailable (air-gapped) | in-app inbox current; polling fallback ≤ 60 s | WL-06 | notification delivery with push gateway down (TST-SLC06-INVARIANTS) | CI + pre-G8 |
 | QAS-PERF-001 | performance | H/M | submits a state-changing command | p95 ≤ 300 ms; p99 ≤ 1 s | WL-01 | load test (PERF-TEST-STRATEGY §3) | pre-G7 + pilot |
 | QAS-PERF-002 | performance | H/M | reads a single object or a list page | single object p95 ≤ 300 ms; list page p95 ≤ 1 s | WL-01 | load test (PERF-TEST-STRATEGY §3) | pre-G7 + pilot |
 | QAS-PERF-003 | performance | H/H | runs a combined text + spatial + temporal search | p95 ≤ 1 s | WL-02 | load test (PERF-TEST-STRATEGY §3) | pre-G7 + pilot |

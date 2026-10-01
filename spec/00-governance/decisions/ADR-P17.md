@@ -38,7 +38,7 @@ The ratified design fixes *what* the platform is — 8 bounded contexts, 89 aggr
 - no reads from another context's store (FIT-01);
 - `If-Match` optimistic concurrency and `Idempotency-Key` on every command (89/89 aggregates);
 - generated contracts driving server stubs, with hot paths possibly re-implemented in Go behind the same contracts (TD-15);
-- acceptance specs that exercise every state transition (89 files, `13-verification/acceptance/`).
+- acceptance specs that exercise every state transition (89 state-machine files, plus 19 invariant files — 108 in `13-verification/acceptance/`; count corrected by CR-82).
 
 ## Decision Drivers
 1. **Domain rules must be testable without infrastructure.** 302 invariants and 89 state machines are the core of the specification; they must run in plain unit tests.

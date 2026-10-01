@@ -239,7 +239,7 @@ flowchart TB
 | ADR-P16 | نظام الإحداثيات المعياري WGS 84 | BC02 الهندسة |
 | **ADR-P17** | المعمارية الداخلية Hexagonal | كل وحدة نشر |
 | **ADR-P18** | هيكلية المستودع | `contracts/`، `contexts/`، `platform/`، `services/` |
-| **ADR-P19** | نتائج التخويل | 403 للمورد المرئي، `401 MFA_STEP_UP_REQUIRED`، `403 APPROVAL_REQUIRED` — `17-security-design.md` §3 |
+| **ADR-P19** | نتائج التخويل (يعدّل البند 5 من ADR-P06) | 403 للمورد المرئي، `401 MFA_STEP_UP_REQUIRED`، `403 APPROVAL_REQUIRED` — `17-security-design.md` §3 |
 | TD-01..TD-19 | التقنيات (PostgreSQL، Kafka، OpenSearch، OPA، Keycloak، OpenBao، Kubernetes...) | المحوّلات الخارجة |
 
 ## 8. ما لم يتغيّر وما أُضيف

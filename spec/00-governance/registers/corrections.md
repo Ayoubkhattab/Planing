@@ -613,7 +613,7 @@ _78 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-78 in Phase 3.8 — 18-an
 ### CR-75
 
 - **issue:** No operation in the 28 OpenAPI contracts declares 403, although every errors-*.md header allows it for a visible resource; no error code exists for an unmet MFA obligation (ADR-P17 step 6) or a REQUIRE_APPROVAL decision (source issue S-07).
-- **correction:** Per ADR-P19: declare 401 and 403 responses on every command operation; add MFA_STEP_UP_REQUIRED (401, retryable after step-up) and APPROVAL_REQUIRED (403, not retryable) as platform-wide codes in the error catalogs; ApiError.details.approver for APPROVAL_REQUIRED. Applied through the spec tooling (slice_contracts) so that V5 round trip stays exact.
+- **correction:** Per ADR-P19: declare 401 and 403 responses on every command operation; add MFA_STEP_UP_REQUIRED (401, retryable after step-up) and APPROVAL_REQUIRED (403, not retryable) as platform-wide codes in the error catalogs, with ApiError.details.approver; add SEGREGATION_OF_DUTIES to the error lists of the 12 commands that have a separation rule but do not declare it; amend ADR-P06 item 5, THR-020 and PRV-04 so that the identical not-found response applies to resources the caller may not see. Applied through the spec tooling (slice_contracts) so that V5 round trip stays exact.
 - **target_wave:** Phase 3.8 — source-correction round
 - **origin:** ADR-P19; 18-analysis-design/00-index.md §6 S-07
 - **status:** APPROVED — pending application
@@ -629,9 +629,9 @@ _78 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-78 in Phase 3.8 — 18-an
 ### CR-77
 
 - **issue:** 26 command policies list several roles with verb lists, none of which names the command's verb, so the issuing role is undefined (18-analysis-design/02-actors-roles.md §6.6).
-- **correction:** Name the issuing role in each of the 26 policy subjects as resolved in 18-analysis-design/17-security-design.md §5 (resolution by the paired verb in the same policy: resume↔pause/suspend, enable↔disable, retire↔deprecate/define, maintenance↔condition).
+- **correction:** Name the issuing role in each of the 26 policy subjects as resolved in 18-analysis-design/17-security-design.md §5 and §12.1 (rule: the paired verb in the same policy — resume↔pause/suspend, enable↔disable, retire↔deprecate/define/register, maintenance↔condition — without contradicting the transition guard; exceptions CMD-MDL-RETIRE and CMD-TOL-RETIRE recorded there). Add a separation rule to POL-ADP-RESUME (resumer ≠ the Administrator who suspended).
 - **target_wave:** Phase 3.8 — source-correction round
-- **origin:** 17-security-design.md §5; S-16
+- **origin:** 17-security-design.md §5; 02-actors-roles.md §6.6
 - **status:** APPROVED_DELEGATED — pending application
 
 ### CR-78
@@ -1195,8 +1195,10 @@ corrections:
     resource; no error code exists for an unmet MFA obligation (ADR-P17 step 6) or a REQUIRE_APPROVAL decision (source issue
     S-07).
   correction: 'Per ADR-P19: declare 401 and 403 responses on every command operation; add MFA_STEP_UP_REQUIRED (401, retryable
-    after step-up) and APPROVAL_REQUIRED (403, not retryable) as platform-wide codes in the error catalogs; ApiError.details.approver
-    for APPROVAL_REQUIRED. Applied through the spec tooling (slice_contracts) so that V5 round trip stays exact.'
+    after step-up) and APPROVAL_REQUIRED (403, not retryable) as platform-wide codes in the error catalogs, with ApiError.details.approver;
+    add SEGREGATION_OF_DUTIES to the error lists of the 12 commands that have a separation rule but do not declare it; amend
+    ADR-P06 item 5, THR-020 and PRV-04 so that the identical not-found response applies to resources the caller may not see.
+    Applied through the spec tooling (slice_contracts) so that V5 round trip stays exact.'
   target_wave: Phase 3.8 — source-correction round
   origin: ADR-P19; 18-analysis-design/00-index.md §6 S-07
   status: APPROVED — pending application
@@ -1212,9 +1214,11 @@ corrections:
   issue: 26 command policies list several roles with verb lists, none of which names the command's verb, so the issuing role
     is undefined (18-analysis-design/02-actors-roles.md §6.6).
   correction: 'Name the issuing role in each of the 26 policy subjects as resolved in 18-analysis-design/17-security-design.md
-    §5 (resolution by the paired verb in the same policy: resume↔pause/suspend, enable↔disable, retire↔deprecate/define, maintenance↔condition).'
+    §5 and §12.1 (rule: the paired verb in the same policy — resume↔pause/suspend, enable↔disable, retire↔deprecate/define/register,
+    maintenance↔condition — without contradicting the transition guard; exceptions CMD-MDL-RETIRE and CMD-TOL-RETIRE recorded
+    there). Add a separation rule to POL-ADP-RESUME (resumer ≠ the Administrator who suspended).'
   target_wave: Phase 3.8 — source-correction round
-  origin: 17-security-design.md §5; S-16
+  origin: 17-security-design.md §5; 02-actors-roles.md §6.6
   status: APPROVED_DELEGATED — pending application
 - id: CR-78
   issue: The contracts define no code for a missing or expired token (401), an oversized request (413), an unsupported media

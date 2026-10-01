@@ -14,6 +14,10 @@ depends_on:
 - ADR-P17
 related:
 - CR-75
+amends:
+- ADR-P06 (item 5)
+- THR-020
+- PRV-04
 verified_by:
 - FIT-03
 - FIT-16
@@ -24,9 +28,9 @@ verified_by:
 ## Context and Problem
 The policy decision point returns `ALLOW`, `DENY`, `CONDITIONAL`, `REDACT`, `AGGREGATE` or `REQUIRE_APPROVAL` with obligations (REQ-FND-012, `08-security/authorization-model.md` §2). The ratified sources leave three outcomes without a defined API behaviour (source issue S-07 in `18-analysis-design/00-index.md` §6):
 
-1. **Visible but not permitted.** ADR-P06 item 5 makes not-found and forbidden indistinguishable for resources the caller may not see. The header of every `05-contracts/errors-*.md` allows `403` "only for a resource the user is entitled to see but not act on", yet no operation in the 28 OpenAPI files declares `403`.
-2. **Unmet pre-execution obligation.** 36 command policies carry an `mfa` obligation (`08-security/policies-slc*.md`); ADR-P17 step 6 says the command is rejected when it is not met, but no error code exists.
-3. **`REQUIRE_APPROVAL`.** No command policy returns it (all 477 decide `ALLOW` when matched); it appears for policy-level approvals such as bulk export (`POL-EXPORT-BULK`, authorization-model §4). Business approvals are already modelled as explicit states with segregation of duties (e.g. `CMD-PLV-APPROVE`, `CMD-TASK-APPROVE`), and AGG-ALLOCATION already turns the obligation into an explicit state (`SYS:checks passed, policy requires approval` → `REQUESTED`, capacity held ≤ 1 h).
+1. **Visible but not permitted.** ADR-P06 item 5 says, without qualification, "Not-found and forbidden return the same response shape and status"; THR-020 and PRV-04 rely on it. The header of every `05-contracts/errors-*.md` contradicts it by allowing `403` "only for a resource the user is entitled to see but not act on", and no operation in the 28 OpenAPI files declares `403`. The sources therefore conflict.
+2. **Unmet pre-execution obligation.** 33 commands require `mfa` (`08-security/policies-slc*.md`: 30 with `audit; mfa`, 2 with `audit; mfa; legal-hold check`, and `CMD-PRJ-PROMOTE` alone among the four PRJ policies that say `mfa for PROMOTE`); ADR-P17 step 6 says the command is rejected when it is not met, but no error code exists. Two erasure commands also carry a pre-execution `legal-hold check`.
+3. **`REQUIRE_APPROVAL`.** No command policy returns it (all 477 decide `ALLOW` when matched); it appears for policy-level approvals such as bulk export (`POL-EXPORT-BULK`, authorization-model §4). Business approvals are already modelled as explicit states with segregation of duties (e.g. `CMD-PLV-APPROVE`, `CMD-TASK-APPROVE`), and AGG-ALLOCATION already turns the obligation into an explicit state (`REQUESTED` → `SYS:checks passed, policy requires approval` → `PENDING_APPROVAL`, capacity held ≤ 1 h).
 
 ## Decision Drivers
 1. No disclosure of existence for invisible resources (ADR-P06, THR-005).
@@ -40,15 +44,17 @@ The policy decision point returns `ALLOW`, `DENY`, `CONDITIONAL`, `REDACT`, `AGG
 - **(3) `REQUIRE_APPROVAL`:** (a) reject with a dedicated code and keep approvals explicit in aggregates; (b) a generic `ApprovalRequest` aggregate that holds the command as pending and executes it on approval.
 
 ## Decision Outcome
-The project owner chose **1(a), 2(a), 3(a)**:
+The project owner chose **1(a), 2(a), 3(a)**. Choice 1(a) **amends ADR-P06 item 5**, THR-020 and PRV-04: the identical response now applies to resources the caller may not *see*; a visible resource may answer `403`. The amendment is carried into those documents by CR-75.
 
 | Outcome | HTTP | Code | `retryable` | Behaviour |
 |---|---|---|---|---|
-| Resource invisible to the caller (any denial) | 404 | `NOT_FOUND` | no | Same body shape as a missing resource; nothing about the resource (existence, version, state) is returned. Unchanged from ADR-P06 item 5. |
+| Resource invisible to the caller (any denial) | 404 | `NOT_FOUND` | no | Same body shape as a missing resource; nothing about the resource (existence, version, state) is returned (ADR-P06 item 5 as amended). |
 | Resource visible, action not permitted | 403 | `AUTHZ_DENIED` | no | `ApiError.policy.reason_code` is set; no resource attributes beyond what the caller can already see. "Visible" means a `view` decision on the same resource returns `ALLOW`/`REDACT`. |
+| Segregation of duties violated on a visible resource | 422 | `SEGREGATION_OF_DUTIES` | no | As in the error catalogs; only 32 of the 44 commands with a separation rule declare the code (S-28, CR-75 completes them). |
+| Create command denied (no resource exists yet) | 403 | `AUTHZ_DENIED` | no | Nothing can be disclosed about a resource that does not exist; the parent scope itself is visible to the caller **[Derived]**. |
 | `mfa` obligation and the session's authentication strength is insufficient | 401 | `MFA_STEP_UP_REQUIRED` (new) | yes, after step-up | The response carries the required authentication strength as a challenge (OIDC `acr_values`). The client re-authenticates and retries **with the same `Idempotency-Key`**; nothing has executed. |
-| `REQUIRE_APPROVAL` | 403 | `APPROVAL_REQUIRED` (new) | no | `ApiError.details.approver` names the approver role; nothing executes. No generic approval workflow; an operation that needs routine approval gets an explicit aggregate (bulk export: **[Missing]** — to be specified with the export capability). |
-| `CONDITIONAL` | — | — | — | Its conditions are obligations: pre-execution ones are checked at pipeline step 6 (today only `mfa`); post-execution ones (`audit`, `watermark`, `notify…`) at step 10. |
+| `REQUIRE_APPROVAL` | 403 | `APPROVAL_REQUIRED` (new) | no | `ApiError.details.approver` names the approver role; nothing executes. No generic approval workflow; an operation that needs routine approval gets an explicit aggregate (bulk export: **[Missing]** — to be specified with the export capability). **Exception:** where an aggregate models approval as a state, the obligation moves it to that state instead (AGG-ALLOCATION → `PENDING_APPROVAL`). |
+| `CONDITIONAL` | — | — | — | Its conditions are obligations: pre-execution ones at pipeline step 6 (`mfa` → `401 MFA_STEP_UP_REQUIRED`; `legal-hold check` → `LEGAL_HOLD_ACTIVE`, already in the catalogs); the audit record is persisted at step 9 with the state; post-execution ones (audit detail, `watermark`, `notify…`) at step 10. |
 | `REDACT` / `AGGREGATE` | 200 | — | — | Query results are returned with the named fields redacted, or as aggregates with `min_group` (PRV-02). Not applicable to commands. |
 | PDP unavailable or erroring | 503 | `POLICY_ENGINE_UNAVAILABLE` | yes | Request denied (REQ-FND-013, FIT-16). Unchanged. |
 
@@ -66,9 +72,9 @@ The project owner chose **1(a), 2(a), 3(a)**:
 - Bulk export stays unavailable until its explicit aggregate is specified.
 
 ### Risks and mitigations
-- **Risk:** a `403` on a list-visible resource could leak an attribute through `reason_code`. **Mitigation:** reason codes are a closed list that names the rule, never resource data; covered by the zero-disclosure tests of QAS-SEC-002.
+- **Risk:** a `403` on a list-visible resource could leak an attribute through `reason_code`. **Mitigation:** reason codes must be a closed list that names the rule, never resource data — the list itself is **[Missing]** in the sources (authorization-model §2 names only the field) and is to be defined with the policy bundles; covered by the zero-disclosure tests of QAS-SEC-002.
 
 ## Related Decisions
-- ADR-P06 (as amended by CR-47) — non-disclosure and result re-checks; unchanged for invisible resources.
+- ADR-P06 (as amended by CR-47) — non-disclosure and result re-checks; item 5 amended by this decision for visible resources.
 - ADR-P11 — PEP/PDP placement.
 - ADR-P17 — the command pipeline steps referenced above.

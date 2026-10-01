@@ -160,5 +160,6 @@ approved_structure: "فهرس اعتمده مالك المشروع في 2026-09-
 
 | S-27 | رموز تذكرها المواصفات وليست في كتالوج الأخطاء: `ELIGIBILITY_UNAVAILABLE`، `CERTIFICATION_EXPIRED`، `CLASSIFICATION_REQUIRED`، `GEOMETRY_INVALID`، `POLICY_DENIED`، `SOURCE_REQUIRED`؛ ولا رموز لأخطاء البوابة وفشل الاعتماد (CR-78) | `05-contracts/errors-*.md` | `18-error-handling.md` §8–§9 |
 
-**ما حُسم بعد التسجيل:** S-07 بـADR-P19 وCR-75؛ S-08 بـCR-76 (قرار مالك المشروع)؛ S-16 جزئيًا بحسم فاعل الأوامر الـ26 (CR-77). التطبيق على ملفات المصدر في جولة تصحيح المصادر.
+| S-28 | 12 من 44 أمرًا لها قاعدة فصل مهام لا تعلن `SEGREGATION_OF_DUTIES` في قائمة أخطائها (CR-75)؛ ومفتاح الموضوع يشمل ادعاءات الكيانات من نوع شخص بينما AGG-CLAIM وAGG-ENTITY معلَّمان `personal_data: false`؛ وقائمة رموز أسباب الرفض (`reason_code`) غير معرَّفة | `commands-*.md`، `key-hierarchy-and-disposition.md`، `authorization-model.md` | `17-security-design.md` §12.4، §12.7؛ ADR-P19 |
+**ما حُسم بعد التسجيل:** S-07 بـADR-P19 (الذي يعدّل البند 5 من ADR-P06) وCR-75؛ S-08 بـCR-76 (قرار مالك المشروع)؛ S-16 جزئيًا بحسم فاعل الأوامر الـ26 (CR-77). التطبيق على ملفات المصدر في جولة تصحيح المصادر.
 

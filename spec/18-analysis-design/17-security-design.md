@@ -18,9 +18,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 |---|---|---|
 | لا ثقة ضمنية داخل الخلية | كل استدعاء بين الخدمات بـmTLS وهوية عبء عمل، وكل تطبيق يتحقق من SecurityContext موقّع | TB-02، `authorization-model.md` §6 |
 | القرار قبل أي استرجاع | منفذ التخويل قبل أي قراءة لأمر أو استعلام أو بحث أو خريطة أو تصدير أو اشتراك أو استرجاع AI | REQ-FND-010، FIT-03 |
-| الفشل يعني الرفض | تعطل محرك السياسات أو خطؤه → رفض | REQ-FND-013، FIT-16 |
+| الفشل يعني الرفض | تعطل محرك السياسات أو خطؤه → رفض | REQ-FND-013، FIT-16، QAS-SEC-005 |
 | عدم الإفصاح | المورد غير المرئي لا يُكشف وجوده بعدد ولا وجه ولا ترتيب ولا توقيت ولا خطأ | ADR-P06، QAS-SEC-002، QAS-SEC-011 |
-| حاجزان للمستأجر | فلتر المستأجر في التطبيق + RLS في قاعدة البيانات؛ والخلية المخصصة للمستأجر السيادي والمستوى SECRET | ADR-P04، FIT-02، REQ-FND-004 |
+| حاجزان للمستأجر | فلتر المستأجر في التطبيق + RLS في قاعدة البيانات؛ والخلية المخصصة للمستأجر السيادي أو المخصص، ولأعلى مستوى في مخطط التصنيف (`requires_dedicated_cell`) | ADR-P04، FIT-02، REQ-FND-004 |
 | فصل المشغّل عن البيانات | مشغلو المنصة لا يقرؤون بيانات المستأجر ولا يملكون مفاتيحه؛ break-glass بشخصين ومدة وتدقيق | TB-09، THR-014، `data-protection.md` |
 | الخصوصية بالتصميم | مفتاح لكل صاحب بيانات، تقييد الغرض، REDACT وAGGREGATE | ADR-P08، PRV-01..07 |
 
@@ -29,9 +29,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الهوية | الآلية | التفاصيل | المصدر |
 |---|---|---|---|
 | المستخدم البشري | OIDC أو SAML عبر مزوّد هوية المستأجر فقط | Keycloak لكل خلية وسيطًا اتحاديًا؛ رموز قصيرة العمر مربوطة بالجهاز؛ TLS 1.3؛ حماية CSRF؛ حدود معدل عند البوابة | REQ-FND-005، TD-09، TB-01، THR-001 |
-| التزويد | SCIM من مزوّد الهوية إلى خدمة التزويد في BC01 (AGG-USER)؛ التعطيل عبر SCIM نافذ خلال ≤ 5 دقائق في كل الجلسات | REQ-FND-005، QAS-SEC-008 |
-| المصادقة المعززة | 36 أمرًا تشترط `mfa` (§12.3)؛ الجلسة الأضعف تُرفض بـ`401 MFA_STEP_UP_REQUIRED` مع تحدٍ بقوة المصادقة المطلوبة، ثم يعيد العميل المحاولة بنفس `Idempotency-Key` | ADR-P19 |
-| الخدمة | هوية عبء عمل لكل تطبيق (mTLS)؛ حسابات الخدمة (AGG-SERVICE-ACCOUNT) للمحوّلات وSCIM؛ الطلب الداخلي يحمل SecurityContext المستخدم الأصلي ولا يرفع الصلاحية باسمه | `authorization-model.md` §6، TB-02، THR-003 |
+| التزويد | SCIM من مزوّد الهوية إلى خدمة التزويد في BC01 (AGG-USER) | حساب SCIM ينشئ مستخدمين PENDING ويربط الهويات فقط، ولا يسند أدوارًا أبدًا (الأدوار عبر `CMD-RAS-ASSIGN` فقط)؛ التعطيل عبر SCIM نافذ خلال ≤ 5 دقائق في كل الجلسات | REQ-FND-005، THR-S01-01، QAS-SEC-008 |
+| المصادقة المعززة | 33 أمرًا تشترط `mfa` (§12.3)؛ الجلسة الأضعف تُرفض بـ`401 MFA_STEP_UP_REQUIRED` مع تحدٍ بقوة المصادقة المطلوبة، ثم يعيد العميل المحاولة بنفس `Idempotency-Key` | ADR-P19 |
+| الخدمة | هوية عبء عمل لكل تطبيق (mTLS)؛ حسابات الخدمة (AGG-SERVICE-ACCOUNT) للمحوّلات وSCIM بمفاتيح عامة وصلاحية ≤ 90 يومًا (THR-S01-11)؛ الطلب الداخلي يحمل SecurityContext المستخدم الأصلي ولا يرفع الصلاحية باسمه | `authorization-model.md` §6، TB-02، THR-003 |
 | الجهاز الميداني | تسجيل الجهاز ومفتاحه (AGG-DEVICE)؛ الأوامر دون اتصال موقّعة بمفتاح الجهاز ومتسلسلة (`seq`، `prev_hash`) | TB-07، THR-S03-05، `openapi-field-slc11.md` |
 | مشغّل المنصة | مستوى تشغيل منفصل؛ لا وصول لبيانات المستأجر إلا break-glass بموافقة شخصين ومدة محددة وتدقيق | TB-09 |
 
@@ -44,7 +44,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | المكوّن | الموقع | المسؤولية |
 |---|---|---|
 | PEP | منفذ التخويل في كل وحدة (ADR-P17) والبوابة | يبني طلب القرار، يستدعي PDP قبل أي استرجاع، يطبق القرار والالتزامات |
-| PDP | سياسات OPA مترجمة من جداول القرار إلى Rego، حزم موقّعة، تُقيَّم مضمَّنة في كل وحدة؛ وخدمة القرار `QRY-PDP-DECIDE` في BC08 | يقيّم السياسات النافذة بزمن سريانها؛ 10,000 قرار/ث بزمن p95 ≤ 5 مللي ث مضمَّنًا (QAS-PERF-009) |
+| PDP | سياسات OPA مترجمة من جداول القرار إلى Rego، حزم موقّعة، تُقيَّم مضمَّنة في كل وحدة (TD-08)؛ وخدمة القرار `QRY-PDP-DECIDE` في BC08 | يقيّم السياسات النافذة بزمن سريانها؛ 10,000 قرار/ث بزمن p95 ≤ 5 مللي ث مضمَّنًا (QAS-PERF-009) |
 | PIP | BC01 (الهوية، التنظيم، السلطة، التصريح)، تسمية الكائن، السياق | سمات الموضوع والمورد |
 | Policy Store | BC08 (AGG-POLICY-SET) | سياسات T2 بإصدارات وزمن سريان (REQ-GOV-009) |
 
@@ -57,9 +57,10 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الخطوة (ADR-P17) | ما يحدث | النتيجة عند الرفض |
 |---|---|---|
 | 2. تخويل أولي قبل أي وصول | المستأجر والإجراء على نوع المورد | `404` (لم يُحمَّل شيء بعد) |
-| 5. تخويل كامل بسمات المورد المحمَّل | التصنيف، المالك، الحالة، المشاركون، فصل المهام | `404` إن كان المورد غير مرئي، `403 AUTHZ_DENIED` إن كان مرئيًا (ADR-P19)؛ `SEGREGATION_OF_DUTIES` (422) |
-| 6. الالتزامات قبل التنفيذ | `mfa` | `401 MFA_STEP_UP_REQUIRED` |
-| 10. الالتزامات بعد التنفيذ | `audit`، `watermark`، `notify…` | — |
+| 5. تخويل كامل بسمات المورد المحمَّل | التصنيف، المالك، الحالة، المشاركون، فصل المهام | `404` إن كان المورد غير مرئي، `403 AUTHZ_DENIED` إن كان مرئيًا أو كان الأمر إنشاءً (ADR-P19 الذي يعدّل البند 5 من ADR-P06)؛ `SEGREGATION_OF_DUTIES` (422) |
+| 6. الالتزامات قبل التنفيذ | `mfa`؛ `legal-hold check` في أوامر المحو | `401 MFA_STEP_UP_REQUIRED`؛ `LEGAL_HOLD_ACTIVE` |
+| 9. الحفظ | سجل التدقيق مع الحالة في نفس المعاملة | `AUDIT_UNAVAILABLE` |
+| 10. الالتزامات بعد التنفيذ | تفاصيل التدقيق، `watermark`، `notify…` | — |
 | الاستعلام | `allowed_scope` من التقييم الجزئي قبل العدّ والترتيب؛ إعادة فحص النتائج (إصدار الأمن للموضوع، `LabelCheck` مجمّعًا لكل صفحة — CR-47) | قائمة بلا المخفي؛ العنصر المخفي `404` |
 
 ### 3.4 قرارات السياسة
@@ -67,11 +68,11 @@ generator: 17-system-study/_build/build_analysis_design.py
 | القرار | السلوك | المصدر |
 |---|---|---|
 | ALLOW | تنفيذ مع الالتزامات | REQ-FND-012 |
-| DENY | `404` أو `403` كما في §3.3 | ADR-P06، ADR-P19 |
-| CONDITIONAL | شروطه التزامات: قبل التنفيذ (`mfa`) أو بعده | ADR-P19 |
+| DENY | `404` أو `403` كما في §3.3 | ADR-P06 (البند 5 معدَّل)، ADR-P19 |
+| CONDITIONAL | شروطه التزامات: قبل التنفيذ (`mfa`، `legal-hold check`) أو بعده | ADR-P19 |
 | REDACT | النتيجة بلا الحقول المحجوبة (مثل البيانات الشخصية لغير الغرض المسموح — POL-PERSONAL-DATA) | `authorization-model.md` §4 |
 | AGGREGATE | إحصاءات بحد أدنى للمجموعة 5 (PRV-02) | POL-AGG-STATS |
-| REQUIRE_APPROVAL | `403 APPROVAL_REQUIRED` باسم دور المعتمِد؛ لا سير موافقة عام — الموافقات العملية حالات صريحة في الـAggregates | ADR-P19 |
+| REQUIRE_APPROVAL | `403 APPROVAL_REQUIRED` باسم دور المعتمِد؛ لا سير موافقة عام. استثناء: Aggregate يمثل الموافقة حالةً ينتقل إليها (AGG-ALLOCATION → `PENDING_APPROVAL`) | ADR-P19 |
 
 ### 3.5 ذاكرة القرارات والإلغاء
 
@@ -82,8 +83,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | التصميم | المصدر |
 |---|---|---|
 | المخطط | لكل مستأجر: مستويات مرتبة (افتراضيًا PUBLIC، INTERNAL، CONFIDENTIAL، SECRET)، أقسام بلا حد، تحفظات إفراج، عتبة تدقيق القراءة، مستوى افتراضي | `classification-scheme.md` §1، §3 |
-| قاعدة القراءة | رتبة التصريح ≥ رتبة المستوى ∧ أقسام التسمية ⊆ أقسام التصريح ∧ كل تحفظ مستوفى ∧ نفس المستأجر ∧ قرار السياسة | REQ-GOV-003 |
-| المستوى SECRET | خلية مخصصة | ADR-P04 |
+| قاعدة القراءة | رتبة التصريح ≥ رتبة المستوى ∧ أقسام التسمية ⊆ أقسام التصريح ∧ كل تحفظ مستوفى ∧ نفس المستأجر ∧ قرار السياسة | REQ-GOV-003، `classification-scheme.md` §2 |
+| أعلى مستوى في المخطط | خلية مخصصة (العلم `requires_dedicated_cell`؛ في المخطط الافتراضي SECRET) | ADR-P04، `classification-scheme.md` §1، §3 |
 | التركيب | الكائن المركب يأخذ أعلى تصنيف ومجموع الأقسام، إلا بخفض موثق بسلطة يُسجل إصدارًا | REQ-GOV-004 |
 | مصدر التسمية | لكل Aggregate مصدر معروف: صريح أو مشتق بقاعدة أو إداري افتراضي (§12.7) | SL-29، `label-derivation-rules.md` |
 | تغيير التصنيف | أوامر `*-RECLASSIFY` بسلطة سياسة المستأجر، إصدار جديد، وحدث مؤثر أمنيًا | REQ-GOV-004 |
@@ -91,14 +92,14 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 ## 5. حسم الفاعل للأوامر الـ26
 
-26 سياسة أمر تسرد أدوارًا بأفعالها ولا يشمل أيٌّ منها فعل الأمر (`02-actors-roles.md` §6.6 قبل هذا الحسم). الحسم بقاعدة واحدة: **الفعل المقابل في السياسة نفسها** (resume ↔ pause/suspend، enable ↔ disable، retire ↔ deprecate/define/register، أعمال الصيانة ↔ condition)، مع إبقاء ما يعادل التفعيل للشخص الثاني. الجدول في §12.1 مولَّد من قائمة واحدة في المولِّد (`ACTOR_RESOLUTION`) تستخدمها قصص المستخدم والفاعلون وحالات الاستخدام. الحسم **قرار تصميم مفوَّض** ينقله CR-77 إلى ملفات السياسات.
+26 سياسة أمر تسرد أدوارًا بأفعالها ولا يشمل أيٌّ منها فعل الأمر (`02-actors-roles.md` §6.6 قبل هذا الحسم). الحسم بقاعدة واحدة: **الفعل المقابل في السياسة نفسها** (resume ↔ pause/suspend، enable ↔ disable، retire ↔ deprecate/define/register، أعمال الصيانة ↔ condition)، مع إبقاء ما يعادل التفعيل للشخص الثاني، وبشرط ألا يخالف الحسم شرط الانتقال (`CMD-DEV-ROTATE-KEY` لا يوقّعه إلا حامل الجهاز). استثناءان معلَّمان في الجدول: `CMD-MDL-RETIRE` و`CMD-TOL-RETIRE`. و`CMD-ADP-RESUME` للشخص الثاني يحتاج قاعدة فصل مهام تضاف بـCR-77. الجدول في §12.1 مولَّد من قائمة واحدة في المولِّد (`ACTOR_RESOLUTION`) تستخدمها قصص المستخدم والفاعلون وحالات الاستخدام. الحسم **قرار تصميم مفوَّض** ينقله CR-77 إلى ملفات السياسات.
 
 ## 6. حماية البيانات والمفاتيح
 
 | البند | التصميم | المصدر |
 |---|---|---|
 | النقل | TLS 1.3 خارجيًا، mTLS داخليًا | `data-protection.md` |
-| التخزين | مفتاح بيانات لكل مستأجر ملفوف بمفتاح رئيسي في HSM الموقع عبر OpenBao Transit | TD-07 |
+| التخزين | تشفير بمفاتيح المستأجر الملفوفة بمفتاح رئيسي في KMS/HSM محلي (`data-protection.md`)، عبر OpenBao Transit وKEKs في HSM الموقع (TD-07)؛ وتتفرع منها مفاتيح الفئة-الحاوية والموضوع أدناه | `data-protection.md`، TD-07 |
 | هرمية المفاتيح | KEK المستأجر في HSM؛ تحته: مفتاح فئة-حاوية (وحدة الإتلاف)، مفتاح الموضوع (وحدة المحو)، مفتاح التجميد (لإعادة لف المجمَّد) | `key-hierarchy-and-disposition.md` §1 |
 | البيانات الشخصية | مشفرة مرتين: بمفتاح الموضوع ومفتاح الفئة-الحاوية؛ إتلاف أيهما يكفي | المصدر نفسه |
 | الإتلاف | يومي لكل جدول احتفاظ نافذ؛ اعتماد شخصين؛ فحص التجميد قبل التنفيذ؛ إتلاف مفتاح الحاوية وسجل إتلاف وشاهد | §2 من المصدر، QAS-GOV-001 |
@@ -106,6 +107,20 @@ generator: 17-system-study/_build/build_analysis_design.py
 | بوابة الاستعادة | سجل إتلاف لا يُستعاد من نسخ أقدم يُعاد تطبيقه قبل فتح أي خدمة بعد استعادة مخزن المفاتيح | CR-51، FIT-19، QAS-PRV-002 |
 | الجهاز الميداني | SQLCipher بمفتاح مربوط بالمستخدم والجهاز؛ مسح عن بعد؛ إلغاء الحزم عند خفض التصريح | TD-16، QAS-SEC-007، QAS-OFF-002 |
 | السجلات التقنية | بلا محتوى أعمال أو بيانات شخصية؛ معرّفات فقط | `data-protection.md` |
+
+### 6.1 ضوابط إضافية من نماذج التهديد والحماية
+
+| الضابط | التفصيل | المصدر |
+|---|---|---|
+| روابط التنزيل | موقّعة، صالحة ≤ 5 دقائق، مربوطة بالموضوع والمستأجر | THR-S02-05 |
+| فحص المرفقات | فحص البرمجيات الخبيثة وحجر قبل الإتاحة (`SYS:scan passed`) | THR-S02-04، AGG-ATTACHMENT |
+| العلامة المائية | على التوزيع والمنتجات حيث تنص السياسة | THR-S12-P2، POL-DST |
+| سلسلة الإمداد | صور موقّعة (cosign) ومثبتة بالبصمة من سجل Harbor الداخلي، وSBOM | TD-12، TD-17، THR-019 |
+| ذاكرة المفاتيح | ≤ 10 دقائق في الذاكرة، وتُفرَّغ فورًا عند حدث إتلاف | `key-hierarchy-and-disposition.md` §1 |
+| نسخ مخزن المفاتيح | ≤ 35 يومًا ثم تختفي فيزيائيًا | المصدر نفسه §4 |
+| تدوير المفاتيح | دوري، وإعادة لف فورية عند الاشتباه؛ KMS/HSM في الطبقة الحرجة | `data-protection.md` |
+| الإسقاطات | الحقول الشخصية تُفهرس كرموز مطبّعة فقط وفق السياسة؛ الملفات المؤقتة مشفرة وتُحذف بانتهاء المهمة | `data-protection.md` |
+| سلامة التدقيق | سجل بحقول ثابتة (الفاعل، الإجراء، المورد، الغرض، قرار السياسة، النتيجة)؛ إعادة حساب السلاسل يوميًا؛ كشف فجوات الشحن بمقارنة العدادات | `audit-architecture.md` القاعدتان 2 و5، REQ-FND-015 |
 
 ## 7. التدقيق
 
@@ -117,7 +132,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 |---|---|---|
 | المستأجر | `tenant_id` أول عمود في كل مفتاح وفهرس ووثيقة وحدث ومسار كائن؛ RLS؛ حساب خدمة لكل سياق | FIT-02، TB-03، QAS-SEC-001 |
 | الخلية | لا مسار بيانات بين الخلايا؛ الترحيل تصدير واستيراد معتمد | TB-05 |
-| الولاية | كل البيانات داخل الولاية المهيأة؛ خروج الشبكة مرفوض افتراضيًا عبر بوابة خروج بقائمة سماح | REQ-GOV-005، `cell-architecture.md` §3 |
+| الولاية | كل البيانات داخل الولاية المهيأة إلا ما تسمح به سياسة المستأجر صراحة؛ خروج الشبكة مرفوض افتراضيًا عبر بوابة خروج بقائمة سماح، وأي خروج خارجها تنبيه P1 | REQ-GOV-005، `cell-architecture.md` §3 |
 | الحصص | حصص وحدود معدل لكل مستأجر للطلبات والتخزين والأحداث والمهام → `RATE_LIMITED` (429) | REQ-FND-018 |
 | AI (R2) | صلاحيات المستخدم الطالب فقط، مستوى الاستقلالية (AIL)، سجل Context Package، لا خروج للسياق من الخلية | TB-08، QAS-AI-004 |
 
@@ -126,7 +141,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الآلية | ما تتحقق منه |
 |---|---|
 | FIT-02، FIT-03، FIT-16، FIT-19، FIT-01، FIT-12 | المستأجر في كل مخزن؛ القرار قبل الوصول؛ الفشل يرفض؛ بوابة الاستعادة؛ لا وصول عابر؛ لا اعتماد على الإنترنت |
-| QAS-SEC-001..013 | العزل، الاستدلال (الأعداد والأوجه والترتيب والتوقيت)، الإلغاء الفوري، البلاطات، الأجهزة، SCIM، المصادر المحمية، التنبيهات، تشغيلات التحليل |
+| QAS-SEC-001..013 | الفشل المغلق (QAS-SEC-005)، العزل، الاستدلال (الأعداد والأوجه والترتيب والتوقيت)، الإلغاء الفوري، البلاطات، الأجهزة، SCIM، المصادر المحمية، التنبيهات، تشغيلات التحليل |
 | QAS-PRV-001/002، QAS-AUD-001، QAS-GOV-001، QAS-AI-004 | المحو، الاستعادة، اكتمال التدقيق، الإتلاف، حقن الأوامر في AI |
 | سيناريوهات القبول | رفض `AUTHZ_DENIED` وفصل المهام في كل قصة (`05-user-stories/`) |
 
@@ -152,7 +167,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 | الأمر | الأدوار في السياسة | الفاعل المحسوم | المبرر |
 |---|---|---|---|
-| `CMD-ADP-RESUME` | Administrator (register, update) · second Administrator (activate) | **second Administrator** | إعادة التشغيل تعادل التفعيل (activate) فتبقى للشخص الثاني |
+| `CMD-ADP-RESUME` | Administrator (register, update) · second Administrator (activate) | **second Administrator** | إعادة التشغيل تعادل التفعيل (activate) فتبقى للشخص الثاني؛ يتطلب قاعدة فصل مهام ≠ من أوقفه تضاف بـCR-77 |
 | `CMD-ADP-RETIRE` | Administrator (register, update) · second Administrator (activate) | **Administrator** | نهاية دورة حياة يملكها من سجّل المحوّل |
 | `CMD-ADP-SUSPEND` | Administrator (register, update) · second Administrator (activate) | **Administrator** | إيقاف فوري للاحتواء، مقابل register/update |
 | `CMD-AMT-DEPRECATE` | Analysis lead (register) · second lead or Administrator (activate) | **Analysis lead** | مقابل register؛ التفعيل وحده للشخص الثاني |
@@ -163,11 +178,11 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `CMD-AST-RETURN-TO-SERVICE` | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | **Resource Manager** | عمليات الحالة الفنية (condition) |
 | `CMD-AST-START-MAINTENANCE` | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | **Resource Manager** | عمليات الحالة الفنية (condition) لمدير الموارد |
 | `CMD-CRR-RETIRE` | Analyst lead (define, edit) · second approver (activate) | **Analyst lead** | مقابل define/edit؛ التفعيل وحده للمعتمِد الثاني |
-| `CMD-DEV-ROTATE-KEY` | user (enroll, report lost) · Administrator / MDM policy (confirm, suspend, reinstate, retire) · Security Officer (lost, retire override) | **user · Administrator / MDM policy** | صاحب الجهاز أو سياسة MDM التي تدير دورة حياته |
+| `CMD-DEV-ROTATE-KEY` | user (enroll, report lost) · Administrator / MDM policy (confirm, suspend, reinstate, retire) · Security Officer (lost, retire override) | **user** | الشرط «signed by current key; new public key» لا يستوفيه إلا حامل الجهاز |
 | `CMD-ER-PARK` | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | **Analyst** | مقابل review/decide؛ الشخص الثاني للتأكيد والتقسيم فقط |
 | `CMD-ER-RESUME` | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | **Analyst** | مقابل review/decide |
 | `CMD-ER-WITHDRAW` | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | **Analyst** | مقابل propose |
-| `CMD-MDL-RETIRE` | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | **AI governance authority** | الإيقاف النهائي قرار حوكمة كالاعتماد والترقية؛ المهندس يكتفي بـdeprecate |
+| `CMD-MDL-RETIRE` | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | **AI governance authority** | **استثناء من القاعدة** (القاعدة تعطيه للمهندس عبر deprecate): الإيقاف النهائي من حالة DEPRECATED يقابل reinstate لدى سلطة الحوكمة |
 | `CMD-OBS-AMEND` | Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject) | **Field User / Operator / Analyst / adapter service account** | تعديل الملاحظة لمن سجّلها (record) |
 | `CMD-OBS-ATTACH-EVIDENCE` | Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject) | **Field User / Operator / Analyst / adapter service account** | إرفاق الدليل لمن سجّل الملاحظة (record) |
 | `CMD-OBS-RECLASSIFY` | Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject) | **Analyst** | إعادة التصنيف لمن يتحقق من الملاحظة (validate) |
@@ -177,44 +192,44 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `CMD-SRC-RETIRE` | Analyst (register, rate, profile) · Security Officer (protection, reclassify) | **Analyst** | مقابل register |
 | `CMD-SRC-SUSPEND` | Analyst (register, rate, profile) · Security Officer (protection, reclassify) | **Analyst** | مقابل register/rate؛ المصدر المحمي يبقى لمسؤول الأمن عبر protection |
 | `CMD-TOL-ENABLE` | AI platform engineer (register) · Security Officer (activate, disable) | **Security Officer** | مقابل disable |
-| `CMD-TOL-RETIRE` | AI platform engineer (register) · Security Officer (activate, disable) | **Security Officer** | تفعيل الأداة وتعطيلها لمسؤول الأمن، فإيقافها النهائي له |
+| `CMD-TOL-RETIRE` | AI platform engineer (register) · Security Officer (activate, disable) | **Security Officer** | **استثناء من القاعدة** (القاعدة تعطيه للمهندس عبر register): تفعيل الأداة وتعطيلها لمسؤول الأمن، فإيقافها النهائي له |
 
 ### 12.2 مصفوفة الدور × نوع الصلاحية (REQ-FND-014)
 
-أنواع الصلاحية الثمانية في REQ-FND-014 تُمنح منفصلة. كل أمر يُنسب إلى نوع بفعله **[Derived]** (approve/activate/publish → Approve؛ retire/cancel/erase/dispose → Delete؛ التجميد والاحتفاظ → Retain؛ الأرشفة والنقل → Archive؛ التوزيع والإرسال → Export؛ الإشراك والتفويض → Share؛ الباقي → Edit)، وكل استعلام → View. الأرقام عدد العمليات.
+أنواع الصلاحية الثمانية في REQ-FND-014 تُمنح منفصلة. كل أمر يُنسب إلى نوع بفعله **[Derived]** (approve/activate/publish → Approve؛ retire/cancel/erase/dispose → Delete؛ التجميد والاحتفاظ → Retain؛ الأرشفة → Archive؛ التوزيع والتصدير → Export؛ الإشراك والتفويض → Share؛ الباقي → Edit)، وكل استعلام → View عدا التنزيل والاسترجاع (`QRY-ATT-DOWNLOAD`، `QRY-RUN-ARTIFACT`، `QRY-ARC-RETRIEVE`) → Export. الأرقام عدد العمليات.
 
 | الدور | View | Edit | Approve | Delete | Retain | Archive | Export | Share |
 |---|---|---|---|---|---|---|---|---|
 | ACT-01 Executive | 1 | — | 2 | — | — | — | — | — |
-| ACT-02 Manager | 4 | 25 | 5 | 8 | — | — | 1 | 1 |
-| ACT-03 Planner | 2 | 42 | 3 | 11 | 3 | — | — | — |
-| ACT-04 Analyst | 11 | 94 | 11 | 23 | — | — | — | — |
+| ACT-02 Manager | 4 | 27 | 5 | 6 | — | — | 1 | 1 |
+| ACT-03 Planner | 2 | 48 | 2 | 9 | — | — | — | — |
+| ACT-04 Analyst | 11 | 102 | 5 | 21 | — | — | — | — |
 | ACT-05 Operator | — | 2 | — | 1 | — | — | — | — |
-| ACT-06 Field User | 2 | 4 | 1 | 1 | — | — | — | — |
-| ACT-07 Resource Manager | 1 | 23 | 1 | 5 | 2 | 1 | — | — |
-| ACT-08 Logistics User | — | 7 | — | 1 | — | — | 1 | — |
-| ACT-09 Risk Manager | 1 | — | — | 1 | — | — | — | — |
-| ACT-10 Training Manager | 1 | 16 | 2 | 4 | — | — | 1 | — |
+| ACT-06 Field User | 2 | 5 | — | 1 | — | — | — | — |
+| ACT-07 Resource Manager | 1 | 28 | — | 4 | — | — | — | — |
+| ACT-08 Logistics User | — | 8 | — | 1 | — | — | — | — |
+| ACT-09 Risk Manager | 1 | 1 | — | — | — | — | — | — |
+| ACT-10 Training Manager | 1 | 17 | 2 | 4 | — | — | — | — |
 | ACT-11 Knowledge Manager | — | 3 | 2 | 2 | — | — | — | — |
 | ACT-12 Archivist | 4 | 1 | — | 1 | 3 | 3 | — | — |
-| ACT-13 Security Officer | 9 | 18 | 8 | 6 | — | — | — | 1 |
+| ACT-13 Security Officer | 9 | 19 | 8 | 6 | — | — | — | — |
 | ACT-14 Auditor | 14 | 1 | — | 1 | — | — | — | — |
-| ACT-15 Administrator | 10 | 38 | 10 | 12 | — | — | — | — |
+| ACT-15 Administrator | 10 | 41 | 8 | 10 | — | — | — | — |
 | PLT-OPS مشغّل المنصة | 2 | 8 | 1 | 2 | — | — | — | — |
 | PLT-AI مهندس/حوكمة الذكاء الاصطناعي | 3 | 11 | 2 | 2 | — | — | — | — |
 | PLT-INT مهندس التكامل | 2 | 6 | 1 | 1 | — | — | — | — |
 | AUTH-LEGAL السلطة القانونية والامتثال | 4 | 2 | 3 | 1 | 6 | — | — | — |
-| AUTH-GRANT صاحب سلطة أو معتمِد ثانٍ | 2 | 6 | 9 | 4 | 1 | 1 | — | 2 |
-| REL-TASK المنفّذ والمراجع | 4 | 17 | 8 | 2 | — | — | — | — |
-| REL-OWNER المالك والطالب والمشارك | 15 | 25 | 1 | 9 | — | 1 | 1 | 2 |
+| AUTH-GRANT صاحب سلطة أو معتمِد ثانٍ | 2 | 8 | 9 | 4 | — | 1 | — | 1 |
+| REL-TASK المنفّذ والمراجع | 4 | 20 | 5 | 2 | — | — | — | — |
+| REL-OWNER المالك والطالب والمشارك | 15 | 30 | 1 | 6 | — | — | 1 | 1 |
 | REL-RECIPIENT المستلم والمشترك | 1 | 5 | — | — | — | — | — | — |
-| REL-INCIDENT أدوار الحادثة | 1 | 7 | 1 | 2 | — | — | — | — |
+| REL-INCIDENT أدوار الحادثة | 1 | 8 | 1 | 1 | — | — | — | — |
 | REL-RISK أدوار الخطر | 1 | 4 | — | — | — | — | — | — |
-| REL-PEER الشخص الثاني | — | 2 | 3 | — | — | — | — | — |
-| ANY-USER أي مستخدم مخوَّل | 74 | 8 | — | 2 | — | — | — | — |
-| SYS هويات النظام والخدمات | 6 | 30 | 1 | 4 | — | — | — | — |
+| REL-PEER الشخص الثاني | — | 4 | 1 | — | — | — | — | — |
+| ANY-USER أي مستخدم مخوَّل | 71 | 8 | — | 2 | — | — | 3 | — |
+| SYS هويات النظام والخدمات | 6 | 31 | — | 4 | — | — | — | — |
 
-### 12.3 أوامر تشترط المصادقة المعززة (36)
+### 12.3 أوامر تشترط المصادقة المعززة (33)
 
 التزام `mfa` قبل التنفيذ: جلسة بقوة مصادقة أدنى تُرفض بـ`401 MFA_STEP_UP_REQUIRED` (ADR-P19، الخطوة 6 في خط الأوامر).
 
@@ -246,10 +261,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `CMD-PER-ERASE` | BC01 | audit; mfa; legal-hold check | Administrator with org scope ⊇ person's unit |
 | `CMD-PLV-APPROVE` | BC04 | audit; mfa | approver with plan-approval authority ≠ author |
 | `CMD-POL-APPROVE` | BC08 | audit; mfa | Security Officer |
-| `CMD-PRJ-CANCEL-BUILD` | BC07 | audit; mfa for PROMOTE | Platform Operator (platform tenant) |
-| `CMD-PRJ-CREATE-VERSION` | BC07 | audit; mfa for PROMOTE | Platform Operator (platform tenant) |
 | `CMD-PRJ-PROMOTE` | BC07 | audit; mfa for PROMOTE | Platform Operator (platform tenant) |
-| `CMD-PRJ-RETIRE` | BC07 | audit; mfa for PROMOTE | Platform Operator (platform tenant) |
 | `CMD-RTS-ACTIVATE` | BC08 | audit; mfa | Legal/Compliance authority |
 | `CMD-RTS-DISCARD` | BC08 | audit; mfa | Archivist |
 | `CMD-RTS-DRAFT` | BC08 | audit; mfa | Archivist |
@@ -257,7 +269,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `CMD-SRC-SET-PROTECTION` | BC02 | audit; mfa | Security Officer |
 | `CMD-TEN-START-DECOMMISSION` | BC01 | audit; mfa | Platform Operator (platform tenant) |
 
-### 12.4 قواعد فصل المهام (54)
+### 12.4 قواعد فصل المهام (44)
 
 تُقيَّم في منفذ التخويل بعد تحميل المورد (الخطوة 5)، ويعيد المجال فحص ما يقابلها من ثوابت (`09-business-rules.md`).
 
@@ -265,11 +277,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 |---|---|---|
 | `CMD-ADP-ACTIVATE` | BC07 | approver ≠ author |
 | `CMD-ALC-APPROVE` | BC05 | approver ≠ requester |
-| `CMD-ALC-PREEMPT` | BC05 | decision by pool-scope authority |
 | `CMD-AMT-ACTIVATE` | BC03 | approver ≠ author |
-| `CMD-ARC-TRANSFER` | BC06 | transfer authority decision |
 | `CMD-ASM-PUBLISH` | BC03 | reviewer ≠ author |
-| `CMD-AST-DISPOSE` | BC05 | asset-disposal authority |
 | `CMD-AUT-APPROVE-GRANT` | BC01 | approver ≠ requester |
 | `CMD-AUT-DELEGATE` | BC01 | delegate ≠ delegator |
 | `CMD-CAP-RELEASE` | BC03 | release authority ≠ preparer |
@@ -278,11 +287,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `CMD-CLS-ACTIVATE` | BC08 | approver ≠ drafter |
 | `CMD-CNF-RESOLVE` | BC02 | reviewer ≠ asserter of preferred claim |
 | `CMD-CON-ACTIVATE` | BC07 | Security Officer ≠ requester |
-| `CMD-CRP-ACCEPT` | BC02 | reviewer cleared for all inputs |
 | `CMD-CRQ-APPROVE` | BC02 | approver ≠ requester |
 | `CMD-CRR-ACTIVATE` | BC02 | approver ≠ author |
-| `CMD-DEC-ANNUL` | BC04 | authority at higher scope |
-| `CMD-DEC-RECORD` | BC04 | AuthorityCheck (BRL-003) |
 | `CMD-DSP-APPROVE` | BC08 | approver ≠ submitter |
 | `CMD-ER-CONFIRM-MATCH` | BC02 | reviewer ≠ split requester |
 | `CMD-ER-DECIDE-MATCH` | BC02 | reviewer ≠ human proposer; second reviewer if cluster > 50 |
@@ -307,16 +313,27 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `CMD-RRQ-ACTIVATE` | BC05 | approver ≠ author |
 | `CMD-RTG-ACTIVATE` | BC07 | approver ≠ author |
 | `CMD-RTS-ACTIVATE` | BC08 | approver ≠ drafter |
-| `CMD-RUN-REPRODUCE` | BC03 | reproducer cleared for source run label |
 | `CMD-SCN-ACTIVATE` | BC05 | approver ≠ author |
 | `CMD-SIM-RECORD-EVALUATION` | BC05 | evaluator ≠ participant |
 | `CMD-SRC-SET-PROTECTION` | BC02 | decrease needs second Security Officer |
 | `CMD-TASK-APPROVE` | BC04 | reviewer ≠ assignee (PB-06) |
-| `CMD-TASK-ASSIGN` | BC04 | assignee clearance ≥ task label |
-| `CMD-TASK-REASSIGN` | BC04 | assignee clearance ≥ task label |
 | `CMD-TASK-START-REVIEW` | BC04 | reviewer ≠ assignee |
 | `CMD-TEN-START-DECOMMISSION` | BC01 | two distinct platform operators |
-| `CMD-TOL-ACTIVATE` | BC07 | Security Officer |
+
+قيود سلطة أو تصريح مسجلة في حقل `segregation_of_duties` وليست فصل مهام (10):
+
+| الأمر | القيد |
+|---|---|
+| `CMD-ALC-PREEMPT` | decision by pool-scope authority |
+| `CMD-ARC-TRANSFER` | transfer authority decision |
+| `CMD-AST-DISPOSE` | asset-disposal authority |
+| `CMD-CRP-ACCEPT` | reviewer cleared for all inputs |
+| `CMD-DEC-ANNUL` | authority at higher scope |
+| `CMD-DEC-RECORD` | AuthorityCheck (BRL-003) |
+| `CMD-RUN-REPRODUCE` | reproducer cleared for source run label |
+| `CMD-TASK-ASSIGN` | assignee clearance ≥ task label |
+| `CMD-TASK-REASSIGN` | assignee clearance ≥ task label |
+| `CMD-TOL-ACTIVATE` | Security Officer |
 
 ### 12.5 التزامات أخرى
 
@@ -406,6 +423,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `QRY-INC-RECOVERY-STATUS` | BC04 | القائد؛ مالك الاستمرارية | — | DENY (not-found shape) |
 | `QRY-KNO-SEARCH` | BC06 | any user; label rule | — | DENY (not-found shape) |
 | `QRY-KNO-SUGGEST` | BC06 | planner; label rule | — | DENY (not-found shape) |
+| `QRY-LABEL-CHECK` | كل المالكين | discovery service workload identity only | returns visibility for the subject passed in the request context | DENY |
 | `QRY-LGR-GET` | BC05 | allowed_scope; requester | — | DENY (not-found shape) |
 | `QRY-LGR-LIST` | BC05 | allowed_scope | — | DENY (not-found shape) |
 | `QRY-LHD-CHECK` | BC08 | owner contexts (workload identity); Archivist | — | DENY |
@@ -474,7 +492,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 ### 12.7 البيانات الشخصية والتصنيف
 
-- **Aggregates ببيانات شخصية (4):** `AGG-ERASURE-REQUEST`, `AGG-HR-SYNC-PROPOSAL`, `AGG-PERSON`, `AGG-QUALIFICATION-RECORD` — حقولها الشخصية مشفرة بمفتاح الموضوع (ADR-P08) ومحوها بإتلافه.
+- **Aggregates ببيانات شخصية (4):** `AGG-ERASURE-REQUEST`, `AGG-HR-SYNC-PROPOSAL`, `AGG-PERSON`, `AGG-QUALIFICATION-RECORD` — حقولها الشخصية مشفرة بمفتاح الموضوع (ADR-P08) ومحوها بإتلافه، عدا ما يبقى بمرجع مستعار في طلب المحو نفسه (INV-ERS-03). `key-hierarchy-and-disposition.md` §1 يمد مفتاح الموضوع إلى ادعاءات الكيانات من نوع شخص في BC02، بينما AGG-CLAIM وAGG-ENTITY معلَّمان `personal_data: false` **[Needs Review]** (S-28).
 - **مستوى الأهمية** (REQ-GOV-002: كل كائن T1/T2 يحمل تصنيفًا): T1: AI-REQUEST, AI-RESULT, ANALYSIS-RUN, ARCHIVE-PACKAGE, ASSESSMENT, ATTACHMENT, CLAIM, CORRELATION-PROPOSAL, EVIDENCE, EVIDENCE-LINK, FINDING, INCIDENT, KNOWLEDGE-OBJECT, OBSERVATION, PRODUCT, RELATIONSHIP, SOURCE؛ T2: ADAPTER, AI-ROUTING, AI-TOOL, ALERT, ALERT-RULE, ALLOCATION, ANALYSIS-CASE, ANALYSIS-METHOD, ASSET, ASSET-ASSIGNMENT, ASSET-RESERVATION, AUTHORITY-GRANT, CAP-MESSAGE, CLASSIFICATION-SCHEME, CLEARANCE, COLLECTION-PLAN, COLLECTION-REQUIREMENT, CONFLICT, COORDINATION-CASE, CORRELATION-RULE, DECISION, DECISION-REQUEST, DEVICE, DISPOSITION-RUN, DISTRIBUTION, ENTITY, ER-CASE, ERASURE-REQUEST, EVAL-SUITE, EXERCISE, EXTERNAL-ID, HR-SYNC-PROPOSAL, IMPORT-BATCH, INTEGRATION-CONNECTION, LEGAL-HOLD, LOGISTICS-REQUEST, MAINTENANCE-ORDER, MATCH-RULESET, MODEL-VERSION, ORGANIZATION, OUTCOME-TRACKER, PERSON, PLAN, PLAN-VERSION, POLICY-SET, PRELOAD-PACKAGE, PRODUCT-TEMPLATE, QUALIFICATION-RECORD, REALWORLD-EVENT, RECONSTRUCTION, RESOURCE-POOL, RETENTION-SCHEDULE, RISK, ROLE, ROLE-ASSIGNMENT, ROLE-REQUIREMENT, SCENARIO, SECURITY-EXCEPTION, SENSOR-STREAM, SERVICE-ACCOUNT, SHIPMENT, SIMULATION, SITUATION, SYNC-CONFLICT, SYNC-SESSION, TASK, TASK-TYPE, TENANT, USER؛ T3: NOTIFICATION, PROJECTION-VERSION, SUBSCRIPTION
 
 **مصدر التصنيف لكل Aggregate** (`08-security/label-derivation-rules.md`، القاعدة SL-29):
@@ -491,23 +509,26 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 ترفع إصدار الأمن للموضوع وتبطل ذاكرة القرارات (`15-event-design.md` §7): `EVT-ACS-RECLASSIFIED`, `EVT-AST-RECLASSIFIED`, `EVT-ATT-ERASED`, `EVT-AUT-DELEGATED`, `EVT-AUT-EXPIRED`, `EVT-AUT-GRANTED`, `EVT-AUT-RESUMED`, `EVT-AUT-REVOKED`, `EVT-AUT-SUSPENDED`, `EVT-CLM-RECLASSIFIED`, `EVT-CLR-EXPIRED`, `EVT-CLR-GRANTED`, `EVT-CLR-MODIFIED`, `EVT-CLR-REINSTATED`, `EVT-CLR-REVOKED`, `EVT-CLR-SUSPENDED`, `EVT-CLS-ACTIVATED`, `EVT-CON-ACTIVATED`, `EVT-CON-SUSPENDED`, `EVT-DEV-REPORTED-LOST`, `EVT-DEV-SUSPENDED`, `EVT-ENT-RECLASSIFIED`, `EVT-EVD-RECLASSIFIED`, `EVT-EXC-ACTIVATED`, `EVT-EXC-EXPIRED`, `EVT-EXC-REVOKED`, `EVT-HRS-APPROVED`, `EVT-OBS-RECLASSIFIED`, `EVT-ORG-UNIT-DEACTIVATED`, `EVT-ORG-UNIT-MOVED`, `EVT-PLN-RECLASSIFIED`, `EVT-POL-ACTIVATED`, `EVT-RAS-ASSIGNED`, `EVT-RAS-EXPIRED`, `EVT-RAS-REVOKED`, `EVT-REL-RECLASSIFIED`, `EVT-ROL-PERMISSIONS-CHANGED`, `EVT-RTG-ACTIVATED`, `EVT-RWE-RECLASSIFIED`, `EVT-SEC-VERSION-INCREMENTED`, `EVT-SIT-RECLASSIFIED`, `EVT-SRC-PROTECTION-CHANGED`, `EVT-SRC-RECLASSIFIED`, `EVT-TASK-RECLASSIFIED`, `EVT-TEN-REACTIVATED`, `EVT-TEN-SUSPENDED`, `EVT-TOL-ACTIVATED`, `EVT-TOL-DISABLED`, `EVT-USR-ACTIVATED`, `EVT-USR-CLOSED`, `EVT-USR-DISABLED`, `EVT-USR-ENABLED`, `EVT-USR-IDENTITY-UNLINKED`, `EVT-USR-LOCKED`, `EVT-USR-UNLOCKED`
 
-### 12.9 نموذج التهديدات الموحَّد (122 تهديدًا)
+### 12.9 نموذج التهديدات الموحَّد (134 تهديدًا)
 
 من `08-security/threat-model.md` (النواة، حسب حدود الثقة) و`threat-model-slcNN.md` (لكل شريحة، حسب المكوّن)، بتصنيف STRIDE.
 
 | STRIDE | العدد |
 |---|---|
-| Info Disclosure | 48 |
-| Tampering | 36 |
-| Elevation | 19 |
-| Repudiation | 11 |
+| Info Disclosure | 49 |
+| Tampering | 39 |
+| Elevation | 23 |
+| Repudiation | 12 |
+| Spoofing | 5 |
 | DoS | 5 |
-| Spoofing | 3 |
+| Spoofing/Elevation | 1 |
 
-**مخاطر متبقية فوق المنخفض (12):**
+**مخاطر متبقية فوق المنخفض (14):**
 
 | التهديد | المصدر | الحد / المكوّن | STRIDE | التهديد | الضوابط | المتبقي |
 |---|---|---|---|---|---|---|
+| THR-S01-04 | threat-model-slc01 | Clearance | Elevation | Security Officer grants own or colluding clearance | INV-CLR-02/03 two distinct officers for top rank; MFA; audit review | M |
+| THR-S01-11 | threat-model-slc01 | Service account | Spoofing | Leaked long-lived credential | ≤ 90 days; public-key credentials; owner accountability; rotation | M |
 | THR-S02-01 | threat-model-slc02 | Adapter / import | Tampering | poisoned external data asserted as facts | claims cite adapter source with reliability; quarantine; no automatic truth (BRL-013); anomaly review | M |
 | THR-S02-04 | threat-model-slc02 | Attachments | Tampering | malicious file (malware, polyglot, parser exploit) | offline scanner + format validation; QUARANTINED state; rendering in sandboxed viewer | M |
 | THR-S02-07 | threat-model-slc02 | Observation | Spoofing | fabricated observation with forged device time | server record time; clock-skew flag; source reliability; validation SoD | M |
@@ -521,10 +542,34 @@ generator: 17-system-study/_build/build_analysis_design.py
 | THR-017 | threat-model | PDP | DoS | تعطل PDP يوقف المنصة | PDP في critical tier، نسخ متعددة، ذاكرة قرارات قصيرة؛ fail-closed مقبول كخطر متبقٍ | M |
 | THR-019 | threat-model | supply chain | Tampering | مكتبة أو صورة حاوية ملوثة | SBOM، توقيع الصور، مرآة داخلية للحزم (بيئة معزولة) | M |
 
+**تهديدات الخصوصية (LINDDUN، 7):**
+
+| التهديد | الفئة | التهديد | الضابط |
+|---|---|---|---|
+| PRV-01 | Linkability | ربط سجلات شخص عبر مصادر يكشف أكثر مما أذن به الغرض | تقييد الغرض في السياسة؛ REDACT؛ مراجعة مطابقة الكيانات للأشخاص |
+| PRV-02 | Identifiability | إعادة تعريف من إحصاءات صغيرة | AGGREGATE بحد أدنى 5 |
+| PRV-03 | Non-repudiation (as privacy threat) | تتبع مفرط لنشاط المستخدمين | تدقيق القراءة فقط فوق العتبة؛ وصول مقيد لسجلات التدقيق |
+| PRV-04 | Detectability | معرفة أن شخصاً ما في النظام | نفس شكل not-found/forbidden؛ لا اقتراحات بحث خارج النطاق |
+| PRV-05 | Disclosure | بيانات شخصية في السجلات التقنية | إخفاء آلي؛ URN فقط |
+| PRV-06 | Unawareness | أصحاب البيانات لا يعرفون المعالجة | خارج نطاق التقنية: سياسة المستأجر (UNK-002) |
+| PRV-07 | Non-compliance | احتفاظ أطول من المسموح | جداول احتفاظ + crypto-shredding (ADR-P08) |
+
 #### الكتالوج الكامل
 
 | التهديد | المصدر | الحد / المكوّن | STRIDE | التهديد | الاحتمال | الأثر | الضوابط | المتبقي |
 |---|---|---|---|---|---|---|---|---|
+| THR-S01-01 | threat-model-slc01 | SCIM endpoint | Spoofing/Elevation | SCIM client provisions users with admin roles | M | H | SCIM service account can only create PENDING users and link identities; roles never via SCIM (only via CMD-RAS-ASSIGN) | L |
+| THR-S01-02 | threat-model-slc01 | Role assignment | Elevation | Administrator assigns self a higher role or out-of-scope role | M | H | INV-RAS-01 (no self, scope-bound); PB-05; audit | L |
+| THR-S01-03 | threat-model-slc01 | Delegation | Elevation | Delegation chain amplifies authority | L | H | INV-AUT-01/02; effective check evaluates chain at time t | L |
+| THR-S01-04 | threat-model-slc01 | Clearance | Elevation | Security Officer grants own or colluding clearance | L | H | INV-CLR-02/03 two distinct officers for top rank; MFA; audit review | M |
+| THR-S01-05 | threat-model-slc01 | Policy set | Tampering | Tenant weakens platform baseline via policy | M | H | INV-POL-02 restrict-only; PB-* non-overridable; policy tests | L |
+| THR-S01-06 | threat-model-slc01 | Security exception | Elevation | Long-lived or chained exceptions | M | M | 30-day max; two approvers; baseline exempt; exception report to Auditor | L |
+| THR-S01-07 | threat-model-slc01 | SecurityContext | Spoofing | Forged or replayed internal context | L | H | JWS, ≤ 60 s, mTLS, security_version check | L |
+| THR-S01-08 | threat-model-slc01 | Tenant provisioning | Tampering | Namespace squatting / takeover | L | M | platform operator only; namespace immutable; two-person decommission | L |
+| THR-S01-09 | threat-model-slc01 | Audit outbox | Repudiation | Application deletes audit before shipping | L | H | insert-only grants; shipping counters reconciliation; ≤ 5 s window | L |
+| THR-S01-10 | threat-model-slc01 | Revocation | Info Disclosure | Disabled user keeps access via cached decisions | M | H | security_version checked per request (PL-SECURITY-CONTEXT §2) | L |
+| THR-S01-11 | threat-model-slc01 | Service account | Spoofing | Leaked long-lived credential | M | H | ≤ 90 days; public-key credentials; owner accountability; rotation | M |
+| THR-S01-12 | threat-model-slc01 | Org tree | Tampering | Moving a unit to widen an admin's scope | M | M | MoveUnit increments security_version of affected subjects; requires Administrator of both old and new parent scopes | L |
 | THR-S02-01 | threat-model-slc02 | Adapter / import | Tampering | poisoned external data asserted as facts | M | H | claims cite adapter source with reliability; quarantine; no automatic truth (BRL-013); anomaly review | M |
 | THR-S02-02 | threat-model-slc02 | Source | Info Disclosure | identity of protected human source revealed via claims, lineage, exports or search | M | H | PB-08; source label ≥ default+1; lineage cut (PB-11); QAS-SEC-009 | L |
 | THR-S02-03 | threat-model-slc02 | Claims | Info Disclosure | hidden claims inferred from DISPUTED status, counts or completeness | M | H | LIB §3 visibility-first filtering; QAS-SEC-010 | L |

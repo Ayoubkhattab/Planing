@@ -765,9 +765,9 @@ Scenario Outline: CMD-DEV-RETIRE is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| تعديل | تكامل | user · Administrator / MDM policy (محسوم: `17-security-design.md` §5) | `POST /api/v1/foundation/devices/{id}/actions/rotate-key` | POL-DEV-ROTATE-KEY |
+| تعديل | تكامل | user (محسوم: `17-security-design.md` §5) | `POST /api/v1/foundation/devices/{id}/actions/rotate-key` | POL-DEV-ROTATE-KEY |
 
-**القصة:** بصفتي **user · Administrator / MDM policy**، أريد **تدوير مفتاح الجهاز الميداني**، لكي يتحقق غرض الجهاز الميداني: جهاز ميداني مسجل ومربوط بمستخدم ومفتاح
+**القصة:** بصفتي **user**، أريد **تدوير مفتاح الجهاز الميداني**، لكي يتحقق غرض الجهاز الميداني: جهاز ميداني مسجل ومربوط بمستخدم ومفتاح
 
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE؛ signed by current key; new public key
 - **المدخلات:** `new_public_key`!: string, `signature`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -779,7 +779,7 @@ Scenario Outline: CMD-DEV-RETIRE is rejected
 ```gherkin
 Scenario: CMD-DEV-ROTATE-KEY succeeds
   Given AGG-DEVICE in state ACTIVE and every guard holds
-  When an authorized actor (user or Administrator / MDM policy) sends CMD-DEV-ROTATE-KEY with a valid payload, a new Idempotency-Key and a matching If-Match
+  When user sends CMD-DEV-ROTATE-KEY with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state is unchanged and the version increases by one
   And EVT-DEV-KEY-ROTATED is written to the outbox with one audit record in the same transaction
 

@@ -1730,7 +1730,7 @@ def build_domain_model(aggs, cmds):
 # Resolved in 17-security-design.md §5 by the paired verb in the same policy; CR-77 carries them back into the policies.
 ACTOR_RESOLUTION = {
     "CMD-ADP-SUSPEND": ("Administrator", "إيقاف فوري للاحتواء، مقابل register/update"),
-    "CMD-ADP-RESUME": ("second Administrator", "إعادة التشغيل تعادل التفعيل (activate) فتبقى للشخص الثاني"),
+    "CMD-ADP-RESUME": ("second Administrator", "إعادة التشغيل تعادل التفعيل (activate) فتبقى للشخص الثاني؛ يتطلب قاعدة فصل مهام ≠ من أوقفه تضاف بـCR-77"),
     "CMD-ADP-RETIRE": ("Administrator", "نهاية دورة حياة يملكها من سجّل المحوّل"),
     "CMD-AMT-DEPRECATE": ("Analysis lead", "مقابل register؛ التفعيل وحده للشخص الثاني"),
     "CMD-AMT-RETIRE": ("Analysis lead", "مقابل register"),
@@ -1740,11 +1740,11 @@ ACTOR_RESOLUTION = {
     "CMD-AST-MARK-UNSERVICEABLE": ("Resource Manager", "عمليات الحالة الفنية (condition)"),
     "CMD-AST-RECOVER": ("Resource Manager", "مقابل lost (الإبلاغ عن الفقد)"),
     "CMD-CRR-RETIRE": ("Analyst lead", "مقابل define/edit؛ التفعيل وحده للمعتمِد الثاني"),
-    "CMD-DEV-ROTATE-KEY": ("user · Administrator / MDM policy", "صاحب الجهاز أو سياسة MDM التي تدير دورة حياته"),
+    "CMD-DEV-ROTATE-KEY": ("user", "الشرط «signed by current key; new public key» لا يستوفيه إلا حامل الجهاز"),
     "CMD-ER-PARK": ("Analyst", "مقابل review/decide؛ الشخص الثاني للتأكيد والتقسيم فقط"),
     "CMD-ER-RESUME": ("Analyst", "مقابل review/decide"),
     "CMD-ER-WITHDRAW": ("Analyst", "مقابل propose"),
-    "CMD-MDL-RETIRE": ("AI governance authority", "الإيقاف النهائي قرار حوكمة كالاعتماد والترقية؛ المهندس يكتفي بـdeprecate"),
+    "CMD-MDL-RETIRE": ("AI governance authority", "**استثناء من القاعدة** (القاعدة تعطيه للمهندس عبر deprecate): الإيقاف النهائي من حالة DEPRECATED يقابل reinstate لدى سلطة الحوكمة"),
     "CMD-OBS-AMEND": ("Field User / Operator / Analyst / adapter service account", "تعديل الملاحظة لمن سجّلها (record)"),
     "CMD-OBS-ATTACH-EVIDENCE": ("Field User / Operator / Analyst / adapter service account", "إرفاق الدليل لمن سجّل الملاحظة (record)"),
     "CMD-OBS-RECLASSIFY": ("Analyst", "إعادة التصنيف لمن يتحقق من الملاحظة (validate)"),
@@ -1754,28 +1754,33 @@ ACTOR_RESOLUTION = {
     "CMD-SRC-REINSTATE": ("Analyst", "مقابل suspend"),
     "CMD-SRC-RETIRE": ("Analyst", "مقابل register"),
     "CMD-TOL-ENABLE": ("Security Officer", "مقابل disable"),
-    "CMD-TOL-RETIRE": ("Security Officer", "تفعيل الأداة وتعطيلها لمسؤول الأمن، فإيقافها النهائي له"),
+    "CMD-TOL-RETIRE": ("Security Officer", "**استثناء من القاعدة** (القاعدة تعطيه للمهندس عبر register): تفعيل الأداة وتعطيلها لمسؤول الأمن، فإيقافها النهائي له"),
 }
-PERMISSION_OF = [  # REQ-FND-014 permission kinds, by command verb
-    ("Approve", r"^(APPROVE|REJECT|ACTIVATE|CONFIRM|PROMOTE|PUBLISH|BASELINE|DECIDE|ACCEPT)"),
-    ("Delete", r"^(ERASE|DISPOSE|DESTROY|RETIRE|CANCEL|WITHDRAW|DISCARD|REVOKE|DECOMMISSION|CLOSE)"),
-    ("Retain", r"^(PLACE|EXTEND|RELEASE|REQUEST-RELEASE|APPROVE-RELEASE|CANCEL-RELEASE|HOLD)|RETENTION"),
-    ("Archive", r"^(ARCHIVE|TRANSFER|PRESERVE|MIGRATE|SUBMIT-PACKAGE)"),
-    ("Export", r"^(EXPORT|DISTRIBUTE|SEND|DELIVER|ISSUE)"),
-    ("Share", r"^(SHARE|ADD-PARTICIPANT|SUBSCRIBE|GRANT|DELEGATE)"),
+PERMISSION_OF = [  # REQ-FND-014 permission kinds, by command verb ([Derived])
+    ("Approve", r"^(APPROVE|REJECT|ACTIVATE|PROMOTE|PUBLISH|BASELINE)"),
+    ("Delete", r"^(ERASE|DISPOSE|DESTROY|RETIRE|CANCEL|WITHDRAW|DISCARD|REVOKE|DECOMMISSION)"),
+    ("Export", r"^(EXPORT|DISTRIBUTE)"),
+    ("Share", r"^(SHARE|ADD-PARTICIPANT|DELEGATE)"),
 ]
+EXPORT_QUERIES = {"QRY-ATT-DOWNLOAD", "QRY-RUN-ARTIFACT", "QRY-ARC-RETRIEVE"}
 
 
 def permission_kind(cid, a):
     v = verb_of(cid)
     if a["id"] in ("AGG-LEGAL-HOLD", "AGG-RETENTION-SCHEDULE"):
         return "Retain"
-    if a["id"] in ("AGG-ARCHIVE-PACKAGE",):
+    if a["id"] == "AGG-ARCHIVE-PACKAGE" or v.startswith("ARCHIVE"):
         return "Archive"
     for kind, rx in PERMISSION_OF:
         if re.search(rx, v):
             return kind
     return "Edit"
+
+
+def mfa_required(cid, pol):
+    ob = str(pol.get("obligations", ""))
+    m = re.search(r"mfa for ([A-Z-]+)", ob)
+    return "mfa" in ob and (not m or verb_of(cid) == m.group(1))
 
 
 def build_security(aggs, cmds, qrys, pol_c, pol_q, evts):
@@ -1798,38 +1803,45 @@ def build_security(aggs, cmds, qrys, pol_c, pol_q, evts):
             matrix[lab][permission_kind(cid, a)] += 1
     for qid, q in qrys.items():
         for lab in {l_ for seg in re.split(r"\s*[;؛,،]\s*|\s+or\s+", query_actor(q, pol_q.get(qid, {}), pol_q)) for l_ in classify_role(seg)}:
-            matrix[lab]["View"] += 1
+            matrix[lab]["Export" if qid in EXPORT_QUERIES else "View"] += 1
     L += ["", "### 12.2 مصفوفة الدور × نوع الصلاحية (REQ-FND-014)", "",
           "أنواع الصلاحية الثمانية في REQ-FND-014 تُمنح منفصلة. كل أمر يُنسب إلى نوع بفعله **[Derived]** (approve/activate/publish → Approve؛ "
-          "retire/cancel/erase/dispose → Delete؛ التجميد والاحتفاظ → Retain؛ الأرشفة والنقل → Archive؛ التوزيع والإرسال → Export؛ "
-          "الإشراك والتفويض → Share؛ الباقي → Edit)، وكل استعلام → View. الأرقام عدد العمليات.", "",
+          "retire/cancel/erase/dispose → Delete؛ التجميد والاحتفاظ → Retain؛ الأرشفة → Archive؛ التوزيع والتصدير → Export؛ "
+          "الإشراك والتفويض → Share؛ الباقي → Edit)، وكل استعلام → View عدا التنزيل والاسترجاع (`QRY-ATT-DOWNLOAD`، `QRY-RUN-ARTIFACT`، `QRY-ARC-RETRIEVE`) → Export. الأرقام عدد العمليات.", "",
           "| الدور | " + " | ".join(perms) + " |", "|---|" + "---|" * len(perms)]
     for lab in order:
         if matrix.get(lab):
             L.append(f"| {name(lab)} | " + " | ".join(str(matrix[lab].get(p, 0) or "—") for p in perms) + " |")
-    mfa = [(c, p) for c, p in sorted(pol_c.items()) if "mfa" in str(p.get("obligations", ""))]
+    mfa = [(c, p) for c, p in sorted(pol_c.items()) if mfa_required(c, p)]
     L += ["", f"### 12.3 أوامر تشترط المصادقة المعززة ({len(mfa)})", "",
           "التزام `mfa` قبل التنفيذ: جلسة بقوة مصادقة أدنى تُرفض بـ`401 MFA_STEP_UP_REQUIRED` (ADR-P19، الخطوة 6 في خط الأوامر).", "",
           "| الأمر | السياق | الالتزامات | الفاعل |", "|---|---|---|---|"]
     L += [f"| `{c}` | {cmds[c]['_bc']} | {esc(p.get('obligations'))} | {esc(ACTOR_RESOLUTION.get(c, (pick_actor(str(p.get('subject')), c)[0],))[0])} |" for c, p in mfa]
-    sod = [(c, p) for c, p in sorted(pol_c.items()) if str(p.get("segregation_of_duties", "—")) not in ("—", "", "None")]
+    sod = [(c, p) for c, p in sorted(pol_c.items()) if str(p.get("segregation_of_duties", "—")) not in ("—", "", "None")
+           and re.search(r"≠|∉|\bnot\b|distinct|second|different|own", str(p.get("segregation_of_duties")), re.I)]
     L += ["", f"### 12.4 قواعد فصل المهام ({len(sod)})", "",
           "تُقيَّم في منفذ التخويل بعد تحميل المورد (الخطوة 5)، ويعيد المجال فحص ما يقابلها من ثوابت (`09-business-rules.md`).", "",
           "| الأمر | السياق | القاعدة |", "|---|---|---|"]
     L += [f"| `{c}` | {cmds[c]['_bc']} | {esc(p.get('segregation_of_duties'))} |" for c, p in sod]
+    auth_req = [(c, p) for c, p in sorted(pol_c.items()) if str(p.get("segregation_of_duties", "—")) not in ("—", "", "None") and (c, p) not in sod]
+    if auth_req:
+        L += ["", f"قيود سلطة أو تصريح مسجلة في حقل `segregation_of_duties` وليست فصل مهام ({len(auth_req)}):", "", "| الأمر | القيد |", "|---|---|"]
+        L += [f"| `{c}` | {esc(p.get('segregation_of_duties'))} |" for c, p in auth_req]
     other = [(c, p) for c, p in sorted(pol_c.items()) if re.sub(r"\b(audit|mfa)\b|[;\s]", "", str(p.get("obligations", "")))]
     L += ["", "### 12.5 التزامات أخرى", "", "| الأمر | الالتزامات |", "|---|---|"]
     L += [f"| `{c}` | {esc(p.get('obligations'))} |" for c, p in other]
     L += ["", "### 12.6 سياسات الاستعلامات", "",
           "`allowed_scope` يُطبَّق قبل العدّ والترتيب؛ «عند الرفض» شكل الاستجابة (ADR-P06).", "",
           "| الاستعلام | السياق | الموضوع | النطاق المسموح | عند الرفض |", "|---|---|---|---|---|"]
-    for qid, q in sorted(qrys.items()):
+    for qid in sorted(set(qrys) | set(pol_q)):
         p = pol_q.get(qid, {})
-        L.append(f"| `{qid}` | {q['_bc']} | {esc(str(p.get('subject', '—')))} | {esc(str(p.get('allowed_scope', '—')))} | {esc(str(p.get('otherwise', '—')))} |")
+        bc = qrys[qid]["_bc"] if qid in qrys else "كل المالكين"
+        L.append(f"| `{qid}` | {bc} | {esc(str(p.get('subject', '—')))} | {esc(str(p.get('allowed_scope', '—')))} | {esc(str(p.get('otherwise', '—')))} |")
     personal = sorted(x for x in aggs if aggs[x]["personal"])
     L += ["", "### 12.7 البيانات الشخصية والتصنيف", "",
           f"- **Aggregates ببيانات شخصية ({len(personal)}):** " + ", ".join(f"`{x}`" for x in personal) +
-          " — حقولها الشخصية مشفرة بمفتاح الموضوع (ADR-P08) ومحوها بإتلافه.",
+          " — حقولها الشخصية مشفرة بمفتاح الموضوع (ADR-P08) ومحوها بإتلافه، عدا ما يبقى بمرجع مستعار في طلب المحو نفسه (INV-ERS-03). "
+          "`key-hierarchy-and-disposition.md` §1 يمد مفتاح الموضوع إلى ادعاءات الكيانات من نوع شخص في BC02، بينما AGG-CLAIM وAGG-ENTITY معلَّمان `personal_data: false` **[Needs Review]** (S-28).",
           "- **مستوى الأهمية** (REQ-GOV-002: كل كائن T1/T2 يحمل تصنيفًا): " + "؛ ".join(
               f"{t}: {', '.join(x[4:] for x in sorted(aggs) if str(aggs[x].get('tier', '')).startswith(t))}" for t in ("T1", "T2", "T3")), ""]
     labels = {}
@@ -1851,12 +1863,20 @@ def build_security(aggs, cmds, qrys, pol_c, pol_q, evts):
           "ترفع إصدار الأمن للموضوع وتبطل ذاكرة القرارات (`15-event-design.md` §7): " + ", ".join(f"`{e}`" for e in sec_ev), ""]
     threats = []
     for f in sorted((SPEC / "08-security").glob("threat-model*.md")):
-        for header, rows in tables(f.read_text(encoding="utf-8")):
+        text = f.read_text(encoding="utf-8")
+        for header, rows in tables(text):
             if header and header[0] == "id" and "stride" in header:
                 for r in rows:
                     d = dict(zip(header, r))
                     d["_src"] = f.stem
                     threats.append(d)
+        for tid, rec in md_records(text, "THR").items():
+            if not any(t["id"] == tid for t in threats):
+                threats.append(dict(rec, id=tid, _src=f.stem))
+    privacy = []
+    for header, rows in tables((SPEC / "08-security" / "privacy-threats.md").read_text(encoding="utf-8")):
+        if header and header[0] == "id":
+            privacy += [dict(zip(header, r)) for r in rows]
     stride = defaultdict(int)
     for t in threats:
         stride[t.get("stride", "—")] += 1
@@ -1866,6 +1886,8 @@ def build_security(aggs, cmds, qrys, pol_c, pol_q, evts):
     res = [t for t in threats if t.get("residual_risk", "L") not in ("L", "—")]
     L += ["", f"**مخاطر متبقية فوق المنخفض ({len(res)}):**", "", "| التهديد | المصدر | الحد / المكوّن | STRIDE | التهديد | الضوابط | المتبقي |", "|---|---|---|---|---|---|---|"]
     L += [f"| {t['id']} | {t['_src']} | {esc(t.get('boundary') or t.get('component', '—'))} | {t.get('stride')} | {esc(t.get('threat'))} | {esc(t.get('controls'))} | {t.get('residual_risk')} |" for t in res]
+    L += ["", f"**تهديدات الخصوصية (LINDDUN، {len(privacy)}):**", "", "| التهديد | الفئة | التهديد | الضابط |", "|---|---|---|---|"]
+    L += [f"| {p_['id']} | {p_.get('category')} | {esc(p_.get('threat'))} | {esc(p_.get('control'))} |" for p_ in privacy]
     L += ["", "#### الكتالوج الكامل", "", "| التهديد | المصدر | الحد / المكوّن | STRIDE | التهديد | الاحتمال | الأثر | الضوابط | المتبقي |", "|---|---|---|---|---|---|---|---|---|"]
     L += [f"| {t['id']} | {t['_src']} | {esc(t.get('boundary') or t.get('component', '—'))} | {t.get('stride')} | {esc(t.get('threat'))} | "
           f"{t.get('likelihood', '—')} | {t.get('impact', '—')} | {esc(t.get('controls'))} | {t.get('residual_risk', '—')} |" for t in threats]

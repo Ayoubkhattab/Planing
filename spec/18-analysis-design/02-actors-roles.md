@@ -92,7 +92,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | ACT-12 Archivist — أمين الأرشيف | الحوكمة (SH-04) | 8 | 4 | BC06, BC08 |
 | ACT-13 Security Officer — مسؤول الأمن | الحوكمة (SH-04) | 33 | 9 | BC01, BC02, BC03, BC04, BC05, BC06, BC07, BC08 |
 | ACT-14 Auditor — المدقِّق | الحوكمة (SH-04) | 2 | 14 | BC03, BC06, BC07, BC08 |
-| ACT-15 Administrator — مسؤول الإدارة | فرق المنصة (SH-05) | 60 | 10 | BC01, BC02, BC03, BC04, BC05, BC07 |
+| ACT-15 Administrator — مسؤول الإدارة | فرق المنصة (SH-05) | 59 | 10 | BC01, BC02, BC03, BC04, BC05, BC07 |
 
 #### (B) أدوار المنصة
 
@@ -145,7 +145,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | ACT-12 Archivist — أمين الأرشيف | — | — | — | — | — | 3 / 0 | — | 5 / 4 |
 | ACT-13 Security Officer — مسؤول الأمن | 9 / 2 | 2 / 0 | 2 / 0 | 1 / 0 | 1 / 0 | 0 / 1 | 6 / 3 | 12 / 3 |
 | ACT-14 Auditor — المدقِّق | — | — | 0 / 1 | — | — | 2 / 2 | 0 / 3 | 0 / 8 |
-| ACT-15 Administrator — مسؤول الإدارة | 36 / 6 | 5 / 2 | 1 / 0 | 4 / 0 | 4 / 0 | — | 10 / 2 | — |
+| ACT-15 Administrator — مسؤول الإدارة | 35 / 6 | 5 / 2 | 1 / 0 | 4 / 0 | 4 / 0 | — | 10 / 2 | — |
 | PLT-OPS — مشغّل المنصة | 7 / 1 | — | — | — | — | — | 4 / 1 | — |
 | PLT-AI — مهندس/حوكمة الذكاء الاصطناعي | — | — | — | — | — | — | 15 / 3 | — |
 | PLT-INT — مهندس التكامل | — | — | — | — | — | — | 8 / 2 | — |
@@ -178,7 +178,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | ACT-12 Archivist — أمين الأرشيف | 1 | 2 | 3 | 2 | — | 4 |
 | ACT-13 Security Officer — مسؤول الأمن | 3 | 9 | 13 | 8 | — | 9 |
 | ACT-14 Auditor — المدقِّق | 1 | — | — | 1 | — | 14 |
-| ACT-15 Administrator — مسؤول الإدارة | 10 | 15 | 20 | 15 | — | 10 |
+| ACT-15 Administrator — مسؤول الإدارة | 10 | 14 | 20 | 15 | — | 10 |
 | PLT-OPS — مشغّل المنصة | 2 | 1 | 6 | 2 | — | 2 |
 | PLT-AI — مهندس/حوكمة الذكاء الاصطناعي | 4 | 2 | 6 | 3 | — | 3 |
 | PLT-INT — مهندس التكامل | 2 | 1 | 4 | 1 | — | 2 |
@@ -279,7 +279,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 #### ACT-15 Administrator — مسؤول الإدارة
 
-- **BC01:** `CMD-DEV-CONFIRM`, `CMD-DEV-REINSTATE`, `CMD-DEV-RETIRE`, `CMD-DEV-ROTATE-KEY`, `CMD-DEV-SUSPEND`, `CMD-HRS-APPROVE`, `CMD-HRS-REJECT`, `CMD-ORG-ADD-UNIT`, `CMD-ORG-CREATE`, `CMD-ORG-DEACTIVATE`, `CMD-ORG-DEACTIVATE-UNIT`, `CMD-ORG-MOVE-UNIT`, `CMD-ORG-REACTIVATE`, `CMD-ORG-RENAME`, `CMD-ORG-RENAME-UNIT`, `CMD-PER-DEACTIVATE`, `CMD-PER-ERASE`, `CMD-PER-REACTIVATE`, `CMD-PER-REGISTER`, `CMD-PER-UPDATE-DETAILS`, `CMD-RAS-ASSIGN`, `CMD-RAS-REVOKE`, `CMD-ROL-ACTIVATE`, `CMD-ROL-DEFINE`, `CMD-ROL-RETIRE`, `CMD-ROL-SET-PERMISSIONS`, `CMD-SVC-CLOSE`, `CMD-SVC-CREATE`, `CMD-SVC-DISABLE`, `CMD-SVC-ENABLE`, `CMD-SVC-ROTATE-CREDENTIAL`, `CMD-USR-CLOSE`, `CMD-USR-LINK-IDENTITY`, `CMD-USR-LINK-PERSON`, `CMD-USR-PROVISION`, `CMD-USR-UNLINK-IDENTITY`, `QRY-AUT-LIST`, `QRY-DEV-LIST`, `QRY-HRS-QUEUE`, `QRY-TEN-GET`, `QRY-USR-GET`, `QRY-USR-LIST`
+- **BC01:** `CMD-DEV-CONFIRM`, `CMD-DEV-REINSTATE`, `CMD-DEV-RETIRE`, `CMD-DEV-SUSPEND`, `CMD-HRS-APPROVE`, `CMD-HRS-REJECT`, `CMD-ORG-ADD-UNIT`, `CMD-ORG-CREATE`, `CMD-ORG-DEACTIVATE`, `CMD-ORG-DEACTIVATE-UNIT`, `CMD-ORG-MOVE-UNIT`, `CMD-ORG-REACTIVATE`, `CMD-ORG-RENAME`, `CMD-ORG-RENAME-UNIT`, `CMD-PER-DEACTIVATE`, `CMD-PER-ERASE`, `CMD-PER-REACTIVATE`, `CMD-PER-REGISTER`, `CMD-PER-UPDATE-DETAILS`, `CMD-RAS-ASSIGN`, `CMD-RAS-REVOKE`, `CMD-ROL-ACTIVATE`, `CMD-ROL-DEFINE`, `CMD-ROL-RETIRE`, `CMD-ROL-SET-PERMISSIONS`, `CMD-SVC-CLOSE`, `CMD-SVC-CREATE`, `CMD-SVC-DISABLE`, `CMD-SVC-ENABLE`, `CMD-SVC-ROTATE-CREDENTIAL`, `CMD-USR-CLOSE`, `CMD-USR-LINK-IDENTITY`, `CMD-USR-LINK-PERSON`, `CMD-USR-PROVISION`, `CMD-USR-UNLINK-IDENTITY`, `QRY-AUT-LIST`, `QRY-DEV-LIST`, `QRY-HRS-QUEUE`, `QRY-TEN-GET`, `QRY-USR-GET`, `QRY-USR-LIST`
 - **BC02:** `CMD-IMP-ACCEPT-QUARANTINE`, `CMD-IMP-CANCEL`, `CMD-IMP-REPROCESS-QUARANTINE`, `CMD-IMP-SUBMIT`, `CMD-MRS-ACTIVATE`, `QRY-IMP-GET`, `QRY-MRS-GET`
 - **BC03:** `CMD-AMT-ACTIVATE`
 - **BC04:** `CMD-TTY-ACTIVATE`, `CMD-TTY-DEFINE`, `CMD-TTY-EDIT`, `CMD-TTY-RETIRE`

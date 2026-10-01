@@ -107,7 +107,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 كل قصة تحمل معرّف ضابط نوعها. الضابط قائمة أسئلة يجب أن يجيب عنها التنفيذ واختباراته، **إضافة** إلى سيناريوهات Gherkin في القصة.
 
 ### C-CRE — إنشاء
-1. المعرّف ULID والـURN بالصيغة `urn:<namespace>:<type>:<ulid>` (ADR-P13). من يولّد المعرّف في الأوامر المسموحة دون اتصال (`x-offline-capable`) يُحسم في `20-integration-design.md` **[Needs Review]**.
+1. المعرّف ULID والـURN بالصيغة `urn:<namespace>:<type>:<ulid>` (ADR-P13). في الأوامر دون اتصال يولّد الجهاز ULID للكائن الجديد فيكون الإنشاء idempotent (CR-50، `field-sync-protocol.md` §1، `20-integration-design.md` §6).
 2. كل حقل إلزامي (`!`) مفقود → `VALIDATION_FAILED` (400)، ولا يُنشأ شيء.
 3. التكرار بنفس `Idempotency-Key` ونفس الحمولة يعيد نفس `ResourceRef` بلا إنشاء ثانٍ؛ مع حمولة مختلفة → `IDEMPOTENCY_KEY_REUSED` (422).
 4. الاستجابة 201 مع `ResourceRef` (`urn`، `id`، `version = 1`، `state`).

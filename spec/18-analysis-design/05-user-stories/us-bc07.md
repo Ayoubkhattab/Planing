@@ -111,7 +111,7 @@ Scenario Outline: CMD-ADP-REGISTER is rejected
 - **الشروط المسبقة:** الحالة الحالية: SUSPENDED؛ لا شروط إضافية
 - **المدخلات:** لا حمولة — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← ACTIVE؛ الحدث EVT-ADP-RESUMED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Administrator (register, update) · second Administrator (activate)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** second Administrator (resume)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: resumer ≠ the Administrator who suspended (CR-77)؛ الالتزامات: audit
 - **الربط:** `CMD-ADP-RESUME` · `AGG-ADAPTER` · متطلبات: REQ-INF-005, REQ-INF-008, REQ-INF-009 · حالات استخدام: UC-094
 - **ضوابط النوع والفئة:** C-WF، K-INT (التعريف في [00-guide.md](00-guide.md))
 
@@ -131,6 +131,7 @@ Scenario Outline: CMD-ADP-RESUME is rejected
     | ADAPTER_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ACTIVE, DRAFT, RETIRED |
     | AUTHZ_DENIED | 403→404 | السياسة POL-ADP-RESUME ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
+    | SEGREGATION_OF_DUTIES | 422 | فصل المهام: resumer ≠ the Administrator who suspended (CR-77) |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -146,7 +147,7 @@ Scenario Outline: CMD-ADP-RESUME is rejected
 - **الشروط المسبقة:** الحالة الحالية: DRAFT, ACTIVE, SUSPENDED؛ reason
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← RETIRED؛ الحدث EVT-ADP-RETIRED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Administrator (register, update) · second Administrator (activate)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Administrator (retire)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-ADP-RETIRE` · `AGG-ADAPTER` · متطلبات: REQ-INF-005, REQ-INF-008, REQ-INF-009 · حالات استخدام: UC-094
 - **ضوابط النوع والفئة:** C-DEL، K-INT (التعريف في [00-guide.md](00-guide.md))
 
@@ -182,7 +183,7 @@ Scenario Outline: CMD-ADP-RETIRE is rejected
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE؛ reason
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← SUSPENDED؛ الحدث EVT-ADP-SUSPENDED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Administrator (register, update) · second Administrator (activate)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Administrator (suspend)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-ADP-SUSPEND` · `AGG-ADAPTER` · متطلبات: REQ-INF-005, REQ-INF-008, REQ-INF-009 · حالات استخدام: UC-094
 - **ضوابط النوع والفئة:** C-WF، K-INT (التعريف في [00-guide.md](00-guide.md))
 
@@ -954,7 +955,7 @@ Scenario Outline: CMD-TOL-DISABLE is rejected
 - **الشروط المسبقة:** الحالة الحالية: DISABLED؛ لا شروط إضافية
 - **المدخلات:** لا حمولة — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← ACTIVE؛ الحدث EVT-TOL-ENABLED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** AI platform engineer (register) · Security Officer (activate, disable)؛ الشروط: tenant match; object visible؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Security Officer (enable)؛ الشروط: tenant match; object visible؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-TOL-ENABLE` · `AGG-AI-TOOL` · متطلبات: REQ-AI-013, REQ-AI-012 · حالات استخدام: UC-071, UC-077
 - **ضوابط النوع والفئة:** C-WF، K-GOV (التعريف في [00-guide.md](00-guide.md))
 
@@ -1024,7 +1025,7 @@ Scenario Outline: CMD-TOL-REGISTER is rejected
 - **الشروط المسبقة:** الحالة الحالية: DRAFT, ACTIVE, DISABLED؛ reason
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← RETIRED؛ الحدث EVT-TOL-RETIRED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** AI platform engineer (register) · Security Officer (activate, disable)؛ الشروط: tenant match; object visible؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Security Officer (retire)؛ الشروط: tenant match; object visible؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-TOL-RETIRE` · `AGG-AI-TOOL` · متطلبات: REQ-AI-013, REQ-AI-012 · حالات استخدام: UC-071, UC-077
 - **ضوابط النوع والفئة:** C-DEL، K-GOV (التعريف في [00-guide.md](00-guide.md))
 
@@ -1238,6 +1239,7 @@ Scenario Outline: CMD-CON-ACTIVATE is rejected
     | SEGREGATION_OF_DUTIES | 422 | فصل المهام: Security Officer ≠ requester |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: allow_list_entry |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-CON-ACTIVATE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC07-CON-FAIL-TEST — تسجيل فشل اختبار اتصال التكامل
@@ -1542,6 +1544,7 @@ Scenario Outline: CMD-MDL-APPROVE is rejected
     | EVALUATION_BELOW_THRESHOLD | 422 | لم يتحقق الشرط: report meets thresholds: citation accuracy ≥ 95 %, hallucination ≤ 2 %, insufficient-evidence recall ≥ 95 %, 0 injection/exfiltration successes, latency and cost recorded (REQ-AI-010) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | MODEL_VERSION_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: APPROVED, DEPRECATED, EVALUATION_FAILED, PRODUCTION, REGISTERED, RETIRED, STAGED |
+    | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ registrar |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: report |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -1649,6 +1652,7 @@ Scenario Outline: CMD-MDL-PROMOTE is rejected
     | CANARY_BELOW_THRESHOLD | 422 | لم يتحقق الشرط: canary metrics within thresholds for ≥ 7 days |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | MODEL_VERSION_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: APPROVED, DEPRECATED, EVALUATING, EVALUATION_FAILED, PRODUCTION, REGISTERED, RETIRED |
+    | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ stager |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: canary_report |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -1735,7 +1739,7 @@ Scenario Outline: CMD-MDL-REINSTATE is rejected
 - **الشروط المسبقة:** الحالة الحالية: DEPRECATED؛ weights archived (cold) if referenced by lineage of accepted results; record kept
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← RETIRED؛ الحدث EVT-MDL-RETIRED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate)؛ الشروط: tenant match; object visible؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** AI governance authority (retire)؛ الشروط: tenant match; object visible؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-MDL-RETIRE` · `AGG-MODEL-VERSION` · متطلبات: REQ-AI-009, REQ-AI-010 · حالات استخدام: UC-075, UC-076
 - **ضوابط النوع والفئة:** C-DEL، K-GOV (التعريف في [00-guide.md](00-guide.md))
 
@@ -2170,6 +2174,7 @@ Scenario Outline: CMD-PRJ-PROMOTE is rejected
     | PROJECTION_VERSION_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ACTIVE, BUILDING, DEGRADED, FAILED, RETIRED |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-PRJ-PROMOTE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC07-PRJ-RETIRE — إحالة إصدار الإسقاط إلى التقاعد

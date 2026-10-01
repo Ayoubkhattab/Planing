@@ -20,7 +20,7 @@ _29 commands_
 | CMD-PTM-DEFINE | AGG-PRODUCT-TEMPLATE | `POST /api/v1/knowledge/product-templates` | لا | Knowledge Manager / Analysis lead (define, edit) · second approver (activate) | POL-PTM-DEFINE | `code!:string kind!:enum(report,briefing,map_product,analytical_product) name!:LocalizedName` | EVT-PTM-DEFINED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, TEMPLATE_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-PTM-EDIT | AGG-PRODUCT-TEMPLATE | `POST /api/v1/knowledge/product-templates/{id}/actions/edit` | لا | Knowledge Manager / Analysis lead (define, edit) · second approver (activate) | POL-PTM-EDIT | `sections!:array` | EVT-PTM-EDITED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, PRODUCT_TEMPLATE_INVALID_STATE_TRANSITION, TEMPLATE_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-PTM-ACTIVATE | AGG-PRODUCT-TEMPLATE | `POST /api/v1/knowledge/product-templates/{id}/actions/activate` | لا | Knowledge Manager / Analysis lead (define, edit) · second approver (activate) | POL-PTM-ACTIVATE | `sample_ref!:urn` | EVT-PTM-ACTIVATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, PRODUCT_TEMPLATE_INVALID_STATE_TRANSITION, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-PTM-RETIRE | AGG-PRODUCT-TEMPLATE | `POST /api/v1/knowledge/product-templates/{id}/actions/retire` | لا | Knowledge Manager / Analysis lead (define, edit) · second approver (activate) | POL-PTM-RETIRE | `reason!:string` | EVT-PTM-RETIRED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, PRODUCT_TEMPLATE_INVALID_STATE_TRANSITION, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-PTM-RETIRE | AGG-PRODUCT-TEMPLATE | `POST /api/v1/knowledge/product-templates/{id}/actions/retire` | لا | Knowledge Manager / Analysis lead | POL-PTM-RETIRE | `reason!:string` | EVT-PTM-RETIRED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, PRODUCT_TEMPLATE_INVALID_STATE_TRANSITION, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-PRD-CREATE | AGG-PRODUCT | `POST /api/v1/knowledge/products` | لا | Analyst / Planner (create, generate, edit, submit, discard) · reviewer (return, approve) · Manager (withdraw) | POL-PRD-CREATE | `template!:urn parameters!:object audience!:array title!:LocalizedName revises:urn label!:Label` | EVT-PRD-CREATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, PRODUCT_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-PRD-GENERATE | AGG-PRODUCT | `POST /api/v1/knowledge/products/{id}/actions/generate` | لا | Analyst / Planner (create, generate, edit, submit, discard) · reviewer (return, approve) · Manager (withdraw) | POL-PRD-GENERATE | `—` | EVT-PRD-GENERATION-STARTED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, PRODUCT_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-PRD-EDIT-NARRATIVE | AGG-PRODUCT | `POST /api/v1/knowledge/products/{id}/actions/edit-narrative` | لا | Analyst / Planner (create, generate, edit, submit, discard) · reviewer (return, approve) · Manager (withdraw) | POL-PRD-EDIT-NARRATIVE | `section_id!:string text!:LocalizedName` | EVT-PRD-NARRATIVE-EDITED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, PRODUCT_INVALID_STATE_TRANSITION, SECTION_NOT_EDITABLE, VALIDATION_FAILED, VERSION_CONFLICT |
@@ -162,7 +162,7 @@ commands:
   - /api/v1/knowledge/product-templates/{id}/actions/retire
   internal: false
   policy: POL-PTM-RETIRE
-  actors: Knowledge Manager / Analysis lead (define, edit) · second approver (activate)
+  actors: Knowledge Manager / Analysis lead
   payload: reason!:string
   offline_capable: false
   idempotency_key: required

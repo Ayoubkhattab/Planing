@@ -20,9 +20,9 @@ _6 commands_
 | CMD-ADP-REGISTER | AGG-ADAPTER | `POST /api/v1/integration/adapters` | لا | Administrator (register, update) · second Administrator (activate) | POL-ADP-REGISTER | `name!:string source!:urn service_account!:urn mapping!:object` | EVT-ADP-REGISTERED | ADAPTER_INVALID, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ADP-UPDATE-MAPPING | AGG-ADAPTER | `POST /api/v1/integration/adapters/{id}/actions/update-mapping` | لا | Administrator (register, update) · second Administrator (activate) | POL-ADP-UPDATE-MAPPING | `mapping!:object tests!:array` | EVT-ADP-MAPPING-UPDATED | ADAPTER_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, MAPPING_TESTS_FAILED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ADP-ACTIVATE | AGG-ADAPTER | `POST /api/v1/integration/adapters/{id}/actions/activate` | لا | Administrator (register, update) · second Administrator (activate) | POL-ADP-ACTIVATE | `—` | EVT-ADP-ACTIVATED | ADAPTER_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-ADP-SUSPEND | AGG-ADAPTER | `POST /api/v1/integration/adapters/{id}/actions/suspend` | لا | Administrator (register, update) · second Administrator (activate) | POL-ADP-SUSPEND | `reason!:string` | EVT-ADP-SUSPENDED | ADAPTER_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-ADP-RESUME | AGG-ADAPTER | `POST /api/v1/integration/adapters/{id}/actions/resume` | لا | Administrator (register, update) · second Administrator (activate) | POL-ADP-RESUME | `—` | EVT-ADP-RESUMED | ADAPTER_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-ADP-RETIRE | AGG-ADAPTER | `POST /api/v1/integration/adapters/{id}/actions/retire` | لا | Administrator (register, update) · second Administrator (activate) | POL-ADP-RETIRE | `reason!:string` | EVT-ADP-RETIRED | ADAPTER_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-ADP-SUSPEND | AGG-ADAPTER | `POST /api/v1/integration/adapters/{id}/actions/suspend` | لا | Administrator | POL-ADP-SUSPEND | `reason!:string` | EVT-ADP-SUSPENDED | ADAPTER_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-ADP-RESUME | AGG-ADAPTER | `POST /api/v1/integration/adapters/{id}/actions/resume` | لا | second Administrator | POL-ADP-RESUME | `—` | EVT-ADP-RESUMED | ADAPTER_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-ADP-RETIRE | AGG-ADAPTER | `POST /api/v1/integration/adapters/{id}/actions/retire` | لا | Administrator | POL-ADP-RETIRE | `reason!:string` | EVT-ADP-RETIRED | ADAPTER_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 
 **مشترك لكل الأوامر:** `Idempotency-Key` إلزامي؛ `If-Match` إلزامي لغير أوامر الإنشاء؛ `X-Purpose` و`X-Correlation-Id` إلزاميان؛ الاستجابة `202` مع `ResourceRef {urn, id, version, state}` أو `201` للإنشاء.
 
@@ -136,7 +136,7 @@ commands:
   - /api/v1/integration/adapters/{id}/actions/suspend
   internal: false
   policy: POL-ADP-SUSPEND
-  actors: Administrator (register, update) · second Administrator (activate)
+  actors: Administrator
   payload: reason!:string
   offline_capable: false
   idempotency_key: required
@@ -154,6 +154,7 @@ commands:
   - ADAPTER_INVALID_STATE_TRANSITION
   - AUTHZ_DENIED
   - IDEMPOTENCY_KEY_REUSED
+  - SEGREGATION_OF_DUTIES
   - VALIDATION_FAILED
   - VERSION_CONFLICT
   creates: false
@@ -162,7 +163,7 @@ commands:
   - /api/v1/integration/adapters/{id}/actions/resume
   internal: false
   policy: POL-ADP-RESUME
-  actors: Administrator (register, update) · second Administrator (activate)
+  actors: second Administrator
   payload: ''
   offline_capable: false
   idempotency_key: required
@@ -191,7 +192,7 @@ commands:
   - /api/v1/integration/adapters/{id}/actions/retire
   internal: false
   policy: POL-ADP-RETIRE
-  actors: Administrator (register, update) · second Administrator (activate)
+  actors: Administrator
   payload: reason!:string
   offline_capable: false
   idempotency_key: required

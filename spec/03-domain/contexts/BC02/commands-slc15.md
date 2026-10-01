@@ -23,8 +23,8 @@ _8 commands_
 | CMD-CRP-REJECT | AGG-CORRELATION-PROPOSAL | `POST /api/v1/information/correlation-proposals/{id}/actions/reject` | لا | Analyst (propose, review, accept, reject) | POL-CRP-REJECT | `reason!:string` | EVT-CRP-REJECTED | AUTHZ_DENIED, CORRELATION_PROPOSAL_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-CRR-DEFINE | AGG-CORRELATION-RULE | `POST /api/v1/information/correlation-rules` | لا | Analyst lead (define, edit) · second approver (activate) | POL-CRR-DEFINE | `kind!:enum(same_event,co_location,track_association,same_entity_hint) name!:string` | EVT-CRR-DEFINED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, RULE_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-CRR-EDIT | AGG-CORRELATION-RULE | `POST /api/v1/information/correlation-rules/{id}/actions/edit` | لا | Analyst lead (define, edit) · second approver (activate) | POL-CRR-EDIT | `parameters!:object` | EVT-CRR-EDITED | AUTHZ_DENIED, CORRELATION_RULE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, RULE_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-CRR-ACTIVATE | AGG-CORRELATION-RULE | `POST /api/v1/information/correlation-rules/{id}/actions/activate` | لا | Analyst lead (define, edit) · second approver (activate) | POL-CRR-ACTIVATE | `evaluation_report!:urn` | EVT-CRR-ACTIVATED | AUTHZ_DENIED, CORRELATION_RULE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, RULE_BELOW_TARGET, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-CRR-RETIRE | AGG-CORRELATION-RULE | `POST /api/v1/information/correlation-rules/{id}/actions/retire` | لا | Analyst lead (define, edit) · second approver (activate) | POL-CRR-RETIRE | `reason!:string` | EVT-CRR-RETIRED | AUTHZ_DENIED, CORRELATION_RULE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-CRR-ACTIVATE | AGG-CORRELATION-RULE | `POST /api/v1/information/correlation-rules/{id}/actions/activate` | لا | Analyst lead (define, edit) · second approver (activate) | POL-CRR-ACTIVATE | `evaluation_report!:urn` | EVT-CRR-ACTIVATED | AUTHZ_DENIED, CORRELATION_RULE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, RULE_BELOW_TARGET, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-CRR-RETIRE | AGG-CORRELATION-RULE | `POST /api/v1/information/correlation-rules/{id}/actions/retire` | لا | Analyst lead | POL-CRR-RETIRE | `reason!:string` | EVT-CRR-RETIRED | AUTHZ_DENIED, CORRELATION_RULE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 
 **مشترك لكل الأوامر:** `Idempotency-Key` إلزامي؛ `If-Match` إلزامي لغير أوامر الإنشاء؛ `X-Purpose` و`X-Correlation-Id` إلزاميان؛ الاستجابة `202` مع `ResourceRef {urn, id, version, state}` أو `201` للإنشاء.
 
@@ -217,6 +217,7 @@ commands:
   - CORRELATION_RULE_INVALID_STATE_TRANSITION
   - IDEMPOTENCY_KEY_REUSED
   - RULE_BELOW_TARGET
+  - SEGREGATION_OF_DUTIES
   - VALIDATION_FAILED
   - VERSION_CONFLICT
   creates: false
@@ -252,7 +253,7 @@ commands:
   - /api/v1/information/correlation-rules/{id}/actions/retire
   internal: false
   policy: POL-CRR-RETIRE
-  actors: Analyst lead (define, edit) · second approver (activate)
+  actors: Analyst lead
   payload: reason!:string
   offline_capable: false
   idempotency_key: required

@@ -4,16 +4,16 @@ type: traceability-matrix
 title: 'Quality Verification Matrix — every QAS → verification method and timing (V5 #104)'
 wave: W9
 status: GENERATED
-notes: فحص W9 وجد 19 سيناريو جودة بلا مرجع تحقق صريح؛ هذا الجدول يغطي كل السيناريوهات الـ 74.
+notes: فحص W9 وجد 19 سيناريو جودة بلا مرجع تحقق صريح؛ هذا الجدول يغطي كل السيناريوهات الـ 95 (أُضيفت QAS-LOG-001/002 وQAS-TRX-001/002 — CR-81).
 ---
 
 # Quality Verification Matrix — every QAS → verification method and timing (V5 #104)
 
-> فحص W9 وجد 19 سيناريو جودة بلا مرجع تحقق صريح؛ هذا الجدول يغطي كل السيناريوهات الـ 74.
+> فحص W9 وجد 19 سيناريو جودة بلا مرجع تحقق صريح؛ هذا الجدول يغطي كل السيناريوهات الـ 95 (أُضيفت QAS-LOG-001/002 وQAS-TRX-001/002 — CR-81).
 
 ## scenarios
 
-_91 items_
+_95 items_
 
 | qas | quality | measure | verification | when | workload |
 |---|---|---|---|---|---|
@@ -108,6 +108,10 @@ _91 items_
 | QAS-INT-001 | reliability | no data loss; backlog processed ≤ 1 h after recovery | adapter outage/backlog test | pre-G8-R2 (recalibrate after R1 pilot) | R2 |
 | QAS-RCM-001 | performance | response dispatched within the severity's SLA | incident dispatch latency test (TST-INCIDENT-SM + load harness) | CI + pilot (recalibrate after R1 and R2 pilot — RSK-028) | R3 |
 | QAS-RCM-002 | governance | 100 % of treated risks have ≥ 1 treatment action or an explicit accept decision | TST-SLC17-INVARIANTS + registry audit query | CI (recalibrate after R1 and R2 pilot — RSK-028) | R3 |
+| QAS-LOG-001 | integrity | 0 over-commitment across combined demand; deterministic priority order | TST-SLC18-INVARIANTS + shared capacity-ledger concurrency tests (QAS-RES-001) | CI + pilot (recalibrate after R1 and R2 pilot — RSK-028) | R3 |
+| QAS-LOG-002 | performance | transit duration within target | TST-SHIPMENT-SM + transit-time measurement in pilot | pilot (recalibrate after R1 and R2 pilot — RSK-028) | R3 |
+| QAS-TRX-001 | integrity | 0 simulations reach COMPLETED with a participant lacking a recorded evaluation (INV-SIM-02) | TST-SLC19-INVARIANTS + TST-SIMULATION-SM | CI | R3 |
+| QAS-TRX-002 | performance | inject delivery recorded within target latency | TST-SIMULATION-SM + load harness | CI + pilot (recalibrate after R1 and R2 pilot — RSK-028) | R3 |
 
 ---
 
@@ -661,6 +665,30 @@ scenarios:
   measure: 100 % of treated risks have ≥ 1 treatment action or an explicit accept decision
   verification: TST-SLC17-INVARIANTS + registry audit query
   when: CI (recalibrate after R1 and R2 pilot — RSK-028)
+  workload: R3
+- qas: QAS-LOG-001
+  quality: integrity
+  measure: 0 over-commitment across combined demand; deterministic priority order
+  verification: TST-SLC18-INVARIANTS + shared capacity-ledger concurrency tests (QAS-RES-001)
+  when: CI + pilot (recalibrate after R1 and R2 pilot — RSK-028)
+  workload: R3
+- qas: QAS-LOG-002
+  quality: performance
+  measure: transit duration within target
+  verification: TST-SHIPMENT-SM + transit-time measurement in pilot
+  when: pilot (recalibrate after R1 and R2 pilot — RSK-028)
+  workload: R3
+- qas: QAS-TRX-001
+  quality: integrity
+  measure: 0 simulations reach COMPLETED with a participant lacking a recorded evaluation (INV-SIM-02)
+  verification: TST-SLC19-INVARIANTS + TST-SIMULATION-SM
+  when: CI
+  workload: R3
+- qas: QAS-TRX-002
+  quality: performance
+  measure: inject delivery recorded within target latency
+  verification: TST-SIMULATION-SM + load harness
+  when: CI + pilot (recalibrate after R1 and R2 pilot — RSK-028)
   workload: R3
 ```
 

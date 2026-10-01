@@ -61,8 +61,10 @@ Scenario Outline: CMD-CLS-ACTIVATE is rejected
     | CLASSIFICATION_SCHEME_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ACTIVE, DISCARDED, SUPERSEDED |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | SCHEME_INVALID | 422 | لم يتحقق الشرط: validation passes; effective_from ≥ now; approver ≠ drafter; previous ACTIVE → SUPERSEDED in same transaction |
+    | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ drafter |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: effective_from |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-CLS-ACTIVATE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-CLS-DISCARD — تجاهل مسودة مخطط التصنيف
@@ -250,6 +252,7 @@ Scenario Outline: CMD-DSP-APPROVE is rejected
     | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ submitter |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-DSP-APPROVE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-DSP-CANCEL — إلغاء تشغيل الإتلاف
@@ -286,6 +289,7 @@ Scenario Outline: CMD-DSP-CANCEL is rejected
     | REASON_REQUIRED | 422 | لم يُذكر السبب |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-DSP-CANCEL وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-DSP-SUBMIT — تقديم تشغيل الإتلاف
@@ -321,6 +325,7 @@ Scenario Outline: CMD-DSP-SUBMIT is rejected
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-DSP-SUBMIT وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-S-DISPOSITION-RUN-01 — تلقائي: scheduled evaluation (daily) (تشغيل الإتلاف)
@@ -440,6 +445,7 @@ Scenario Outline: CMD-ERS-APPROVE is rejected
     | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ registrar |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: decision_note |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-ERS-APPROVE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-ERS-REGISTER — تسجيل طلب المحو
@@ -475,6 +481,7 @@ Scenario Outline: CMD-ERS-REGISTER is rejected
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: legal_basis, requester |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-ERS-REGISTER وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-ERS-REJECT — رفض طلب المحو
@@ -511,6 +518,7 @@ Scenario Outline: CMD-ERS-REJECT is rejected
     | REASON_REQUIRED | 422 | لم يُذكر السبب |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-ERS-REJECT وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-S-ERASURE-REQUEST-01 — تلقائي: subject scope resolved (طلب المحو)
@@ -643,6 +651,7 @@ Scenario Outline: CMD-LHD-APPROVE-RELEASE is rejected
     | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ requester |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-LHD-APPROVE-RELEASE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-LHD-CANCEL-RELEASE — إلغاء طلب رفع التجميد القانوني
@@ -679,6 +688,7 @@ Scenario Outline: CMD-LHD-CANCEL-RELEASE is rejected
     | REASON_REQUIRED | 422 | لم يُذكر السبب |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-LHD-CANCEL-RELEASE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-LHD-EXTEND — تمديد التجميد القانوني
@@ -715,6 +725,7 @@ Scenario Outline: CMD-LHD-EXTEND is rejected
     | LEGAL_HOLD_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: RELEASED, RELEASE_REQUESTED |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: scope, reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-LHD-EXTEND وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-LHD-PLACE — إنشاء التجميد القانوني
@@ -750,6 +761,7 @@ Scenario Outline: CMD-LHD-PLACE is rejected
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: name, legal_reference, scope |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-LHD-PLACE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-LHD-REQUEST-RELEASE — طلب رفع التجميد القانوني
@@ -786,6 +798,7 @@ Scenario Outline: CMD-LHD-REQUEST-RELEASE is rejected
     | REASON_REQUIRED | 422 | لم يُذكر السبب |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-LHD-REQUEST-RELEASE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-Q-LHD-CHECK — جلب: HoldCheck OHS: URNs / subjects / (class, bucket) → held? with hold ids
@@ -881,6 +894,7 @@ Scenario Outline: CMD-POL-APPROVE is rejected
     | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ author |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-POL-APPROVE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-POL-DRAFT — إعداد مسودة مجموعة السياسات
@@ -1114,8 +1128,10 @@ Scenario Outline: CMD-RTS-ACTIVATE is rejected
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | RETENTION_SCHEDULE_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ACTIVE, DISCARDED, SUPERSEDED |
     | SCHEDULE_INCOMPLETE | 422 | لم يتحقق الشرط: every record class in RD-RECORD-CLASSES has exactly one rule (REQ-GOV-006); approver = Legal/Compliance authority ≠ drafter; previous ACTIVE → SUPERSEDED in the same transaction |
+    | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ drafter |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: effective_from |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-RTS-ACTIVATE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-RTS-DISCARD — تجاهل مسودة جدول الاحتفاظ
@@ -1152,6 +1168,7 @@ Scenario Outline: CMD-RTS-DISCARD is rejected
     | RETENTION_SCHEDULE_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ACTIVE, DISCARDED, SUPERSEDED |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-RTS-DISCARD وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-RTS-DRAFT — إعداد مسودة جدول الاحتفاظ
@@ -1187,6 +1204,7 @@ Scenario Outline: CMD-RTS-DRAFT is rejected
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-RTS-DRAFT وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-RTS-EDIT — تعديل جدول الاحتفاظ
@@ -1223,6 +1241,7 @@ Scenario Outline: CMD-RTS-EDIT is rejected
     | SCHEDULE_INVALID | 422 | لم يتحقق الشرط: each rule: record class (RD-RECORD-CLASSES), period (ISO 8601 duration), trigger ∈ {recorded, closed, superseded, event}, action ∈ {DESTROY, REVIEW, ARCHIVE (R2)}, legal basis |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: rules |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-RTS-EDIT وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-S-RETENTION-SCHEDULE-01 — تلقائي: successor activated (جدول الاحتفاظ)
@@ -1311,6 +1330,7 @@ Scenario Outline: CMD-EXC-APPROVE is rejected
     | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ∉ {requester, first approver} |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-EXC-APPROVE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC08-EXC-REJECT — رفض الاستثناء الأمني

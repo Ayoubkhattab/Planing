@@ -46,7 +46,7 @@ _28 items_
 | RSK-025 | الاعتماد الحرج على KMS ومخزن المفاتيح؛ فقدانه يعني فقدان البيانات | L | H | HSM مكرر؛ نسخ KEK خارج الخط بإجراء شخصين؛ تدريبات استعادة (FIT-19) | Platform / Security | L | open | — |
 | RSK-026 | البصمة التشغيلية (8 خدمات ذات حالة لكل خلية) قد تتجاوز قدرة فريق تشغيل صغير | M | H | operators, GitOps, Zarf, runbooks; تأكيد حجم الفريق قبل G8؛ بديل NATS JetStream موثق | Platform | M | open | — |
 | RSK-027 | تصميم R2 قبل قياسات Pilot للإصدار الأول قد يبني على أرقام غير معايرة | M | M | كل قيمة رقمية في R2 موسومة 'recalibrate after R1 pilot'؛ بوابة G6 لأي شريحة R2 تتطلب مراجعة بعد نتائج Pilot | Orchestrator | L | open | — |
-| RSK-028 | تكرار مخاطرة RSK-027 مع R3: نطاق R3 حُدِّد (W1/W2) قبل تجربة R1 **وقبل مراجعة R2 نفسها**؛ أي تصميم فعلي لشرائح R3 سيبني على افتراضات BC04/BC05 غير مقاسة على طبقتين (R1 وR2 معاً) | M | M | **لا تصميم شرائح R3 (Aggregates/عقود) قبل مراجعة Pilot R1؛ لا G6 لأي شريحة R3 قبل مراجعة تجربة R2 أيضاً** — بوابة أشد من RSK-027 عمداً | Orchestrator | L | open | scope-only (W1/W2) هذه الجولة؛ لا تصميم تفصيلي |
+| RSK-028 | تكرار مخاطرة RSK-027 مع R3: نطاق R3 حُدِّد (W1/W2) قبل تجربة R1 **وقبل مراجعة R2 نفسها**؛ أي تصميم فعلي لشرائح R3 سيبني على افتراضات BC04/BC05 غير مقاسة على طبقتين (R1 وR2 معاً) | M | M | **لا تصميم شرائح R3 (Aggregates/عقود) قبل مراجعة Pilot R1؛ لا G6 لأي شريحة R3 قبل مراجعة تجربة R2 أيضاً** — بوابة أشد من RSK-027 عمداً | Orchestrator | L | open | scope-only (W1/W2) هذه الجولة؛ لا تصميم تفصيلي. **تحديث (CR-81):** شرائح R3 (SLC-17..19) صُمِّمت لاحقًا بقرار CR-67/CR-70 (DESIGN_COMPLETE)، فالجزء الأول من التخفيف تجاوزته الأحداث؛ يبقى قيد G6 لشرائح R3 حتى مراجعة تجربة R2، وأرقامها موسومة «تُعاد معايرته بعد Pilot R1/R2» |
 
 ---
 
@@ -280,6 +280,7 @@ risks:
   probability: M
   impact: M
   mitigation: لا تصميم شرائح R3 قبل مراجعة Pilot R1؛ لا G6 لأي شريحة R3 قبل مراجعة تجربة R2 أيضاً؛ هذه الجولة scope-only (W1/W2)، بلا تصميم تفصيلي
+  note: 'CR-81: R3 slices SLC-17..19 were designed later under CR-67/CR-70 (DESIGN_COMPLETE), so the first part of the mitigation was overtaken; the G6 gate for R3 slices still waits for the R2 pilot review, and R3 numbers are tagged recalibrate after Pilot R1/R2'
   owner: Orchestrator
   residual_risk: L
   status: open

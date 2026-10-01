@@ -10,7 +10,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 # معالجة الأخطاء
 
-كيف يرفض النظام طلبًا، وبأي رمز وحالة HTTP، وأي خطأ يغلب حين يتعدد السبب، ومتى يعيد العميل أو النظام المحاولة. الكتالوج المعتمد في `05-contracts/errors-*.md` (19 ملفًا، 306 رموز مميزة)؛ هذا الملف يصنّفه ويضيف ما يلزم للتنفيذ.
+كيف يرفض النظام طلبًا، وبأي رمز وحالة HTTP، وأي خطأ يغلب حين يتعدد السبب، ومتى يعيد العميل أو النظام المحاولة. الكتالوج المعتمد في `05-contracts/errors-*.md` (19 ملفًا، 313 رمزًا مميزًا بعد CR-75 وCR-78)؛ هذا الملف يصنّفه ويضيف ما يلزم للتنفيذ.
 
 ## 1. نموذج الخطأ
 
@@ -33,14 +33,15 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الفئة | HTTP | أمثلة | من أين |
 |---|---|---|---|
 | طلب غير صالح | 400 | `VALIDATION_FAILED` | محوّل HTTP: مخطط العقد والحقول الإلزامية |
-| مصادقة | 401 | `MFA_STEP_UP_REQUIRED` †؛ رمز غائب أو منتهٍ **[Missing]** (§8) | البوابة؛ الخطوة 6 في خط الأوامر |
+| مصادقة | 401 | `UNAUTHENTICATED` (رمز غائب أو منتهٍ)، `MFA_STEP_UP_REQUIRED` † | البوابة؛ الخطوة 6 في خط الأوامر |
+| حجم الطلب ونوعه | 413 / 415 | `PAYLOAD_TOO_LARGE`، `UNSUPPORTED_MEDIA_TYPE` | البوابة |
 | تخويل وعدم إفصاح | 403 / 404 / 422 | `AUTHZ_DENIED`، `PERMISSION_DENIED`، `NOT_FOUND`، `SEGREGATION_OF_DUTIES` (الخطوتان 2 و5)؛ `APPROVAL_REQUIRED` † (الخطوة 6) | منفذ التخويل |
 | تزامن وعدم تكرار | 409 / 422 | `VERSION_CONFLICT`، `IDEMPOTENCY_KEY_REUSED` | الخطوتان 3 و7 |
 | انتقال حالة غير مسموح | 409 | `*_INVALID_STATE_TRANSITION` (89 رمزًا، رمز لكل Aggregate) | حلقة المجال: مصفوفة الحالة × الأمر |
 | قاعدة عمل أو شرط انتقال | 422 | `*_INVALID`، `*_REQUIRED`، `ASSIGNEE_NOT_ELIGIBLE`… | حلقة المجال: الشروط والثوابت |
-| منصة | 429 / 503 | `RATE_LIMITED`، `POLICY_ENGINE_UNAVAILABLE`، `AUDIT_UNAVAILABLE` | البوابة والحصص؛ محرك السياسات؛ التدقيق |
+| منصة واعتماديات | 429 / 503 | `RATE_LIMITED`، `POLICY_ENGINE_UNAVAILABLE`، `AUDIT_UNAVAILABLE`، `DEPENDENCY_UNAVAILABLE`، `ELIGIBILITY_UNAVAILABLE` | البوابة والحصص؛ محرك السياسات؛ التدقيق؛ استدعاء سياق آخر |
 
-أرقام الخطوات في هذا الملف هي خطوات خط الأوامر في ADR-P17 (1–10). † رمز **[Derived]** من ADR-P19 وليس في الكتالوج بعد: يضيفه CR-75 (معتمد، بانتظار التطبيق في جولة تصحيح المصادر)، فلا يظهر في الـ306 رموز في §9.
+أرقام الخطوات في هذا الملف هي خطوات خط الأوامر في ADR-P17 (1–10). † رمز من ADR-P19 أضافه CR-75 إلى كل كتالوج في جولة تصحيح المصادر (مطبَّق)، فهو ضمن الـ313 رمزًا في §9.
 
 ## 3. أين يُنشأ الخطأ وكيف يُحوَّل (ADR-P17)
 
@@ -72,7 +73,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 ترتيب الشروط داخل الخطوة 8 حين يفشل أكثر من شرط: الحالة أولًا، ثم الشروط بترتيب ورودها في جدول الانتقالات **[Derived]**.
 
-**تحفظ على الخطوة 3:** ما بعد الخطوة 5 لا يكشف شيئًا قبل قرار التخويل، لكن الخطوة 3 تسبقه. جدول `idempotency_keys` مفتاحه `(tenant_id, key)` (`06-data/logical-model/slc-01.md`)، فمستخدم ثانٍ في المستأجر نفسه يعيد استعمال مفتاح غيره يتلقى `ResourceRef` المحفوظ (urn، الإصدار، الحالة) أو `IDEMPOTENCY_KEY_REUSED`، وهذا يخالف ADR-P17 2.5 («nothing about the resource … is returned before this decision»). المقترح: مفتاح عدم التكرار بنطاق المستدعي `(tenant_id, principal_id, key)`، فلا يُطابق إلا طلبات المستدعي نفسه، مع بقاء الترتيب كما هو — CR-80. المفاتيح عشوائية (ULID) فالتصادم غير المقصود نادر، لكن التخمين أو التسريب ممكن.
+**تحفظ على الخطوة 3 (عولج بـCR-80):** ما بعد الخطوة 5 لا يكشف شيئًا قبل قرار التخويل، لكن الخطوة 3 تسبقه. كان جدول `idempotency_keys` مفتاحه `(tenant_id, key)` (`06-data/logical-model/slc-01.md` قبل CR-80)، فمستخدم ثانٍ في المستأجر نفسه يعيد استعمال مفتاح غيره كان يتلقى `ResourceRef` المحفوظ (urn، الإصدار، الحالة) أو `IDEMPOTENCY_KEY_REUSED`، وهذا يخالف ADR-P17 2.5 («nothing about the resource … is returned before this decision»). الحل المطبَّق (CR-80): مفتاح عدم التكرار بنطاق المستدعي `(tenant_id, principal_id, key)`، فلا يُطابق إلا طلبات المستدعي نفسه، مع بقاء الترتيب كما هو. المفاتيح عشوائية (ULID) فالتصادم غير المقصود نادر، لكن التخمين أو التسريب ممكن.
 
 ## 5. إعادة المحاولة
 
@@ -82,7 +83,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 |---|---|---|
 | `VERSION_CONFLICT` | نعم | يعيد تحميل المورد، ويعيد بناء الأمر على الإصدار الجديد إن بقي منطقيًا، بمفتاح `Idempotency-Key` جديد |
 | `MFA_STEP_UP_REQUIRED` | نعم | بعد المصادقة المعززة، **بنفس** `Idempotency-Key` (لم يُنفَّذ شيء) |
-| `RATE_LIMITED`، `POLICY_ENGINE_UNAVAILABLE` | نعم | تأخير متزايد مع عشوائية، بنفس `Idempotency-Key`؛ ترويسة `Retry-After` **[Missing]** (§8) |
+| `RATE_LIMITED`، `POLICY_ENGINE_UNAVAILABLE` | نعم | تأخير متزايد مع عشوائية، بنفس `Idempotency-Key`؛ وتحترم ترويسة `Retry-After` (CR-78) |
 | انقطاع الشبكة أو مهلة دون استجابة | نعم | بنفس `Idempotency-Key`: إن كان الأمر نُفِّذ تُعاد استجابته المحفوظة (24 ساعة) |
 | كل ما سواه | لا | خطأ منطقي يحتاج تغيير الطلب أو الحالة أو الصلاحية |
 
@@ -97,7 +98,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | ناقل التدقيق | تراكم محلي؛ رفض الأوامر المغيرة للحالة بعد 24 ساعة أو 80 % من السعة | `audit-architecture.md` |
 | الانتقالات التلقائية (`SYS:`) والعمّال | نفس خط الأوامر؛ الفشل يُسجَّل ويُنبَّه عليه، ولا يُسقَط بصمت | `05-user-stories/00-guide.md` ضابط C-SYS |
 | المزامنة الميدانية | الأمر المرفوض دون اتصال لا يصبح خطأ HTTP للمستخدم بل تعارض مزامنة (AGG-SYNC-CONFLICT) يحسمه محلل أو المستخدم | ADR-P09 |
-| استدعاء سياق آخر (OHS) | يفشل مغلقًا: الأمر الذي يحتاج نتيجة الاستدعاء يُرفض — رمز لذلك **[Missing]** (§8) | THR-S03-04 |
+| استدعاء سياق آخر (OHS) | يفشل مغلقًا: الأمر الذي يحتاج نتيجة الاستدعاء يُرفض بـ`DEPENDENCY_UNAVAILABLE` أو رمز السياق الخاص مثل `ELIGIBILITY_UNAVAILABLE` (503، قابل لإعادة المحاولة — CR-78) | THR-S03-04 |
 
 ## 6. المراقبة
 
@@ -113,14 +114,14 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 | البند | الحالة |
 |---|---|
-| `401` لرمز غائب أو منتهٍ، و`413` (حجم الطلب)، و`415` (نوع المحتوى) عند البوابة | **[Missing]** في العقود — مقترح: `UNAUTHENTICATED` (401)، `PAYLOAD_TOO_LARGE` (413)، `UNSUPPORTED_MEDIA_TYPE` (415) — CR-78 |
-| فشل استدعاء سياق آخر مغلقًا | **[Missing]** — مقترح: `DEPENDENCY_UNAVAILABLE` (503، قابل لإعادة المحاولة) للحالة العامة، مع إبقاء الرموز الخاصة التي تذكرها المواصفات (`ELIGIBILITY_UNAVAILABLE`) — CR-78 |
-| ترويسة `Retry-After` مع 429 و503 القابل لإعادة المحاولة | **[Missing]** — مقترحة في CR-78؛ لا تُرسل مع `AUDIT_UNAVAILABLE` ما دام غير قابل لإعادة المحاولة |
-| رموز ADR-P19 (`MFA_STEP_UP_REQUIRED`، `APPROVAL_REQUIRED`) و`403` في العقود | معتمدة بانتظار التطبيق — CR-75؛ مستعملة في هذا الملف بعلامة † |
-| مفتاح عدم التكرار بنطاق المستأجر لا المستدعي (§4) | مقترح — CR-80 |
+| `401` لرمز غائب أو منتهٍ، و`413` (حجم الطلب)، و`415` (نوع المحتوى) عند البوابة | مطبَّق — `UNAUTHENTICATED` (401)، `PAYLOAD_TOO_LARGE` (413)، `UNSUPPORTED_MEDIA_TYPE` (415) في كل كتالوج، والاستجابات معلنة في العقود (CR-78) |
+| فشل استدعاء سياق آخر مغلقًا | مطبَّق — `DEPENDENCY_UNAVAILABLE` (503، قابل لإعادة المحاولة) للحالة العامة، و`ELIGIBILITY_UNAVAILABLE` على `CMD-TASK-ASSIGN` و`CMD-TASK-REASSIGN` (CR-78) |
+| ترويسة `Retry-After` مع 429 و503 القابل لإعادة المحاولة | مطبَّق في العقود (CR-78)؛ لا تُرسل مع `AUDIT_UNAVAILABLE` ما دام غير قابل لإعادة المحاولة |
+| رموز ADR-P19 (`MFA_STEP_UP_REQUIRED`، `APPROVAL_REQUIRED`) و`401`/`403` في العقود | مطبَّق — CR-75 (العلامة † في هذا الملف) |
+| مفتاح عدم التكرار بنطاق المستأجر لا المستدعي (§4) | مطبَّق — `(tenant_id, principal_id, key)` (CR-80) |
 | رموز أسباب الرفض غير المتزامن (§9.1: `POLICY_DENIED`، `GEOGRAPHY_MISMATCH`…) | فئة مستقلة: تُحمل في حقل سبب حالة `REJECTED` لا في `ApiError.code`. `POLICY_DENIED` للفحص 6 في `allocation-readiness-spec.md` §1 يذكر `REQUIRE_APPROVAL` مثالًا، بينما مصفوفة AGG-ALLOCATION ترسل الطلب إلى `PENDING_APPROVAL` (استثناء ADR-P19): التوفيق المقترح أن `REQUIRE_APPROVAL` ← `PENDING_APPROVAL` و`POLICY_DENIED` لالتزام آخر غير مستوفى **[Needs Review]** — S-29 |
 | أوامر لا يُطلق فيها رمز انتقال الحالة أبدًا (§9.1) | تبقى دفاعيًا: المصفوفة قد تتغير، والرمز لا يضر **[Derived]**؛ تصحيح المصدر S-03 |
-| رموز تذكرها المواصفات ولا يذكرها الكتالوج (§9.1) | **[Needs Review]** — S-27؛ `ELIGIBILITY_UNAVAILABLE` يضيفه CR-78 إلى `errors-slc03` لـ`CMD-TASK-ASSIGN` و`CMD-TASK-REASSIGN` (503، قابل لإعادة المحاولة) |
+| رموز تذكرها المواصفات ولا يذكرها الكتالوج (§9.1) | **[Needs Review]** — S-27: بقي ثلاثة يذكرها `requirements.md` (`CLASSIFICATION_REQUIRED`، `GEOMETRY_INVALID`، `SOURCE_REQUIRED`)؛ `ELIGIBILITY_UNAVAILABLE` أُضيف (CR-78) |
 | `AUDIT_UNAVAILABLE` غير قابل لإعادة المحاولة رغم أنه ظرف مؤقت | **[Needs Review]** — قيمة المصدر محفوظة |
 
 ## 9. الكتالوج
@@ -131,22 +132,21 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 | الفئة | الرموز | HTTP | قابل لإعادة المحاولة |
 |---|---|---|---|
-| 1. طلب غير صالح | 1 | 400 | 0 |
-| 2. تخويل وعدم إفصاح | 4 | 403→404, 404, 422 | 0 |
+| 1. طلب غير صالح | 3 | 400, 413, 415 | 0 |
+| 2. مصادقة وتخويل وعدم إفصاح | 7 | 401, 403, 403→404, 404, 422 | 1 |
 | 3. تزامن وعدم تكرار | 2 | 409, 422 | 1 |
 | 4. انتقال حالة غير مسموح | 89 | 409 | 0 |
 | 5. قاعدة عمل أو شرط انتقال | 207 | 422 | 0 |
-| 6. منصة | 3 | 429, 503, 503 (request denied) | 2 |
-| **المجموع** | **306** | | 3 |
+| 6. منصة واعتماديات | 5 | 429, 503, 503 (request denied) | 4 |
+| **المجموع** | **313** | | 6 |
 
 **أوامر لا يُطلِق فيها رمز `*_INVALID_STATE_TRANSITION` أبدًا (6)** — الأمر مسموح من كل حالات المصفوفة (S-03): `CLAIM_INVALID_STATE_TRANSITION` في `CMD-CLM-RECLASSIFY`، `ENTITY_INVALID_STATE_TRANSITION` في `CMD-ENT-RECLASSIFY`، `EVIDENCE_INVALID_STATE_TRANSITION` في `CMD-EVD-RECLASSIFY`، `OBSERVATION_INVALID_STATE_TRANSITION` في `CMD-OBS-RECLASSIFY`، `REALWORLD_EVENT_INVALID_STATE_TRANSITION` في `CMD-RWE-RECLASSIFY`، `RELATIONSHIP_INVALID_STATE_TRANSITION` في `CMD-REL-RECLASSIFY`.
 
-**رموز تذكرها المواصفات وليست في كتالوج الأخطاء (4)** **[Needs Review]** (S-27):
+**رموز تذكرها المواصفات وليست في كتالوج الأخطاء (3)** **[Needs Review]** (S-27):
 
 | الرمز | أين يُذكر |
 |---|---|
 | `CLASSIFICATION_REQUIRED` | `02-requirements/requirements.md` |
-| `ELIGIBILITY_UNAVAILABLE` | `03-domain/contexts/BC05/eligibility-rules.md`, `08-security/threat-model-slc03.md`, `13-verification/acceptance/SLC-03/invariants-slc03.md` |
 | `GEOMETRY_INVALID` | `02-requirements/requirements.md` |
 | `SOURCE_REQUIRED` | `02-requirements/requirements.md` |
 
@@ -166,16 +166,21 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 | الرمز | HTTP | إعادة | الأوامر | السياقات | مثال الشرط (Aggregate) |
 |---|---|---|---|---|---|
+| `PAYLOAD_TOO_LARGE` | 413 | لا | — (منصة) | — | — |
+| `UNSUPPORTED_MEDIA_TYPE` | 415 | لا | — (منصة) | — | — |
 | `VALIDATION_FAILED` | 400 | لا | 477 | BC01, BC02, BC03, BC04, BC05, BC06, BC07, BC08 | — |
 
-### 9.3 تخويل وعدم إفصاح
+### 9.3 مصادقة وتخويل وعدم إفصاح
 
 | الرمز | HTTP | إعادة | الأوامر | السياقات | مثال الشرط (Aggregate) |
 |---|---|---|---|---|---|
+| `APPROVAL_REQUIRED` | 403 | لا | — (منصة) | — | — |
 | `AUTHZ_DENIED` | 403→404 | لا | 477 | BC01, BC02, BC03, BC04, BC05, BC06, BC07, BC08 | — |
+| `MFA_STEP_UP_REQUIRED` | 401 | نعم | — (منصة) | — | — |
 | `NOT_FOUND` | 404 | لا | — (منصة) | — | — |
 | `PERMISSION_DENIED` | 403→404 | لا | 1 | BC01 | actor has authority.grant permission; decision type exists; scope unit ACTIVE (AUTHORITY-GRANT) |
-| `SEGREGATION_OF_DUTIES` | 422 | لا | 32 | BC01, BC02, BC03, BC04, BC05, BC06, BC07, BC08 | approver is Executive in scope; approver ≠ requester (AUTHORITY-GRANT) |
+| `SEGREGATION_OF_DUTIES` | 422 | لا | 45 | BC01, BC02, BC03, BC04, BC05, BC06, BC07, BC08 | approver is Executive in scope; approver ≠ requester (AUTHORITY-GRANT) |
+| `UNAUTHENTICATED` | 401 | لا | — (منصة) | — | — |
 
 ### 9.4 تزامن وعدم تكرار
 
@@ -480,7 +485,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `TASK_CRITERIA_NOT_MET` | 422 | لا | 1 | BC04 | attestation-type criteria confirmed by an authorized actor; all criteria satisfied (BRL-006) (TASK) |
 | `TASK_INVALID` | 422 | لا | 2 | BC04 | task type ACTIVE (version pinned); plan_ref (operations, collection or contingency plan — CR-59, CR-61) or in… (TASK) |
 | `TASK_NOT_READY` | 422 | لا | 1 | BC04 | title, ≥ 1 completion criterion, owner; dependencies reference existing tasks without cycle (TASK) |
-| `TASK_SUSPENDED` | 422 | لا | 24 | BC04 | — |
+| `TASK_SUSPENDED` | 422 | لا | 21 | BC04 | — |
 | `TASK_TYPE_CODE_TAKEN` | 422 | لا | 1 | BC04 | code unique in tenant (TASK-TYPE) |
 | `TASK_TYPE_INVALID` | 422 | لا | 2 | BC04 | required qualifications exist in RD-COMPETENCIES; criteria templates valid; ACTIVE → new version (existing ta… (TASK-TYPE) |
 | `TEMPLATE_INVALID` | 422 | لا | 2 | BC06 | code unique; product kind ∈ {report, briefing, map_product, analytical_product} (PRODUCT-TEMPLATE) |
@@ -490,11 +495,13 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `TOOL_INVALID` | 422 | لا | 1 | BC07 | name; input JSON schema; underlying platform query or command; effect ∈ {read, propose}; required permission;… (AI-TOOL) |
 | `TREATMENT_INVALID` | 422 | لا | 1 | BC04 | treatment_strategy ∈ {avoid,reduce,transfer,accept}؛ ≥ 1 إجراء معالجة إلا عند accept (INV-RIS-03)؛ موافق مخوَ… (RISK) |
 
-### 9.7 منصة
+### 9.7 منصة واعتماديات
 
 | الرمز | HTTP | إعادة | الأوامر | السياقات | مثال الشرط (Aggregate) |
 |---|---|---|---|---|---|
 | `AUDIT_UNAVAILABLE` | 503 | لا | — (منصة) | — | — |
+| `DEPENDENCY_UNAVAILABLE` | 503 | نعم | — (منصة) | — | — |
+| `ELIGIBILITY_UNAVAILABLE` | 503 | نعم | 2 | BC04 | — |
 | `POLICY_ENGINE_UNAVAILABLE` | 503 (request denied) | نعم | — (منصة) | — | — |
 | `RATE_LIMITED` | 429 | نعم | — (منصة) | — | — |
 

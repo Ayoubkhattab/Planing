@@ -34,8 +34,8 @@ _32 items_
 | POL-ACS-RECLASSIFY | CMD-ACS-RECLASSIFY | Analyst (owner) · Security Officer (reclassify) | AGG-ANALYSIS-CASE | tenant match; case visible; label rules | — | ALLOW | DENY (not-found shape) | audit |
 | POL-AMT-REGISTER | CMD-AMT-REGISTER | Analysis lead (register) · second lead or Administrator (activate) | AGG-ANALYSIS-METHOD | tenant match; case visible; label rules | — | ALLOW | DENY (not-found shape) | audit |
 | POL-AMT-ACTIVATE | CMD-AMT-ACTIVATE | Analysis lead (register) · second lead or Administrator (activate) | AGG-ANALYSIS-METHOD | tenant match; case visible; label rules | approver ≠ author | ALLOW | DENY (not-found shape) | audit |
-| POL-AMT-DEPRECATE | CMD-AMT-DEPRECATE | Analysis lead (register) · second lead or Administrator (activate) | AGG-ANALYSIS-METHOD | tenant match; case visible; label rules | — | ALLOW | DENY (not-found shape) | audit |
-| POL-AMT-RETIRE | CMD-AMT-RETIRE | Analysis lead (register) · second lead or Administrator (activate) | AGG-ANALYSIS-METHOD | tenant match; case visible; label rules | — | ALLOW | DENY (not-found shape) | audit |
+| POL-AMT-DEPRECATE | CMD-AMT-DEPRECATE | Analysis lead (deprecate) | AGG-ANALYSIS-METHOD | tenant match; case visible; label rules | — | ALLOW | DENY (not-found shape) | audit |
+| POL-AMT-RETIRE | CMD-AMT-RETIRE | Analysis lead (retire) | AGG-ANALYSIS-METHOD | tenant match; case visible; label rules | — | ALLOW | DENY (not-found shape) | audit |
 | POL-RUN-SUBMIT | CMD-RUN-SUBMIT | Analyst (submit, reproduce, cancel) | AGG-ANALYSIS-RUN | tenant match; case visible; label rules | — | ALLOW | DENY (not-found shape) | audit |
 | POL-RUN-REPRODUCE | CMD-RUN-REPRODUCE | Analyst (submit, reproduce, cancel) | AGG-ANALYSIS-RUN | tenant match; case visible; label rules | reproducer cleared for source run label | ALLOW | DENY (not-found shape) | audit |
 | POL-RUN-CANCEL | CMD-RUN-CANCEL | Analyst (submit, reproduce, cancel) | AGG-ANALYSIS-RUN | tenant match; case visible; label rules | — | ALLOW | DENY (not-found shape) | audit |
@@ -220,7 +220,7 @@ command_policies:
   obligations: audit
 - id: POL-AMT-DEPRECATE
   command: CMD-AMT-DEPRECATE
-  subject: Analysis lead (register) · second lead or Administrator (activate)
+  subject: Analysis lead (deprecate)
   resource: AGG-ANALYSIS-METHOD
   context_conditions: tenant match; case visible; label rules
   segregation_of_duties: —
@@ -229,7 +229,7 @@ command_policies:
   obligations: audit
 - id: POL-AMT-RETIRE
   command: CMD-AMT-RETIRE
-  subject: Analysis lead (register) · second lead or Administrator (activate)
+  subject: Analysis lead (retire)
   resource: AGG-ANALYSIS-METHOD
   context_conditions: tenant match; case visible; label rules
   segregation_of_duties: —

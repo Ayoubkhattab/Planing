@@ -99,6 +99,7 @@ Scenario Outline: CMD-ATT-ERASE is rejected
     | LEGAL_HOLD_ACTIVE | 422 | لم يتحقق الشرط: no legal hold |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: erasure_order_ref |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-ATT-ERASE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC02-ATT-INITIATE-UPLOAD — بدء رفع المرفق
@@ -1684,6 +1685,7 @@ Scenario Outline: CMD-CRR-ACTIVATE is rejected
     | CORRELATION_RULE_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ACTIVE, RETIRED |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | RULE_BELOW_TARGET | 422 | لم يتحقق الشرط: evaluation on a labelled set: precision ≥ 70 % of proposals (recalibrate after pilot); approver ≠ author |
+    | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ author |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: evaluation_report |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -1770,7 +1772,7 @@ Scenario Outline: CMD-CRR-EDIT is rejected
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE؛ reason
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← RETIRED؛ الحدث EVT-CRR-RETIRED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Analyst lead (define, edit) · second approver (activate)؛ الشروط: tenant match; inputs visible؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Analyst lead (retire)؛ الشروط: tenant match; inputs visible؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-CRR-RETIRE` · `AGG-CORRELATION-RULE` · متطلبات: REQ-FUS-001 · حالات استخدام: UC-132
 - **ضوابط النوع والفئة:** C-DEL، K-ANL (التعريف في [00-guide.md](00-guide.md))
 
@@ -2217,6 +2219,7 @@ Scenario Outline: CMD-ER-DECIDE-MATCH is rejected
     | ER_CASE_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CANDIDATE, MATCHED, NOT_A_MATCH, POSSIBLE_DUPLICATE, SPLIT, SPLIT_REQUIRED, WITHDRAWN |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | MATCH_CONTRADICTS_NOT_A_MATCH | 422 | لم يتحقق الشرط: merged cluster contains no NOT_A_MATCH pair; creates MATCH link and recomputes cluster in the same transaction |
+    | SEGREGATION_OF_DUTIES | 422 | فصل المهام: reviewer ≠ human proposer; second reviewer if cluster > 50 |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: rationale |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -2275,7 +2278,7 @@ Scenario Outline: CMD-ER-DECIDE-NOT-MATCH is rejected
 - **الشروط المسبقة:** الحالة الحالية: UNDER_REVIEW؛ rationale; insufficient evidence
 - **المدخلات:** `rationale`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← POSSIBLE_DUPLICATE؛ الحدث EVT-ER-PARKED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters)؛ الشروط: tenant match; object visible؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Analyst (park)؛ الشروط: tenant match; object visible؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-ER-PARK` · `AGG-ER-CASE` · متطلبات: REQ-INF-032, REQ-INF-033, REQ-INF-034 · حالات استخدام: UC-007, UC-104
 - **ضوابط النوع والفئة:** C-WF، K-ANL (التعريف في [00-guide.md](00-guide.md))
 
@@ -2382,7 +2385,7 @@ Scenario Outline: CMD-ER-REQUEST-SPLIT is rejected
 - **الشروط المسبقة:** الحالة الحالية: POSSIBLE_DUPLICATE؛ new evidence or reason
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← UNDER_REVIEW؛ الحدث EVT-ER-RESUMED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters)؛ الشروط: tenant match; object visible؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Analyst (resume)؛ الشروط: tenant match; object visible؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-ER-RESUME` · `AGG-ER-CASE` · متطلبات: REQ-INF-032, REQ-INF-033, REQ-INF-034 · حالات استخدام: UC-007, UC-104
 - **ضوابط النوع والفئة:** C-WF، K-ANL (التعريف في [00-guide.md](00-guide.md))
 
@@ -2490,7 +2493,7 @@ Scenario Outline: CMD-ER-START-REVIEW is rejected
 - **الشروط المسبقة:** الحالة الحالية: CANDIDATE, UNDER_REVIEW, POSSIBLE_DUPLICATE؛ reason (e.g. entity retired, duplicate case)
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← WITHDRAWN؛ الحدث EVT-ER-WITHDRAWN؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters)؛ الشروط: tenant match; object visible؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Analyst (withdraw)؛ الشروط: tenant match; object visible؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-ER-WITHDRAW` · `AGG-ER-CASE` · متطلبات: REQ-INF-032, REQ-INF-033, REQ-INF-034 · حالات استخدام: UC-007, UC-104
 - **ضوابط النوع والفئة:** C-DEL، K-ANL (التعريف في [00-guide.md](00-guide.md))
 
@@ -3266,6 +3269,7 @@ Scenario Outline: CMD-MRS-ACTIVATE is rejected
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | MATCH_RULESET_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ACTIVE, SUPERSEDED |
     | RULESET_BELOW_TARGET | 422 | لم يتحقق الشرط: evaluation meets QAS-ER-001 (candidate recall ≥ 95 %) and QAS-ER-002; approver ≠ author; previous ACTIVE → SUPERSEDED |
+    | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ author |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -3395,7 +3399,7 @@ Scenario: QRY-MRS-GET hides an item the caller may not see
 - **الشروط المسبقة:** الحالة الحالية: RECORDED؛ actor = observer or Analyst; new version; reason
 - **المدخلات:** `changes`!: object, `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← (بلا تغيير)؛ الحدث EVT-OBS-AMENDED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Field User / Operator / Analyst / adapter service account (amend)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-OBS-AMEND` · `AGG-OBSERVATION` · متطلبات: REQ-INF-002, REQ-INF-028 · حالات استخدام: UC-005
 - **ضوابط النوع والفئة:** C-UPD، K-CORE (التعريف في [00-guide.md](00-guide.md))
 
@@ -3431,7 +3435,7 @@ Scenario Outline: CMD-OBS-AMEND is rejected
 - **الشروط المسبقة:** الحالة الحالية: RECORDED؛ evidence REGISTERED or SEALED
 - **المدخلات:** `evidence`!: urn — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← (بلا تغيير)؛ الحدث EVT-OBS-EVIDENCE-ATTACHED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Field User / Operator / Analyst / adapter service account (attach evidence)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-OBS-ATTACH-EVIDENCE` · `AGG-OBSERVATION` · متطلبات: REQ-INF-002, REQ-INF-028 · حالات استخدام: UC-005
 - **ضوابط النوع والفئة:** C-UPD، K-CORE (التعريف في [00-guide.md](00-guide.md))
 
@@ -3467,7 +3471,7 @@ Scenario Outline: CMD-OBS-ATTACH-EVIDENCE is rejected
 - **الشروط المسبقة:** الحالة الحالية: RECORDED, VALIDATED, REJECTED؛ authority per tenant policy (REQ-GOV-004); new version; bumps object security_version
 - **المدخلات:** `label`!: Label, `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← (بلا تغيير)؛ الحدث EVT-OBS-RECLASSIFIED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Analyst (reclassify)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-OBS-RECLASSIFY` · `AGG-OBSERVATION` · متطلبات: REQ-INF-002, REQ-INF-028 · حالات استخدام: UC-005
 - **ضوابط النوع والفئة:** C-UPD، K-CORE (التعريف في [00-guide.md](00-guide.md))
 
@@ -4133,7 +4137,7 @@ Scenario Outline: CMD-SRC-REGISTER is rejected
 - **الشروط المسبقة:** الحالة الحالية: SUSPENDED؛ لا شروط إضافية
 - **المدخلات:** لا حمولة — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← ACTIVE؛ الحدث EVT-SRC-REINSTATED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Analyst (register, rate, profile) · Security Officer (protection, reclassify)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Analyst (reinstate)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-SRC-REINSTATE` · `AGG-SOURCE` · متطلبات: REQ-INF-001 · حالات استخدام: UC-004, UC-095
 - **ضوابط النوع والفئة:** C-WF، K-CORE (التعريف في [00-guide.md](00-guide.md))
 
@@ -4168,7 +4172,7 @@ Scenario Outline: CMD-SRC-REINSTATE is rejected
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE, SUSPENDED؛ reason; history retained
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← RETIRED؛ الحدث EVT-SRC-RETIRED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Analyst (register, rate, profile) · Security Officer (protection, reclassify)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Analyst (retire)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-SRC-RETIRE` · `AGG-SOURCE` · متطلبات: REQ-INF-001 · حالات استخدام: UC-004, UC-095
 - **ضوابط النوع والفئة:** C-DEL، K-CORE (التعريف في [00-guide.md](00-guide.md))
 
@@ -4227,6 +4231,7 @@ Scenario Outline: CMD-SRC-SET-PROTECTION is rejected
     | SOURCE_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: RETIRED |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: protection_level |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-SRC-SET-PROTECTION وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC02-SRC-SUSPEND — تعليق المصدر
@@ -4240,7 +4245,7 @@ Scenario Outline: CMD-SRC-SET-PROTECTION is rejected
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE؛ reason
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← SUSPENDED؛ الحدث EVT-SRC-SUSPENDED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Analyst (register, rate, profile) · Security Officer (protection, reclassify)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Analyst (suspend)؛ الشروط: tenant match; object visible to subject (label ≤ clearance); write permission in org scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-SRC-SUSPEND` · `AGG-SOURCE` · متطلبات: REQ-INF-001 · حالات استخدام: UC-004, UC-095
 - **ضوابط النوع والفئة:** C-WF، K-CORE (التعريف في [00-guide.md](00-guide.md))
 

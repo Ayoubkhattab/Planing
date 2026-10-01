@@ -22,8 +22,8 @@ _7 items_
 | VS01 | Information → Understanding | Need, Source, Collection, Observation, Validation, Correlation, Context, Understanding | DOC:PRJ§38 | partial/see UC catalog |
 | VS02 | Understanding → Decision | Question, Analysis Case, Evidence, Hypotheses, Assumptions, Analysis, Uncertainty, Assessment, Options, Impact, Decision Support, Decision | DOC:PRJ§38 | partial/see UC catalog |
 | VS03 | Decision → Execution | Decision, Objective, Outcome, Plan, Resources, Capacity, Schedule, Approval, Baseline, Work Packages, Tasks, Execution, Measurement, Outcome | DOC:PRJ§38 | partial/see UC catalog |
-| VS04 | Risk → Resilience | Hazard, Risk, Treatment, Monitoring, Threshold, Incident, Response, Stabilization, Recovery, Review, Lesson | DOC:PRJ§38 | none — CR-09 |
-| VS05 | Capability → Readiness | Role, Competencies, Gap, Training, Assessment, Qualification, Certification, Readiness, Eligibility, Assignment | DOC:PRJ§38 | none — CR-09 |
+| VS04 | Risk → Resilience | Hazard, Risk, Treatment, Monitoring, Threshold, Incident, Response, Stabilization, Recovery, Review, Lesson | DOC:PRJ§38 | UC-140..UC-144 (R3، CR-70؛ كانت none — CR-09) — CR-81 |
+| VS05 | Capability → Readiness | Role, Competencies, Gap, Training, Assessment, Qualification, Certification, Readiness, Eligibility, Assignment | DOC:PRJ§38 | UC-160..UC-163 (R3، CR-70؛ كانت none — CR-09) — CR-81 |
 | VS06 | Experience → Knowledge | Execution, Observation, Result, Review, Lesson, Knowledge Candidate, Validation, Approval, Publication, Reuse | DOC:PRJ§38 | partial/see UC catalog |
 | VS07 | Record → Institutional Memory | Operational Record, Classification, Retention, Closure, Preservation, Archive, Historical Retrieval, Reconstruction, Institutional Memory | DOC:PRJ§38 | partial/see UC catalog |
 
@@ -98,7 +98,7 @@ value_streams:
   - Review
   - Lesson
   epistemic: DOC:PRJ§38
-  use_case_coverage: none — CR-09
+  use_case_coverage: UC-140..UC-144 (R3, CR-70; was none — CR-09) — CR-81
 - id: VS05
   name: Capability → Readiness
   stages:
@@ -113,7 +113,7 @@ value_streams:
   - Eligibility
   - Assignment
   epistemic: DOC:PRJ§38
-  use_case_coverage: none — CR-09
+  use_case_coverage: UC-160..UC-163 (R3, CR-70; was none — CR-09) — CR-81
 - id: VS06
   name: Experience → Knowledge
   stages:

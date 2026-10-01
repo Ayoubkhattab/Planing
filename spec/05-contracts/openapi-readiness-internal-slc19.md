@@ -1,13 +1,13 @@
 ---
-id: OPENAPI-BC04-SLC06
+id: OPENAPI-BC05-INTERNAL
 type: api-contract
-title: Operations API (BC04) — SLC-06
+title: Readiness Internal API — system commands (SLC-19)
 wave: W6
-slice: SLC-06
+slice: SLC-19
 tier: T1
 status: APPROVED_DELEGATED
 approved_by: Claude (acting decision owner, delegated by project owner)
-approved_at: '2026-09-24'
+approved_at: '2026-09-29'
 format: OpenAPI 3.1 (validated)
 traces:
   decided_by:
@@ -17,28 +17,22 @@ traces:
   - REQ-PLT-009
 ---
 
-# Operations API (BC04) — SLC-06
+# Readiness Internal API — system commands (SLC-19)
 
-المسارات `/api/v1/{context}/{resource}`؛ الأوامر `POST …/actions/{action}` مع `Idempotency-Key` و`If-Match`؛ الاستعلامات تقبل `valid_at` و`known_at` حيث تنطبق؛ القوائم بمؤشر؛ الأخطاء بنموذج ApiError.
+أوامر داخلية بهوية عبء عمل فقط.
 
-_7 operations · validated with openapi-spec-validator_
+_1 operations · validated with openapi-spec-validator_
 
 | Method | Path | Operation |
 |---|---|---|
-| POST | `/api/v1/operations/subscriptions` | CMD-SUB-SUBSCRIBE |
-| POST | `/api/v1/operations/subscriptions/{id}/actions/update-channels` | CMD-SUB-UPDATE-CHANNELS |
-| POST | `/api/v1/operations/subscriptions/{id}/actions/pause` | CMD-SUB-PAUSE |
-| POST | `/api/v1/operations/subscriptions/{id}/actions/resume` | CMD-SUB-RESUME |
-| POST | `/api/v1/operations/subscriptions/{id}/actions/unsubscribe` | CMD-SUB-UNSUBSCRIBE |
-| POST | `/api/v1/operations/notifications/{id}/actions/mark-read` | CMD-NTF-MARK-READ |
-| GET | `/api/v1/operations/notifications` | QRY-NTF-INBOX |
+| POST | `/api/v1/readiness/simulations` | CMD-SIM-START |
 
 ```yaml
 openapi: 3.1.0
 info:
-  title: Operations API (BC04) — SLC-06
+  title: Readiness Internal API (system commands)
   version: 1.0.0
-  description: Generated from SLC-06 domain specification. Do not edit by hand.
+  description: Generated from SLC-19 domain specification. Do not edit by hand.
 servers:
 - url: https://{cell}.platform.local
   variables:
@@ -47,18 +41,18 @@ servers:
 security:
 - bearer: []
 paths:
-  /api/v1/operations/subscriptions:
+  /api/v1/readiness/simulations:
     post:
-      operationId: CMD-SUB-SUBSCRIBE
-      summary: CMD-SUB-SUBSCRIBE
-      x-aggregate: AGG-SUBSCRIPTION
-      x-policy: POL-SUB-SUBSCRIBE
+      operationId: CMD-SIM-START
+      summary: CMD-SIM-START
+      x-aggregate: AGG-SIMULATION
+      x-policy: POL-SIM-START
       x-events:
-      - EVT-SUB-SUBSCRIBED
+      - EVT-SIM-STARTED
       x-error-codes:
       - AUTHZ_DENIED
       - IDEMPOTENCY_KEY_REUSED
-      - SUBSCRIPTION_EXISTS
+      - SIMULATION_INVALID
       - VALIDATION_FAILED
       - VERSION_CONFLICT
       x-offline-capable: false
@@ -66,12 +60,13 @@ paths:
       - $ref: '#/components/parameters/Idempotency-Key'
       - $ref: '#/components/parameters/X-Purpose'
       - $ref: '#/components/parameters/X-Correlation-Id'
+      x-internal: true
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubSubscribeCommand'
+              $ref: '#/components/schemas/SimStartCommand'
       responses:
         '201':
           description: accepted
@@ -93,311 +88,6 @@ paths:
           $ref: '#/components/responses/PayloadTooLarge'
         '415':
           $ref: '#/components/responses/UnsupportedMediaType'
-        '422':
-          $ref: '#/components/responses/Unprocessable'
-        '429':
-          $ref: '#/components/responses/RateLimited'
-        '503':
-          $ref: '#/components/responses/Unavailable'
-  /api/v1/operations/subscriptions/{id}/actions/update-channels:
-    post:
-      operationId: CMD-SUB-UPDATE-CHANNELS
-      summary: CMD-SUB-UPDATE-CHANNELS
-      x-aggregate: AGG-SUBSCRIPTION
-      x-policy: POL-SUB-UPDATE-CHANNELS
-      x-events:
-      - EVT-SUB-CHANNELS-UPDATED
-      x-error-codes:
-      - AUTHZ_DENIED
-      - IDEMPOTENCY_KEY_REUSED
-      - SUBSCRIPTION_INVALID
-      - SUBSCRIPTION_INVALID_STATE_TRANSITION
-      - VALIDATION_FAILED
-      - VERSION_CONFLICT
-      x-offline-capable: false
-      parameters:
-      - $ref: '#/components/parameters/Id'
-      - $ref: '#/components/parameters/Idempotency-Key'
-      - $ref: '#/components/parameters/X-Purpose'
-      - $ref: '#/components/parameters/X-Correlation-Id'
-      - $ref: '#/components/parameters/If-Match'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SubUpdateChannelsCommand'
-      responses:
-        '202':
-          description: accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResourceRef'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '413':
-          $ref: '#/components/responses/PayloadTooLarge'
-        '415':
-          $ref: '#/components/responses/UnsupportedMediaType'
-        '422':
-          $ref: '#/components/responses/Unprocessable'
-        '429':
-          $ref: '#/components/responses/RateLimited'
-        '503':
-          $ref: '#/components/responses/Unavailable'
-  /api/v1/operations/subscriptions/{id}/actions/pause:
-    post:
-      operationId: CMD-SUB-PAUSE
-      summary: CMD-SUB-PAUSE
-      x-aggregate: AGG-SUBSCRIPTION
-      x-policy: POL-SUB-PAUSE
-      x-events:
-      - EVT-SUB-PAUSED
-      x-error-codes:
-      - AUTHZ_DENIED
-      - IDEMPOTENCY_KEY_REUSED
-      - SUBSCRIPTION_INVALID_STATE_TRANSITION
-      - VALIDATION_FAILED
-      - VERSION_CONFLICT
-      x-offline-capable: false
-      parameters:
-      - $ref: '#/components/parameters/Id'
-      - $ref: '#/components/parameters/Idempotency-Key'
-      - $ref: '#/components/parameters/X-Purpose'
-      - $ref: '#/components/parameters/X-Correlation-Id'
-      - $ref: '#/components/parameters/If-Match'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SubPauseCommand'
-      responses:
-        '202':
-          description: accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResourceRef'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '413':
-          $ref: '#/components/responses/PayloadTooLarge'
-        '415':
-          $ref: '#/components/responses/UnsupportedMediaType'
-        '422':
-          $ref: '#/components/responses/Unprocessable'
-        '429':
-          $ref: '#/components/responses/RateLimited'
-        '503':
-          $ref: '#/components/responses/Unavailable'
-  /api/v1/operations/subscriptions/{id}/actions/resume:
-    post:
-      operationId: CMD-SUB-RESUME
-      summary: CMD-SUB-RESUME
-      x-aggregate: AGG-SUBSCRIPTION
-      x-policy: POL-SUB-RESUME
-      x-events:
-      - EVT-SUB-RESUMED
-      x-error-codes:
-      - AUTHZ_DENIED
-      - IDEMPOTENCY_KEY_REUSED
-      - SUBSCRIPTION_INVALID_STATE_TRANSITION
-      - TARGET_NOT_VISIBLE
-      - VALIDATION_FAILED
-      - VERSION_CONFLICT
-      x-offline-capable: false
-      parameters:
-      - $ref: '#/components/parameters/Id'
-      - $ref: '#/components/parameters/Idempotency-Key'
-      - $ref: '#/components/parameters/X-Purpose'
-      - $ref: '#/components/parameters/X-Correlation-Id'
-      - $ref: '#/components/parameters/If-Match'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SubResumeCommand'
-      responses:
-        '202':
-          description: accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResourceRef'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '413':
-          $ref: '#/components/responses/PayloadTooLarge'
-        '415':
-          $ref: '#/components/responses/UnsupportedMediaType'
-        '422':
-          $ref: '#/components/responses/Unprocessable'
-        '429':
-          $ref: '#/components/responses/RateLimited'
-        '503':
-          $ref: '#/components/responses/Unavailable'
-  /api/v1/operations/subscriptions/{id}/actions/unsubscribe:
-    post:
-      operationId: CMD-SUB-UNSUBSCRIBE
-      summary: CMD-SUB-UNSUBSCRIBE
-      x-aggregate: AGG-SUBSCRIPTION
-      x-policy: POL-SUB-UNSUBSCRIBE
-      x-events:
-      - EVT-SUB-ENDED
-      x-error-codes:
-      - AUTHZ_DENIED
-      - IDEMPOTENCY_KEY_REUSED
-      - SUBSCRIPTION_INVALID_STATE_TRANSITION
-      - VALIDATION_FAILED
-      - VERSION_CONFLICT
-      x-offline-capable: false
-      parameters:
-      - $ref: '#/components/parameters/Id'
-      - $ref: '#/components/parameters/Idempotency-Key'
-      - $ref: '#/components/parameters/X-Purpose'
-      - $ref: '#/components/parameters/X-Correlation-Id'
-      - $ref: '#/components/parameters/If-Match'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SubUnsubscribeCommand'
-      responses:
-        '202':
-          description: accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResourceRef'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '413':
-          $ref: '#/components/responses/PayloadTooLarge'
-        '415':
-          $ref: '#/components/responses/UnsupportedMediaType'
-        '422':
-          $ref: '#/components/responses/Unprocessable'
-        '429':
-          $ref: '#/components/responses/RateLimited'
-        '503':
-          $ref: '#/components/responses/Unavailable'
-  /api/v1/operations/notifications/{id}/actions/mark-read:
-    post:
-      operationId: CMD-NTF-MARK-READ
-      summary: CMD-NTF-MARK-READ
-      x-aggregate: AGG-NOTIFICATION
-      x-policy: POL-NTF-MARK-READ
-      x-events:
-      - EVT-NTF-READ
-      x-error-codes:
-      - AUTHZ_DENIED
-      - IDEMPOTENCY_KEY_REUSED
-      - NOTIFICATION_INVALID_STATE_TRANSITION
-      - NOT_RECIPIENT
-      - VALIDATION_FAILED
-      - VERSION_CONFLICT
-      x-offline-capable: false
-      parameters:
-      - $ref: '#/components/parameters/Id'
-      - $ref: '#/components/parameters/Idempotency-Key'
-      - $ref: '#/components/parameters/X-Purpose'
-      - $ref: '#/components/parameters/X-Correlation-Id'
-      - $ref: '#/components/parameters/If-Match'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NtfMarkReadCommand'
-      responses:
-        '202':
-          description: accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResourceRef'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '413':
-          $ref: '#/components/responses/PayloadTooLarge'
-        '415':
-          $ref: '#/components/responses/UnsupportedMediaType'
-        '422':
-          $ref: '#/components/responses/Unprocessable'
-        '429':
-          $ref: '#/components/responses/RateLimited'
-        '503':
-          $ref: '#/components/responses/Unavailable'
-  /api/v1/operations/notifications:
-    get:
-      operationId: QRY-NTF-INBOX
-      summary: My notifications (references + templates)
-      x-authorized: recipient
-      x-requirement: REQ-COM-001
-      parameters:
-      - $ref: '#/components/parameters/X-Purpose'
-      - $ref: '#/components/parameters/X-Correlation-Id'
-      - $ref: '#/components/parameters/Cursor'
-      - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Page'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
         '422':
           $ref: '#/components/responses/Unprocessable'
         '429':
@@ -943,49 +633,19 @@ components:
     TemporalParams:
       type: object
       description: valid_at, known_at query parameters (ISO 8601; default now)
-    SubSubscribeCommand:
+    SimStartCommand:
       type: object
       properties:
-        target:
+        exercise:
           $ref: '#/components/schemas/Urn'
-        channels:
-          type: array
-          items:
-            type: string
-        quiet_hours:
-          type: object
-      additionalProperties: false
-      required:
-      - target
-      - channels
-    SubUpdateChannelsCommand:
-      type: object
-      properties:
-        channels:
-          type: array
-          items:
-            type: string
-        quiet_hours:
-          type: object
-      additionalProperties: false
-      required:
-      - channels
-    SubPauseCommand:
-      type: object
-      properties: {}
-      additionalProperties: false
-    SubResumeCommand:
-      type: object
-      properties: {}
-      additionalProperties: false
-    SubUnsubscribeCommand:
-      type: object
-      properties:
-        reason:
+        scenario:
+          $ref: '#/components/schemas/Urn'
+        started_at:
           type: string
+          format: date-time
       additionalProperties: false
-    NtfMarkReadCommand:
-      type: object
-      properties: {}
-      additionalProperties: false
+      required:
+      - exercise
+      - scenario
+      - started_at
 ```

@@ -458,6 +458,7 @@ Scenario Outline: CMD-DEC-ANNUL is rejected
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-DEC-ANNUL وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC04-DEC-RECORD — تسجيل القرار
@@ -493,6 +494,7 @@ Scenario Outline: CMD-DEC-RECORD is rejected
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: selected_option, rationale, effective_from, label |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-DEC-RECORD وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC04-S-DECISION-01 — تلقائي: superseding decision recorded (القرار)
@@ -861,7 +863,7 @@ Scenario Outline: CMD-INC-ACTIVATE-CONTINGENCY is rejected
     | code | http | condition |
     | AUTHZ_DENIED | 403→404 | السياسة POL-INC-ACTIVATE-CONTINGENCY ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
-    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CLOSED, CANCELLED — الحالات النهائية CLOSED, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CANCELLED, CLOSED |
     | PLAN_LINK_INVALID | 422 | لم يتحقق الشرط: سلطة؛ ينشئ/يربط Plan (SLC-08، plan_kind=CONTINGENCY، triggered_by=هذه الحادثة — CR-60)؛ أمر صريح دائماً، ليس أثراً تلقائياً للتصعيد (INV-INC-03) |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: plan_template_ref |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
@@ -898,7 +900,7 @@ Scenario Outline: CMD-INC-ASSESS is rejected
     | AUTHZ_DENIED | 403→404 | السياسة POL-INC-ASSESS ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | INCIDENT_INVALID | 422 | لم يتحقق الشرط: severity ∈ {MINOR,MAJOR,EMERGENCY,CRISIS}؛ affected_scope_refs؛ مقيّم مخوَّل |
-    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ASSESSED, CONTAINED, RESOLVED, RESPONDING, CLOSED, CANCELLED — الحالات النهائية CLOSED, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ASSESSED, CANCELLED, CLOSED, CONTAINED, RESOLVED, RESPONDING |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: severity, affected_scope_refs |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -933,7 +935,7 @@ Scenario Outline: CMD-INC-CANCEL is rejected
     | code | http | condition |
     | AUTHZ_DENIED | 403→404 | السياسة POL-INC-CANCEL ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
-    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ASSESSED, CONTAINED, RESOLVED, RESPONDING, CLOSED, CANCELLED — الحالات النهائية CLOSED, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ASSESSED, CANCELLED, CLOSED, CONTAINED, RESOLVED, RESPONDING |
     | REASON_REQUIRED | 422 | لم يُذكر السبب |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
@@ -969,7 +971,7 @@ Scenario Outline: CMD-INC-CLOSE is rejected
     | code | http | condition |
     | AUTHZ_DENIED | 403→404 | السياسة POL-INC-CLOSE ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
-    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ASSESSED, CONTAINED, REPORTED, RESPONDING, CLOSED, CANCELLED — الحالات النهائية CLOSED, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ASSESSED, CANCELLED, CLOSED, CONTAINED, REPORTED, RESPONDING |
     | REASON_REQUIRED | 422 | لم يُذكر السبب |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: closing_note |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
@@ -1005,7 +1007,7 @@ Scenario Outline: CMD-INC-CONTAIN is rejected
     | code | http | condition |
     | AUTHZ_DENIED | 403→404 | السياسة POL-INC-CONTAIN ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
-    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ASSESSED, CONTAINED, REPORTED, RESOLVED, CLOSED, CANCELLED — الحالات النهائية CLOSED, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ASSESSED, CANCELLED, CLOSED, CONTAINED, REPORTED, RESOLVED |
     | REASON_REQUIRED | 422 | لم يُذكر السبب |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: containment_note |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
@@ -1041,7 +1043,7 @@ Scenario Outline: CMD-INC-DE-ESCALATE is rejected
     | code | http | condition |
     | AUTHZ_DENIED | 403→404 | السياسة POL-INC-DE-ESCALATE ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
-    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CLOSED, CANCELLED — الحالات النهائية CLOSED, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CANCELLED, CLOSED |
     | REASON_REQUIRED | 422 | لم يُذكر السبب |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason, new_severity |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
@@ -1077,7 +1079,7 @@ Scenario Outline: CMD-INC-DISPATCH-RESPONSE is rejected
     | code | http | condition |
     | AUTHZ_DENIED | 403→404 | السياسة POL-INC-DISPATCH-RESPONSE ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
-    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CONTAINED, REPORTED, RESOLVED, RESPONDING, CLOSED, CANCELLED — الحالات النهائية CLOSED, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CANCELLED, CLOSED, CONTAINED, REPORTED, RESOLVED, RESPONDING |
     | RESPONSE_REQUIRED | 422 | لم يتحقق الشرط: commander؛ ≥ 1 response_task_ref (مهام SLC-03 مرتبطة عبر incident_ref — CR-61) |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: commander, response_task_refs |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
@@ -1113,7 +1115,7 @@ Scenario Outline: CMD-INC-ESCALATE is rejected
     | code | http | condition |
     | AUTHZ_DENIED | 403→404 | السياسة POL-INC-ESCALATE ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
-    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CLOSED, CANCELLED — الحالات النهائية CLOSED, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CANCELLED, CLOSED |
     | SEVERITY_MUST_INCREASE | 422 | لم يتحقق الشرط: سبب؛ new_severity أعلى من الحالية فقط (INV-INC-01)؛ إشعار المستوى الأعلى |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason, new_severity |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
@@ -1184,7 +1186,7 @@ Scenario Outline: CMD-INC-RESOLVE is rejected
     | code | http | condition |
     | AUTHZ_DENIED | 403→404 | السياسة POL-INC-RESOLVE ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
-    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ASSESSED, REPORTED, RESOLVED, RESPONDING, CLOSED, CANCELLED — الحالات النهائية CLOSED, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | INCIDENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ASSESSED, CANCELLED, CLOSED, REPORTED, RESOLVED, RESPONDING |
     | RESPONSE_TASKS_OPEN | 422 | لم يتحقق الشرط: كل مهام الاستجابة في حالة نهائية (INV-INC-02)؛ ملاحظة حل |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: resolution_note |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
@@ -2027,6 +2029,7 @@ Scenario Outline: CMD-PLV-APPROVE is rejected
     | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ author (REQ-OPS-005); AuthorityCheck plan-approval |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-PLV-APPROVE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC04-PLV-DISCARD — تجاهل مسودة إصدار الخطة
@@ -2847,6 +2850,7 @@ Scenario Outline: CMD-TASK-ASSIGN is rejected
     | code | http | condition |
     | ASSIGNEE_NOT_ELIGIBLE | 422 | لم يتحقق الشرط: assignee ACTIVE user; assignee clearance ≥ task label; EligibilityCheck(assignee, task type, now) ∈ {ELIGIBLE, CONDITIONALLY_ELIGIBLE with condition met} (REQ-OPS-007) |
     | AUTHZ_DENIED | 403→404 | السياسة POL-TASK-ASSIGN ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
+    | ELIGIBILITY_UNAVAILABLE | 503 | فحص الأهلية في BC05 (`QRY-ELIG-CHECK`) لم يُجب: الإسناد يفشل مغلقًا ويُعاد المحاولة لاحقًا (`03-domain/contexts/BC05/eligibility-rules.md`، THR-S03-04، CR-78) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | TASK_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ACCEPTED, APPROVED, ASSIGNED, BLOCKED, CANCELLED, CLOSED, COMPLETED, DRAFT, EXPIRED, IN_PROGRESS, REJECTED, SUBMITTED, SUPERSEDED, UNDER_REVIEW |
     | TASK_SUSPENDED | 422 | INV-TASK-06: while suspended = true, every state-changing command except UNSUSPEND and CANCEL is rejected with TASK_SUSPENDED (orthogonal flag, not a state) |
@@ -2923,7 +2927,6 @@ Scenario Outline: CMD-TASK-CANCEL is rejected
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | REASON_REQUIRED | 422 | لم يُذكر السبب |
     | TASK_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CANCELLED, CLOSED, COMPLETED, EXPIRED, REJECTED, SUPERSEDED |
-    | TASK_SUSPENDED | 422 | لا ينطبق على هذا الأمر وفق INV-TASK-06 (while suspended = true, every state-changing command except UNSUSPEND and CANCEL is rejected with TASK_SUSPENDED (orthogonal flag, not a state))؛ ذكره في كتالوج الأوامر يناقض الثابت **[Needs Review]** |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -3033,7 +3036,6 @@ Scenario Outline: CMD-TASK-CREATE is rejected
     | AUTHZ_DENIED | 403→404 | السياسة POL-TASK-CREATE ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | TASK_INVALID | 422 | لم يتحقق الشرط: task type ACTIVE (version pinned); plan_ref (operations, collection or contingency plan — CR-59, CR-61) or incident_ref (direct response task under an Incident, SLC-17 — CR-61), or ad_hoc_reason + accountable owner (REQ-OPS-010) |
-    | TASK_SUSPENDED | 422 | لا ينطبق على هذا الأمر وفق INV-TASK-06 (while suspended = true, every state-changing command except UNSUSPEND and CANCEL is rejected with TASK_SUSPENDED (orthogonal flag, not a state))؛ ذكره في كتالوج الأوامر يناقض الثابت **[Needs Review]** |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: task_type, title, owner, org_scope, label |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -3216,6 +3218,7 @@ Scenario Outline: CMD-TASK-REASSIGN is rejected
     | code | http | condition |
     | ASSIGNEE_NOT_ELIGIBLE | 422 | لم يتحقق الشرط: same checks as assign for the new assignee |
     | AUTHZ_DENIED | 403→404 | السياسة POL-TASK-REASSIGN ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
+    | ELIGIBILITY_UNAVAILABLE | 503 | فحص الأهلية في BC05 (`QRY-ELIG-CHECK`) لم يُجب: الإسناد يفشل مغلقًا ويُعاد المحاولة لاحقًا (`03-domain/contexts/BC05/eligibility-rules.md`، THR-S03-04، CR-78) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | TASK_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: APPROVED, CANCELLED, CLOSED, COMPLETED, DRAFT, EXPIRED, READY, REJECTED, SUBMITTED, SUPERSEDED, UNDER_REVIEW |
     | TASK_SUSPENDED | 422 | INV-TASK-06: while suspended = true, every state-changing command except UNSUSPEND and CANCEL is rejected with TASK_SUSPENDED (orthogonal flag, not a state) |
@@ -3588,7 +3591,6 @@ Scenario Outline: CMD-TASK-UNSUSPEND is rejected
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | NOT_SUSPENDED | 422 | لم يتحقق الشرط: suspend authority; suspended = true |
     | TASK_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CANCELLED, CLOSED, EXPIRED, REJECTED, SUPERSEDED |
-    | TASK_SUSPENDED | 422 | لا ينطبق على هذا الأمر وفق INV-TASK-06 (while suspended = true, every state-changing command except UNSUSPEND and CANCEL is rejected with TASK_SUSPENDED (orthogonal flag, not a state))؛ ذكره في كتالوج الأوامر يناقض الثابت **[Needs Review]** |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```

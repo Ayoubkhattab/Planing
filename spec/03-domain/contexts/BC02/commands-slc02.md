@@ -22,13 +22,13 @@ _51 commands_
 | CMD-SRC-UPDATE-PROFILE | AGG-SOURCE | `POST /api/v1/information/sources/{id}/actions/update-profile` | لا | Analyst (register, rate, profile) · Security Officer (protection, reclassify) | POL-SRC-UPDATE-PROFILE | `name:LocalizedName contact:object` | EVT-SRC-PROFILE-UPDATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SOURCE_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-SRC-SET-PROTECTION | AGG-SOURCE | `POST /api/v1/information/sources/{id}/actions/set-protection` | لا | Analyst (register, rate, profile) · Security Officer (protection, reclassify) | POL-SRC-SET-PROTECTION | `protection_level!:integer second_approver:urn` | EVT-SRC-PROTECTION-CHANGED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SEGREGATION_OF_DUTIES, SOURCE_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-SRC-RECLASSIFY | AGG-SOURCE | `POST /api/v1/information/sources/{id}/actions/reclassify` | لا | Analyst (register, rate, profile) · Security Officer (protection, reclassify) | POL-SRC-RECLASSIFY | `label!:Label reason!:string` | EVT-SRC-RECLASSIFIED | AUTHZ_DENIED, CLASSIFICATION_CHANGE_NOT_AUTHORIZED, IDEMPOTENCY_KEY_REUSED, SOURCE_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-SRC-SUSPEND | AGG-SOURCE | `POST /api/v1/information/sources/{id}/actions/suspend` | لا | Analyst (register, rate, profile) · Security Officer (protection, reclassify) | POL-SRC-SUSPEND | `reason!:string` | EVT-SRC-SUSPENDED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, SOURCE_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-SRC-REINSTATE | AGG-SOURCE | `POST /api/v1/information/sources/{id}/actions/reinstate` | لا | Analyst (register, rate, profile) · Security Officer (protection, reclassify) | POL-SRC-REINSTATE | `—` | EVT-SRC-REINSTATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SOURCE_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-SRC-RETIRE | AGG-SOURCE | `POST /api/v1/information/sources/{id}/actions/retire` | لا | Analyst (register, rate, profile) · Security Officer (protection, reclassify) | POL-SRC-RETIRE | `reason!:string` | EVT-SRC-RETIRED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, SOURCE_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-SRC-SUSPEND | AGG-SOURCE | `POST /api/v1/information/sources/{id}/actions/suspend` | لا | Analyst | POL-SRC-SUSPEND | `reason!:string` | EVT-SRC-SUSPENDED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, SOURCE_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-SRC-REINSTATE | AGG-SOURCE | `POST /api/v1/information/sources/{id}/actions/reinstate` | لا | Analyst | POL-SRC-REINSTATE | `—` | EVT-SRC-REINSTATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SOURCE_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-SRC-RETIRE | AGG-SOURCE | `POST /api/v1/information/sources/{id}/actions/retire` | لا | Analyst | POL-SRC-RETIRE | `reason!:string` | EVT-SRC-RETIRED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, SOURCE_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-OBS-RECORD | AGG-OBSERVATION | `POST /api/v1/information/observations` | لا | Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject) | POL-OBS-RECORD | `client_id:string source!:urn observer!:urn observed_at!:date-time event_time:FuzzyInterval location!:SpatialEnvelope method!:string measurements:array narrative:LocalizedName attachments:array label!:Label field_session:urn device:urn` | EVT-OBS-RECORDED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, OBSERVATION_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-OBS-AMEND | AGG-OBSERVATION | `POST /api/v1/information/observations/{id}/actions/amend` | لا | Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject) | POL-OBS-AMEND | `changes!:object reason!:string` | EVT-OBS-AMENDED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, OBSERVATION_INVALID_STATE_TRANSITION, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-OBS-ATTACH-EVIDENCE | AGG-OBSERVATION | `POST /api/v1/information/observations/{id}/actions/attach-evidence` | لا | Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject) | POL-OBS-ATTACH-EVIDENCE | `evidence!:urn` | EVT-OBS-EVIDENCE-ATTACHED | AUTHZ_DENIED, EVIDENCE_INVALID, IDEMPOTENCY_KEY_REUSED, OBSERVATION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-OBS-RECLASSIFY | AGG-OBSERVATION | `POST /api/v1/information/observations/{id}/actions/reclassify` | لا | Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject) | POL-OBS-RECLASSIFY | `label!:Label reason!:string` | EVT-OBS-RECLASSIFIED | AUTHZ_DENIED, CLASSIFICATION_CHANGE_NOT_AUTHORIZED, IDEMPOTENCY_KEY_REUSED, OBSERVATION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-OBS-AMEND | AGG-OBSERVATION | `POST /api/v1/information/observations/{id}/actions/amend` | لا | Field User / Operator / Analyst / adapter service account | POL-OBS-AMEND | `changes!:object reason!:string` | EVT-OBS-AMENDED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, OBSERVATION_INVALID_STATE_TRANSITION, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-OBS-ATTACH-EVIDENCE | AGG-OBSERVATION | `POST /api/v1/information/observations/{id}/actions/attach-evidence` | لا | Field User / Operator / Analyst / adapter service account | POL-OBS-ATTACH-EVIDENCE | `evidence!:urn` | EVT-OBS-EVIDENCE-ATTACHED | AUTHZ_DENIED, EVIDENCE_INVALID, IDEMPOTENCY_KEY_REUSED, OBSERVATION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-OBS-RECLASSIFY | AGG-OBSERVATION | `POST /api/v1/information/observations/{id}/actions/reclassify` | لا | Analyst | POL-OBS-RECLASSIFY | `label!:Label reason!:string` | EVT-OBS-RECLASSIFIED | AUTHZ_DENIED, CLASSIFICATION_CHANGE_NOT_AUTHORIZED, IDEMPOTENCY_KEY_REUSED, OBSERVATION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-OBS-VALIDATE | AGG-OBSERVATION | `POST /api/v1/information/observations/{id}/actions/validate` | لا | Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject) | POL-OBS-VALIDATE | `note:string` | EVT-OBS-VALIDATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, OBSERVATION_INVALID_STATE_TRANSITION, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-OBS-REJECT | AGG-OBSERVATION | `POST /api/v1/information/observations/{id}/actions/reject` | لا | Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject) | POL-OBS-REJECT | `reason!:string` | EVT-OBS-REJECTED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, OBSERVATION_INVALID_STATE_TRANSITION, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ENT-REGISTER | AGG-ENTITY | `POST /api/v1/information/entities` | لا | Analyst · adapter service account | POL-ENT-REGISTER | `entity_type!:string label!:Label initial_claims:array external_ids:array` | EVT-ENT-REGISTERED | AUTHZ_DENIED, ENTITY_INVALID, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
@@ -239,7 +239,7 @@ commands:
   - /api/v1/information/sources/{id}/actions/suspend
   internal: false
   policy: POL-SRC-SUSPEND
-  actors: Analyst (register, rate, profile) · Security Officer (protection, reclassify)
+  actors: Analyst
   payload: reason!:string
   offline_capable: false
   idempotency_key: required
@@ -265,7 +265,7 @@ commands:
   - /api/v1/information/sources/{id}/actions/reinstate
   internal: false
   policy: POL-SRC-REINSTATE
-  actors: Analyst (register, rate, profile) · Security Officer (protection, reclassify)
+  actors: Analyst
   payload: ''
   offline_capable: false
   idempotency_key: required
@@ -293,7 +293,7 @@ commands:
   - /api/v1/information/sources/{id}/actions/retire
   internal: false
   policy: POL-SRC-RETIRE
-  actors: Analyst (register, rate, profile) · Security Officer (protection, reclassify)
+  actors: Analyst
   payload: reason!:string
   offline_capable: false
   idempotency_key: required
@@ -325,7 +325,7 @@ commands:
   payload: client_id:string source!:urn observer!:urn observed_at!:date-time event_time:FuzzyInterval
     location!:SpatialEnvelope method!:string measurements:array narrative:LocalizedName
     attachments:array label!:Label field_session:urn device:urn
-  offline_capable: false
+  offline_capable: true
   idempotency_key: required
   expected_version: not applicable (creation)
 - id: CMD-OBS-AMEND
@@ -350,10 +350,9 @@ commands:
   - /api/v1/information/observations/{id}/actions/amend
   internal: false
   policy: POL-OBS-AMEND
-  actors: Field User / Operator / Analyst / adapter service account (record) · Analyst
-    (validate, reject)
+  actors: Field User / Operator / Analyst / adapter service account
   payload: changes!:object reason!:string
-  offline_capable: false
+  offline_capable: true
   idempotency_key: required
   expected_version: required (If-Match)
 - id: CMD-OBS-ATTACH-EVIDENCE
@@ -378,10 +377,9 @@ commands:
   - /api/v1/information/observations/{id}/actions/attach-evidence
   internal: false
   policy: POL-OBS-ATTACH-EVIDENCE
-  actors: Field User / Operator / Analyst / adapter service account (record) · Analyst
-    (validate, reject)
+  actors: Field User / Operator / Analyst / adapter service account
   payload: evidence!:urn
-  offline_capable: false
+  offline_capable: true
   idempotency_key: required
   expected_version: required (If-Match)
 - id: CMD-OBS-RECLASSIFY
@@ -408,8 +406,7 @@ commands:
   - /api/v1/information/observations/{id}/actions/reclassify
   internal: false
   policy: POL-OBS-RECLASSIFY
-  actors: Field User / Operator / Analyst / adapter service account (record) · Analyst
-    (validate, reject)
+  actors: Analyst
   payload: label!:Label reason!:string
   offline_capable: false
   idempotency_key: required
@@ -1060,7 +1057,7 @@ commands:
   actors: Analyst · Field User (register) · custodian role (custody)
   payload: client_id:string evidence_type!:string attachment:urn observation_ref:urn
     locator:object source!:urn collected_at!:date-time label!:Label
-  offline_capable: false
+  offline_capable: true
   idempotency_key: required
   expected_version: not applicable (creation)
 - id: CMD-EVD-UPDATE-LOCATOR
@@ -1280,7 +1277,7 @@ commands:
   actors: user with write permission on the target object
   payload: client_id:string sha256!:string size_bytes!:integer mime_type!:string file_name:string
     label!:Label
-  offline_capable: false
+  offline_capable: true
   idempotency_key: required
   expected_version: not applicable (creation)
 - id: CMD-ATT-COMPLETE-UPLOAD
@@ -1307,7 +1304,7 @@ commands:
   policy: POL-ATT-COMPLETE-UPLOAD
   actors: user with write permission on the target object
   payload: ''
-  offline_capable: false
+  offline_capable: true
   idempotency_key: required
   expected_version: required (If-Match)
 - id: CMD-ATT-ERASE

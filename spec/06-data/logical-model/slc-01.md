@@ -43,7 +43,7 @@ traces: {decided_by: [ADR-P02, ADR-P04, ADR-P08, ADR-P13], fitness: [FIT-01, FIT
 | outbox | (tenant_id, event_id) | event_type, aggregate_id, payload, recorded_at, published_at? | insert + mark published only |
 | audit_outbox | (tenant_id, audit_id) | record(json), recorded_at, shipped_at? | **insert-only** for application role |
 | inbox | (tenant_id, consumer, event_id) | processed_at | dedupe |
-| idempotency_keys | (tenant_id, key) | command_id, request_hash, response, expires_at | TTL 24 h |
+| idempotency_keys | (tenant_id, principal_id, key) | command_id, request_hash, response, expires_at | TTL 24 h; a stored response matches only the same principal (CR-80) |
 
 ## BC08 — schema `governance`
 

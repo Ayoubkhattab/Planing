@@ -39,7 +39,7 @@ _16 items_
 ### POL-DEV-ROTATE-KEY
 
 - **command:** CMD-DEV-ROTATE-KEY
-- **subject:** user (enroll, report lost) · Administrator / MDM policy (confirm, suspend, reinstate, retire) · Security Officer (lost, retire override)
+- **subject:** user (rotate key)
 - **resource:** AGG-DEVICE
 - **context_conditions:** tenant match; device ACTIVE where applicable; device signature for SYN
 - **decision:** ALLOW
@@ -220,8 +220,7 @@ command_policies:
   obligations: audit; mfa
 - id: POL-DEV-ROTATE-KEY
   command: CMD-DEV-ROTATE-KEY
-  subject: user (enroll, report lost) · Administrator / MDM policy (confirm, suspend, reinstate, retire) · Security Officer
-    (lost, retire override)
+  subject: user (rotate key)
   resource: AGG-DEVICE
   context_conditions: tenant match; device ACTIVE where applicable; device signature for SYN
   decision: ALLOW

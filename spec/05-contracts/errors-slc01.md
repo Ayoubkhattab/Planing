@@ -11,7 +11,7 @@ approved_at: '2026-09-24'
 
 # Error Catalog — SLC-01
 
-`AUTHZ_DENIED` لا يُعاد للعميل كما هو عند موارد غير مرئية: يُعاد `NOT_FOUND` بنفس الشكل (ADR-P06 §5). يُعاد `403` فقط لمورد يحق للمستخدم رؤيته دون تنفيذ الإجراء.
+`AUTHZ_DENIED` لا يُعاد للعميل كما هو عند مورد لا يحق للمستدعي رؤيته: يُعاد `NOT_FOUND` بنفس الشكل (ADR-P06 §5 كما عدّله ADR-P19). يُعاد `403` لمورد يحق للمستخدم رؤيته دون تنفيذ الإجراء، أو لأمر إنشاء مرفوض. التزام `mfa` غير مستوفى يُعاد `401 MFA_STEP_UP_REQUIRED` ويُعاد الطلب بعد المصادقة المعززة بنفس `Idempotency-Key`؛ قرار `REQUIRE_APPROVAL` يُعاد `403 APPROVAL_REQUIRED` ويسمي `details.approver` دور المعتمِد. ترويسة `Retry-After` ترافق 429 و503 القابل لإعادة المحاولة (CR-78).
 
 | الرمز | HTTP | retryable | عدد الأوامر | الأوامر |
 |---|---|---|---|---|
@@ -56,7 +56,7 @@ approved_at: '2026-09-24'
 | `ROLE_IN_USE` | 422 | لا | 1 | CMD-ROL-RETIRE |
 | `SCHEME_INVALID` | 422 | لا | 2 | CMD-CLS-ACTIVATE, CMD-CLS-EDIT |
 | `SECURITY_EXCEPTION_INVALID_STATE_TRANSITION` | 409 | لا | 3 | CMD-EXC-APPROVE, CMD-EXC-REJECT, CMD-EXC-REVOKE |
-| `SEGREGATION_OF_DUTIES` | 422 | لا | 4 | CMD-AUT-APPROVE-GRANT, CMD-CLR-APPROVE, CMD-EXC-APPROVE, CMD-POL-APPROVE |
+| `SEGREGATION_OF_DUTIES` | 422 | لا | 9 | CMD-AUT-APPROVE-GRANT, CMD-AUT-DELEGATE, CMD-CLR-APPROVE, CMD-CLR-GRANT, CMD-CLS-ACTIVATE, CMD-EXC-APPROVE, CMD-POL-APPROVE, CMD-RAS-ASSIGN, CMD-TEN-START-DECOM… |
 | `SERVICE_ACCOUNT_INVALID_STATE_TRANSITION` | 409 | لا | 4 | CMD-SVC-CLOSE, CMD-SVC-DISABLE, CMD-SVC-ENABLE, CMD-SVC-ROTATE-CREDENTIAL |
 | `SOD_ROLE_CONFLICT` | 422 | لا | 1 | CMD-RAS-ASSIGN |
 | `SYSTEM_ROLE_LOCKED` | 422 | لا | 1 | CMD-ROL-SET-PERMISSIONS |
@@ -71,3 +71,9 @@ approved_at: '2026-09-24'
 | `RATE_LIMITED` | 429 | نعم | — | platform-wide |
 | `AUDIT_UNAVAILABLE` | 503 | لا | — | platform-wide |
 | `POLICY_ENGINE_UNAVAILABLE` | 503 (request denied) | نعم | — | platform-wide |
+| `UNAUTHENTICATED` | 401 | لا | — | platform-wide |
+| `MFA_STEP_UP_REQUIRED` | 401 | نعم | — | platform-wide |
+| `APPROVAL_REQUIRED` | 403 | لا | — | platform-wide |
+| `PAYLOAD_TOO_LARGE` | 413 | لا | — | platform-wide |
+| `UNSUPPORTED_MEDIA_TYPE` | 415 | لا | — | platform-wide |
+| `DEPENDENCY_UNAVAILABLE` | 503 | نعم | — | platform-wide |

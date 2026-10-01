@@ -139,42 +139,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/sources/{id}/actions/rate-reliability:
     post:
       operationId: CMD-SRC-RATE-RELIABILITY
@@ -211,42 +194,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/sources/{id}/actions/update-profile:
     post:
       operationId: CMD-SRC-UPDATE-PROFILE
@@ -282,42 +248,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/sources/{id}/actions/set-protection:
     post:
       operationId: CMD-SRC-SET-PROTECTION
@@ -354,42 +303,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/sources/{id}/actions/reclassify:
     post:
       operationId: CMD-SRC-RECLASSIFY
@@ -426,42 +358,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/sources/{id}/actions/suspend:
     post:
       operationId: CMD-SRC-SUSPEND
@@ -498,42 +413,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/sources/{id}/actions/reinstate:
     post:
       operationId: CMD-SRC-REINSTATE
@@ -569,42 +467,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/sources/{id}/actions/retire:
     post:
       operationId: CMD-SRC-RETIRE
@@ -641,42 +522,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/observations:
     post:
       operationId: CMD-OBS-RECORD
@@ -691,7 +555,7 @@ paths:
       - OBSERVATION_INVALID
       - VALIDATION_FAILED
       - VERSION_CONFLICT
-      x-offline-capable: false
+      x-offline-capable: true
       parameters:
       - $ref: '#/components/parameters/Idempotency-Key'
       - $ref: '#/components/parameters/X-Purpose'
@@ -710,42 +574,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
     get:
       operationId: QRY-OBS-LIST
       summary: Observations by bbox, time window (mandatory, ≤ 31 days), source, state
@@ -776,42 +623,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Page'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/observations/{id}/actions/amend:
     post:
       operationId: CMD-OBS-AMEND
@@ -827,7 +651,7 @@ paths:
       - REASON_REQUIRED
       - VALIDATION_FAILED
       - VERSION_CONFLICT
-      x-offline-capable: false
+      x-offline-capable: true
       parameters:
       - $ref: '#/components/parameters/Id'
       - $ref: '#/components/parameters/Idempotency-Key'
@@ -848,42 +672,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/observations/{id}/actions/attach-evidence:
     post:
       operationId: CMD-OBS-ATTACH-EVIDENCE
@@ -899,7 +706,7 @@ paths:
       - OBSERVATION_INVALID_STATE_TRANSITION
       - VALIDATION_FAILED
       - VERSION_CONFLICT
-      x-offline-capable: false
+      x-offline-capable: true
       parameters:
       - $ref: '#/components/parameters/Id'
       - $ref: '#/components/parameters/Idempotency-Key'
@@ -920,42 +727,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/observations/{id}/actions/reclassify:
     post:
       operationId: CMD-OBS-RECLASSIFY
@@ -992,42 +782,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/observations/{id}/actions/validate:
     post:
       operationId: CMD-OBS-VALIDATE
@@ -1064,42 +837,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/observations/{id}/actions/reject:
     post:
       operationId: CMD-OBS-REJECT
@@ -1136,42 +892,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/entities:
     post:
       operationId: CMD-ENT-REGISTER
@@ -1205,42 +944,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
     get:
       operationId: QRY-ENT-LIST
       summary: Entities by type, bbox/polygon of current location, valid_at
@@ -1271,42 +993,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Page'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/entities/{id}/actions/change-type:
     post:
       operationId: CMD-ENT-CHANGE-TYPE
@@ -1343,42 +1042,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/entities/{id}/actions/reclassify:
     post:
       operationId: CMD-ENT-RECLASSIFY
@@ -1415,42 +1097,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/entities/{id}/actions/retire:
     post:
       operationId: CMD-ENT-RETIRE
@@ -1487,42 +1152,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/entities/{id}/actions/reinstate:
     post:
       operationId: CMD-ENT-REINSTATE
@@ -1559,42 +1207,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/events:
     post:
       operationId: CMD-RWE-REGISTER
@@ -1628,42 +1259,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/events/{id}/actions/change-type:
     post:
       operationId: CMD-RWE-CHANGE-TYPE
@@ -1700,42 +1314,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/events/{id}/actions/reclassify:
     post:
       operationId: CMD-RWE-RECLASSIFY
@@ -1772,42 +1369,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/events/{id}/actions/retire:
     post:
       operationId: CMD-RWE-RETIRE
@@ -1844,42 +1424,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/events/{id}/actions/reinstate:
     post:
       operationId: CMD-RWE-REINSTATE
@@ -1916,42 +1479,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/relationships:
     post:
       operationId: CMD-REL-REGISTER
@@ -1985,42 +1531,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/relationships/{id}/actions/reclassify:
     post:
       operationId: CMD-REL-RECLASSIFY
@@ -2057,42 +1586,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/relationships/{id}/actions/retire:
     post:
       operationId: CMD-REL-RETIRE
@@ -2129,42 +1641,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/relationships/{id}/actions/reinstate:
     post:
       operationId: CMD-REL-REINSTATE
@@ -2201,42 +1696,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/claims:
     post:
       operationId: CMD-CLM-ASSERT
@@ -2270,42 +1748,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/claims/{id}/actions/correct:
     post:
       operationId: CMD-CLM-CORRECT
@@ -2342,42 +1803,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/claims/{id}/actions/record-change:
     post:
       operationId: CMD-CLM-RECORD-CHANGE
@@ -2414,42 +1858,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/claims/{id}/actions/retract:
     post:
       operationId: CMD-CLM-RETRACT
@@ -2486,42 +1913,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/claims/{id}/actions/assess:
     post:
       operationId: CMD-CLM-ASSESS
@@ -2558,42 +1968,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/claims/{id}/actions/reclassify:
     post:
       operationId: CMD-CLM-RECLASSIFY
@@ -2630,42 +2023,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/evidence:
     post:
       operationId: CMD-EVD-REGISTER
@@ -2680,7 +2056,7 @@ paths:
       - IDEMPOTENCY_KEY_REUSED
       - VALIDATION_FAILED
       - VERSION_CONFLICT
-      x-offline-capable: false
+      x-offline-capable: true
       parameters:
       - $ref: '#/components/parameters/Idempotency-Key'
       - $ref: '#/components/parameters/X-Purpose'
@@ -2699,42 +2075,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/evidence/{id}/actions/update-locator:
     post:
       operationId: CMD-EVD-UPDATE-LOCATOR
@@ -2771,42 +2130,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/evidence/{id}/actions/seal:
     post:
       operationId: CMD-EVD-SEAL
@@ -2842,42 +2184,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/evidence/{id}/actions/transfer-custody:
     post:
       operationId: CMD-EVD-TRANSFER-CUSTODY
@@ -2914,42 +2239,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/evidence/{id}/actions/reclassify:
     post:
       operationId: CMD-EVD-RECLASSIFY
@@ -2986,42 +2294,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/evidence/{id}/actions/withdraw:
     post:
       operationId: CMD-EVD-WITHDRAW
@@ -3058,42 +2349,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/evidence-links:
     post:
       operationId: CMD-EVL-LINK
@@ -3127,42 +2401,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/evidence-links/{id}/actions/unlink:
     post:
       operationId: CMD-EVL-UNLINK
@@ -3199,42 +2456,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/attachments:
     post:
       operationId: CMD-ATT-INITIATE-UPLOAD
@@ -3249,7 +2489,7 @@ paths:
       - IDEMPOTENCY_KEY_REUSED
       - VALIDATION_FAILED
       - VERSION_CONFLICT
-      x-offline-capable: false
+      x-offline-capable: true
       parameters:
       - $ref: '#/components/parameters/Idempotency-Key'
       - $ref: '#/components/parameters/X-Purpose'
@@ -3268,42 +2508,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/attachments/{id}/actions/complete-upload:
     post:
       operationId: CMD-ATT-COMPLETE-UPLOAD
@@ -3319,7 +2542,7 @@ paths:
       - IDEMPOTENCY_KEY_REUSED
       - VALIDATION_FAILED
       - VERSION_CONFLICT
-      x-offline-capable: false
+      x-offline-capable: true
       parameters:
       - $ref: '#/components/parameters/Id'
       - $ref: '#/components/parameters/Idempotency-Key'
@@ -3340,42 +2563,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/attachments/{id}/actions/erase:
     post:
       operationId: CMD-ATT-ERASE
@@ -3412,42 +2618,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/import-batches:
     post:
       operationId: CMD-IMP-SUBMIT
@@ -3481,42 +2670,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/import-batches/{id}/actions/reprocess-quarantine:
     post:
       operationId: CMD-IMP-REPROCESS-QUARANTINE
@@ -3552,42 +2724,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/import-batches/{id}/actions/accept-quarantine:
     post:
       operationId: CMD-IMP-ACCEPT-QUARANTINE
@@ -3624,42 +2779,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/import-batches/{id}/actions/cancel:
     post:
       operationId: CMD-IMP-CANCEL
@@ -3696,42 +2834,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/external-ids:
     post:
       operationId: CMD-EXT-MAP
@@ -3765,42 +2886,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/external-ids/{id}/actions/end:
     post:
       operationId: CMD-EXT-END
@@ -3837,42 +2941,25 @@ paths:
               schema:
                 $ref: '#/components/schemas/ResourceRef'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/entities/{entity_id}:
     get:
       operationId: QRY-ENT-RESOLVED
@@ -3909,42 +2996,19 @@ paths:
               schema:
                 type: object
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/entities/{entity_id}/claims:
     get:
       operationId: QRY-ENT-CLAIMS
@@ -3981,42 +3045,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Page'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/entities/{entity_id}/positions:
     get:
       operationId: QRY-ENT-POSITIONS
@@ -4053,42 +3094,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Page'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/events/{event_id}:
     get:
       operationId: QRY-RWE-GET
@@ -4123,42 +3141,19 @@ paths:
               schema:
                 type: object
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/entities/{entity_id}/relationships:
     get:
       operationId: QRY-REL-LIST
@@ -4195,42 +3190,19 @@ paths:
               schema:
                 $ref: '#/components/schemas/Page'
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/claims/{claim_id}:
     get:
       operationId: QRY-CLM-GET
@@ -4265,42 +3237,19 @@ paths:
               schema:
                 type: object
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/observations/{observation_id}:
     get:
       operationId: QRY-OBS-GET
@@ -4335,42 +3284,19 @@ paths:
               schema:
                 type: object
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/sources/{source_id}:
     get:
       operationId: QRY-SRC-GET
@@ -4405,42 +3331,19 @@ paths:
               schema:
                 type: object
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/evidence/{evidence_id}:
     get:
       operationId: QRY-EVD-GET
@@ -4475,42 +3378,19 @@ paths:
               schema:
                 type: object
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/attachments/{attachment_id}/download-grants:
     post:
       operationId: QRY-ATT-DOWNLOAD
@@ -4533,42 +3413,23 @@ paths:
               schema:
                 type: object
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
       requestBody:
         required: false
         content:
@@ -4609,42 +3470,19 @@ paths:
               schema:
                 type: object
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/external-ids/{system}/{external_id}:
     get:
       operationId: QRY-EXT-RESOLVE
@@ -4684,42 +3522,19 @@ paths:
               schema:
                 type: object
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
   /api/v1/information/import-batches/{batch_id}:
     get:
       operationId: QRY-IMP-GET
@@ -4754,42 +3569,19 @@ paths:
               schema:
                 type: object
         '400':
-          description: VALIDATION_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
-          description: NOT_FOUND (also returned for forbidden resources — ADR-P06
-            §5)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/NotFound'
         '409':
-          description: state transition or version conflict
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Conflict'
         '422':
-          description: guard failed / idempotency key reused
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unprocessable'
         '429':
-          description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/RateLimited'
         '503':
-          description: AUDIT_UNAVAILABLE / dependency
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiError'
+          $ref: '#/components/responses/Unavailable'
 components:
   securitySchemes:
     bearer:
@@ -4843,6 +3635,80 @@ components:
       required: true
       schema:
         type: string
+  responses:
+    BadRequest:
+      description: VALIDATION_FAILED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Unauthorized:
+      description: UNAUTHENTICATED (missing or expired token) / MFA_STEP_UP_REQUIRED
+        (challenge carries the required authentication strength as OIDC acr_values;
+        retry with the same Idempotency-Key — ADR-P19)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Forbidden:
+      description: AUTHZ_DENIED for a visible resource or a denied create / APPROVAL_REQUIRED
+        with details.approver (ADR-P19)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    NotFound:
+      description: NOT_FOUND (also returned for resources the caller may not see —
+        ADR-P06 §5 as amended by ADR-P19)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Conflict:
+      description: state transition or version conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    PayloadTooLarge:
+      description: PAYLOAD_TOO_LARGE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    UnsupportedMediaType:
+      description: UNSUPPORTED_MEDIA_TYPE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    Unprocessable:
+      description: guard failed / segregation of duties / idempotency key reused
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    RateLimited:
+      description: RATE_LIMITED
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+      headers: &id001
+        Retry-After:
+          description: seconds to wait before retrying; sent when the error is retryable
+            (CR-78)
+          schema:
+            type: integer
+            minimum: 0
+    Unavailable:
+      description: AUDIT_UNAVAILABLE (not retryable, no Retry-After) / POLICY_ENGINE_UNAVAILABLE
+        / DEPENDENCY_UNAVAILABLE / context-specific dependency codes such as ELIGIBILITY_UNAVAILABLE
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+      headers: *id001
   schemas:
     Urn:
       type: string
@@ -4962,6 +3828,10 @@ components:
           type: string
         details:
           type: object
+          properties:
+            approver:
+              type: string
+              description: approver role (APPROVAL_REQUIRED, ADR-P19)
         correlation_id:
           type: string
         trace_id:
@@ -5450,7 +4320,7 @@ components:
           $ref: '#/components/schemas/Label'
         initial_claims:
           type: array
-          items: &id001
+          items: &id002
             $ref: '#/components/schemas/ClaimInput'
         external_ids:
           type: array
@@ -5507,7 +4377,7 @@ components:
           $ref: '#/components/schemas/Label'
         initial_claims:
           type: array
-          items: *id001
+          items: *id002
       additionalProperties: false
       required:
       - event_type
@@ -5564,7 +4434,7 @@ components:
           $ref: '#/components/schemas/Interval'
         source_refs:
           type: array
-          items: &id002
+          items: &id003
             $ref: '#/components/schemas/Urn'
         label:
           $ref: '#/components/schemas/Label'
@@ -5616,7 +4486,7 @@ components:
           $ref: '#/components/schemas/Interval'
         source_refs:
           type: array
-          items: *id002
+          items: *id003
         derived_from:
           type: array
           items:
@@ -5643,7 +4513,7 @@ components:
           $ref: '#/components/schemas/Interval'
         source_refs:
           type: array
-          items: *id002
+          items: *id003
         confidence:
           $ref: '#/components/schemas/Confidence'
         reason:
@@ -5664,7 +4534,7 @@ components:
           $ref: '#/components/schemas/ClaimValue'
         source_refs:
           type: array
-          items: *id002
+          items: *id003
         confidence:
           $ref: '#/components/schemas/Confidence'
       additionalProperties: false

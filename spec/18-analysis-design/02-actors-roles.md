@@ -63,7 +63,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 |---|---|
 | حقوق القرار لمجموعات أصحاب المصلحة (`decision_rights: UNKNOWN` لـ SH-01..05) | **[Missing]** في المصدر |
 | أدوار تستخدمها السياسات وليست ضمن ACT-01..15: Platform Operator، AI platform engineer، AI governance authority، integration engineer، Legal/Compliance authority، Privacy officer؛ وأدوار مكافأة لـACT بالتصنيف (dispatcher، carrier operator، Exercise Director/Controller، Evaluator، technician، collection manager… — §6.5) | **[Needs Review]** — تُضاف إلى `stakeholders.md` أو تُعرَّف كأدوار في AGG-ROLE |
-| 26 أمرًا يذكر مصدرها أدوارًا لا يشمل أيٌّ منها فعل الأمر | محسومة في `17-security-design.md` §5 وتُنقل إلى السياسات بـCR-77 |
+| 26 أمرًا يذكر مصدرها أدوارًا لا يشمل أيٌّ منها فعل الأمر | محسومة في `17-security-design.md` §5، ومطبَّقة على السياسات وكتالوجات الأوامر (CR-77) |
 | وصف «finance» في سياسة `QRY-AI-USAGE` | دور غير معرَّف (§2.5) **[Needs Review]** |
 
 ## 6. الكتالوج والمصفوفات

@@ -165,13 +165,13 @@ release: سلطة إصدار ≠ المُعِد ← إرسال عبر اتصال
 
 | المصدر | ما يقوله |
 |---|---|
-| `x-offline-capable: true` في العقود | 6 أوامر: `CMD-TASK-ACCEPT`، `START`، `BLOCK`، `RESUME`، `ADD-RESULT-ITEM`، `SUBMIT` |
+| `x-offline-capable: true` في العقود (قبل CR-79) | 6 أوامر: `CMD-TASK-ACCEPT`، `START`، `BLOCK`، `RESUME`، `ADD-RESULT-ITEM`، `SUBMIT`؛ الآن 12 |
 | `CommandEnvelope.target_command` في `openapi-field-slc11.md` | 12 أمرًا: الستة + `CMD-OBS-RECORD`، `CMD-OBS-AMEND`، `CMD-OBS-ATTACH-EVIDENCE`، `CMD-EVD-REGISTER`، `CMD-ATT-INITIATE-UPLOAD`، `CMD-ATT-COMPLETE-UPLOAD` |
 | `field-sync-protocol.md` §1 | «الأوامر المسموحة فقط (x-offline-capable في SLC-02/SLC-03)» — أي أوامر SLC-02 أيضًا |
 | `field-sync-protocol.md` §3 | يسرد الأوامر الإلحاقية: RECORD، INITIATE/COMPLETE-UPLOAD، EVD-REGISTER، ATTACH-EVIDENCE، ADD-RESULT-ITEM |
 | REQ-OFF-001 | التقاط الملاحظات دون اتصال من نطاق R1 |
 
-**التقييم:** البروتوكول المعتمد والغلاف وREQ-OFF-001 كلها تفترض الاثني عشر؛ علم العقد هو الناقص في أوامر SLC-02. **التوصية:** اعتماد الاثني عشر بتصحيح علم `x-offline-capable` في عقود SLC-02. **القرار (مالك المشروع، 2026-10-01):** الاثنا عشر أمرًا؛ تصحيح العلم في عقود SLC-02 بـCR-79 (بانتظار جولة تصحيح المصادر). إلى أن يُطبَّق، بوابة المزامنة تقبل ما يقبله `CommandEnvelope` وتعامل الأوامر الستة الإضافية كأوامر دون اتصال.
+**التقييم:** البروتوكول المعتمد والغلاف وREQ-OFF-001 كلها تفترض الاثني عشر؛ علم العقد هو الناقص في أوامر SLC-02. **التوصية:** اعتماد الاثني عشر بتصحيح علم `x-offline-capable` في عقود SLC-02. **القرار (مالك المشروع، 2026-10-01):** الاثنا عشر أمرًا؛ صُحح العلم في عقود SLC-02 بـCR-79 (مطبَّق)، فالعقود و`CommandEnvelope` متطابقة الآن.
 
 ## 8. فجوات
 

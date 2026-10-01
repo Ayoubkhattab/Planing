@@ -25,13 +25,13 @@ _27 commands_
 | CMD-AIRS-REJECT | AGG-AI-RESULT | `POST /api/v1/ai/results/{id}/actions/reject` | لا | reviewer authorized on the target (review, accept, reject) | POL-AIRS-REJECT | `reason!:string` | EVT-AIRS-REJECTED | AI_RESULT_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-MDL-REGISTER | AGG-MODEL-VERSION | `POST /api/v1/ai/models` | لا | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | POL-MDL-REGISTER | `family!:string version!:string weights_digest!:string licence!:string languages!:array context_tokens!:integer hosting!:enum(local,external_allowed) roles!:array` | EVT-MDL-REGISTERED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, MODEL_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-MDL-START-EVALUATION | AGG-MODEL-VERSION | `POST /api/v1/ai/models/{id}/actions/start-evaluation` | لا | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | POL-MDL-START-EVALUATION | `suite!:urn` | EVT-MDL-EVALUATION-STARTED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, MODEL_VERSION_INVALID_STATE_TRANSITION, SUITE_NOT_ACTIVE, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-MDL-APPROVE | AGG-MODEL-VERSION | `POST /api/v1/ai/models/{id}/actions/approve` | لا | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | POL-MDL-APPROVE | `report!:urn` | EVT-MDL-APPROVED | AUTHZ_DENIED, EVALUATION_BELOW_THRESHOLD, IDEMPOTENCY_KEY_REUSED, MODEL_VERSION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-MDL-APPROVE | AGG-MODEL-VERSION | `POST /api/v1/ai/models/{id}/actions/approve` | لا | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | POL-MDL-APPROVE | `report!:urn` | EVT-MDL-APPROVED | AUTHZ_DENIED, EVALUATION_BELOW_THRESHOLD, IDEMPOTENCY_KEY_REUSED, MODEL_VERSION_INVALID_STATE_TRANSITION, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-MDL-FAIL-EVALUATION | AGG-MODEL-VERSION | `POST /api/v1/ai/models/{id}/actions/fail-evaluation` | لا | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | POL-MDL-FAIL-EVALUATION | `report!:urn` | EVT-MDL-EVALUATION-FAILED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, MODEL_VERSION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-MDL-STAGE | AGG-MODEL-VERSION | `POST /api/v1/ai/models/{id}/actions/stage` | لا | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | POL-MDL-STAGE | `canary_share!:number operations!:array` | EVT-MDL-STAGED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, MODEL_VERSION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-MDL-PROMOTE | AGG-MODEL-VERSION | `POST /api/v1/ai/models/{id}/actions/promote` | لا | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | POL-MDL-PROMOTE | `canary_report!:urn` | EVT-MDL-PROMOTED | AUTHZ_DENIED, CANARY_BELOW_THRESHOLD, IDEMPOTENCY_KEY_REUSED, MODEL_VERSION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-MDL-PROMOTE | AGG-MODEL-VERSION | `POST /api/v1/ai/models/{id}/actions/promote` | لا | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | POL-MDL-PROMOTE | `canary_report!:urn` | EVT-MDL-PROMOTED | AUTHZ_DENIED, CANARY_BELOW_THRESHOLD, IDEMPOTENCY_KEY_REUSED, MODEL_VERSION_INVALID_STATE_TRANSITION, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-MDL-DEPRECATE | AGG-MODEL-VERSION | `POST /api/v1/ai/models/{id}/actions/deprecate` | لا | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | POL-MDL-DEPRECATE | `reason!:string` | EVT-MDL-DEPRECATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, MODEL_IN_ACTIVE_ROUTE, MODEL_VERSION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-MDL-REINSTATE | AGG-MODEL-VERSION | `POST /api/v1/ai/models/{id}/actions/reinstate` | لا | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | POL-MDL-REINSTATE | `reason!:string` | EVT-MDL-REINSTATED | AUTHZ_DENIED, EVALUATION_TOO_OLD, IDEMPOTENCY_KEY_REUSED, MODEL_VERSION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-MDL-RETIRE | AGG-MODEL-VERSION | `POST /api/v1/ai/models/{id}/actions/retire` | لا | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | POL-MDL-RETIRE | `reason!:string` | EVT-MDL-RETIRED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, MODEL_VERSION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-MDL-RETIRE | AGG-MODEL-VERSION | `POST /api/v1/ai/models/{id}/actions/retire` | لا | AI governance authority | POL-MDL-RETIRE | `reason!:string` | EVT-MDL-RETIRED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, MODEL_VERSION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-RTG-DRAFT | AGG-AI-ROUTING | `POST /api/v1/ai/routings` | لا | AI governance authority (draft, edit) · second authority (activate) | POL-RTG-DRAFT | `based_on:urn` | EVT-RTG-DRAFTED | AUTHZ_DENIED, DRAFT_EXISTS, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-RTG-EDIT | AGG-AI-ROUTING | `POST /api/v1/ai/routings/{id}/actions/edit` | لا | AI governance authority (draft, edit) · second authority (activate) | POL-RTG-EDIT | `routes!:array` | EVT-RTG-EDITED | AI_ROUTING_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, ROUTING_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-RTG-ACTIVATE | AGG-AI-ROUTING | `POST /api/v1/ai/routings/{id}/actions/activate` | لا | AI governance authority (draft, edit) · second authority (activate) | POL-RTG-ACTIVATE | `—` | EVT-RTG-ACTIVATED | AI_ROUTING_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
@@ -39,8 +39,8 @@ _27 commands_
 | CMD-TOL-REGISTER | AGG-AI-TOOL | `POST /api/v1/ai/tools` | لا | AI platform engineer (register) · Security Officer (activate, disable) | POL-TOL-REGISTER | `name!:string description!:LocalizedName input_schema!:object binding!:string effect!:enum(read,propose) permission!:string max_ail!:integer` | EVT-TOL-REGISTERED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, TOOL_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TOL-ACTIVATE | AGG-AI-TOOL | `POST /api/v1/ai/tools/{id}/actions/activate` | لا | AI platform engineer (register) · Security Officer (activate, disable) | POL-TOL-ACTIVATE | `review_ref!:string` | EVT-TOL-ACTIVATED | AI_TOOL_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SECURITY_REVIEW_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TOL-DISABLE | AGG-AI-TOOL | `POST /api/v1/ai/tools/{id}/actions/disable` | لا | AI platform engineer (register) · Security Officer (activate, disable) | POL-TOL-DISABLE | `reason!:string` | EVT-TOL-DISABLED | AI_TOOL_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-TOL-ENABLE | AGG-AI-TOOL | `POST /api/v1/ai/tools/{id}/actions/enable` | لا | AI platform engineer (register) · Security Officer (activate, disable) | POL-TOL-ENABLE | `—` | EVT-TOL-ENABLED | AI_TOOL_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-TOL-RETIRE | AGG-AI-TOOL | `POST /api/v1/ai/tools/{id}/actions/retire` | لا | AI platform engineer (register) · Security Officer (activate, disable) | POL-TOL-RETIRE | `reason!:string` | EVT-TOL-RETIRED | AI_TOOL_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-TOL-ENABLE | AGG-AI-TOOL | `POST /api/v1/ai/tools/{id}/actions/enable` | لا | Security Officer | POL-TOL-ENABLE | `—` | EVT-TOL-ENABLED | AI_TOOL_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-TOL-RETIRE | AGG-AI-TOOL | `POST /api/v1/ai/tools/{id}/actions/retire` | لا | Security Officer | POL-TOL-RETIRE | `reason!:string` | EVT-TOL-RETIRED | AI_TOOL_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-EVS-DRAFT | AGG-EVAL-SUITE | `POST /api/v1/ai/evaluation-suites` | لا | AI governance (draft, edit) · second authority (activate) | POL-EVS-DRAFT | `based_on:urn` | EVT-EVS-DRAFTED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-EVS-EDIT | AGG-EVAL-SUITE | `POST /api/v1/ai/evaluation-suites/{id}/actions/edit` | لا | AI governance (draft, edit) · second authority (activate) | POL-EVS-EDIT | `sets!:array` | EVT-EVS-EDITED | AUTHZ_DENIED, EVAL_SUITE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, SUITE_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-EVS-ACTIVATE | AGG-EVAL-SUITE | `POST /api/v1/ai/evaluation-suites/{id}/actions/activate` | لا | AI governance (draft, edit) · second authority (activate) | POL-EVS-ACTIVATE | `—` | EVT-EVS-ACTIVATED | AUTHZ_DENIED, EVAL_SUITE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
@@ -293,6 +293,7 @@ commands:
   - EVALUATION_BELOW_THRESHOLD
   - IDEMPOTENCY_KEY_REUSED
   - MODEL_VERSION_INVALID_STATE_TRANSITION
+  - SEGREGATION_OF_DUTIES
   - VALIDATION_FAILED
   - VERSION_CONFLICT
   creates: false
@@ -375,6 +376,7 @@ commands:
   - CANARY_BELOW_THRESHOLD
   - IDEMPOTENCY_KEY_REUSED
   - MODEL_VERSION_INVALID_STATE_TRANSITION
+  - SEGREGATION_OF_DUTIES
   - VALIDATION_FAILED
   - VERSION_CONFLICT
   creates: false
@@ -469,8 +471,7 @@ commands:
   - /api/v1/ai/models/{id}/actions/retire
   internal: false
   policy: POL-MDL-RETIRE
-  actors: AI platform engineer (register, evaluate, stage, deprecate) · AI governance
-    authority (approve, promote, reinstate)
+  actors: AI governance authority
   payload: reason!:string
   offline_capable: false
   idempotency_key: required
@@ -688,7 +689,7 @@ commands:
   - /api/v1/ai/tools/{id}/actions/enable
   internal: false
   policy: POL-TOL-ENABLE
-  actors: AI platform engineer (register) · Security Officer (activate, disable)
+  actors: Security Officer
   payload: ''
   offline_capable: false
   idempotency_key: required
@@ -717,7 +718,7 @@ commands:
   - /api/v1/ai/tools/{id}/actions/retire
   internal: false
   policy: POL-TOL-RETIRE
-  actors: AI platform engineer (register) · Security Officer (activate, disable)
+  actors: Security Officer
   payload: reason!:string
   offline_capable: false
   idempotency_key: required

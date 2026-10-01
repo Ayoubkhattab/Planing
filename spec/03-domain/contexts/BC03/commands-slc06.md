@@ -21,7 +21,7 @@ _16 commands_
 | CMD-SIT-EDIT-DEFINITION | AGG-SITUATION | `POST /api/v1/intelligence/situations/{id}/actions/edit-definition` | لا | Analyst / Manager (create, edit, activate, pause, close) · Security Officer (reclassify) | POL-SIT-EDIT-DEFINITION | `extent:object window:Interval criteria:object reason!:string` | EVT-SIT-DEFINITION-CHANGED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SITUATION_INVALID, SITUATION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-SIT-ACTIVATE | AGG-SITUATION | `POST /api/v1/intelligence/situations/{id}/actions/activate` | لا | Analyst / Manager (create, edit, activate, pause, close) · Security Officer (reclassify) | POL-SIT-ACTIVATE | `—` | EVT-SIT-ACTIVATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, QUOTA_EXCEEDED, SITUATION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-SIT-PAUSE | AGG-SITUATION | `POST /api/v1/intelligence/situations/{id}/actions/pause` | لا | Analyst / Manager (create, edit, activate, pause, close) · Security Officer (reclassify) | POL-SIT-PAUSE | `reason!:string` | EVT-SIT-PAUSED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, SITUATION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-SIT-RESUME | AGG-SITUATION | `POST /api/v1/intelligence/situations/{id}/actions/resume` | لا | Analyst / Manager (create, edit, activate, pause, close) · Security Officer (reclassify) | POL-SIT-RESUME | `—` | EVT-SIT-RESUMED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SITUATION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-SIT-RESUME | AGG-SITUATION | `POST /api/v1/intelligence/situations/{id}/actions/resume` | لا | Analyst / Manager | POL-SIT-RESUME | `—` | EVT-SIT-RESUMED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SITUATION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-SIT-CLOSE | AGG-SITUATION | `POST /api/v1/intelligence/situations/{id}/actions/close` | لا | Analyst / Manager (create, edit, activate, pause, close) · Security Officer (reclassify) | POL-SIT-CLOSE | `reason!:string` | EVT-SIT-CLOSED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, SITUATION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-SIT-RECLASSIFY | AGG-SITUATION | `POST /api/v1/intelligence/situations/{id}/actions/reclassify` | لا | Analyst / Manager (create, edit, activate, pause, close) · Security Officer (reclassify) | POL-SIT-RECLASSIFY | `label!:Label reason!:string` | EVT-SIT-RECLASSIFIED | AUTHZ_DENIED, CLASSIFICATION_CHANGE_NOT_AUTHORIZED, IDEMPOTENCY_KEY_REUSED, SITUATION_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ARL-DEFINE | AGG-ALERT-RULE | `POST /api/v1/intelligence/alert-rules` | لا | Analyst lead / Manager | POL-ARL-DEFINE | `situation:urn scope!:enum(situation,tenant) kind!:string parameters!:object severity!:enum(info,warning,critical) dedupe_window!:string escalation:object auto_resolve!:boolean label!:Label` | EVT-ARL-DEFINED | ALERT_RULE_INVALID, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
@@ -180,8 +180,7 @@ commands:
   - /api/v1/intelligence/situations/{id}/actions/resume
   internal: false
   policy: POL-SIT-RESUME
-  actors: Analyst / Manager (create, edit, activate, pause, close) · Security Officer
-    (reclassify)
+  actors: Analyst / Manager
   payload: ''
   offline_capable: false
   idempotency_key: required

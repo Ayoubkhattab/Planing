@@ -62,6 +62,7 @@ Scenario Outline: CMD-ALC-APPROVE is rejected
     | AUTHZ_DENIED | 403→404 | السياسة POL-ALC-APPROVE ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | CAPACITY_UNAVAILABLE | 422 | لم يتحقق الشرط: capacity still available |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
+    | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ requester |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -388,7 +389,7 @@ Scenario Outline: CMD-AST-DISPOSE is rejected
 - **الشروط المسبقة:** الحالة الحالية: UNDER_MAINTENANCE؛ maintenance order COMPLETED with outcome failed; reason
 - **المدخلات:** `maintenance_order`!: urn, `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← UNSERVICEABLE؛ الحدث EVT-AST-UNSERVICEABLE؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify)؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Resource Manager (fail maintenance)؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-AST-FAIL-MAINTENANCE` · `AGG-ASSET` · متطلبات: REQ-RES-001, REQ-RES-002, REQ-RES-003, REQ-RES-005 · حالات استخدام: UC-050, UC-051, UC-053
 - **ضوابط النوع والفئة:** C-WF، K-CORE (التعريف في [00-guide.md](00-guide.md))
 
@@ -424,7 +425,7 @@ Scenario Outline: CMD-AST-FAIL-MAINTENANCE is rejected
 - **الشروط المسبقة:** الحالة الحالية: IN_SERVICE؛ reason; active assignments are notified; future reservations flagged
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← UNSERVICEABLE؛ الحدث EVT-AST-UNSERVICEABLE؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify)؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Resource Manager (mark unserviceable)؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-AST-MARK-UNSERVICEABLE` · `AGG-ASSET` · متطلبات: REQ-RES-001, REQ-RES-002, REQ-RES-003, REQ-RES-005 · حالات استخدام: UC-050, UC-051, UC-053
 - **ضوابط النوع والفئة:** C-WF، K-CORE (التعريف في [00-guide.md](00-guide.md))
 
@@ -496,7 +497,7 @@ Scenario Outline: CMD-AST-RECLASSIFY is rejected
 - **الشروط المسبقة:** الحالة الحالية: LOST؛ found; inspection required before service
 - **المدخلات:** `note`: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← UNSERVICEABLE؛ الحدث EVT-AST-RECOVERED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify)؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Resource Manager (recover)؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-AST-RECOVER` · `AGG-ASSET` · متطلبات: REQ-RES-001, REQ-RES-002, REQ-RES-003, REQ-RES-005 · حالات استخدام: UC-050, UC-051, UC-053
 - **ضوابط النوع والفئة:** C-WF، K-CORE (التعريف في [00-guide.md](00-guide.md))
 
@@ -602,7 +603,7 @@ Scenario Outline: CMD-AST-REPORT-LOST is rejected
 - **الشروط المسبقة:** الحالة الحالية: UNDER_MAINTENANCE؛ maintenance order COMPLETED; condition serviceable; required certifications valid
 - **المدخلات:** `maintenance_order`!: urn — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← IN_SERVICE؛ الحدث EVT-AST-RETURNED-TO-SERVICE؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify)؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Resource Manager (return to service)؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-AST-RETURN-TO-SERVICE` · `AGG-ASSET` · متطلبات: REQ-RES-001, REQ-RES-002, REQ-RES-003, REQ-RES-005 · حالات استخدام: UC-050, UC-051, UC-053
 - **ضوابط النوع والفئة:** C-WF، K-CORE (التعريف في [00-guide.md](00-guide.md))
 
@@ -674,7 +675,7 @@ Scenario Outline: CMD-AST-SET-CERTIFICATION is rejected
 - **الشروط المسبقة:** الحالة الحالية: IN_SERVICE, UNSERVICEABLE؛ maintenance order IN_PROGRESS for this asset
 - **المدخلات:** `maintenance_order`!: urn — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← UNDER_MAINTENANCE؛ الحدث EVT-AST-MAINTENANCE-STARTED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify)؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Resource Manager (start maintenance)؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-AST-START-MAINTENANCE` · `AGG-ASSET` · متطلبات: REQ-RES-001, REQ-RES-002, REQ-RES-003, REQ-RES-005 · حالات استخدام: UC-050, UC-051, UC-053
 - **ضوابط النوع والفئة:** C-WF، K-CORE (التعريف في [00-guide.md](00-guide.md))
 
@@ -1383,7 +1384,7 @@ Scenario Outline: CMD-LGR-CANCEL is rejected
     | code | http | condition |
     | AUTHZ_DENIED | 403→404 | السياسة POL-LGR-CANCEL ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
-    | LOGISTICS_REQUEST_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: IN_TRANSIT, FULFILLED, PARTIALLY_FULFILLED, REJECTED, CANCELLED — الحالات النهائية FULFILLED, PARTIALLY_FULFILLED, REJECTED, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | LOGISTICS_REQUEST_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CANCELLED, FULFILLED, IN_TRANSIT, PARTIALLY_FULFILLED, REJECTED |
     | REASON_REQUIRED | 422 | لم يُذكر السبب |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
@@ -1420,7 +1421,7 @@ Scenario Outline: CMD-LGR-DISPATCH is rejected
     | ALLOCATION_NOT_COMMITTED | 422 | لم يتحقق الشرط: linked allocation still COMMITTED; creates a Shipment (AGG-SHIPMENT) referencing this request and the allocation |
     | AUTHZ_DENIED | 403→404 | السياسة POL-LGR-DISPATCH ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
-    | LOGISTICS_REQUEST_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: IN_TRANSIT, PENDING_APPROVAL, REQUESTED, FULFILLED, PARTIALLY_FULFILLED, REJECTED, CANCELLED — الحالات النهائية FULFILLED, PARTIALLY_FULFILLED, REJECTED, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | LOGISTICS_REQUEST_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CANCELLED, FULFILLED, IN_TRANSIT, PARTIALLY_FULFILLED, PENDING_APPROVAL, REJECTED, REQUESTED |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: carrier, ship_quantity |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -2634,7 +2635,7 @@ Scenario Outline: CMD-SHP-CANCEL is rejected
     | AUTHZ_DENIED | 403→404 | السياسة POL-SHP-CANCEL ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | REASON_REQUIRED | 422 | لم يُذكر السبب |
-    | SHIPMENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: IN_TRANSIT, DELIVERED, DAMAGED, LOST, CANCELLED — الحالات النهائية DELIVERED, DAMAGED, LOST, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | SHIPMENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CANCELLED, DAMAGED, DELIVERED, IN_TRANSIT, LOST |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -2670,7 +2671,7 @@ Scenario Outline: CMD-SHP-DELIVER is rejected
     | AUTHZ_DENIED | 403→404 | السياسة POL-SHP-DELIVER ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | DELIVERY_INVALID | 422 | لم يتحقق الشرط: delivered_quantity ≤ planned quantity |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
-    | SHIPMENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: PLANNED, DELIVERED, DAMAGED, LOST, CANCELLED — الحالات النهائية DELIVERED, DAMAGED, LOST, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | SHIPMENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CANCELLED, DAMAGED, DELIVERED, LOST, PLANNED |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: delivered_quantity, received_by |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -2706,7 +2707,7 @@ Scenario Outline: CMD-SHP-DEPART is rejected
     | AUTHZ_DENIED | 403→404 | السياسة POL-SHP-DEPART ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | DEPARTURE_INVALID | 422 | لم يتحقق الشرط: departure checkpoint recorded |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
-    | SHIPMENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: IN_TRANSIT, DELIVERED, DAMAGED, LOST, CANCELLED — الحالات النهائية DELIVERED, DAMAGED, LOST, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | SHIPMENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CANCELLED, DAMAGED, DELIVERED, IN_TRANSIT, LOST |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -2777,7 +2778,7 @@ Scenario Outline: CMD-SHP-RECORD-CHECKPOINT is rejected
     | AUTHZ_DENIED | 403→404 | السياسة POL-SHP-RECORD-CHECKPOINT ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | CHECKPOINT_INVALID | 422 | لم يتحقق الشرط: checkpoint strictly after the previous checkpoint in time (append-only, gapless — mirrors INV-AST-02) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
-    | SHIPMENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: PLANNED, DELIVERED, DAMAGED, LOST, CANCELLED — الحالات النهائية DELIVERED, DAMAGED, LOST, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | SHIPMENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CANCELLED, DAMAGED, DELIVERED, LOST, PLANNED |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: location, at |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -2813,7 +2814,7 @@ Scenario Outline: CMD-SHP-REPORT-DAMAGE is rejected
     | AUTHZ_DENIED | 403→404 | السياسة POL-SHP-REPORT-DAMAGE ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | REASON_REQUIRED | 422 | لم يُذكر السبب |
-    | SHIPMENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: PLANNED, DELIVERED, DAMAGED, LOST, CANCELLED — الحالات النهائية DELIVERED, DAMAGED, LOST, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | SHIPMENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CANCELLED, DAMAGED, DELIVERED, LOST, PLANNED |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: damaged_quantity, reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -2849,7 +2850,7 @@ Scenario Outline: CMD-SHP-REPORT-LOST is rejected
     | AUTHZ_DENIED | 403→404 | السياسة POL-SHP-REPORT-LOST ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | REASON_REQUIRED | 422 | لم يُذكر السبب |
-    | SHIPMENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: PLANNED, DELIVERED, DAMAGED, LOST, CANCELLED — الحالات النهائية DELIVERED, DAMAGED, LOST, CANCELLED بلا صف في المصفوفة، وأُضيفت لأن الحالة النهائية لا تقبل أوامر **[Derived]** |
+    | SHIPMENT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: CANCELLED, DAMAGED, DELIVERED, LOST, PLANNED |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```

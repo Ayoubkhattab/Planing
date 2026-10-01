@@ -92,7 +92,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 ## 5. حسم الفاعل للأوامر الـ26
 
-26 سياسة أمر تسرد أدوارًا بأفعالها ولا يشمل أيٌّ منها فعل الأمر (`02-actors-roles.md` §6.6 قبل هذا الحسم). الحسم بقاعدة واحدة: **الفعل المقابل في السياسة نفسها** (resume ↔ pause/suspend، enable ↔ disable، retire ↔ deprecate/define/register، أعمال الصيانة ↔ condition)، مع إبقاء ما يعادل التفعيل للشخص الثاني، وبشرط ألا يخالف الحسم شرط الانتقال (`CMD-DEV-ROTATE-KEY` لا يوقّعه إلا حامل الجهاز). استثناءان معلَّمان في الجدول: `CMD-MDL-RETIRE` و`CMD-TOL-RETIRE`. و`CMD-ADP-RESUME` للشخص الثاني يحتاج قاعدة فصل مهام تضاف بـCR-77. الجدول في §12.1 مولَّد من قائمة واحدة في المولِّد (`ACTOR_RESOLUTION`) تستخدمها قصص المستخدم والفاعلون وحالات الاستخدام. الحسم **قرار تصميم مفوَّض** ينقله CR-77 إلى ملفات السياسات.
+26 سياسة أمر تسرد أدوارًا بأفعالها ولا يشمل أيٌّ منها فعل الأمر (`02-actors-roles.md` §6.6 قبل هذا الحسم). الحسم بقاعدة واحدة: **الفعل المقابل في السياسة نفسها** (resume ↔ pause/suspend، enable ↔ disable، retire ↔ deprecate/define/register، أعمال الصيانة ↔ condition)، مع إبقاء ما يعادل التفعيل للشخص الثاني، وبشرط ألا يخالف الحسم شرط الانتقال (`CMD-DEV-ROTATE-KEY` لا يوقّعه إلا حامل الجهاز). استثناءان معلَّمان في الجدول: `CMD-MDL-RETIRE` و`CMD-TOL-RETIRE`. و`CMD-ADP-RESUME` للشخص الثاني بقاعدة فصل مهام (≠ من أوقفه). الجدول في §12.1 مولَّد من قائمة واحدة في المولِّد (`ACTOR_RESOLUTION`) تستخدمها قصص المستخدم والفاعلون وحالات الاستخدام. الحسم **قرار تصميم مفوَّض** طبَّقه CR-77 على ملفات السياسات وكتالوجات الأوامر في جولة تصحيح المصادر، فعمود «في المصدر» في §12.1 يعرض الآن الدور المُصدِر نفسه.
 
 ## 6. حماية البيانات والمفاتيح
 
@@ -167,32 +167,32 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 | الأمر | الأدوار في السياسة | الفاعل المحسوم | المبرر |
 |---|---|---|---|
-| `CMD-ADP-RESUME` | Administrator (register, update) · second Administrator (activate) | **second Administrator** | إعادة التشغيل تعادل التفعيل (activate) فتبقى للشخص الثاني؛ يتطلب قاعدة فصل مهام ≠ من أوقفه تضاف بـCR-77 |
-| `CMD-ADP-RETIRE` | Administrator (register, update) · second Administrator (activate) | **Administrator** | نهاية دورة حياة يملكها من سجّل المحوّل |
-| `CMD-ADP-SUSPEND` | Administrator (register, update) · second Administrator (activate) | **Administrator** | إيقاف فوري للاحتواء، مقابل register/update |
-| `CMD-AMT-DEPRECATE` | Analysis lead (register) · second lead or Administrator (activate) | **Analysis lead** | مقابل register؛ التفعيل وحده للشخص الثاني |
-| `CMD-AMT-RETIRE` | Analysis lead (register) · second lead or Administrator (activate) | **Analysis lead** | مقابل register |
-| `CMD-AST-FAIL-MAINTENANCE` | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | **Resource Manager** | عمليات الحالة الفنية (condition) |
-| `CMD-AST-MARK-UNSERVICEABLE` | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | **Resource Manager** | عمليات الحالة الفنية (condition) |
-| `CMD-AST-RECOVER` | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | **Resource Manager** | مقابل lost (الإبلاغ عن الفقد) |
-| `CMD-AST-RETURN-TO-SERVICE` | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | **Resource Manager** | عمليات الحالة الفنية (condition) |
-| `CMD-AST-START-MAINTENANCE` | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | **Resource Manager** | عمليات الحالة الفنية (condition) لمدير الموارد |
-| `CMD-CRR-RETIRE` | Analyst lead (define, edit) · second approver (activate) | **Analyst lead** | مقابل define/edit؛ التفعيل وحده للمعتمِد الثاني |
-| `CMD-DEV-ROTATE-KEY` | user (enroll, report lost) · Administrator / MDM policy (confirm, suspend, reinstate, retire) · Security Officer (lost, retire override) | **user** | الشرط «signed by current key; new public key» لا يستوفيه إلا حامل الجهاز |
-| `CMD-ER-PARK` | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | **Analyst** | مقابل review/decide؛ الشخص الثاني للتأكيد والتقسيم فقط |
-| `CMD-ER-RESUME` | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | **Analyst** | مقابل review/decide |
-| `CMD-ER-WITHDRAW` | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | **Analyst** | مقابل propose |
-| `CMD-MDL-RETIRE` | AI platform engineer (register, evaluate, stage, deprecate) · AI governance authority (approve, promote, reinstate) | **AI governance authority** | **استثناء من القاعدة** (القاعدة تعطيه للمهندس عبر deprecate): الإيقاف النهائي من حالة DEPRECATED يقابل reinstate لدى سلطة الحوكمة |
-| `CMD-OBS-AMEND` | Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject) | **Field User / Operator / Analyst / adapter service account** | تعديل الملاحظة لمن سجّلها (record) |
-| `CMD-OBS-ATTACH-EVIDENCE` | Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject) | **Field User / Operator / Analyst / adapter service account** | إرفاق الدليل لمن سجّل الملاحظة (record) |
-| `CMD-OBS-RECLASSIFY` | Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject) | **Analyst** | إعادة التصنيف لمن يتحقق من الملاحظة (validate) |
-| `CMD-PTM-RETIRE` | Knowledge Manager / Analysis lead (define, edit) · second approver (activate) | **Knowledge Manager / Analysis lead** | مقابل define/edit |
-| `CMD-SIT-RESUME` | Analyst / Manager (create, edit, activate, pause, close) · Security Officer (reclassify) | **Analyst / Manager** | مقابل pause |
-| `CMD-SRC-REINSTATE` | Analyst (register, rate, profile) · Security Officer (protection, reclassify) | **Analyst** | مقابل suspend |
-| `CMD-SRC-RETIRE` | Analyst (register, rate, profile) · Security Officer (protection, reclassify) | **Analyst** | مقابل register |
-| `CMD-SRC-SUSPEND` | Analyst (register, rate, profile) · Security Officer (protection, reclassify) | **Analyst** | مقابل register/rate؛ المصدر المحمي يبقى لمسؤول الأمن عبر protection |
-| `CMD-TOL-ENABLE` | AI platform engineer (register) · Security Officer (activate, disable) | **Security Officer** | مقابل disable |
-| `CMD-TOL-RETIRE` | AI platform engineer (register) · Security Officer (activate, disable) | **Security Officer** | **استثناء من القاعدة** (القاعدة تعطيه للمهندس عبر register): تفعيل الأداة وتعطيلها لمسؤول الأمن، فإيقافها النهائي له |
+| `CMD-ADP-RESUME` | second Administrator (resume) | **second Administrator** | إعادة التشغيل تعادل التفعيل (activate) فتبقى للشخص الثاني؛ يتطلب قاعدة فصل مهام ≠ من أوقفه تضاف بـCR-77 |
+| `CMD-ADP-RETIRE` | Administrator (retire) | **Administrator** | نهاية دورة حياة يملكها من سجّل المحوّل |
+| `CMD-ADP-SUSPEND` | Administrator (suspend) | **Administrator** | إيقاف فوري للاحتواء، مقابل register/update |
+| `CMD-AMT-DEPRECATE` | Analysis lead (deprecate) | **Analysis lead** | مقابل register؛ التفعيل وحده للشخص الثاني |
+| `CMD-AMT-RETIRE` | Analysis lead (retire) | **Analysis lead** | مقابل register |
+| `CMD-AST-FAIL-MAINTENANCE` | Resource Manager (fail maintenance) | **Resource Manager** | عمليات الحالة الفنية (condition) |
+| `CMD-AST-MARK-UNSERVICEABLE` | Resource Manager (mark unserviceable) | **Resource Manager** | عمليات الحالة الفنية (condition) |
+| `CMD-AST-RECOVER` | Resource Manager (recover) | **Resource Manager** | مقابل lost (الإبلاغ عن الفقد) |
+| `CMD-AST-RETURN-TO-SERVICE` | Resource Manager (return to service) | **Resource Manager** | عمليات الحالة الفنية (condition) |
+| `CMD-AST-START-MAINTENANCE` | Resource Manager (start maintenance) | **Resource Manager** | عمليات الحالة الفنية (condition) لمدير الموارد |
+| `CMD-CRR-RETIRE` | Analyst lead (retire) | **Analyst lead** | مقابل define/edit؛ التفعيل وحده للمعتمِد الثاني |
+| `CMD-DEV-ROTATE-KEY` | user (rotate key) | **user** | الشرط «signed by current key; new public key» لا يستوفيه إلا حامل الجهاز |
+| `CMD-ER-PARK` | Analyst (park) | **Analyst** | مقابل review/decide؛ الشخص الثاني للتأكيد والتقسيم فقط |
+| `CMD-ER-RESUME` | Analyst (resume) | **Analyst** | مقابل review/decide |
+| `CMD-ER-WITHDRAW` | Analyst (withdraw) | **Analyst** | مقابل propose |
+| `CMD-MDL-RETIRE` | AI governance authority (retire) | **AI governance authority** | **استثناء من القاعدة** (القاعدة تعطيه للمهندس عبر deprecate): الإيقاف النهائي من حالة DEPRECATED يقابل reinstate لدى سلطة الحوكمة |
+| `CMD-OBS-AMEND` | Field User / Operator / Analyst / adapter service account (amend) | **Field User / Operator / Analyst / adapter service account** | تعديل الملاحظة لمن سجّلها (record) |
+| `CMD-OBS-ATTACH-EVIDENCE` | Field User / Operator / Analyst / adapter service account (attach evidence) | **Field User / Operator / Analyst / adapter service account** | إرفاق الدليل لمن سجّل الملاحظة (record) |
+| `CMD-OBS-RECLASSIFY` | Analyst (reclassify) | **Analyst** | إعادة التصنيف لمن يتحقق من الملاحظة (validate) |
+| `CMD-PTM-RETIRE` | Knowledge Manager / Analysis lead (retire) | **Knowledge Manager / Analysis lead** | مقابل define/edit |
+| `CMD-SIT-RESUME` | Analyst / Manager (resume) | **Analyst / Manager** | مقابل pause |
+| `CMD-SRC-REINSTATE` | Analyst (reinstate) | **Analyst** | مقابل suspend |
+| `CMD-SRC-RETIRE` | Analyst (retire) | **Analyst** | مقابل register |
+| `CMD-SRC-SUSPEND` | Analyst (suspend) | **Analyst** | مقابل register/rate؛ المصدر المحمي يبقى لمسؤول الأمن عبر protection |
+| `CMD-TOL-ENABLE` | Security Officer (enable) | **Security Officer** | مقابل disable |
+| `CMD-TOL-RETIRE` | Security Officer (retire) | **Security Officer** | **استثناء من القاعدة** (القاعدة تعطيه للمهندس عبر register): تفعيل الأداة وتعطيلها لمسؤول الأمن، فإيقافها النهائي له |
 
 ### 12.2 مصفوفة الدور × نوع الصلاحية (REQ-FND-014)
 
@@ -269,13 +269,14 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `CMD-SRC-SET-PROTECTION` | BC02 | audit; mfa | Security Officer |
 | `CMD-TEN-START-DECOMMISSION` | BC01 | audit; mfa | Platform Operator (platform tenant) |
 
-### 12.4 قواعد فصل المهام (44)
+### 12.4 قواعد فصل المهام (45)
 
 تُقيَّم في منفذ التخويل بعد تحميل المورد (الخطوة 5)، ويعيد المجال فحص ما يقابلها من ثوابت (`09-business-rules.md`).
 
 | الأمر | السياق | القاعدة |
 |---|---|---|
 | `CMD-ADP-ACTIVATE` | BC07 | approver ≠ author |
+| `CMD-ADP-RESUME` | BC07 | resumer ≠ the Administrator who suspended (CR-77) |
 | `CMD-ALC-APPROVE` | BC05 | approver ≠ requester |
 | `CMD-AMT-ACTIVATE` | BC03 | approver ≠ author |
 | `CMD-ASM-PUBLISH` | BC03 | reviewer ≠ author |
@@ -549,7 +550,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | PRV-01 | Linkability | ربط سجلات شخص عبر مصادر يكشف أكثر مما أذن به الغرض | تقييد الغرض في السياسة؛ REDACT؛ مراجعة مطابقة الكيانات للأشخاص |
 | PRV-02 | Identifiability | إعادة تعريف من إحصاءات صغيرة | AGGREGATE بحد أدنى 5 |
 | PRV-03 | Non-repudiation (as privacy threat) | تتبع مفرط لنشاط المستخدمين | تدقيق القراءة فقط فوق العتبة؛ وصول مقيد لسجلات التدقيق |
-| PRV-04 | Detectability | معرفة أن شخصاً ما في النظام | نفس شكل not-found/forbidden؛ لا اقتراحات بحث خارج النطاق |
+| PRV-04 | Detectability | معرفة أن شخصاً ما في النظام | نفس شكل not-found لمن لا يحق له رؤية الشخص (ADR-P06 §5 كما عدّله ADR-P19)؛ لا اقتراحات بحث خارج النطاق |
 | PRV-05 | Disclosure | بيانات شخصية في السجلات التقنية | إخفاء آلي؛ URN فقط |
 | PRV-06 | Unawareness | أصحاب البيانات لا يعرفون المعالجة | خارج نطاق التقنية: سياسة المستأجر (UNK-002) |
 | PRV-07 | Non-compliance | احتفاظ أطول من المسموح | جداول احتفاظ + crypto-shredding (ADR-P08) |
@@ -691,6 +692,6 @@ generator: 17-system-study/_build/build_analysis_design.py
 | THR-017 | threat-model | PDP | DoS | تعطل PDP يوقف المنصة | M | H | PDP في critical tier، نسخ متعددة، ذاكرة قرارات قصيرة؛ fail-closed مقبول كخطر متبقٍ | M |
 | THR-018 | threat-model | ER | Tampering | دمج كيانات خاطئ متعمد لإخفاء معلومة | L | M | الدمج قرار مدقق وقابل للعكس؛ حد العنقود | L |
 | THR-019 | threat-model | supply chain | Tampering | مكتبة أو صورة حاوية ملوثة | M | H | SBOM، توقيع الصور، مرآة داخلية للحزم (بيئة معزولة) | M |
-| THR-020 | threat-model | TB-01 | Info Disclosure | رسالة خطأ تكشف وجود كائن | M | M | نفس شكل not-found/forbidden (ADR-P06 §5) | L |
+| THR-020 | threat-model | TB-01 | Info Disclosure | رسالة خطأ تكشف وجود كائن | M | M | نفس شكل not-found للموارد غير المرئية للمستدعي (ADR-P06 §5 كما عدّله ADR-P19)؛ 403 لمورد مرئي فقط، و`reason_code` من قائمة مغلقة لا تحمل بيانات المورد | L |
 
 <!-- END GENERATED: build_analysis_design.py -->

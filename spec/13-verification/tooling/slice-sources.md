@@ -264,6 +264,7 @@ P = {
  "CMD-EXC-APPROVE":"note:string", "CMD-EXC-REJECT":"reason!:string", "CMD-EXC-REVOKE":"reason!:string",
 }
 SYSTEM_CMDS = {"CMD-TEN-COMPLETE-PROVISIONING","CMD-TEN-FAIL-PROVISIONING","CMD-TEN-COMPLETE-CELL-MIGRATION","CMD-TEN-COMPLETE-DECOMMISSION","CMD-USR-RECORD-FIRST-SIGN-IN"}
+CMD_ERRORS = {"CMD-AUT-DELEGATE":["SEGREGATION_OF_DUTIES"],"CMD-CLR-GRANT":["SEGREGATION_OF_DUTIES"],"CMD-CLS-ACTIVATE":["SEGREGATION_OF_DUTIES"],"CMD-RAS-ASSIGN":["SEGREGATION_OF_DUTIES"],"CMD-TEN-START-DECOMMISSION":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD)
 RESOURCE = {"AGG-TENANT":("foundation","tenants"),"AGG-ORGANIZATION":("foundation","organizations"),"AGG-PERSON":("foundation","persons"),
  "AGG-USER":("foundation","users"),"AGG-SERVICE-ACCOUNT":("foundation","service-accounts"),"AGG-ROLE":("foundation","roles"),
  "AGG-ROLE-ASSIGNMENT":("foundation","role-assignments"),"AGG-AUTHORITY-GRANT":("foundation","authority-grants"),"AGG-CLEARANCE":("foundation","clearances"),
@@ -490,6 +491,9 @@ P = {
  "CMD-ADP-ACTIVATE":"","CMD-ADP-SUSPEND":"reason!:string","CMD-ADP-RESUME":"","CMD-ADP-RETIRE":"reason!:string",
 }
 SYSTEM_CMDS = set()
+ACTOR_OVERRIDE = {"CMD-ADP-SUSPEND":"Administrator","CMD-ADP-RESUME":"second Administrator","CMD-ADP-RETIRE":"Administrator","CMD-OBS-AMEND":"Field User / Operator / Analyst / adapter service account","CMD-OBS-ATTACH-EVIDENCE":"Field User / Operator / Analyst / adapter service account","CMD-OBS-RECLASSIFY":"Analyst","CMD-SRC-SUSPEND":"Analyst","CMD-SRC-REINSTATE":"Analyst","CMD-SRC-RETIRE":"Analyst"}  # CR-77: issuing role
+CMD_ERRORS = {"CMD-ADP-RESUME":["SEGREGATION_OF_DUTIES"]}  # CR-77 (separation rule for POL-ADP-RESUME)
+OFFLINE = {"CMD-OBS-RECORD","CMD-OBS-AMEND","CMD-OBS-ATTACH-EVIDENCE","CMD-EVD-REGISTER","CMD-ATT-INITIATE-UPLOAD","CMD-ATT-COMPLETE-UPLOAD"}  # CR-79
 RESOURCE = {"AGG-SOURCE":("information","sources"),"AGG-OBSERVATION":("information","observations"),"AGG-ENTITY":("information","entities"),
  "AGG-REALWORLD-EVENT":("information","events"),"AGG-RELATIONSHIP":("information","relationships"),"AGG-CLAIM":("information","claims"),
  "AGG-EVIDENCE":("information","evidence"),"AGG-EVIDENCE-LINK":("information","evidence-links"),"AGG-ATTACHMENT":("information","attachments"),
@@ -586,7 +590,7 @@ agg("AGG-QUALIFICATION-RECORD","BC05","Qualification Record","T2","كفاءة أ
  [],["REQ-RDY-001","REQ-RDY-002"],personal=True)
 
 PERPETUAL = {}
-EXTRA_ERRORS = {"AGG-TASK": ["TASK_SUSPENDED"]}
+EXTRA_ERRORS = {}  # TASK_SUSPENDED moved to CMD_ERRORS: INV-TASK-06 exempts UNSUSPEND and CANCEL, and CREATE has no flag yet (CR-81, S-02)
 OFFLINE = {"CMD-TASK-ACCEPT","CMD-TASK-START","CMD-TASK-BLOCK","CMD-TASK-RESUME","CMD-TASK-ADD-RESULT-ITEM","CMD-TASK-SUBMIT"}
 
 QUERIES = [
@@ -613,6 +617,7 @@ P = {
  "CMD-QUAL-RENEW":"valid_to!:date-time evidence:urn","CMD-QUAL-SUSPEND":"reason!:string","CMD-QUAL-REINSTATE":"","CMD-QUAL-REVOKE":"reason!:string",
 }
 SYSTEM_CMDS = set()
+CMD_ERRORS = {"CMD-TASK-ACCEPT":["TASK_SUSPENDED"],"CMD-TASK-ADD-RESULT-ITEM":["TASK_SUSPENDED"],"CMD-TASK-APPROVE":["TASK_SUSPENDED"],"CMD-TASK-ASSIGN":["ELIGIBILITY_UNAVAILABLE","TASK_SUSPENDED"],"CMD-TASK-BLOCK":["TASK_SUSPENDED"],"CMD-TASK-CLOSE":["TASK_SUSPENDED"],"CMD-TASK-COMPLETE":["TASK_SUSPENDED"],"CMD-TASK-DECLINE":["TASK_SUSPENDED"],"CMD-TASK-EDIT":["TASK_SUSPENDED"],"CMD-TASK-ESCALATE":["TASK_SUSPENDED"],"CMD-TASK-MARK-READY":["TASK_SUSPENDED"],"CMD-TASK-REASSIGN":["ELIGIBILITY_UNAVAILABLE","TASK_SUSPENDED"],"CMD-TASK-RECLASSIFY":["TASK_SUSPENDED"],"CMD-TASK-REJECT":["TASK_SUSPENDED"],"CMD-TASK-RESUME":["TASK_SUSPENDED"],"CMD-TASK-RETURN":["TASK_SUSPENDED"],"CMD-TASK-SET-DUE":["TASK_SUSPENDED"],"CMD-TASK-START":["TASK_SUSPENDED"],"CMD-TASK-START-REVIEW":["TASK_SUSPENDED"],"CMD-TASK-SUBMIT":["TASK_SUSPENDED"],"CMD-TASK-SUSPEND":["TASK_SUSPENDED"]}  # CR-78 (dependency), CR-81 (TASK_SUSPENDED per INV-TASK-06)
 RESOURCE = {"AGG-TASK":("operations","tasks"),"AGG-TASK-TYPE":("operations","task-types"),"AGG-QUALIFICATION-RECORD":("readiness","qualification-records")}
 SECURITY_AFFECTING = {"EVT-TASK-RECLASSIFIED"}
 CONSUMERS = {
@@ -708,6 +713,8 @@ P = {
  "CMD-MRS-DRAFT":"entity_type!:string based_on:urn","CMD-MRS-EDIT":"blocking_keys!:array features!:array thresholds!:object evaluation_attachment!:urn","CMD-MRS-ACTIVATE":"",
 }
 SYSTEM_CMDS = set()
+ACTOR_OVERRIDE = {"CMD-ER-PARK":"Analyst","CMD-ER-RESUME":"Analyst","CMD-ER-WITHDRAW":"Analyst"}  # CR-77: issuing role
+CMD_ERRORS = {"CMD-ER-DECIDE-MATCH":["SEGREGATION_OF_DUTIES"],"CMD-MRS-ACTIVATE":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD)
 RESOURCE = {"AGG-CONFLICT":("information","conflicts"),"AGG-ER-CASE":("information","er-cases"),"AGG-MATCH-RULESET":("information","match-rulesets")}
 SECURITY_AFFECTING = set()
 CONSUMERS = {
@@ -908,6 +915,7 @@ P = {
  "CMD-SUB-PAUSE":"","CMD-SUB-RESUME":"","CMD-SUB-UNSUBSCRIBE":"reason:string","CMD-NTF-MARK-READ":"",
 }
 SYSTEM_CMDS = set()
+ACTOR_OVERRIDE = {"CMD-SIT-RESUME":"Analyst / Manager"}  # CR-77: issuing role
 RESOURCE = {"AGG-SITUATION":("intelligence","situations"),"AGG-ALERT-RULE":("intelligence","alert-rules"),"AGG-ALERT":("intelligence","alerts"),
             "AGG-SUBSCRIPTION":("operations","subscriptions"),"AGG-NOTIFICATION":("operations","notifications")}
 SECURITY_AFFECTING = {"EVT-SIT-RECLASSIFIED"}
@@ -1062,6 +1070,7 @@ P = {
  "CMD-ASM-SUBMIT":"","CMD-ASM-RETURN":"reason!:string","CMD-ASM-PUBLISH":"note:string","CMD-ASM-WITHDRAW":"reason!:string","CMD-ASM-DISCARD":"reason!:string",
 }
 SYSTEM_CMDS = set()
+ACTOR_OVERRIDE = {"CMD-AMT-DEPRECATE":"Analysis lead","CMD-AMT-RETIRE":"Analysis lead"}  # CR-77: issuing role
 RESOURCE = {"AGG-ANALYSIS-CASE":("intelligence","analysis-cases"),"AGG-ANALYSIS-METHOD":("intelligence","analysis-methods"),"AGG-ANALYSIS-RUN":("intelligence","analysis-runs"),
             "AGG-FINDING":("intelligence","findings"),"AGG-ASSESSMENT":("intelligence","assessments")}
 SECURITY_AFFECTING = {"EVT-ACS-RECLASSIFIED"}
@@ -1362,6 +1371,8 @@ P = {
  "CMD-RRQ-DEFINE":"role!:urn requirements!:array","CMD-RRQ-EDIT":"requirements!:array","CMD-RRQ-ACTIVATE":"","CMD-RRQ-RETIRE":"reason!:string",
 }
 SYSTEM_CMDS = set()
+ACTOR_OVERRIDE = {"CMD-AST-START-MAINTENANCE":"Resource Manager","CMD-AST-FAIL-MAINTENANCE":"Resource Manager","CMD-AST-RETURN-TO-SERVICE":"Resource Manager","CMD-AST-MARK-UNSERVICEABLE":"Resource Manager","CMD-AST-RECOVER":"Resource Manager"}  # CR-77: issuing role
+CMD_ERRORS = {"CMD-ALC-APPROVE":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD)
 RESOURCE = {"AGG-ASSET":("readiness","assets"),"AGG-MAINTENANCE-ORDER":("readiness","maintenance-orders"),"AGG-ASSET-RESERVATION":("readiness","asset-reservations"),
  "AGG-ASSET-ASSIGNMENT":("readiness","asset-assignments"),"AGG-RESOURCE-POOL":("readiness","resource-pools"),"AGG-ALLOCATION":("readiness","allocations"),
  "AGG-ROLE-REQUIREMENT":("readiness","role-requirements")}
@@ -1509,6 +1520,8 @@ P = {
  "CMD-EVS-DRAFT":"based_on:urn","CMD-EVS-EDIT":"sets!:array","CMD-EVS-ACTIVATE":"",
 }
 SYSTEM_CMDS = set()
+ACTOR_OVERRIDE = {"CMD-MDL-RETIRE":"AI governance authority","CMD-TOL-ENABLE":"Security Officer","CMD-TOL-RETIRE":"Security Officer"}  # CR-77: issuing role
+CMD_ERRORS = {"CMD-MDL-APPROVE":["SEGREGATION_OF_DUTIES"],"CMD-MDL-PROMOTE":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD)
 RESOURCE = {"AGG-AI-REQUEST":("ai","requests"),"AGG-AI-RESULT":("ai","results"),"AGG-MODEL-VERSION":("ai","models"),
  "AGG-AI-ROUTING":("ai","routings"),"AGG-AI-TOOL":("ai","tools"),"AGG-EVAL-SUITE":("ai","evaluation-suites")}
 SECURITY_AFFECTING = {"EVT-RTG-ACTIVATED","EVT-TOL-DISABLED","EVT-TOL-ACTIVATED"}
@@ -1622,6 +1635,7 @@ P = {
  "CMD-SCF-ASSIGN":"reviewer!:urn","CMD-SCF-REAPPLY":"note:string","CMD-SCF-DISCARD":"reason!:string","CMD-SCF-RESOLVE-MANUALLY":"note!:string action_ref:urn",
 }
 SYSTEM_CMDS = set()
+ACTOR_OVERRIDE = {"CMD-DEV-ROTATE-KEY":"user"}  # CR-77: issuing role
 RESOURCE = {"AGG-DEVICE":("foundation","devices"),"AGG-PRELOAD-PACKAGE":("field","preload-packages"),"AGG-SYNC-SESSION":("field","sync-sessions"),"AGG-SYNC-CONFLICT":("field","sync-conflicts")}
 SECURITY_AFFECTING = {"EVT-DEV-REPORTED-LOST","EVT-DEV-SUSPENDED"}
 CONSUMERS = {"AGG-DEVICE":["Sync gateway (device registry cache)","Preload packages (revoke on LOST/SUSPENDED)","Security-version service"],
@@ -1772,6 +1786,7 @@ P = {
  "CMD-REC-REQUEST":"scope!:object valid_at!:date-time known_at!:date-time purpose!:enum(audit,legal,lessons,analysis)","CMD-REC-CANCEL":"reason!:string",
 }
 SYSTEM_CMDS = set()
+ACTOR_OVERRIDE = {"CMD-PTM-RETIRE":"Knowledge Manager / Analysis lead"}  # CR-77: issuing role
 RESOURCE = {"AGG-PRODUCT-TEMPLATE":("knowledge","product-templates"),"AGG-PRODUCT":("knowledge","products"),"AGG-DISTRIBUTION":("knowledge","distributions"),
  "AGG-KNOWLEDGE-OBJECT":("knowledge","knowledge-objects"),"AGG-ARCHIVE-PACKAGE":("knowledge","archive-packages"),"AGG-RECONSTRUCTION":("knowledge","reconstructions")}
 SECURITY_AFFECTING = set()
@@ -1888,6 +1903,7 @@ P = {
  "CMD-ERS-REGISTER":"legal_basis!:string person:urn entities:array requester!:string","CMD-ERS-APPROVE":"decision_note!:string","CMD-ERS-REJECT":"reason!:string",
 }
 SYSTEM_CMDS = set()
+CMD_ERRORS = {"CMD-RTS-ACTIVATE":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD)
 RESOURCE = {"AGG-RETENTION-SCHEDULE":("governance","retention-schedules"),"AGG-LEGAL-HOLD":("governance","legal-holds"),
             "AGG-DISPOSITION-RUN":("governance","disposition-runs"),"AGG-ERASURE-REQUEST":("governance","erasure-requests")}
 SECURITY_AFFECTING = set()
@@ -2069,6 +2085,8 @@ P = {
  "CMD-CRR-DEFINE":"kind!:enum(same_event,co_location,track_association,same_entity_hint) name!:string","CMD-CRR-EDIT":"parameters!:object","CMD-CRR-ACTIVATE":"evaluation_report!:urn","CMD-CRR-RETIRE":"reason!:string",
 }
 SYSTEM_CMDS = set()
+ACTOR_OVERRIDE = {"CMD-CRR-RETIRE":"Analyst lead"}  # CR-77: issuing role
+CMD_ERRORS = {"CMD-CRR-ACTIVATE":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD)
 RESOURCE = {"AGG-COORDINATION-CASE":("operations","coordination-cases"),"AGG-CORRELATION-PROPOSAL":("information","correlation-proposals"),"AGG-CORRELATION-RULE":("information","correlation-rules")}
 SECURITY_AFFECTING = set()
 CONSUMERS = {"AGG-COORDINATION-CASE":["Decision requests (SLC-08)","Notification (participants)","Search projection (SLC-05)"],
@@ -2223,7 +2241,7 @@ agg("AGG-RISK","BC04","Risk","T2","تسجيل وتقييم ومعالجة مخا
  ["REQ-RCM-001","REQ-RCM-002","REQ-RCM-003","REQ-RCM-004","REQ-RCM-005"])
 
 agg("AGG-INCIDENT","BC04","Incident","T1","تتبّع حادثة فعلية من التبليغ حتى الإغلاق، بما فيها تصعيدها لطارئ/أزمة والاستجابة والتعافي",
- ["REPORTED","ASSESSED","RESPONDING","CONTAINED","RESOLVED"],["CLOSED","CANCELLED"],
+ ["REPORTED","ASSESSED","RESPONDING","CONTAINED","RESOLVED","CLOSED","CANCELLED"],["CLOSED","CANCELLED"],  # terminal states listed (CR-81, S-01)
  [("∅","CMD-INC-REPORT","REPORTED","category_ref (RD-HAZARD-CATEGORIES)؛ description؛ scope_refs ≥ 1؛ risk_ref اختياري (خطر تحقَّق)؛ severity ابتدائية MINOR؛ label ≥ تصنيف النطاق","EVT-INC-REPORTED","INCIDENT_INVALID"),
   (["REPORTED"],"CMD-INC-ASSESS","ASSESSED","severity ∈ {MINOR,MAJOR,EMERGENCY,CRISIS}؛ affected_scope_refs؛ مقيّم مخوَّل","EVT-INC-ASSESSED","INCIDENT_INVALID"),
   (["ASSESSED"],"CMD-INC-DISPATCH-RESPONSE","RESPONDING","commander؛ ≥ 1 response_task_ref (مهام SLC-03 مرتبطة عبر incident_ref — CR-61)","EVT-INC-RESPONSE-DISPATCHED","RESPONSE_REQUIRED"),
@@ -2304,7 +2322,7 @@ def agg(id_, bc, name, tier, purpose, states, terminal, transitions, invariants,
                      transitions=transitions, invariants=invariants, entities=entities, requirements=reqs, notes=notes, personal_data=personal)
 
 agg("AGG-LOGISTICS-REQUEST","BC05","Logistics Request","T2","طلب كمية من صنف إمداد لوجهة؛ يقود إلى تخصيص من دفتر سعة المخزون (SLC-09) وشحنة تُنفّذه",
- ["REQUESTED","PENDING_APPROVAL","APPROVED","IN_TRANSIT"],["FULFILLED","PARTIALLY_FULFILLED","REJECTED","CANCELLED"],
+ ["REQUESTED","PENDING_APPROVAL","APPROVED","IN_TRANSIT","FULFILLED","PARTIALLY_FULFILLED","REJECTED","CANCELLED"],["FULFILLED","PARTIALLY_FULFILLED","REJECTED","CANCELLED"],  # CR-81, S-01
  [("∅","CMD-LGR-REQUEST","REQUESTED","item pool ACTIVE (AGG-RESOURCE-POOL, resource_type in RD-LOGISTICS-ITEM-TYPES); quantity > 0 in pool unit; destination; needed_by; priority 1–5; requester; justification; system issues a linked allocation request in the same unit of work (CMD-ALC-REQUEST, target = this request — CR-62)","EVT-LGR-REQUESTED","LOGISTICS_REQUEST_INVALID"),
   (["REQUESTED"],"SYS:linked allocation committed","APPROVED","SLC-09 EVT-ALC-COMMITTED for the linked allocation","EVT-LGR-APPROVED",None),
   (["REQUESTED"],"SYS:linked allocation requires approval","PENDING_APPROVAL","SLC-09 EVT-ALC-APPROVAL-REQUIRED for the linked allocation","EVT-LGR-PENDING-APPROVAL",None),
@@ -2323,7 +2341,7 @@ agg("AGG-LOGISTICS-REQUEST","BC05","Logistics Request","T2","طلب كمية م�
  [],["REQ-LOG-001","REQ-LOG-002","REQ-LOG-003","REQ-LOG-008","REQ-LOG-009","REQ-LOG-013","REQ-LOG-014"])
 
 agg("AGG-SHIPMENT","BC05","Shipment","T2","نقل كمية من صنف إمداد من موقع تخزين إلى وجهة تلبيةً لطلب إمداد، بتتبع نقاط حركة",
- ["PLANNED","IN_TRANSIT"],["DELIVERED","DAMAGED","LOST","CANCELLED"],
+ ["PLANNED","IN_TRANSIT","DELIVERED","DAMAGED","LOST","CANCELLED"],["DELIVERED","DAMAGED","LOST","CANCELLED"],  # CR-81, S-01
  [("∅","CMD-SHP-PLAN","PLANNED","logistics_request APPROVED; origin pool with sufficient COMMITTED allocation quantity for the linked request; destination; carrier; planned_quantity ≤ the linked allocation's committed quantity","EVT-SHP-PLANNED","SHIPMENT_INVALID"),
   (["PLANNED"],"CMD-SHP-DEPART","IN_TRANSIT","carrier confirmed; departure checkpoint recorded","EVT-SHP-DEPARTED","DEPARTURE_INVALID"),
   (["IN_TRANSIT"],"CMD-SHP-RECORD-CHECKPOINT","=","checkpoint strictly after the previous checkpoint in time (append-only, gapless — mirrors INV-AST-02); location; at; note","EVT-SHP-CHECKPOINT-RECORDED","CHECKPOINT_INVALID"),
@@ -2383,6 +2401,7 @@ SLC-19 — Training, Competency & Exercises (R3, third and last R3 slice; G6 hel
 # -*- coding: utf-8 -*-
 # SLC-19 — Training, Competency & Exercises (CAP-08.05, DOM-18+19, BC05), R3 — scope-only design, G6 held (RSK-028)
 SLICE = "SLC-19"
+APPROVED_AT = "2026-09-29"
 AGGS = {}
 def agg(id_, bc, name, tier, purpose, states, terminal, transitions, invariants, entities, reqs, notes=None, personal=False):
     AGGS[id_] = dict(id=id_, bc=bc, name=name, tier=tier, purpose=purpose, states=states, terminal=terminal,

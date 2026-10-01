@@ -175,7 +175,7 @@ notes: >
 
 ## 11. معمارية الواجهات (API Architecture)
 
-- **العقود:** 28 ملف OpenAPI، و19 ملف أخطاء، في `05-contracts/` (موزعة حسب المجال والشريحة، مثل `openapi-foundation-slc01.md`).
+- **العقود:** 29 ملف OpenAPI (منها عقدان داخليان)، و19 ملف أخطاء، في `05-contracts/` (موزعة حسب المجال والشريحة، مثل `openapi-foundation-slc01.md`).
 - **الأوامر:** 477 أمرًا، كل منها `POST /api/v1/<area>/<resource>[/{id}/actions/<verb>]` بـ`Idempotency-Key` إلزامي و`If-Match` لغير الإنشاء — مصدرها جداول `03-domain/contexts/BC*/commands-slcNN.md`.
 - **الاستعلامات:** 133 استعلامًا (117 مرتبطة بـAggregate + 16 عابرة مثل QRY-PDP-DECIDE وQRY-SRCH-QUERY)؛ كلها عبر PEP/PDP قبل القراءة، والقوائم بمؤشر لا offset — [04-cross-cutting.md §4.1](04-cross-cutting.md).
 - **الأخطاء الموحَّدة:** `VERSION_CONFLICT` (409)، `IDEMPOTENCY_KEY_REUSED` (422)، `SEGREGATION_OF_DUTIES`، `{AGGREGATE}_INVALID_STATE_TRANSITION` — [04-cross-cutting.md §4.2](04-cross-cutting.md).
@@ -271,14 +271,14 @@ notes: >
 | V1b انتقالات المجدول بلا سيناريو | 0 من 175 (CR-72) |
 | V2 الأوامر والاستعلامات ↔ OpenAPI (611 عملية) | 0 فرق؛ QRY-LABEL-CHECK عقد مشترك بالتصميم |
 | V3 الأحداث ↔ AsyncAPI (585) | 0 فرق |
-| V4 رموز الأخطاء (2756 زوجًا + 430 خطأ شرط) | 0 فرق |
+| V4 رموز الأخطاء (2768 زوجًا + 430 خطأ شرط) | 0 فرق |
 | V5 ذهاب وإياب أدوات المواصفة (326 ملفًا) | مطابق حرفيًا لـSLC-01..18؛ SLC-19 مستثناة (DEBT-002) |
-| V6 كتل YAML (1018) | كلها تُقرأ |
+| V6 كتل YAML (1056) | كلها تُقرأ |
 | V7 سياسة واحدة معرَّفة لكل أمر (477) | 0 فرق |
 
 | مستوى آخر | الحالة | المصدر |
 |---|---|---|
-| سيناريوهات الجودة بطريقة تحقق | 74/74 | `15-traceability/quality-verification-matrix.md` |
+| سيناريوهات الجودة بطريقة تحقق | 95/95 | `15-traceability/quality-verification-matrix.md` |
 | Fitness functions | 19 (FIT-01..19) | `13-verification/fitness-functions.md` |
 | خصائص الثوابت لكل شريحة | 19 ملفًا | `13-verification/invariant-properties-slcNN.md` |
 | التحقق التنفيذي (أداء، DR، اختراق تحت الحمل) | خارج مرحلة الدراسة — شروط G8 | `16-reports/IMPLEMENTATION-READINESS-R1.md` |
@@ -298,7 +298,7 @@ notes: >
 | Phase 4 — الأنماط العابرة | ✅ CLOSED |
 | Phase 5 — التعارضات | ✅ CLOSED — لا تعارضات مفتوحة |
 | Phase 6 — هذا الفهرس | ✅ CLOSED |
-| Phase 3.8 — دراسة التحليل والتصميم ([`18-analysis-design/`](../18-analysis-design/00-index.md)) | ⏳ جارية — المراحل 1–3 مكتملة ومراجَعة (الأساس، القصص والعقود والبيانات، التحليل)؛ المرحلة 4 مكتملة: المكوّنات، الأمن، الأخطاء، سيناريوهات التشغيل، التكامل، الواجهات، النشر، الاهتمامات المشتركة (12، 17–23)، وADR-P19 وADR-P20 وCR-75..80؛ المرحلة 5 (24–27) لم تبدأ |
+| Phase 3.8 — دراسة التحليل والتصميم ([`18-analysis-design/`](../18-analysis-design/00-index.md)) | ⏳ جارية — المراحل 1–3 مكتملة ومراجَعة (الأساس، القصص والعقود والبيانات، التحليل)؛ المرحلة 4 مكتملة: المكوّنات، الأمن، الأخطاء، سيناريوهات التشغيل، التكامل، الواجهات، النشر، الاهتمامات المشتركة (12، 17–23)، وADR-P19 وADR-P20؛ جولة تصحيح المصادر طبّقت CR-75..CR-81 (V5 ذهاب وإياب تام)؛ المرحلة 5 (24–27) لم تبدأ |
 
 ### 20.2 حالة كل BC (من §21 في ملفه)
 
@@ -335,7 +335,7 @@ notes: >
 - **477** أمرًا، **584** حدثًا، **133** استعلامًا ([02-relationship-index.md §21.1](02-relationship-index.md))
 - **114** تهديدًا موثَّقًا (STRIDE) ([04-cross-cutting.md §2.4](04-cross-cutting.md))
 - **14** Platform Baseline (PB-01..14)، صفر قابل للتجاوز من المستأجر عدا PB-06 ([04-cross-cutting.md §2.1](04-cross-cutting.md))
-- **80** تصحيحًا (CR-01..CR-74 مُطبَّقة، وCR-75..CR-80 معتمدة بانتظار جولة تصحيح المصادر؛ `spec/00-governance/registers/corrections.md`)؛ **11** سؤالًا مفتوحًا مسجَّلًا، كلها مغلقة؛ **2** بندا دَين تقني
+- **81** تصحيحًا كلها مُطبَّقة (CR-75..CR-81 في جولة تصحيح المصادر لـPhase 3.8؛ `spec/00-governance/registers/corrections.md`)؛ **11** سؤالًا مفتوحًا مسجَّلًا، كلها مغلقة؛ **2** بندا دَين تقني
 - **26** قائمة بيانات مرجعية (`04-information/reference-data.md`)
 - **5** تعارضات مُكتشَفة أثناء البناء، **كلها مغلقة** ([05-conflicts.md](05-conflicts.md))
 

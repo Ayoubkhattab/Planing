@@ -44,7 +44,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `outbox` | أحداث المجال المكتوبة في نفس معاملة الحالة، ينقلها CDC إلى Kafka | ADR-P02، FIT-04 |
 | `audit_outbox` | سجلات التدقيق في نفس المعاملة، تنتقل إلى `governance.audit_records` | ADR-P02 |
 | `inbox` | `event_id` للأحداث المستهلكة؛ عدم التكرار | ADR-P02 |
-| `idempotency_keys` | `(tenant_id, key)` ← `command_id`، `request_hash`، `response`، `expires_at`؛ صلاحية 24 ساعة | `slc-01.md` |
+| `idempotency_keys` | `(tenant_id, principal_id, key)` ← `command_id`، `request_hash`، `response`، `expires_at`؛ صلاحية 24 ساعة؛ الاستجابة المحفوظة لا تُعاد إلا للمستدعي نفسه (CR-80) | `slc-01.md` |
 | `<table>_history` | إصدار لكل تغيير في كل جدول Aggregate؛ حتى ما سماه النموذج صراحة (`tasks_history`، `qualification_records_history`، `incident_severity_history`) لا يُكرَّر في الكتالوج | القاعدة 2 |
 | `security_versions` | إصدار الأمن لكل موضوع — مصدر حقيقة الإلغاء لنقاط فرض السياسة (BC01)، تُنسخ إلى Valkey (TD-11) | `slc-01.md` |
 

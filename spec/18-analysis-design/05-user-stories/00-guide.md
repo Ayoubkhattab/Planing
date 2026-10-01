@@ -201,7 +201,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | اختيار الفاعل آلي | الأوامر الـ26 التي لم يحدد مصدرها فاعلها محسومة في `17-security-design.md` §5 (CR-77) ومعلَّمة بذلك في جدول القصة | — |
 | نص الغرض والمتطلب بلغة المصدر | بعضه بالإنجليزية | لا ترجمة آلية حتى لا يتغير المعنى |
 | نوع محفِّز `SYS:` مصنف بالكلمات المفتاحية | قد يُخطئ في حالات قليلة | **[Derived — تصنيف آلي]**؛ يُراجَع عند تنفيذ المجدول |
-| التعامل مع `REQUIRE_APPROVAL` / `CONDITIONAL` والالتزام قبل التنفيذ | محسوم في ADR-P19 (`401 MFA_STEP_UP_REQUIRED`، `403 APPROVAL_REQUIRED`)؛ يظهر في القصص بعد إضافة الرمزين إلى كتالوج الأخطاء (CR-75) | — |
-| مصفوفات بلا صفوف للحالات النهائية | AGG-INCIDENT (وقائمة `states` فيه لا تذكر CLOSED وCANCELLED)، AGG-SHIPMENT، AGG-LOGISTICS-REQUEST | القصص تضيف الحالات النهائية إلى الحالات المرفوضة **[Derived]**؛ تصحيح المصدر مسجل في `00-index.md` §6 |
-| كتالوج الأوامر يذكر `TASK_SUSPENDED` لأوامر يستثنيها INV-TASK-06 (`CANCEL`، `UNSUSPEND`) أو لا ينطبق عليها (`CREATE`) | القصة تقول إن الرمز لا ينطبق وتعلّمه **[Needs Review]** | تصحيح المصدر مسجل في `00-index.md` §6 |
+| التعامل مع `REQUIRE_APPROVAL` / `CONDITIONAL` والالتزام قبل التنفيذ | محسوم في ADR-P19؛ الرمزان في كل كتالوج (CR-75). `MFA_STEP_UP_REQUIRED` (401) صف في قصص الأوامر الـ33 التي تحمل سياستها التزام `mfa`؛ `APPROVAL_REQUIRED` لا يظهر لأن أي سياسة أمر لا تعيد `REQUIRE_APPROVAL` | — |
+| مصفوفات بلا صفوف للحالات النهائية | كان في AGG-INCIDENT وAGG-SHIPMENT وAGG-LOGISTICS-REQUEST؛ صُحح في المصدر (CR-81) | — |
+| كتالوج الأوامر كان يذكر `TASK_SUSPENDED` لأوامر يستثنيها INV-TASK-06 (`CANCEL`، `UNSUSPEND`) أو لا ينطبق عليها (`CREATE`) | صُحح في المصدر (CR-81): الرمز على الأوامر الـ21 التي يشملها الثابت فقط | — |
 | رموز `*_INVALID_STATE_TRANSITION` لا تُطلقها أي حالة (مثل أوامر `RECLASSIFY` في BC02) | القصة تقول «لا يُتوقع حدوثه» | تُحذف من كتالوج الأخطاء أو تُترك دفاعيًا — يُحسم في `18-error-handling.md` |

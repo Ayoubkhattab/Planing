@@ -1583,7 +1583,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | CMD-ADP-SUSPEND | ACTIVE | reason | REASON_REQUIRED |
 | CMD-ADP-RETIRE | DRAFT, ACTIVE, SUSPENDED | reason | REASON_REQUIRED |
 
-**فصل المهام:** CMD-ADP-ACTIVATE: approver ≠ author
+**فصل المهام:** CMD-ADP-ACTIVATE: approver ≠ author؛ CMD-ADP-RESUME: resumer ≠ the Administrator who suspended (CR-77)
 
 #### AGG-AI-REQUEST — طلب الذكاء الاصطناعي
 

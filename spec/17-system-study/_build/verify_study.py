@@ -427,6 +427,11 @@ def v8(sys_trans):
         for tid in re.findall(r"^\| (THR-[A-Z0-9-]+) \|", f.read_text(encoding="utf-8"), re.M):
             if f"| {tid} |" not in sec:
                 gaps.append(("17", tid, "تهديد غير مذكور"))
+    err = (AD / "18-error-handling.md").read_text(encoding="utf-8") if (AD / "18-error-handling.md").exists() else ""
+    for f in sorted(CONTRACTS.glob("errors-*.md")):
+        for code in re.findall(r"^\| `([A-Z0-9_]+)` \|", f.read_text(encoding="utf-8"), re.M):
+            if f"| `{code}` |" not in err:
+                gaps.append(("18", code, "رمز خطأ غير مذكور"))
     actor_lists = p3["02-actors-roles.md"].split("### 6.4")[-1]
     for oid in list(cmds) + list(qrys):
         if f"`{oid}`" not in actor_lists:

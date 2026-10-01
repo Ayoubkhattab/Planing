@@ -15,7 +15,7 @@ consumers: []
 
 ## corrections
 
-_77 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-77 in Phase 3.8 — 18-analysis-design)
+_78 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-78 in Phase 3.8 — 18-analysis-design)
 
 ### CR-01
 
@@ -634,6 +634,14 @@ _77 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-77 in Phase 3.8 — 18-an
 - **origin:** 17-security-design.md §5; S-16
 - **status:** APPROVED_DELEGATED — pending application
 
+### CR-78
+
+- **issue:** The contracts define no code for a missing or expired token (401), an oversized request (413), an unsupported media type (415) or a fail-closed dependency call to another context; no Retry-After header for 429/503 (18-analysis-design/18-error-handling.md §8).
+- **correction:** Add platform-wide codes UNAUTHENTICATED (401), PAYLOAD_TOO_LARGE (413), UNSUPPORTED_MEDIA_TYPE (415) and DEPENDENCY_UNAVAILABLE (503, retryable), keep specific dependency codes the specs already name (ELIGIBILITY_UNAVAILABLE), and declare Retry-After on 429 and 503 responses; applied through the spec tooling.
+- **target_wave:** Phase 3.8 — source-correction round
+- **origin:** 18-error-handling.md §8; S-27
+- **status:** APPROVED_DELEGATED — pending application
+
 ---
 
 <details>
@@ -1207,6 +1215,16 @@ corrections:
     §5 (resolution by the paired verb in the same policy: resume↔pause/suspend, enable↔disable, retire↔deprecate/define, maintenance↔condition).'
   target_wave: Phase 3.8 — source-correction round
   origin: 17-security-design.md §5; S-16
+  status: APPROVED_DELEGATED — pending application
+- id: CR-78
+  issue: The contracts define no code for a missing or expired token (401), an oversized request (413), an unsupported media
+    type (415) or a fail-closed dependency call to another context; no Retry-After header for 429/503 (18-analysis-design/18-error-handling.md
+    §8).
+  correction: Add platform-wide codes UNAUTHENTICATED (401), PAYLOAD_TOO_LARGE (413), UNSUPPORTED_MEDIA_TYPE (415) and DEPENDENCY_UNAVAILABLE
+    (503, retryable), keep specific dependency codes the specs already name (ELIGIBILITY_UNAVAILABLE), and declare Retry-After
+    on 429 and 503 responses; applied through the spec tooling.
+  target_wave: Phase 3.8 — source-correction round
+  origin: 18-error-handling.md §8; S-27
   status: APPROVED_DELEGATED — pending application
 ```
 

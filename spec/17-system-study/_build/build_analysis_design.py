@@ -1873,6 +1873,79 @@ def build_security(aggs, cmds, qrys, pol_c, pol_q, evts):
     write_generated(OUT / "17-security-design.md", None, "\n".join(L))
 
 
+# ------------------------------------------------------------------ 18 error handling
+def error_category(code, http):
+    if code in ("VALIDATION_FAILED",):
+        return "1. طلب غير صالح"
+    if code in ("AUTHZ_DENIED", "PERMISSION_DENIED", "NOT_FOUND", "SEGREGATION_OF_DUTIES"):
+        return "2. تخويل وعدم إفصاح"
+    if code in ("VERSION_CONFLICT", "IDEMPOTENCY_KEY_REUSED"):
+        return "3. تزامن وعدم تكرار"
+    if code.endswith("_INVALID_STATE_TRANSITION"):
+        return "4. انتقال حالة غير مسموح"
+    if code in ("RATE_LIMITED", "AUDIT_UNAVAILABLE", "POLICY_ENGINE_UNAVAILABLE"):
+        return "6. منصة"
+    return "5. قاعدة عمل أو شرط انتقال"
+
+
+def build_errors(aggs, cmds):
+    codes = {}
+    for f in sorted((SPEC / "05-contracts").glob("errors-*.md")):
+        for header, rows in tables(f.read_text(encoding="utf-8")):
+            if header and header[0] == "الرمز":
+                for r in rows:
+                    c = r[0].strip("`")
+                    d = codes.setdefault(c, {"http": r[1], "retry": r[2], "slices": []})
+                    d["slices"].append(f.stem.replace("errors-", ""))
+    users = defaultdict(list)
+    for cid, c in cmds.items():
+        for e in [x.strip() for x in c["الأخطاء"].split(",") if x.strip() not in ("", "—")]:
+            users[e].append(cid)
+    guard_of = {}
+    for a in aggs.values():
+        for t in a["trans"]:
+            if t.get("error") and t["error"] not in guard_of and t["guard"] not in ("—", ""):
+                guard_of[t["error"]] = (a["id"], guard_clause(t["error"], t["guard"]))
+    never = sorted((code, c) for code in codes if code.endswith("_INVALID_STATE_TRANSITION")
+                   for c in users.get(code, []) if not any(reject_states(aggs[cmds[c]["Aggregate"]], c)))
+    states = {st for a in aggs.values() for st in a["open"] + a["final"] + [x for x, _ in a["matrix"]]}
+    referenced = defaultdict(set)
+    for f in sorted(SPEC.rglob("*.md")):
+        rel = f.relative_to(SPEC).as_posix()
+        if rel.startswith(("17-system-study", "18-analysis-design", "05-contracts", "00-governance")):
+            continue
+        for m in re.findall(r"\b([A-Z]{3,}(?:_[A-Z0-9]+){1,6})\b", f.read_text(encoding="utf-8")):
+            if (m.endswith(("_UNAVAILABLE", "_DENIED", "_EXCEEDED", "_REQUIRED", "_CONFLICT", "_TIMEOUT", "_EXPIRED", "_INVALID"))
+                    and m not in codes and m not in states):
+                referenced[m].add(rel)
+    by_cat = defaultdict(list)
+    for code, d in codes.items():
+        by_cat[error_category(code, d["http"])].append(code)
+    L = [BEGIN, "", "### 9.1 الملخص", "", "| الفئة | الرموز | HTTP | قابل لإعادة المحاولة |", "|---|---|---|---|"]
+    for cat in sorted(by_cat):
+        ids = by_cat[cat]
+        L.append(f"| {cat} | {len(ids)} | {', '.join(sorted({codes[c]['http'] for c in ids}))} | "
+                 f"{sum(1 for c in ids if codes[c]['retry'] == 'نعم')} |")
+    L.append(f"| **المجموع** | **{len(codes)}** | | {sum(1 for c in codes.values() if c['retry'] == 'نعم')} |")
+    L += ["", f"**أوامر لا يُطلِق فيها رمز `*_INVALID_STATE_TRANSITION` أبدًا ({len(never)})** — الأمر مسموح من كل حالات المصفوفة (S-03): " +
+          ("، ".join(f"`{c}` في `{cmd}`" for c, cmd in never) or "لا شيء") + ".", "",
+          f"**رموز تذكرها المواصفات وليست في كتالوج الأخطاء ({len(referenced)})** **[Needs Review]** (S-27):", "",
+          "| الرمز | أين يُذكر |", "|---|---|"] + [f"| `{k}` | {', '.join(f'`{x}`' for x in sorted(v)[:3])} |" for k, v in sorted(referenced.items())] + [""]
+    for cat in sorted(by_cat):
+        L += [f"### {cat.replace(cat.split(' ')[0], '9.' + str(int(cat.split('.')[0]) + 1), 1)}", "",
+              "| الرمز | HTTP | إعادة | الأوامر | السياقات | مثال الشرط (Aggregate) |", "|---|---|---|---|---|---|"]
+        for code in sorted(by_cat[cat]):
+            d, cs = codes[code], users.get(code, [])
+            ctx = sorted({cmds[c]["_bc"] for c in cs})
+            ex = guard_of.get(code)
+            L.append(f"| `{code}` | {d['http']} | {d['retry']} | {len(cs) or '— (منصة)'} | {', '.join(ctx) or '—'} | "
+                     f"{esc(short(ex[1], 110)) + ' (' + ex[0][4:] + ')' if ex else '—'} |")
+        L.append("")
+    L.append(END)
+    write_generated(OUT / "18-error-handling.md", None, "\n".join(L))
+    return codes, never
+
+
 # ------------------------------------------------------------------ writer
 def write_generated(path, header, block):
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -1907,6 +1980,7 @@ def main():
     build_use_cases(aggs, cmds, qrys, pol_c, reqs, ucs)
     build_domain_model(aggs, cmds)
     build_security(aggs, cmds, qrys, pol_c, pol_q, evts)
+    build_errors(aggs, cmds)
     total = sum(sum(v.values()) for v in stats.values())
     print(f"stories={total} (commands={sum(1 for k in story_ids if k.startswith('CMD-'))}, "
           f"queries={sum(1 for k in story_ids if k.startswith('QRY-'))}, sys={sum(v.get('نظام (SYS)', 0) for v in stats.values())}) "

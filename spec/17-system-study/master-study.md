@@ -298,7 +298,7 @@ notes: >
 | Phase 4 — الأنماط العابرة | ✅ CLOSED |
 | Phase 5 — التعارضات | ✅ CLOSED — لا تعارضات مفتوحة |
 | Phase 6 — هذا الفهرس | ✅ CLOSED |
-| Phase 3.8 — دراسة التحليل والتصميم ([`18-analysis-design/`](../18-analysis-design/00-index.md)) | ⏳ جارية — المراحل 1–3 مكتملة ومراجَعة (الأساس، القصص والعقود والبيانات، التحليل)؛ المرحلة 4 جارية: `17-security-design.md` وADR-P19 وCR-75..77 |
+| Phase 3.8 — دراسة التحليل والتصميم ([`18-analysis-design/`](../18-analysis-design/00-index.md)) | ⏳ جارية — المراحل 1–3 مكتملة ومراجَعة (الأساس، القصص والعقود والبيانات، التحليل)؛ المرحلة 4 جارية: `17-security-design.md` و`18-error-handling.md` وADR-P19 وCR-75..78 |
 
 ### 20.2 حالة كل BC (من §21 في ملفه)
 
@@ -335,7 +335,7 @@ notes: >
 - **477** أمرًا، **584** حدثًا، **133** استعلامًا ([02-relationship-index.md §21.1](02-relationship-index.md))
 - **114** تهديدًا موثَّقًا (STRIDE) ([04-cross-cutting.md §2.4](04-cross-cutting.md))
 - **14** Platform Baseline (PB-01..14)، صفر قابل للتجاوز من المستأجر عدا PB-06 ([04-cross-cutting.md §2.1](04-cross-cutting.md))
-- **77** تصحيحًا (CR-01..CR-74 مُطبَّقة، وCR-75..CR-77 معتمدة بانتظار جولة تصحيح المصادر؛ `spec/00-governance/registers/corrections.md`)؛ **11** سؤالًا مفتوحًا مسجَّلًا، كلها مغلقة؛ **2** بندا دَين تقني
+- **78** تصحيحًا (CR-01..CR-74 مُطبَّقة، وCR-75..CR-78 معتمدة بانتظار جولة تصحيح المصادر؛ `spec/00-governance/registers/corrections.md`)؛ **11** سؤالًا مفتوحًا مسجَّلًا، كلها مغلقة؛ **2** بندا دَين تقني
 - **26** قائمة بيانات مرجعية (`04-information/reference-data.md`)
 - **5** تعارضات مُكتشَفة أثناء البناء، **كلها مغلقة** ([05-conflicts.md](05-conflicts.md))
 

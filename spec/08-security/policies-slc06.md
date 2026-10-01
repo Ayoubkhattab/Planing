@@ -22,7 +22,7 @@ _22 items_
 | POL-SIT-EDIT-DEFINITION | CMD-SIT-EDIT-DEFINITION | Analyst / Manager (create, edit, activate, pause, close) · Security Officer (reclassify) | AGG-SITUATION | tenant match; target visible to subject | ALLOW | DENY (not-found shape) | audit |
 | POL-SIT-ACTIVATE | CMD-SIT-ACTIVATE | Analyst / Manager (create, edit, activate, pause, close) · Security Officer (reclassify) | AGG-SITUATION | tenant match; target visible to subject | ALLOW | DENY (not-found shape) | audit |
 | POL-SIT-PAUSE | CMD-SIT-PAUSE | Analyst / Manager (create, edit, activate, pause, close) · Security Officer (reclassify) | AGG-SITUATION | tenant match; target visible to subject | ALLOW | DENY (not-found shape) | audit |
-| POL-SIT-RESUME | CMD-SIT-RESUME | Analyst / Manager (resume) — issuing role named by CR-77 | AGG-SITUATION | tenant match; target visible to subject | ALLOW | DENY (not-found shape) | audit |
+| POL-SIT-RESUME | CMD-SIT-RESUME | Analyst / Manager (resume) | AGG-SITUATION | tenant match; target visible to subject | ALLOW | DENY (not-found shape) | audit |
 | POL-SIT-CLOSE | CMD-SIT-CLOSE | Analyst / Manager (create, edit, activate, pause, close) · Security Officer (reclassify) | AGG-SITUATION | tenant match; target visible to subject | ALLOW | DENY (not-found shape) | audit |
 | POL-SIT-RECLASSIFY | CMD-SIT-RECLASSIFY | Analyst / Manager (create, edit, activate, pause, close) · Security Officer (reclassify) | AGG-SITUATION | tenant match; target visible to subject | ALLOW | DENY (not-found shape) | audit |
 | POL-ARL-DEFINE | CMD-ARL-DEFINE | Analyst lead / Manager | AGG-ALERT-RULE | tenant match; target visible to subject | ALLOW | DENY (not-found shape) | audit |
@@ -97,7 +97,7 @@ command_policies:
   obligations: audit
 - id: POL-SIT-RESUME
   command: CMD-SIT-RESUME
-  subject: Analyst / Manager (resume) — issuing role named by CR-77
+  subject: Analyst / Manager (resume)
   resource: AGG-SITUATION
   context_conditions: tenant match; target visible to subject
   decision: ALLOW

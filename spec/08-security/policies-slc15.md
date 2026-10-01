@@ -196,7 +196,7 @@ _17 items_
 ### POL-CRR-RETIRE
 
 - **command:** CMD-CRR-RETIRE
-- **subject:** Analyst lead (retire) — issuing role named by CR-77
+- **subject:** Analyst lead (retire)
 - **resource:** AGG-CORRELATION-RULE
 - **context_conditions:** tenant match; inputs visible
 - **segregation_of_duties:** —
@@ -377,7 +377,7 @@ command_policies:
   obligations: audit
 - id: POL-CRR-RETIRE
   command: CMD-CRR-RETIRE
-  subject: Analyst lead (retire) — issuing role named by CR-77
+  subject: Analyst lead (retire)
   resource: AGG-CORRELATION-RULE
   context_conditions: tenant match; inputs visible
   segregation_of_duties: —

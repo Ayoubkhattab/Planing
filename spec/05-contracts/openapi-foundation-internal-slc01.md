@@ -67,6 +67,7 @@ paths:
       - $ref: '#/components/parameters/X-Purpose'
       - $ref: '#/components/parameters/X-Correlation-Id'
       - $ref: '#/components/parameters/If-Match'
+      x-internal: true
       requestBody:
         required: true
         content:
@@ -121,6 +122,7 @@ paths:
       - $ref: '#/components/parameters/X-Purpose'
       - $ref: '#/components/parameters/X-Correlation-Id'
       - $ref: '#/components/parameters/If-Match'
+      x-internal: true
       requestBody:
         required: true
         content:
@@ -176,6 +178,7 @@ paths:
       - $ref: '#/components/parameters/X-Purpose'
       - $ref: '#/components/parameters/X-Correlation-Id'
       - $ref: '#/components/parameters/If-Match'
+      x-internal: true
       requestBody:
         required: true
         content:
@@ -230,6 +233,7 @@ paths:
       - $ref: '#/components/parameters/X-Purpose'
       - $ref: '#/components/parameters/X-Correlation-Id'
       - $ref: '#/components/parameters/If-Match'
+      x-internal: true
       requestBody:
         required: true
         content:
@@ -284,6 +288,7 @@ paths:
       - $ref: '#/components/parameters/X-Purpose'
       - $ref: '#/components/parameters/X-Correlation-Id'
       - $ref: '#/components/parameters/If-Match'
+      x-internal: true
       requestBody:
         required: true
         content:
@@ -379,14 +384,15 @@ components:
             $ref: '#/components/schemas/ApiError'
     Unauthorized:
       description: UNAUTHENTICATED (missing or expired token) / MFA_STEP_UP_REQUIRED
-        (step-up challenge, retry with the same Idempotency-Key — ADR-P19)
+        (challenge carries the required authentication strength as OIDC acr_values;
+        retry with the same Idempotency-Key — ADR-P19)
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ApiError'
     Forbidden:
       description: AUTHZ_DENIED for a visible resource or a denied create / APPROVAL_REQUIRED
-        (ADR-P19)
+        with details.approver (ADR-P19)
       content:
         application/json:
           schema:
@@ -436,7 +442,8 @@ components:
             type: integer
             minimum: 0
     Unavailable:
-      description: AUDIT_UNAVAILABLE / POLICY_ENGINE_UNAVAILABLE / DEPENDENCY_UNAVAILABLE
+      description: AUDIT_UNAVAILABLE (not retryable, no Retry-After) / POLICY_ENGINE_UNAVAILABLE
+        / DEPENDENCY_UNAVAILABLE / context-specific dependency codes such as ELIGIBILITY_UNAVAILABLE
       content:
         application/json:
           schema:
@@ -561,6 +568,10 @@ components:
           type: string
         details:
           type: object
+          properties:
+            approver:
+              type: string
+              description: approver role (APPROVAL_REQUIRED, ADR-P19)
         correlation_id:
           type: string
         trace_id:

@@ -61,7 +61,7 @@ sequenceDiagram
 | 9 | الشرط في جدول انتقالات AGG-TASK | AGG-TASK |
 | 10 | معاملة واحدة (FIT-04) | ADR-P02 |
 
-**مسارات الفشل:** غير مؤهل → `ASSIGNEE_NOT_ELIGIBLE` (422)؛ BC05 غير متاح → يُرفض الأمر مغلقًا (THR-S03-04؛ الرمز **[Missing]**، CR-78)؛ حالة غير READY → `TASK_INVALID_STATE_TRANSITION` (409)؛ مهمة معلقة → `TASK_SUSPENDED`. **الجودة:** p95 ≤ 300 مللي ث (QAS-PERF-001).
+**مسارات الفشل:** غير مؤهل → `ASSIGNEE_NOT_ELIGIBLE` (422)؛ BC05 غير متاح → يُرفض الأمر مغلقًا بـ`ELIGIBILITY_UNAVAILABLE` (503، قابل لإعادة المحاولة؛ THR-S03-04، CR-78)؛ حالة غير READY → `TASK_INVALID_STATE_TRANSITION` (409)؛ مهمة معلقة → `TASK_SUSPENDED`. **الجودة:** p95 ≤ 300 مللي ث (QAS-PERF-001).
 
 ## 2. اعتماد خطة بمصادقة معززة — `CMD-PLV-APPROVE`
 

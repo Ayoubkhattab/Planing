@@ -39,7 +39,7 @@ _16 items_
 ### POL-DEV-ROTATE-KEY
 
 - **command:** CMD-DEV-ROTATE-KEY
-- **subject:** user (rotate key) — issuing role named by CR-77
+- **subject:** user (rotate key)
 - **resource:** AGG-DEVICE
 - **context_conditions:** tenant match; device ACTIVE where applicable; device signature for SYN
 - **decision:** ALLOW
@@ -220,7 +220,7 @@ command_policies:
   obligations: audit; mfa
 - id: POL-DEV-ROTATE-KEY
   command: CMD-DEV-ROTATE-KEY
-  subject: user (rotate key) — issuing role named by CR-77
+  subject: user (rotate key)
   resource: AGG-DEVICE
   context_conditions: tenant match; device ACTIVE where applicable; device signature for SYN
   decision: ALLOW

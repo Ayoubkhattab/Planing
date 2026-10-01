@@ -458,6 +458,7 @@ Scenario Outline: CMD-DEC-ANNUL is rejected
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-DEC-ANNUL وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC04-DEC-RECORD — تسجيل القرار
@@ -493,6 +494,7 @@ Scenario Outline: CMD-DEC-RECORD is rejected
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: selected_option, rationale, effective_from, label |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-DEC-RECORD وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC04-S-DECISION-01 — تلقائي: superseding decision recorded (القرار)
@@ -2027,6 +2029,7 @@ Scenario Outline: CMD-PLV-APPROVE is rejected
     | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ author (REQ-OPS-005); AuthorityCheck plan-approval |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-PLV-APPROVE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC04-PLV-DISCARD — تجاهل مسودة إصدار الخطة
@@ -2847,7 +2850,7 @@ Scenario Outline: CMD-TASK-ASSIGN is rejected
     | code | http | condition |
     | ASSIGNEE_NOT_ELIGIBLE | 422 | لم يتحقق الشرط: assignee ACTIVE user; assignee clearance ≥ task label; EligibilityCheck(assignee, task type, now) ∈ {ELIGIBLE, CONDITIONALLY_ELIGIBLE with condition met} (REQ-OPS-007) |
     | AUTHZ_DENIED | 403→404 | السياسة POL-TASK-ASSIGN ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
-    | ELIGIBILITY_UNAVAILABLE | 503 | انظر شرط الانتقال وكتالوج الأخطاء |
+    | ELIGIBILITY_UNAVAILABLE | 503 | فحص الأهلية في BC05 (`QRY-ELIG-CHECK`) لم يُجب: الإسناد يفشل مغلقًا ويُعاد المحاولة لاحقًا (`03-domain/contexts/BC05/eligibility-rules.md`، THR-S03-04، CR-78) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | TASK_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ACCEPTED, APPROVED, ASSIGNED, BLOCKED, CANCELLED, CLOSED, COMPLETED, DRAFT, EXPIRED, IN_PROGRESS, REJECTED, SUBMITTED, SUPERSEDED, UNDER_REVIEW |
     | TASK_SUSPENDED | 422 | INV-TASK-06: while suspended = true, every state-changing command except UNSUSPEND and CANCEL is rejected with TASK_SUSPENDED (orthogonal flag, not a state) |
@@ -3215,7 +3218,7 @@ Scenario Outline: CMD-TASK-REASSIGN is rejected
     | code | http | condition |
     | ASSIGNEE_NOT_ELIGIBLE | 422 | لم يتحقق الشرط: same checks as assign for the new assignee |
     | AUTHZ_DENIED | 403→404 | السياسة POL-TASK-REASSIGN ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
-    | ELIGIBILITY_UNAVAILABLE | 503 | انظر شرط الانتقال وكتالوج الأخطاء |
+    | ELIGIBILITY_UNAVAILABLE | 503 | فحص الأهلية في BC05 (`QRY-ELIG-CHECK`) لم يُجب: الإسناد يفشل مغلقًا ويُعاد المحاولة لاحقًا (`03-domain/contexts/BC05/eligibility-rules.md`، THR-S03-04، CR-78) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | TASK_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: APPROVED, CANCELLED, CLOSED, COMPLETED, DRAFT, EXPIRED, READY, REJECTED, SUBMITTED, SUPERSEDED, UNDER_REVIEW |
     | TASK_SUSPENDED | 422 | INV-TASK-06: while suspended = true, every state-changing command except UNSUSPEND and CANCEL is rejected with TASK_SUSPENDED (orthogonal flag, not a state) |

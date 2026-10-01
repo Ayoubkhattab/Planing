@@ -31,12 +31,12 @@ _19 items_
 | POL-ER-START-REVIEW | CMD-ER-START-REVIEW | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | AGG-ER-CASE | tenant match; cleared for both entity labels | — | ALLOW | DENY (not-found shape) | audit |
 | POL-ER-DECIDE-MATCH | CMD-ER-DECIDE-MATCH | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | AGG-ER-CASE | tenant match; cleared for both entity labels | reviewer ≠ human proposer; second reviewer if cluster > 50 | ALLOW | DENY (not-found shape) | audit |
 | POL-ER-DECIDE-NOT-MATCH | CMD-ER-DECIDE-NOT-MATCH | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | AGG-ER-CASE | tenant match; object visible | — | ALLOW | DENY (not-found shape) | audit |
-| POL-ER-PARK | CMD-ER-PARK | Analyst (park) — issuing role named by CR-77 | AGG-ER-CASE | tenant match; object visible | — | ALLOW | DENY (not-found shape) | audit |
-| POL-ER-RESUME | CMD-ER-RESUME | Analyst (resume) — issuing role named by CR-77 | AGG-ER-CASE | tenant match; object visible | — | ALLOW | DENY (not-found shape) | audit |
+| POL-ER-PARK | CMD-ER-PARK | Analyst (park) | AGG-ER-CASE | tenant match; object visible | — | ALLOW | DENY (not-found shape) | audit |
+| POL-ER-RESUME | CMD-ER-RESUME | Analyst (resume) | AGG-ER-CASE | tenant match; object visible | — | ALLOW | DENY (not-found shape) | audit |
 | POL-ER-REQUEST-SPLIT | CMD-ER-REQUEST-SPLIT | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | AGG-ER-CASE | tenant match; cleared for both entity labels | — | ALLOW | DENY (not-found shape) | audit |
 | POL-ER-CONFIRM-MATCH | CMD-ER-CONFIRM-MATCH | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | AGG-ER-CASE | tenant match; object visible | reviewer ≠ split requester | ALLOW | DENY (not-found shape) | audit |
 | POL-ER-SPLIT | CMD-ER-SPLIT | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | AGG-ER-CASE | tenant match; object visible | reviewer ≠ split requester | ALLOW | DENY (not-found shape) | audit |
-| POL-ER-WITHDRAW | CMD-ER-WITHDRAW | Analyst (withdraw) — issuing role named by CR-77 | AGG-ER-CASE | tenant match; object visible | — | ALLOW | DENY (not-found shape) | audit |
+| POL-ER-WITHDRAW | CMD-ER-WITHDRAW | Analyst (withdraw) | AGG-ER-CASE | tenant match; object visible | — | ALLOW | DENY (not-found shape) | audit |
 | POL-MRS-DRAFT | CMD-MRS-DRAFT | Analyst lead (draft, edit) · Administrator ≠ author (activate) | AGG-MATCH-RULESET | tenant match; object visible | — | ALLOW | DENY (not-found shape) | audit |
 | POL-MRS-EDIT | CMD-MRS-EDIT | Analyst lead (draft, edit) · Administrator ≠ author (activate) | AGG-MATCH-RULESET | tenant match; object visible | — | ALLOW | DENY (not-found shape) | audit |
 | POL-MRS-ACTIVATE | CMD-MRS-ACTIVATE | Analyst lead (draft, edit) · Administrator ≠ author (activate) | AGG-MATCH-RULESET | tenant match; object visible | approver ≠ author | ALLOW | DENY (not-found shape) | audit |
@@ -153,7 +153,7 @@ command_policies:
   obligations: audit
 - id: POL-ER-PARK
   command: CMD-ER-PARK
-  subject: Analyst (park) — issuing role named by CR-77
+  subject: Analyst (park)
   resource: AGG-ER-CASE
   context_conditions: tenant match; object visible
   segregation_of_duties: —
@@ -162,7 +162,7 @@ command_policies:
   obligations: audit
 - id: POL-ER-RESUME
   command: CMD-ER-RESUME
-  subject: Analyst (resume) — issuing role named by CR-77
+  subject: Analyst (resume)
   resource: AGG-ER-CASE
   context_conditions: tenant match; object visible
   segregation_of_duties: —
@@ -198,7 +198,7 @@ command_policies:
   obligations: audit
 - id: POL-ER-WITHDRAW
   command: CMD-ER-WITHDRAW
-  subject: Analyst (withdraw) — issuing role named by CR-77
+  subject: Analyst (withdraw)
   resource: AGG-ER-CASE
   context_conditions: tenant match; object visible
   segregation_of_duties: —

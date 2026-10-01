@@ -280,7 +280,7 @@ risks:
   probability: M
   impact: M
   mitigation: لا تصميم شرائح R3 قبل مراجعة Pilot R1؛ لا G6 لأي شريحة R3 قبل مراجعة تجربة R2 أيضاً؛ هذه الجولة scope-only (W1/W2)، بلا تصميم تفصيلي
-  update: 'CR-81: R3 slices SLC-17..19 were designed later under CR-67/CR-70 (DESIGN_COMPLETE), so the first part of the mitigation was overtaken; the G6 gate for R3 slices still waits for the R2 pilot review, and R3 numbers are tagged recalibrate after Pilot R1/R2'
+  note: 'CR-81: R3 slices SLC-17..19 were designed later under CR-67/CR-70 (DESIGN_COMPLETE), so the first part of the mitigation was overtaken; the G6 gate for R3 slices still waits for the R2 pilot review, and R3 numbers are tagged recalibrate after Pilot R1/R2'
   owner: Orchestrator
   residual_risk: L
   status: open

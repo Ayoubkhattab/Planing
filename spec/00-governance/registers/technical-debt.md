@@ -37,7 +37,7 @@ _2 items_
 
 - **description:** SLC-19 (Training, Competency & Exercises) domain, contract and acceptance files were authored outside the spec tooling: column order, YAML quoting, hand-written notes and narrative SYS scenarios differ from what slice_gen/slice_contracts/acc_gen produce
 - **cause:** R3 slice designed after the W9 tooling baseline; files written directly
-- **impact:** Regenerating SLC-19 from slc19_data would drop the hand-written notes and narrative scenarios; the V5 round trip excludes 13 SLC-19 files
+- **impact:** Regenerating SLC-19 from slc19_data would drop the hand-written notes and narrative scenarios; the V5 round trip excludes 12 SLC-19 files (the internal contract `openapi-readiness-internal-slc19.md` added by CR-76 is generator output and round-trips)
 - **severity:** L
 - **workaround:** Treat SLC-19 files as documents until reconciled; V1-V4 and V6 still verify them
 - **remediation:** Move SLC-19 notes into slc19_data, then regenerate and compare scenario coverage before replacing files
@@ -71,7 +71,7 @@ technical_debt:
     produce'
   cause: R3 slice designed after the W9 tooling baseline; files written directly
   impact: Regenerating SLC-19 from slc19_data would drop the hand-written notes and narrative scenarios; the V5 round trip
-    excludes 13 SLC-19 files
+    excludes 12 SLC-19 files (the internal contract openapi-readiness-internal-slc19.md added by CR-76 is generator output and round-trips)
   severity: L
   workaround: Treat SLC-19 files as documents until reconciled; V1-V4 and V6 still verify them
   remediation: Move SLC-19 notes into slc19_data, then regenerate and compare scenario coverage before replacing files

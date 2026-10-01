@@ -12,7 +12,7 @@ status: BASELINED
 
 **ما يُولَّد (لا يُعدَّل يدوياً):** ملفات Aggregates، كتالوجات الأوامر/الاستعلامات/الأحداث، كل ملفات OpenAPI/AsyncAPI/الأخطاء، ملفات القبول `*-state-machine.md`. **ما يُحرَّر كوثائق:** المواصفات، السياسات، وثائق الجودة والأمن والاعتمادية، سجلات الجاهزية، التقارير.
 
-**جولة تصحيح المصادر (Phase 3.8، CR-75..CR-79):** `slice_gen` يقبل في ملف بيانات الشريحة `ACTOR_OVERRIDE` (الدور المُصدِر لأمر بعينه، CR-77) و`CMD_ERRORS` (رموز خطأ لأمر بعينه، CR-75/CR-78)؛ `slice_contracts` يعرّف استجابات الخطأ مرة واحدة في `components.responses` ويضيف 401 لكل عملية و403 للأوامر و413/415 للعمليات ذات جسم وترويسة `Retry-After` مع 429 و503 (CR-75، CR-78)، ويكتب عقدًا داخليًا لكل سياق له أوامر نظام (CR-76)، ويضيف رموز المنصة الجديدة إلى كتالوج الأخطاء.
+**جولة تصحيح المصادر (Phase 3.8، CR-75..CR-81):** `slice_gen` يقبل في ملف بيانات الشريحة `ACTOR_OVERRIDE` (الدور المُصدِر لأمر بعينه، CR-77) و`CMD_ERRORS` (رموز خطأ لأمر بعينه، CR-75/CR-78/CR-81 — حلّت محل `EXTRA_ERRORS` لـ`TASK_SUSPENDED`)؛ `slice_contracts` يعرّف استجابات الخطأ مرة واحدة في `components.responses` ويضيف 401 لكل عملية و403 للأوامر و413/415 للعمليات ذات جسم وترويسة `Retry-After` مع 429 و503 (CR-75، CR-78)، ويكتب عقدًا داخليًا لكل سياق له أوامر نظام وعملياته تحمل `x-internal: true` (CR-76)، ويضيف رموز المنصة الجديدة إلى كتالوج الأخطاء.
 
 ## md_io.py
 
@@ -350,7 +350,7 @@ BASE_SCHEMAS = {
  "ResourceRef": {"type": "object", "required": ["urn", "id", "version", "state"], "properties": {"urn": {"$ref": "#/components/schemas/Urn"}, "id": {"type": "string"},
      "version": {"type": "integer"}, "state": {"type": "string"}}},
  "ApiError": {"type": "object", "required": ["code", "message", "correlation_id", "retryable"], "properties": {"code": {"type": "string"}, "message": {"type": "string"},
-     "details": {"type": "object"}, "correlation_id": {"type": "string"}, "trace_id": {"type": "string"}, "retryable": {"type": "boolean"},
+     "details": {"type": "object", "properties": {"approver": {"type": "string", "description": "approver role (APPROVAL_REQUIRED, ADR-P19)"}}}, "correlation_id": {"type": "string"}, "trace_id": {"type": "string"}, "retryable": {"type": "boolean"},
      "policy": {"type": "object", "properties": {"decision": {"type": "string"}, "reason_code": {"type": "string"}}}}},
  "Page": {"type": "object", "required": ["items"], "properties": {"items": {"type": "array", "items": {"type": "object"}}, "next_cursor": {"type": ["string", "null"]}}},
  "AuthorityCheckRequest": {"type": "object", "required": ["actor", "decision_type", "scope", "at"], "properties": {"actor": {"$ref": "#/components/schemas/Urn"},
@@ -390,15 +390,15 @@ BASE_SCHEMAS.update({
 
 RETRY_AFTER = {"Retry-After": {"description": "seconds to wait before retrying; sent when the error is retryable (CR-78)", "schema": {"type": "integer", "minimum": 0}}}
 ERRS = {"400": ("BadRequest", "VALIDATION_FAILED"),
-        "401": ("Unauthorized", "UNAUTHENTICATED (missing or expired token) / MFA_STEP_UP_REQUIRED (step-up challenge, retry with the same Idempotency-Key — ADR-P19)"),
-        "403": ("Forbidden", "AUTHZ_DENIED for a visible resource or a denied create / APPROVAL_REQUIRED (ADR-P19)"),
+        "401": ("Unauthorized", "UNAUTHENTICATED (missing or expired token) / MFA_STEP_UP_REQUIRED (challenge carries the required authentication strength as OIDC acr_values; retry with the same Idempotency-Key — ADR-P19)"),
+        "403": ("Forbidden", "AUTHZ_DENIED for a visible resource or a denied create / APPROVAL_REQUIRED with details.approver (ADR-P19)"),
         "404": ("NotFound", "NOT_FOUND (also returned for resources the caller may not see — ADR-P06 §5 as amended by ADR-P19)"),
         "409": ("Conflict", "state transition or version conflict"),
         "413": ("PayloadTooLarge", "PAYLOAD_TOO_LARGE"),
         "415": ("UnsupportedMediaType", "UNSUPPORTED_MEDIA_TYPE"),
         "422": ("Unprocessable", "guard failed / segregation of duties / idempotency key reused"),
         "429": ("RateLimited", "RATE_LIMITED"),
-        "503": ("Unavailable", "AUDIT_UNAVAILABLE / POLICY_ENGINE_UNAVAILABLE / DEPENDENCY_UNAVAILABLE")}
+        "503": ("Unavailable", "AUDIT_UNAVAILABLE (not retryable, no Retry-After) / POLICY_ENGINE_UNAVAILABLE / DEPENDENCY_UNAVAILABLE / context-specific dependency codes such as ELIGIBILITY_UNAVAILABLE")}
 RESPONSES = {name: {"description": d, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApiError"}}},
                     **({"headers": RETRY_AFTER} if k in ("429", "503") else {})} for k, (name, d) in ERRS.items()}
 def err_responses(command=False, body=False):
@@ -419,6 +419,7 @@ def build(ctx, bc, title, internal=False):
         ok = "201" if c["creates"] else "202"
         op = {"operationId": c["id"], "summary": c["id"], "x-aggregate": c["aggregate"], "x-policy": c["policy"],
               "x-events": sorted({t["event"] for t in c["transitions"]}), "x-error-codes": c["errors"], "x-offline-capable": c.get("offline_capable", False), "parameters": params,
+              **({"x-internal": True} if internal else {}),
               "requestBody": {"required": True, "content": {"application/json": {"schema": {"$ref": f"#/components/schemas/{name}"}}}},
               "responses": {ok: {"description": "accepted", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ResourceRef"}}}}, **err_responses(command=True, body=True)}}
         if m.lower() in paths.get(p, {}): raise SystemExit(f"PATH COLLISION: {m} {p} ({paths[p][m.lower()]['operationId']} vs {c['id']})")
@@ -506,7 +507,7 @@ open(f"{W}/05-contracts/asyncapi-{SFX}.md", "w", encoding="utf-8").write("\n".jo
 # ---------------- errors ----------------
 ERR_NOTE = ("`AUTHZ_DENIED` لا يُعاد للعميل كما هو عند مورد لا يحق للمستدعي رؤيته: يُعاد `NOT_FOUND` بنفس الشكل (ADR-P06 §5 كما عدّله ADR-P19). "
             "يُعاد `403` لمورد يحق للمستخدم رؤيته دون تنفيذ الإجراء، أو لأمر إنشاء مرفوض. التزام `mfa` غير مستوفى يُعاد `401 MFA_STEP_UP_REQUIRED` "
-            "ويُعاد الطلب بعد المصادقة المعززة بنفس `Idempotency-Key`؛ قرار `REQUIRE_APPROVAL` يُعاد `403 APPROVAL_REQUIRED`. ترويسة `Retry-After` ترافق 429 و503 القابل لإعادة المحاولة (CR-78).")
+            "ويُعاد الطلب بعد المصادقة المعززة بنفس `Idempotency-Key`؛ قرار `REQUIRE_APPROVAL` يُعاد `403 APPROVAL_REQUIRED` ويسمي `details.approver` دور المعتمِد. ترويسة `Retry-After` ترافق 429 و503 القابل لإعادة المحاولة (CR-78).")
 codes = {}
 for c in COMMANDS.values():
     for e in c["errors"]: codes.setdefault(e, set()).add(c["id"])

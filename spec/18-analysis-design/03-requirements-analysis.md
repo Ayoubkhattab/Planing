@@ -444,7 +444,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 ### 3.5 سيناريوهات الجودة
 
-95 سيناريو في `02-requirements/quality-scenarios.md`؛ مصفوفة التحقق `15-traceability/quality-verification-matrix.md` تغطي 95 منها. غير المغطاة: لا شيء **[Missing]**.
+95 سيناريو في `02-requirements/quality-scenarios.md`؛ مصفوفة التحقق `15-traceability/quality-verification-matrix.md` تغطي 95 منها. غير المغطاة: لا شيء.
 
 | الخاصية | العدد | السيناريوهات |
 |---|---|---|

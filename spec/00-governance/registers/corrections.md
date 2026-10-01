@@ -616,7 +616,7 @@ _81 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-81 in Phase 3.8 — 18-an
 - **correction:** Per ADR-P19: declare 401 and 403 responses on every command operation; add MFA_STEP_UP_REQUIRED (401, retryable after step-up) and APPROVAL_REQUIRED (403, not retryable) as platform-wide codes in the error catalogs, with ApiError.details.approver; add SEGREGATION_OF_DUTIES to the error lists of the 12 commands that have a separation rule but do not declare it; amend ADR-P06 item 5, THR-020 and PRV-04 so that the identical not-found response applies to resources the caller may not see. Applied through the spec tooling (slice_contracts) so that V5 round trip stays exact.
 - **target_wave:** Phase 3.8 — source-correction round
 - **origin:** ADR-P19; 18-analysis-design/00-index.md §6 S-07
-- **status:** APPLIED (Phase 3.8 source-correction round): slice_contracts declares 401 on every operation, 403 on commands, 413/415 on operations with a body (shared components.responses); MFA_STEP_UP_REQUIRED and APPROVAL_REQUIRED in every error catalog; SEGREGATION_OF_DUTIES on the 12 commands (CMD_ERRORS); ADR-P06 item 5, THR-020 and PRV-04 amended; SLC-19 contract and catalog edited by hand (DEBT-002)
+- **status:** APPLIED (Phase 3.8 source-correction round): slice_contracts declares 401 on every generated operation (QRY-LABEL-CHECK, built by the slc05 enrichment, declares no error responses), 403 on commands, 413/415 on operations with a body (shared components.responses); MFA_STEP_UP_REQUIRED and APPROVAL_REQUIRED in every error catalog; SEGREGATION_OF_DUTIES on the 12 commands (CMD_ERRORS); ADR-P06 item 5, THR-020 and PRV-04 amended; SLC-19 contract and catalog edited by hand (DEBT-002)
 
 ### CR-76
 
@@ -632,7 +632,7 @@ _81 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-81 in Phase 3.8 — 18-an
 - **correction:** Name the issuing role in each of the 26 policy subjects as resolved in 18-analysis-design/17-security-design.md §5 and §12.1 (rule: the paired verb in the same policy — resume↔pause/suspend, enable↔disable, retire↔deprecate/define/register, maintenance↔condition — without contradicting the transition guard; exceptions CMD-MDL-RETIRE and CMD-TOL-RETIRE recorded there). Add a separation rule to POL-ADP-RESUME (resumer ≠ the Administrator who suspended).
 - **target_wave:** Phase 3.8 — source-correction round
 - **origin:** 17-security-design.md §5; 02-actors-roles.md §6.6
-- **status:** APPLIED (Phase 3.8 source-correction round): 26 policy subjects name the issuing role (policies-slc02/04/06/07/09/10/11/12/15); the command catalogs carry the same actor (ACTOR_OVERRIDE); POL-ADP-RESUME has its separation rule and CMD-ADP-RESUME declares SEGREGATION_OF_DUTIES
+- **status:** APPLIED (Phase 3.8 source-correction round): 26 policy subjects name the issuing role (policies-slc02/04/06/07/09/10/11/12/15); the command catalogs carry the same actor (ACTOR_OVERRIDE); POL-ADP-RESUME has its separation rule and CMD-ADP-RESUME declares SEGREGATION_OF_DUTIES; the subject text carries no provenance (this entry is the record)
 
 ### CR-78
 
@@ -664,7 +664,7 @@ _81 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-81 in Phase 3.8 — 18-an
 - **correction:** AGG-INCIDENT, AGG-LOGISTICS-REQUEST and AGG-SHIPMENT list their terminal states (slc17/slc18 data, regenerated); TASK_SUSPENDED declared per command (CMD_ERRORS) on the 21 commands INV-TASK-06 covers; sensors marked R2 with a dashed edge in c4-context.md; RSK-028 carries a dated update; slices.md 21 items, quality-scenarios.md 95 items; verification rows for QAS-LOG-001/002 and QAS-TRX-001/002; VS04 and VS05 cite UC-140..144 and UC-160..163.
 - **target_wave:** Phase 3.8 — source-correction round
 - **origin:** 18-analysis-design/00-index.md §6 S-01, S-02, S-12, S-13, S-14, S-18, S-19, S-25
-- **status:** APPLIED (Phase 3.8 source-correction round) — APPROVED_DELEGATED
+- **status:** APPLIED (Phase 3.8 source-correction round): approved under the project owner's delegation (APPROVED_DELEGATED) and applied in the same round
 
 ---
 
@@ -1225,7 +1225,7 @@ corrections:
     Applied through the spec tooling (slice_contracts) so that V5 round trip stays exact.'
   target_wave: Phase 3.8 — source-correction round
   origin: ADR-P19; 18-analysis-design/00-index.md §6 S-07
-  status: 'APPLIED (Phase 3.8 source-correction round): slice_contracts declares 401 on every operation, 403 on commands, 413/415
+  status: 'APPLIED (Phase 3.8 source-correction round): slice_contracts declares 401 on every generated operation (QRY-LABEL-CHECK, built by the slc05 enrichment, declares no error responses), 403 on commands, 413/415
     on operations with a body (shared components.responses); MFA_STEP_UP_REQUIRED and APPROVAL_REQUIRED in every error catalog;
     SEGREGATION_OF_DUTIES on the 12 commands (CMD_ERRORS); ADR-P06 item 5, THR-020 and PRV-04 amended; SLC-19 contract and catalog
     edited by hand (DEBT-002)'
@@ -1297,7 +1297,7 @@ corrections:
     rows for QAS-LOG-001/002 and QAS-TRX-001/002; VS04 and VS05 cite UC-140..144 and UC-160..163.
   target_wave: Phase 3.8 — source-correction round
   origin: 18-analysis-design/00-index.md §6 S-01, S-02, S-12, S-13, S-14, S-18, S-19, S-25
-  status: APPLIED (Phase 3.8 source-correction round) — APPROVED_DELEGATED
+  status: 'APPLIED (Phase 3.8 source-correction round): approved under the project owner''s delegation (APPROVED_DELEGATED) and applied in the same round'
 ```
 
 </details>

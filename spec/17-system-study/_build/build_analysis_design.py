@@ -411,6 +411,9 @@ def error_condition(code, cmd, a, pol, trs, mandatory):
     if code == "AUTHZ_DENIED":
         return (f"السياسة {pol.get('id', '—')} ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، "
                 "و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`)")
+    if code == "ELIGIBILITY_UNAVAILABLE":
+        return ("فحص الأهلية في BC05 (`QRY-ELIG-CHECK`) لم يُجب: الإسناد يفشل مغلقًا ويُعاد المحاولة لاحقًا "
+                "(`03-domain/contexts/BC05/eligibility-rules.md`، THR-S03-04، CR-78)")
     if code == "VALIDATION_FAILED":
         return "حقل إلزامي مفقود أو غير صالح" + (f": {', '.join(mandatory)}" if mandatory else "")
     if code == "VERSION_CONFLICT":
@@ -513,6 +516,8 @@ def command_story(cid, c, a, aggs, pol, reqs_txt, ucs_of, http_of, ops, stats):
           "    | code | http | condition |"]
     for code in errors:
         L.append(f"    | {code} | {http_of.get(code, '?')} | {esc(error_condition(code, cid, a, pol, trs, mandatory))} |")
+    if mfa_required(cid, pol):  # platform-wide code, listed only where the policy carries the obligation (ADR-P19, CR-75)
+        L.append(f"    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في {pol.get('id', '—')} وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |")
     L += ["```", ""]
     return sid, typ, cat, L
 
@@ -1353,7 +1358,7 @@ def build_requirements(aggs, reqs, ucs, qrys):
         qual[q.get("quality", "—")].append(qid)
     L += ["### 3.5 سيناريوهات الجودة", "",
           f"{len(qas)} سيناريو في `02-requirements/quality-scenarios.md`؛ مصفوفة التحقق `15-traceability/quality-verification-matrix.md` تغطي {len(set(qas) & set(matrix))} منها. "
-          f"غير المغطاة: {', '.join(sorted(set(qas) - set(matrix))) or 'لا شيء'} **[Missing]**.", "",
+          f"غير المغطاة: {(', '.join(sorted(set(qas) - set(matrix))) + ' **[Missing]**') if set(qas) - set(matrix) else 'لا شيء'}.", "",
           "| الخاصية | العدد | السيناريوهات |", "|---|---|---|"]
     L += [f"| {k} | {len(v)} | {', '.join(v)} |" for k, v in sorted(qual.items(), key=lambda x: (-len(x[1]), x[0]))]
     L += ["", "#### محركات المعمارية (الأولوية H/H)", "", "| السيناريو | الخاصية | المحفِّز | المقياس | التحقق |", "|---|---|---|---|---|"]

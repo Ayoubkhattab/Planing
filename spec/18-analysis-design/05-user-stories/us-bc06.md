@@ -1323,7 +1323,7 @@ Scenario Outline: CMD-PTM-EDIT is rejected
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE؛ reason; existing products keep their pinned version
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← RETIRED؛ الحدث EVT-PTM-RETIRED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Knowledge Manager / Analysis lead (retire) — issuing role named by CR-77؛ الشروط: tenant match; object visible؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Knowledge Manager / Analysis lead (retire)؛ الشروط: tenant match; object visible؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-PTM-RETIRE` · `AGG-PRODUCT-TEMPLATE` · متطلبات: REQ-PRD-001 · حالات استخدام: UC-110
 - **ضوابط النوع والفئة:** C-DEL، K-RPT (التعريف في [00-guide.md](00-guide.md))
 

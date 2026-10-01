@@ -174,7 +174,7 @@ _27 items_
 ### POL-MDL-RETIRE
 
 - **command:** CMD-MDL-RETIRE
-- **subject:** AI governance authority (retire) — issuing role named by CR-77
+- **subject:** AI governance authority (retire)
 - **resource:** AGG-MODEL-VERSION
 - **context_conditions:** tenant match; object visible
 - **segregation_of_duties:** —
@@ -262,7 +262,7 @@ _27 items_
 ### POL-TOL-ENABLE
 
 - **command:** CMD-TOL-ENABLE
-- **subject:** Security Officer (enable) — issuing role named by CR-77
+- **subject:** Security Officer (enable)
 - **resource:** AGG-AI-TOOL
 - **context_conditions:** tenant match; object visible
 - **segregation_of_duties:** —
@@ -273,7 +273,7 @@ _27 items_
 ### POL-TOL-RETIRE
 
 - **command:** CMD-TOL-RETIRE
-- **subject:** Security Officer (retire) — issuing role named by CR-77
+- **subject:** Security Officer (retire)
 - **resource:** AGG-AI-TOOL
 - **context_conditions:** tenant match; object visible
 - **segregation_of_duties:** —
@@ -473,7 +473,7 @@ command_policies:
   obligations: audit
 - id: POL-MDL-RETIRE
   command: CMD-MDL-RETIRE
-  subject: AI governance authority (retire) — issuing role named by CR-77
+  subject: AI governance authority (retire)
   resource: AGG-MODEL-VERSION
   context_conditions: tenant match; object visible
   segregation_of_duties: —
@@ -545,7 +545,7 @@ command_policies:
   obligations: audit
 - id: POL-TOL-ENABLE
   command: CMD-TOL-ENABLE
-  subject: Security Officer (enable) — issuing role named by CR-77
+  subject: Security Officer (enable)
   resource: AGG-AI-TOOL
   context_conditions: tenant match; object visible
   segregation_of_duties: —
@@ -554,7 +554,7 @@ command_policies:
   obligations: audit
 - id: POL-TOL-RETIRE
   command: CMD-TOL-RETIRE
-  subject: Security Officer (retire) — issuing role named by CR-77
+  subject: Security Officer (retire)
   resource: AGG-AI-TOOL
   context_conditions: tenant match; object visible
   segregation_of_duties: —

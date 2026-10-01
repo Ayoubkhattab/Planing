@@ -254,9 +254,9 @@ flowchart LR
 
 | # | الملاحظة | المصادر | التصنيف |
 |---|---|---|---|
-| N-01 | الحساسات في R2 (W1 Q24، SLC-16، REQ-INT-002)، لكن `c4-context.md` يرسمها بخط متصل مع GIS والطقس دون علامة R2 (خلافًا لـERP) | `W1-answers.md` Q24؛ `12-solution/c4-context.md` | **[Needs Review]** |
-| N-02 | تخفيف RSK-028 ما زال «لا تصميم شرائح R3 قبل مراجعة Pilot R1»، بينما صُمِّمت SLC-17..19 بتفويض المالك وهي DESIGN_COMPLETE | `registers/risks.md` RSK-028؛ `release-3-scope.md` §3؛ `slices.md` | **[Needs Review]** |
-| N-03 | ترويسة `slices.md` تقول «18 items» والملف يحوي 21 شريحة (SLC-00..SLC-19 مع SLC-12a وSLC-13 المُستبدلة) | `14-slices/slices.md` | **[Needs Review]** |
+| N-01 | الحساسات في R2 (W1 Q24، SLC-16، REQ-INT-002)، لكن `c4-context.md` يرسمها بخط متصل مع GIS والطقس دون علامة R2 (خلافًا لـERP) | `W1-answers.md` Q24؛ `12-solution/c4-context.md` | محسوم (CR-81): خط متقطع بعلامة R2 |
+| N-02 | تخفيف RSK-028 ما زال «لا تصميم شرائح R3 قبل مراجعة Pilot R1»، بينما صُمِّمت SLC-17..19 بتفويض المالك وهي DESIGN_COMPLETE | `registers/risks.md` RSK-028؛ `release-3-scope.md` §3؛ `slices.md` | محسوم (CR-81): ملاحظة مؤرخة في RSK-028؛ قيد G6 لشرائح R3 باقٍ |
+| N-03 | ترويسة `slices.md` تقول «18 items» والملف يحوي 21 شريحة (SLC-00..SLC-19 مع SLC-12a وSLC-13 المُستبدلة) | `14-slices/slices.md` | محسوم (CR-81): 21 |
 | N-04 | تبادل OGC API الصادر وارد في TD-10 وغائب عن مخطط C4 السياقي | `technology-decisions.md` TD-10؛ `c4-context.md` | **[Inferred]** في F-16 |
 
 ## 10. خريطة هذه الدراسة

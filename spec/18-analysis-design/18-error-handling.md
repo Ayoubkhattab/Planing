@@ -33,12 +33,13 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الفئة | HTTP | أمثلة | من أين |
 |---|---|---|---|
 | طلب غير صالح | 400 | `VALIDATION_FAILED` | محوّل HTTP: مخطط العقد والحقول الإلزامية |
-| مصادقة | 401 | `MFA_STEP_UP_REQUIRED` †؛ رمز غائب أو منتهٍ **[Missing]** (§8) | البوابة؛ الخطوة 6 في خط الأوامر |
+| مصادقة | 401 | `UNAUTHENTICATED` (رمز غائب أو منتهٍ)، `MFA_STEP_UP_REQUIRED` † | البوابة؛ الخطوة 6 في خط الأوامر |
+| حجم الطلب ونوعه | 413 / 415 | `PAYLOAD_TOO_LARGE`، `UNSUPPORTED_MEDIA_TYPE` | البوابة |
 | تخويل وعدم إفصاح | 403 / 404 / 422 | `AUTHZ_DENIED`، `PERMISSION_DENIED`، `NOT_FOUND`، `SEGREGATION_OF_DUTIES` (الخطوتان 2 و5)؛ `APPROVAL_REQUIRED` † (الخطوة 6) | منفذ التخويل |
 | تزامن وعدم تكرار | 409 / 422 | `VERSION_CONFLICT`، `IDEMPOTENCY_KEY_REUSED` | الخطوتان 3 و7 |
 | انتقال حالة غير مسموح | 409 | `*_INVALID_STATE_TRANSITION` (89 رمزًا، رمز لكل Aggregate) | حلقة المجال: مصفوفة الحالة × الأمر |
 | قاعدة عمل أو شرط انتقال | 422 | `*_INVALID`، `*_REQUIRED`، `ASSIGNEE_NOT_ELIGIBLE`… | حلقة المجال: الشروط والثوابت |
-| منصة | 429 / 503 | `RATE_LIMITED`، `POLICY_ENGINE_UNAVAILABLE`، `AUDIT_UNAVAILABLE` | البوابة والحصص؛ محرك السياسات؛ التدقيق |
+| منصة واعتماديات | 429 / 503 | `RATE_LIMITED`، `POLICY_ENGINE_UNAVAILABLE`، `AUDIT_UNAVAILABLE`، `DEPENDENCY_UNAVAILABLE`، `ELIGIBILITY_UNAVAILABLE` | البوابة والحصص؛ محرك السياسات؛ التدقيق؛ استدعاء سياق آخر |
 
 أرقام الخطوات في هذا الملف هي خطوات خط الأوامر في ADR-P17 (1–10). † رمز من ADR-P19 أضافه CR-75 إلى كل كتالوج في جولة تصحيح المصادر (مطبَّق)، فهو ضمن الـ313 رمزًا في §9.
 
@@ -72,7 +73,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 ترتيب الشروط داخل الخطوة 8 حين يفشل أكثر من شرط: الحالة أولًا، ثم الشروط بترتيب ورودها في جدول الانتقالات **[Derived]**.
 
-**تحفظ على الخطوة 3 (عولج بـCR-80):** ما بعد الخطوة 5 لا يكشف شيئًا قبل قرار التخويل، لكن الخطوة 3 تسبقه. جدول `idempotency_keys` مفتاحه `(tenant_id, key)` (`06-data/logical-model/slc-01.md`)، فمستخدم ثانٍ في المستأجر نفسه يعيد استعمال مفتاح غيره يتلقى `ResourceRef` المحفوظ (urn، الإصدار، الحالة) أو `IDEMPOTENCY_KEY_REUSED`، وهذا يخالف ADR-P17 2.5 («nothing about the resource … is returned before this decision»). المقترح: مفتاح عدم التكرار بنطاق المستدعي `(tenant_id, principal_id, key)`، فلا يُطابق إلا طلبات المستدعي نفسه، مع بقاء الترتيب كما هو — CR-80. المفاتيح عشوائية (ULID) فالتصادم غير المقصود نادر، لكن التخمين أو التسريب ممكن.
+**تحفظ على الخطوة 3 (عولج بـCR-80):** ما بعد الخطوة 5 لا يكشف شيئًا قبل قرار التخويل، لكن الخطوة 3 تسبقه. كان جدول `idempotency_keys` مفتاحه `(tenant_id, key)` (`06-data/logical-model/slc-01.md` قبل CR-80)، فمستخدم ثانٍ في المستأجر نفسه يعيد استعمال مفتاح غيره كان يتلقى `ResourceRef` المحفوظ (urn، الإصدار، الحالة) أو `IDEMPOTENCY_KEY_REUSED`، وهذا يخالف ADR-P17 2.5 («nothing about the resource … is returned before this decision»). الحل المطبَّق (CR-80): مفتاح عدم التكرار بنطاق المستدعي `(tenant_id, principal_id, key)`، فلا يُطابق إلا طلبات المستدعي نفسه، مع بقاء الترتيب كما هو. المفاتيح عشوائية (ULID) فالتصادم غير المقصود نادر، لكن التخمين أو التسريب ممكن.
 
 ## 5. إعادة المحاولة
 
@@ -82,7 +83,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 |---|---|---|
 | `VERSION_CONFLICT` | نعم | يعيد تحميل المورد، ويعيد بناء الأمر على الإصدار الجديد إن بقي منطقيًا، بمفتاح `Idempotency-Key` جديد |
 | `MFA_STEP_UP_REQUIRED` | نعم | بعد المصادقة المعززة، **بنفس** `Idempotency-Key` (لم يُنفَّذ شيء) |
-| `RATE_LIMITED`، `POLICY_ENGINE_UNAVAILABLE` | نعم | تأخير متزايد مع عشوائية، بنفس `Idempotency-Key`؛ ترويسة `Retry-After` **[Missing]** (§8) |
+| `RATE_LIMITED`، `POLICY_ENGINE_UNAVAILABLE` | نعم | تأخير متزايد مع عشوائية، بنفس `Idempotency-Key`؛ وتحترم ترويسة `Retry-After` (CR-78) |
 | انقطاع الشبكة أو مهلة دون استجابة | نعم | بنفس `Idempotency-Key`: إن كان الأمر نُفِّذ تُعاد استجابته المحفوظة (24 ساعة) |
 | كل ما سواه | لا | خطأ منطقي يحتاج تغيير الطلب أو الحالة أو الصلاحية |
 
@@ -97,7 +98,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | ناقل التدقيق | تراكم محلي؛ رفض الأوامر المغيرة للحالة بعد 24 ساعة أو 80 % من السعة | `audit-architecture.md` |
 | الانتقالات التلقائية (`SYS:`) والعمّال | نفس خط الأوامر؛ الفشل يُسجَّل ويُنبَّه عليه، ولا يُسقَط بصمت | `05-user-stories/00-guide.md` ضابط C-SYS |
 | المزامنة الميدانية | الأمر المرفوض دون اتصال لا يصبح خطأ HTTP للمستخدم بل تعارض مزامنة (AGG-SYNC-CONFLICT) يحسمه محلل أو المستخدم | ADR-P09 |
-| استدعاء سياق آخر (OHS) | يفشل مغلقًا: الأمر الذي يحتاج نتيجة الاستدعاء يُرفض — رمز لذلك **[Missing]** (§8) | THR-S03-04 |
+| استدعاء سياق آخر (OHS) | يفشل مغلقًا: الأمر الذي يحتاج نتيجة الاستدعاء يُرفض بـ`DEPENDENCY_UNAVAILABLE` أو رمز السياق الخاص مثل `ELIGIBILITY_UNAVAILABLE` (503، قابل لإعادة المحاولة — CR-78) | THR-S03-04 |
 
 ## 6. المراقبة
 

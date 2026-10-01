@@ -28,12 +28,12 @@ sources: [01-business/value-streams.md, 01-business/processes.md, 01-business/st
 | VS01 Information → Understanding | 8 | BP01–BP10 | UC-001..008، UC-020..024 | partial | 8/8 مراحل؛ BP10 بلا أمر نشر (إسقاطات) | R1، R2 |
 | VS02 Understanding → Decision | 12 | BP11–BP20 | UC-010..016، UC-020..024، UC-030..036 | partial | 12/12؛ «Impact» حقل فقط | R1 |
 | VS03 Decision → Execution | 14 | BP21–BP30 | UC-030..036، UC-040..046، UC-050..055 | partial | 14/14؛ «Work Packages» عبر الأنشطة؛ الموارد والسعة R2 | R1، R2 |
-| VS04 Risk → Resilience | 11 | BP31–BP38 | UC-140..144 | **none — CR-09** | 10/11 عبر AGG-RISK وAGG-INCIDENT؛ «Threshold» **[Missing]** | R3 |
-| VS05 Capability → Readiness | 10 | BP39–BP48 | UC-160..163 | **none — CR-09** | 10/10 عبر AGG-ROLE-REQUIREMENT وAGG-QUALIFICATION-RECORD وAGG-EXERCISE؛ BP42 «Training Plan» **[Missing]** | R1، R2، R3 |
+| VS04 Risk → Resilience | 11 | BP31–BP38 | UC-140..144 | UC-140..144 (صُحح بـCR-81) | 10/11 عبر AGG-RISK وAGG-INCIDENT؛ «Threshold» **[Missing]** | R3 |
+| VS05 Capability → Readiness | 10 | BP39–BP48 | UC-160..163 | UC-160..163 (صُحح بـCR-81) | 10/10 عبر AGG-ROLE-REQUIREMENT وAGG-QUALIFICATION-RECORD وAGG-EXERCISE؛ BP42 «Training Plan» **[Missing]** | R1، R2، R3 |
 | VS06 Experience → Knowledge | 10 | BP49–BP55 | UC-060..065 | partial | 10/10 | R1 (المصادر)، R2 |
 | VS07 Record → Institutional Memory | 9 | BP56–BP62 | UC-060..065 | partial | 8/9؛ «Institutional Memory» **[Missing]** | R1، R2 |
 
-**[Needs Review] NR-01:** عمود `use_case_coverage` في `01-business/value-streams.md` ما زال يقول «none — CR-09» لـVS04 وVS05. لكن `02-requirements/use-cases.md` أضاف UC-140..144 (VS04) وUC-160..163 (VS05) في CR-70، وجدول `gaps` فيه يحيل VS04 إلى «R3 (SLC-17)» وVS05 إلى «UC-102 eligibility (R1); rest R3». الموجود الآن في المواصفات هو AGG-RISK وAGG-INCIDENT (SLC-17) وAGG-SCENARIO وAGG-EXERCISE وAGG-SIMULATION (SLC-19)، يضاف إليها AGG-QUALIFICATION-RECORD (SLC-03) وAGG-ROLE-REQUIREMENT (SLC-09) المعاد استخدامهما. لذلك يُعامَل التياران في هذه الوثيقة على أنهما **متحققان [Derived]**. يلزم تحديث `value-streams.md`.
+**NR-01 (حُسم بـCR-81):** كان عمود `use_case_coverage` في `01-business/value-streams.md` ما زال يقول «none — CR-09» لـVS04 وVS05. لكن `02-requirements/use-cases.md` أضاف UC-140..144 (VS04) وUC-160..163 (VS05) في CR-70، وجدول `gaps` فيه يحيل VS04 إلى «R3 (SLC-17)» وVS05 إلى «UC-102 eligibility (R1); rest R3». الموجود الآن في المواصفات هو AGG-RISK وAGG-INCIDENT (SLC-17) وAGG-SCENARIO وAGG-EXERCISE وAGG-SIMULATION (SLC-19)، يضاف إليها AGG-QUALIFICATION-RECORD (SLC-03) وAGG-ROLE-REQUIREMENT (SLC-09) المعاد استخدامهما. لذلك يُعامَل التياران في هذه الوثيقة على أنهما **متحققان [Derived]**. حدّث CR-81 `value-streams.md` ليذكر UC-140..144 وUC-160..163.
 
 ---
 
@@ -1089,7 +1089,7 @@ flowchart LR
 
 | # | الوسم | البند | المسارات |
 |---|---|---|---|
-| NR-01 | **[Needs Review]** | `use_case_coverage` لـVS04 وVS05 هو «none — CR-09»، بينما هناك UC-140..144 وUC-160..163 (CR-70) وAggregates في R3 تحقق التيارين | `01-business/value-streams.md`؛ `02-requirements/use-cases.md` (UC-140..163، جدول `gaps`) |
+| NR-01 | محسوم (CR-81) | كان `use_case_coverage` لـVS04 وVS05 «none — CR-09»، بينما هناك UC-140..144 وUC-160..163 (CR-70) وAggregates في R3 تحقق التيارين | `01-business/value-streams.md`؛ `02-requirements/use-cases.md` (UC-140..163، جدول `gaps`) |
 | NR-02 | **[Needs Review]** | فاعلون في عمود «الفاعل» بكتالوجات الأوامر ليس لهم معرّف `ACT-*` بين الخمسة عشر، ومنهم: collection manager، collection planner، Analysis lead، reviewer، authority holder، محدِّد الخطر، مقيّم، موافق المعالجة، أي مُبلِّغ مخوَّل، مقيّم الحادثة، قائد الحادثة، Exercise Director، Exercise Controller، Evaluator، dispatcher / carrier operator، Legal/Compliance authority، release authority، integration engineer، AI platform engineer. يُحسم الربط في `02-actors-roles.md` | `01-business/stakeholders.md`؛ `03-domain/contexts/BC*/commands-*.md` |
 | NR-03 | **[Needs Review]** | الحدث الحامل لإجراء ARCHIVE من BC08 إلى BC06 غير مسمّى، ومستهلكو EVT-DSP-* لا يذكرون BC06 | `BC06/aggregates/AGG-ARCHIVE-PACKAGE.md`؛ `BC08/events-slc12a.md`؛ `BC08/aggregates/AGG-DISPOSITION-RUN.md` |
 | M-01 | **[Missing]** | VS04 «Threshold»: لا عتبة ولا انتقال تلقائي على `risk_score` | `BC04/aggregates/AGG-RISK.md`؛ `BC04/risk-contingency-spec.md` |
@@ -1098,4 +1098,4 @@ flowchart LR
 | M-04 | **[Missing]** | لا تسليم من VS01 (تنبيه أو موقف) إلى VS04 (حادثة) | `BC03/events-slc06.md`؛ `BC04/aggregates/AGG-INCIDENT.md` |
 | D-01 | **[Derived]** | مراحل بلا أمر خاص وتتحقق بتجميع: VS01 BP10 (عبر الإسقاطات)، وVS02 «Impact» (حقل)، وVS03 «Work Packages» (أنشطة `task_generating`)، وVS04 «Hazard» (بيانات مرجعية، قرار صريح)، وVS07 «Operational Record» و«Closure» | الأقسام 1.1، 2.1، 3.1، 4.1، 7.1 |
 | D-02 | **[Derived]** | مراحل بلا BP بالاسم: VS01 «Source» و«Context»، وVS02 «Assumptions» و«Impact»، وVS03 «Schedule»، وVS05 «Assignment»، وVS06 «Execution» إلى «Review»، وVS07 «Closure» و«Institutional Memory». السبب أن `processes.md` أسماء فقط («name only — W1/W4») | `01-business/processes.md` |
-| — | مسجَّل سابقًا | S-01 (AGG-INCIDENT: قائمة `states` بلا CLOSED وCANCELLED)، S-08 (`CMD-SIM-START` داخلي في عقد عام)، S-11 (اسم schema الإسقاطات) | `00-index.md` §6 |
+| — | مسجَّل سابقًا | S-01 وS-08 محسومان (CR-81، CR-76)؛ S-11 (اسم schema الإسقاطات) ما زال مفتوحًا | `00-index.md` §6 |

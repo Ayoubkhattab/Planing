@@ -389,7 +389,7 @@ Scenario Outline: CMD-AST-DISPOSE is rejected
 - **الشروط المسبقة:** الحالة الحالية: UNDER_MAINTENANCE؛ maintenance order COMPLETED with outcome failed; reason
 - **المدخلات:** `maintenance_order`!: urn, `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← UNSERVICEABLE؛ الحدث EVT-AST-UNSERVICEABLE؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Resource Manager (fail maintenance) — issuing role named by CR-77؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Resource Manager (fail maintenance)؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-AST-FAIL-MAINTENANCE` · `AGG-ASSET` · متطلبات: REQ-RES-001, REQ-RES-002, REQ-RES-003, REQ-RES-005 · حالات استخدام: UC-050, UC-051, UC-053
 - **ضوابط النوع والفئة:** C-WF، K-CORE (التعريف في [00-guide.md](00-guide.md))
 
@@ -425,7 +425,7 @@ Scenario Outline: CMD-AST-FAIL-MAINTENANCE is rejected
 - **الشروط المسبقة:** الحالة الحالية: IN_SERVICE؛ reason; active assignments are notified; future reservations flagged
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← UNSERVICEABLE؛ الحدث EVT-AST-UNSERVICEABLE؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Resource Manager (mark unserviceable) — issuing role named by CR-77؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Resource Manager (mark unserviceable)؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-AST-MARK-UNSERVICEABLE` · `AGG-ASSET` · متطلبات: REQ-RES-001, REQ-RES-002, REQ-RES-003, REQ-RES-005 · حالات استخدام: UC-050, UC-051, UC-053
 - **ضوابط النوع والفئة:** C-WF، K-CORE (التعريف في [00-guide.md](00-guide.md))
 
@@ -497,7 +497,7 @@ Scenario Outline: CMD-AST-RECLASSIFY is rejected
 - **الشروط المسبقة:** الحالة الحالية: LOST؛ found; inspection required before service
 - **المدخلات:** `note`: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← UNSERVICEABLE؛ الحدث EVT-AST-RECOVERED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Resource Manager (recover) — issuing role named by CR-77؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Resource Manager (recover)؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-AST-RECOVER` · `AGG-ASSET` · متطلبات: REQ-RES-001, REQ-RES-002, REQ-RES-003, REQ-RES-005 · حالات استخدام: UC-050, UC-051, UC-053
 - **ضوابط النوع والفئة:** C-WF، K-CORE (التعريف في [00-guide.md](00-guide.md))
 
@@ -603,7 +603,7 @@ Scenario Outline: CMD-AST-REPORT-LOST is rejected
 - **الشروط المسبقة:** الحالة الحالية: UNDER_MAINTENANCE؛ maintenance order COMPLETED; condition serviceable; required certifications valid
 - **المدخلات:** `maintenance_order`!: urn — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← IN_SERVICE؛ الحدث EVT-AST-RETURNED-TO-SERVICE؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Resource Manager (return to service) — issuing role named by CR-77؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Resource Manager (return to service)؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-AST-RETURN-TO-SERVICE` · `AGG-ASSET` · متطلبات: REQ-RES-001, REQ-RES-002, REQ-RES-003, REQ-RES-005 · حالات استخدام: UC-050, UC-051, UC-053
 - **ضوابط النوع والفئة:** C-WF، K-CORE (التعريف في [00-guide.md](00-guide.md))
 
@@ -675,7 +675,7 @@ Scenario Outline: CMD-AST-SET-CERTIFICATION is rejected
 - **الشروط المسبقة:** الحالة الحالية: IN_SERVICE, UNSERVICEABLE؛ maintenance order IN_PROGRESS for this asset
 - **المدخلات:** `maintenance_order`!: urn — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← UNDER_MAINTENANCE؛ الحدث EVT-AST-MAINTENANCE-STARTED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Resource Manager (start maintenance) — issuing role named by CR-77؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Resource Manager (start maintenance)؛ الشروط: tenant match; object visible; owner/pool scope؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-AST-START-MAINTENANCE` · `AGG-ASSET` · متطلبات: REQ-RES-001, REQ-RES-002, REQ-RES-003, REQ-RES-005 · حالات استخدام: UC-050, UC-051, UC-053
 - **ضوابط النوع والفئة:** C-WF، K-CORE (التعريف في [00-guide.md](00-guide.md))
 

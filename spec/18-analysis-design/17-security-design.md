@@ -167,32 +167,32 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 | الأمر | الأدوار في السياسة | الفاعل المحسوم | المبرر |
 |---|---|---|---|
-| `CMD-ADP-RESUME` | second Administrator (resume) — issuing role named by CR-77 | **second Administrator** | إعادة التشغيل تعادل التفعيل (activate) فتبقى للشخص الثاني؛ يتطلب قاعدة فصل مهام ≠ من أوقفه تضاف بـCR-77 |
-| `CMD-ADP-RETIRE` | Administrator (retire) — issuing role named by CR-77 | **Administrator** | نهاية دورة حياة يملكها من سجّل المحوّل |
-| `CMD-ADP-SUSPEND` | Administrator (suspend) — issuing role named by CR-77 | **Administrator** | إيقاف فوري للاحتواء، مقابل register/update |
-| `CMD-AMT-DEPRECATE` | Analysis lead (deprecate) — issuing role named by CR-77 | **Analysis lead** | مقابل register؛ التفعيل وحده للشخص الثاني |
-| `CMD-AMT-RETIRE` | Analysis lead (retire) — issuing role named by CR-77 | **Analysis lead** | مقابل register |
-| `CMD-AST-FAIL-MAINTENANCE` | Resource Manager (fail maintenance) — issuing role named by CR-77 | **Resource Manager** | عمليات الحالة الفنية (condition) |
-| `CMD-AST-MARK-UNSERVICEABLE` | Resource Manager (mark unserviceable) — issuing role named by CR-77 | **Resource Manager** | عمليات الحالة الفنية (condition) |
-| `CMD-AST-RECOVER` | Resource Manager (recover) — issuing role named by CR-77 | **Resource Manager** | مقابل lost (الإبلاغ عن الفقد) |
-| `CMD-AST-RETURN-TO-SERVICE` | Resource Manager (return to service) — issuing role named by CR-77 | **Resource Manager** | عمليات الحالة الفنية (condition) |
-| `CMD-AST-START-MAINTENANCE` | Resource Manager (start maintenance) — issuing role named by CR-77 | **Resource Manager** | عمليات الحالة الفنية (condition) لمدير الموارد |
-| `CMD-CRR-RETIRE` | Analyst lead (retire) — issuing role named by CR-77 | **Analyst lead** | مقابل define/edit؛ التفعيل وحده للمعتمِد الثاني |
-| `CMD-DEV-ROTATE-KEY` | user (rotate key) — issuing role named by CR-77 | **user** | الشرط «signed by current key; new public key» لا يستوفيه إلا حامل الجهاز |
-| `CMD-ER-PARK` | Analyst (park) — issuing role named by CR-77 | **Analyst** | مقابل review/decide؛ الشخص الثاني للتأكيد والتقسيم فقط |
-| `CMD-ER-RESUME` | Analyst (resume) — issuing role named by CR-77 | **Analyst** | مقابل review/decide |
-| `CMD-ER-WITHDRAW` | Analyst (withdraw) — issuing role named by CR-77 | **Analyst** | مقابل propose |
-| `CMD-MDL-RETIRE` | AI governance authority (retire) — issuing role named by CR-77 | **AI governance authority** | **استثناء من القاعدة** (القاعدة تعطيه للمهندس عبر deprecate): الإيقاف النهائي من حالة DEPRECATED يقابل reinstate لدى سلطة الحوكمة |
-| `CMD-OBS-AMEND` | Field User / Operator / Analyst / adapter service account (amend) — issuing role named by CR-77 | **Field User / Operator / Analyst / adapter service account** | تعديل الملاحظة لمن سجّلها (record) |
-| `CMD-OBS-ATTACH-EVIDENCE` | Field User / Operator / Analyst / adapter service account (attach evidence) — issuing role named by CR-77 | **Field User / Operator / Analyst / adapter service account** | إرفاق الدليل لمن سجّل الملاحظة (record) |
-| `CMD-OBS-RECLASSIFY` | Analyst (reclassify) — issuing role named by CR-77 | **Analyst** | إعادة التصنيف لمن يتحقق من الملاحظة (validate) |
-| `CMD-PTM-RETIRE` | Knowledge Manager / Analysis lead (retire) — issuing role named by CR-77 | **Knowledge Manager / Analysis lead** | مقابل define/edit |
-| `CMD-SIT-RESUME` | Analyst / Manager (resume) — issuing role named by CR-77 | **Analyst / Manager** | مقابل pause |
-| `CMD-SRC-REINSTATE` | Analyst (reinstate) — issuing role named by CR-77 | **Analyst** | مقابل suspend |
-| `CMD-SRC-RETIRE` | Analyst (retire) — issuing role named by CR-77 | **Analyst** | مقابل register |
-| `CMD-SRC-SUSPEND` | Analyst (suspend) — issuing role named by CR-77 | **Analyst** | مقابل register/rate؛ المصدر المحمي يبقى لمسؤول الأمن عبر protection |
-| `CMD-TOL-ENABLE` | Security Officer (enable) — issuing role named by CR-77 | **Security Officer** | مقابل disable |
-| `CMD-TOL-RETIRE` | Security Officer (retire) — issuing role named by CR-77 | **Security Officer** | **استثناء من القاعدة** (القاعدة تعطيه للمهندس عبر register): تفعيل الأداة وتعطيلها لمسؤول الأمن، فإيقافها النهائي له |
+| `CMD-ADP-RESUME` | second Administrator (resume) | **second Administrator** | إعادة التشغيل تعادل التفعيل (activate) فتبقى للشخص الثاني؛ يتطلب قاعدة فصل مهام ≠ من أوقفه تضاف بـCR-77 |
+| `CMD-ADP-RETIRE` | Administrator (retire) | **Administrator** | نهاية دورة حياة يملكها من سجّل المحوّل |
+| `CMD-ADP-SUSPEND` | Administrator (suspend) | **Administrator** | إيقاف فوري للاحتواء، مقابل register/update |
+| `CMD-AMT-DEPRECATE` | Analysis lead (deprecate) | **Analysis lead** | مقابل register؛ التفعيل وحده للشخص الثاني |
+| `CMD-AMT-RETIRE` | Analysis lead (retire) | **Analysis lead** | مقابل register |
+| `CMD-AST-FAIL-MAINTENANCE` | Resource Manager (fail maintenance) | **Resource Manager** | عمليات الحالة الفنية (condition) |
+| `CMD-AST-MARK-UNSERVICEABLE` | Resource Manager (mark unserviceable) | **Resource Manager** | عمليات الحالة الفنية (condition) |
+| `CMD-AST-RECOVER` | Resource Manager (recover) | **Resource Manager** | مقابل lost (الإبلاغ عن الفقد) |
+| `CMD-AST-RETURN-TO-SERVICE` | Resource Manager (return to service) | **Resource Manager** | عمليات الحالة الفنية (condition) |
+| `CMD-AST-START-MAINTENANCE` | Resource Manager (start maintenance) | **Resource Manager** | عمليات الحالة الفنية (condition) لمدير الموارد |
+| `CMD-CRR-RETIRE` | Analyst lead (retire) | **Analyst lead** | مقابل define/edit؛ التفعيل وحده للمعتمِد الثاني |
+| `CMD-DEV-ROTATE-KEY` | user (rotate key) | **user** | الشرط «signed by current key; new public key» لا يستوفيه إلا حامل الجهاز |
+| `CMD-ER-PARK` | Analyst (park) | **Analyst** | مقابل review/decide؛ الشخص الثاني للتأكيد والتقسيم فقط |
+| `CMD-ER-RESUME` | Analyst (resume) | **Analyst** | مقابل review/decide |
+| `CMD-ER-WITHDRAW` | Analyst (withdraw) | **Analyst** | مقابل propose |
+| `CMD-MDL-RETIRE` | AI governance authority (retire) | **AI governance authority** | **استثناء من القاعدة** (القاعدة تعطيه للمهندس عبر deprecate): الإيقاف النهائي من حالة DEPRECATED يقابل reinstate لدى سلطة الحوكمة |
+| `CMD-OBS-AMEND` | Field User / Operator / Analyst / adapter service account (amend) | **Field User / Operator / Analyst / adapter service account** | تعديل الملاحظة لمن سجّلها (record) |
+| `CMD-OBS-ATTACH-EVIDENCE` | Field User / Operator / Analyst / adapter service account (attach evidence) | **Field User / Operator / Analyst / adapter service account** | إرفاق الدليل لمن سجّل الملاحظة (record) |
+| `CMD-OBS-RECLASSIFY` | Analyst (reclassify) | **Analyst** | إعادة التصنيف لمن يتحقق من الملاحظة (validate) |
+| `CMD-PTM-RETIRE` | Knowledge Manager / Analysis lead (retire) | **Knowledge Manager / Analysis lead** | مقابل define/edit |
+| `CMD-SIT-RESUME` | Analyst / Manager (resume) | **Analyst / Manager** | مقابل pause |
+| `CMD-SRC-REINSTATE` | Analyst (reinstate) | **Analyst** | مقابل suspend |
+| `CMD-SRC-RETIRE` | Analyst (retire) | **Analyst** | مقابل register |
+| `CMD-SRC-SUSPEND` | Analyst (suspend) | **Analyst** | مقابل register/rate؛ المصدر المحمي يبقى لمسؤول الأمن عبر protection |
+| `CMD-TOL-ENABLE` | Security Officer (enable) | **Security Officer** | مقابل disable |
+| `CMD-TOL-RETIRE` | Security Officer (retire) | **Security Officer** | **استثناء من القاعدة** (القاعدة تعطيه للمهندس عبر register): تفعيل الأداة وتعطيلها لمسؤول الأمن، فإيقافها النهائي له |
 
 ### 12.2 مصفوفة الدور × نوع الصلاحية (REQ-FND-014)
 

@@ -12,6 +12,8 @@ blocked_by:
 corrects:
 - CR-11
 - CR-17
+amended_by:
+- ADR-P19 (item 5, applied by CR-75)
 verified_by:
 - QAS-SEC-002
 - QAS-SEC-003

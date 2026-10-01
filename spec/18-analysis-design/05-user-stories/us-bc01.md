@@ -64,6 +64,7 @@ Scenario Outline: CMD-AUT-APPROVE-GRANT is rejected
     | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ requester |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-AUT-APPROVE-GRANT وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC01-AUT-DELEGATE — تفويض منح السلطة
@@ -387,6 +388,7 @@ Scenario Outline: CMD-CLR-APPROVE is rejected
     | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ requester ≠ subject (top rank) |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-CLR-APPROVE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC01-CLR-GRANT — منح التصريح الأمني
@@ -423,6 +425,7 @@ Scenario Outline: CMD-CLR-GRANT is rejected
     | SEGREGATION_OF_DUTIES | 422 | فصل المهام: requester ≠ subject |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: user, level, compartments |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-CLR-GRANT وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC01-CLR-MODIFY — تعديل التصريح الأمني
@@ -619,6 +622,7 @@ Scenario Outline: CMD-DEV-CONFIRM is rejected
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: attestation |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-DEV-CONFIRM وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC01-DEV-ENROLL — تسجيل الجهاز الميداني
@@ -761,6 +765,7 @@ Scenario Outline: CMD-DEV-RETIRE is rejected
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-DEV-RETIRE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC01-DEV-ROTATE-KEY — تدوير مفتاح الجهاز الميداني
@@ -774,7 +779,7 @@ Scenario Outline: CMD-DEV-RETIRE is rejected
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE؛ signed by current key; new public key
 - **المدخلات:** `new_public_key`!: string, `signature`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← (بلا تغيير)؛ الحدث EVT-DEV-KEY-ROTATED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** user (rotate key) — issuing role named by CR-77؛ الشروط: tenant match; device ACTIVE where applicable; device signature for SYN؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** user (rotate key)؛ الشروط: tenant match; device ACTIVE where applicable; device signature for SYN؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-DEV-ROTATE-KEY` · `AGG-DEVICE` · متطلبات: REQ-OFF-005 · حالات استخدام: UC-093
 - **ضوابط النوع والفئة:** C-UPD، K-INT (التعريف في [00-guide.md](00-guide.md))
 
@@ -1410,6 +1415,7 @@ Scenario Outline: CMD-PER-ERASE is rejected
     | PERSON_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ACTIVE, ERASED |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: erasure_order_ref |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-PER-ERASE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC01-PER-REACTIVATE — إعادة تفعيل الشخص
@@ -2256,6 +2262,7 @@ Scenario Outline: CMD-TEN-START-DECOMMISSION is rejected
     | TENANT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: DECOMMISSIONED, DECOMMISSIONING, MIGRATING, PROVISIONING, PROVISIONING_FAILED |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason, second_approver |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-TEN-START-DECOMMISSION وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC01-TEN-SUSPEND — تعليق المستأجر

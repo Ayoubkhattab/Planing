@@ -1104,7 +1104,7 @@ Scenario Outline: CMD-AMT-ACTIVATE is rejected
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE؛ reason; no new runs; reproduction still allowed
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← DEPRECATED؛ الحدث EVT-AMT-DEPRECATED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Analysis lead (deprecate) — issuing role named by CR-77؛ الشروط: tenant match; case visible; label rules؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Analysis lead (deprecate)؛ الشروط: tenant match; case visible; label rules؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-AMT-DEPRECATE` · `AGG-ANALYSIS-METHOD` · متطلبات: REQ-ANL-002, REQ-ANL-003 · حالات استخدام: UC-013
 - **ضوابط النوع والفئة:** C-WF، K-ANL (التعريف في [00-guide.md](00-guide.md))
 
@@ -1175,7 +1175,7 @@ Scenario Outline: CMD-AMT-REGISTER is rejected
 - **الشروط المسبقة:** الحالة الحالية: DEPRECATED؛ no run of this version backs a PUBLISHED or SUPERSEDED assessment (reproducibility preserved)
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← RETIRED؛ الحدث EVT-AMT-RETIRED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Analysis lead (retire) — issuing role named by CR-77؛ الشروط: tenant match; case visible; label rules؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Analysis lead (retire)؛ الشروط: tenant match; case visible; label rules؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-AMT-RETIRE` · `AGG-ANALYSIS-METHOD` · متطلبات: REQ-ANL-002, REQ-ANL-003 · حالات استخدام: UC-013
 - **ضوابط النوع والفئة:** C-DEL، K-ANL (التعريف في [00-guide.md](00-guide.md))
 
@@ -1863,6 +1863,7 @@ Scenario Outline: CMD-CAP-RELEASE is rejected
     | SEGREGATION_OF_DUTIES | 422 | فصل المهام: release authority ≠ preparer |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
+    | MFA_STEP_UP_REQUIRED | 401 | التزام mfa في POL-CAP-RELEASE وقوة مصادقة الجلسة أقل من المطلوب؛ يُعاد الطلب بعد المصادقة المعززة بنفس Idempotency-Key (ADR-P19، الخطوة 6) |
 ```
 
 #### US-BC03-CAP-RETRY — إعادة محاولة رسالة CAP الصادرة
@@ -2318,7 +2319,7 @@ Scenario Outline: CMD-SIT-RECLASSIFY is rejected
 - **الشروط المسبقة:** الحالة الحالية: PAUSED؛ membership re-evaluated from current state
 - **المدخلات:** لا حمولة — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← ACTIVE؛ الحدث EVT-SIT-RESUMED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** Analyst / Manager (resume) — issuing role named by CR-77؛ الشروط: tenant match; target visible to subject؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** Analyst / Manager (resume)؛ الشروط: tenant match; target visible to subject؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-SIT-RESUME` · `AGG-SITUATION` · متطلبات: REQ-SIT-001, REQ-SIT-002, REQ-SIT-003 · حالات استخدام: UC-020, UC-021, UC-022, UC-024, UC-098
 - **ضوابط النوع والفئة:** C-WF، K-CORE (التعريف في [00-guide.md](00-guide.md))
 

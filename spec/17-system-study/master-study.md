@@ -175,7 +175,7 @@ notes: >
 
 ## 11. معمارية الواجهات (API Architecture)
 
-- **العقود:** 28 ملف OpenAPI، و19 ملف أخطاء، في `05-contracts/` (موزعة حسب المجال والشريحة، مثل `openapi-foundation-slc01.md`).
+- **العقود:** 29 ملف OpenAPI (منها عقدان داخليان)، و19 ملف أخطاء، في `05-contracts/` (موزعة حسب المجال والشريحة، مثل `openapi-foundation-slc01.md`).
 - **الأوامر:** 477 أمرًا، كل منها `POST /api/v1/<area>/<resource>[/{id}/actions/<verb>]` بـ`Idempotency-Key` إلزامي و`If-Match` لغير الإنشاء — مصدرها جداول `03-domain/contexts/BC*/commands-slcNN.md`.
 - **الاستعلامات:** 133 استعلامًا (117 مرتبطة بـAggregate + 16 عابرة مثل QRY-PDP-DECIDE وQRY-SRCH-QUERY)؛ كلها عبر PEP/PDP قبل القراءة، والقوائم بمؤشر لا offset — [04-cross-cutting.md §4.1](04-cross-cutting.md).
 - **الأخطاء الموحَّدة:** `VERSION_CONFLICT` (409)، `IDEMPOTENCY_KEY_REUSED` (422)، `SEGREGATION_OF_DUTIES`، `{AGGREGATE}_INVALID_STATE_TRANSITION` — [04-cross-cutting.md §4.2](04-cross-cutting.md).
@@ -271,14 +271,14 @@ notes: >
 | V1b انتقالات المجدول بلا سيناريو | 0 من 175 (CR-72) |
 | V2 الأوامر والاستعلامات ↔ OpenAPI (611 عملية) | 0 فرق؛ QRY-LABEL-CHECK عقد مشترك بالتصميم |
 | V3 الأحداث ↔ AsyncAPI (585) | 0 فرق |
-| V4 رموز الأخطاء (2756 زوجًا + 430 خطأ شرط) | 0 فرق |
+| V4 رموز الأخطاء (2768 زوجًا + 430 خطأ شرط) | 0 فرق |
 | V5 ذهاب وإياب أدوات المواصفة (326 ملفًا) | مطابق حرفيًا لـSLC-01..18؛ SLC-19 مستثناة (DEBT-002) |
-| V6 كتل YAML (1018) | كلها تُقرأ |
+| V6 كتل YAML (1056) | كلها تُقرأ |
 | V7 سياسة واحدة معرَّفة لكل أمر (477) | 0 فرق |
 
 | مستوى آخر | الحالة | المصدر |
 |---|---|---|
-| سيناريوهات الجودة بطريقة تحقق | 74/74 | `15-traceability/quality-verification-matrix.md` |
+| سيناريوهات الجودة بطريقة تحقق | 95/95 | `15-traceability/quality-verification-matrix.md` |
 | Fitness functions | 19 (FIT-01..19) | `13-verification/fitness-functions.md` |
 | خصائص الثوابت لكل شريحة | 19 ملفًا | `13-verification/invariant-properties-slcNN.md` |
 | التحقق التنفيذي (أداء، DR، اختراق تحت الحمل) | خارج مرحلة الدراسة — شروط G8 | `16-reports/IMPLEMENTATION-READINESS-R1.md` |

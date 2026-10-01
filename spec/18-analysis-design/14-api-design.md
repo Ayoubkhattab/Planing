@@ -10,7 +10,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 # تصميم الواجهات البرمجية (API Design)
 
-العقد المعتمد هو ملفات OpenAPI 3.1 في `05-contracts/` (28 ملفًا، مولَّدة من المواصفات). هذا الملف يشرح الاصطلاحات المشتركة بينها ويضع **كل** عملياتها (611) في كتالوج واحد مرتب حسب السياق والمورد. في الكود، العقود تُنسخ إلى `contracts/` كما هي، والأنواع المولَّدة منها لا تتجاوز حلقة المحوّلات (ADR-P18، FIT-20).
+العقد المعتمد هو ملفات OpenAPI 3.1 في `05-contracts/` (29 ملفًا، مولَّدة من المواصفات، منها عقدان داخليان). هذا الملف يشرح الاصطلاحات المشتركة بينها ويضع **كل** عملياتها (611) في كتالوج واحد مرتب حسب السياق والمورد. في الكود، العقود تُنسخ إلى `contracts/` كما هي، والأنواع المولَّدة منها لا تتجاوز حلقة المحوّلات (ADR-P18، FIT-20).
 
 ## 1. الشكل العام
 
@@ -31,7 +31,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 | الترويسة | إلزامية في | الغرض | عند المخالفة |
 |---|---|---|---|
-| `Authorization: Bearer <token>` | كل العمليات | هوية المستخدم أو حساب الخدمة (OIDC — `08-security/trust-boundaries.md`) | رفض من البوابة (الرمز غير موثق في العقود — §10) |
+| `Authorization: Bearer <token>` | كل العمليات | هوية المستخدم أو حساب الخدمة (OIDC — `08-security/trust-boundaries.md`) | `401 UNAUTHENTICATED` من البوابة (CR-78) |
 | `Idempotency-Key` (≤ 128 حرفًا) | كل الأوامر (477) | عدم التكرار؛ يُحفظ 24 ساعة في `idempotency_keys` مع `request_hash` و`response`: التكرار بنفس الحمولة يعيد الاستجابة المحفوظة | نفس المفتاح بحمولة مختلفة ← `IDEMPOTENCY_KEY_REUSED` (422) |
 | `If-Match` | كل الأوامر عدا الإنشاء (394) | الإصدار المتوقع (تزامن متفائل) | `VERSION_CONFLICT` (409)، بعد التخويل الكامل فقط |
 | `X-Purpose` | كل العمليات عدا `QRY-LABEL-CHECK` (610) | غرض الوصول (`operations`، `analysis`، `audit`، `administration`… — `authorization-model.md` §2)؛ مدخل لقرار السياسة والتدقيق | `VALIDATION_FAILED` |
@@ -56,6 +56,10 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `AUTHZ_DENIED` | 403→404 | لا | السياسة ترفض. المورد غير المرئي يُعاد `404` بنفس شكل غير الموجود (ADR-P06 البند 5)؛ ويُعاد `403` لمورد يراه المستخدم دون أن يحق له الإجراء (ADR-P19)؛ `403` معلن على كل أمر في العقود (CR-75) |
 | `MFA_STEP_UP_REQUIRED` | 401 | نعم، بعد المصادقة المعززة | التزام `mfa` غير مستوفى؛ تحدٍّ بقوة المصادقة المطلوبة، وإعادة بنفس `Idempotency-Key` (ADR-P19؛ CR-75) |
 | `APPROVAL_REQUIRED` | 403 | لا | قرار `REQUIRE_APPROVAL`؛ `details.approver` يسمي دور المعتمِد (ADR-P19؛ CR-75) |
+| `UNAUTHENTICATED` | 401 | لا | رمز غائب أو منتهٍ عند البوابة (CR-78) |
+| `PAYLOAD_TOO_LARGE` / `UNSUPPORTED_MEDIA_TYPE` | 413 / 415 | لا | حجم جسم الطلب أو نوعه عند البوابة؛ معلنان على العمليات ذات الجسم (CR-78) |
+| `DEPENDENCY_UNAVAILABLE` | 503 | نعم | استدعاء سياق آخر فشل مغلقًا؛ مع `Retry-After` (CR-78) |
+| `ELIGIBILITY_UNAVAILABLE` | 503 | نعم | فحص الأهلية في BC05 لم يُجب عند `CMD-TASK-ASSIGN` و`CMD-TASK-REASSIGN` (CR-78) |
 | `NOT_FOUND` | 404 | لا | المورد غير موجود أو غير مرئي |
 | `VERSION_CONFLICT` | 409 | نعم (بعد إعادة تحميل المورد وإعادة بناء الأمر) | `If-Match` لا يطابق |
 | `*_INVALID_STATE_TRANSITION` | 409 | لا | الأمر غير مسموح من الحالة الحالية |

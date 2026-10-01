@@ -264,7 +264,7 @@ P = {
  "CMD-EXC-APPROVE":"note:string", "CMD-EXC-REJECT":"reason!:string", "CMD-EXC-REVOKE":"reason!:string",
 }
 SYSTEM_CMDS = {"CMD-TEN-COMPLETE-PROVISIONING","CMD-TEN-FAIL-PROVISIONING","CMD-TEN-COMPLETE-CELL-MIGRATION","CMD-TEN-COMPLETE-DECOMMISSION","CMD-USR-RECORD-FIRST-SIGN-IN"}
-CMD_ERRORS = {"CMD-AUT-DELEGATE":["SEGREGATION_OF_DUTIES"],"CMD-CLR-GRANT":["SEGREGATION_OF_DUTIES"],"CMD-CLS-ACTIVATE":["SEGREGATION_OF_DUTIES"],"CMD-RAS-ASSIGN":["SEGREGATION_OF_DUTIES"],"CMD-TEN-START-DECOMMISSION":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD), CR-78 (dependency)
+CMD_ERRORS = {"CMD-AUT-DELEGATE":["SEGREGATION_OF_DUTIES"],"CMD-CLR-GRANT":["SEGREGATION_OF_DUTIES"],"CMD-CLS-ACTIVATE":["SEGREGATION_OF_DUTIES"],"CMD-RAS-ASSIGN":["SEGREGATION_OF_DUTIES"],"CMD-TEN-START-DECOMMISSION":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD)
 RESOURCE = {"AGG-TENANT":("foundation","tenants"),"AGG-ORGANIZATION":("foundation","organizations"),"AGG-PERSON":("foundation","persons"),
  "AGG-USER":("foundation","users"),"AGG-SERVICE-ACCOUNT":("foundation","service-accounts"),"AGG-ROLE":("foundation","roles"),
  "AGG-ROLE-ASSIGNMENT":("foundation","role-assignments"),"AGG-AUTHORITY-GRANT":("foundation","authority-grants"),"AGG-CLEARANCE":("foundation","clearances"),
@@ -492,7 +492,7 @@ P = {
 }
 SYSTEM_CMDS = set()
 ACTOR_OVERRIDE = {"CMD-ADP-SUSPEND":"Administrator","CMD-ADP-RESUME":"second Administrator","CMD-ADP-RETIRE":"Administrator","CMD-OBS-AMEND":"Field User / Operator / Analyst / adapter service account","CMD-OBS-ATTACH-EVIDENCE":"Field User / Operator / Analyst / adapter service account","CMD-OBS-RECLASSIFY":"Analyst","CMD-SRC-SUSPEND":"Analyst","CMD-SRC-REINSTATE":"Analyst","CMD-SRC-RETIRE":"Analyst"}  # CR-77: issuing role
-CMD_ERRORS = {"CMD-ADP-RESUME":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD), CR-78 (dependency)
+CMD_ERRORS = {"CMD-ADP-RESUME":["SEGREGATION_OF_DUTIES"]}  # CR-77 (separation rule for POL-ADP-RESUME)
 OFFLINE = {"CMD-OBS-RECORD","CMD-OBS-AMEND","CMD-OBS-ATTACH-EVIDENCE","CMD-EVD-REGISTER","CMD-ATT-INITIATE-UPLOAD","CMD-ATT-COMPLETE-UPLOAD"}  # CR-79
 RESOURCE = {"AGG-SOURCE":("information","sources"),"AGG-OBSERVATION":("information","observations"),"AGG-ENTITY":("information","entities"),
  "AGG-REALWORLD-EVENT":("information","events"),"AGG-RELATIONSHIP":("information","relationships"),"AGG-CLAIM":("information","claims"),
@@ -714,7 +714,7 @@ P = {
 }
 SYSTEM_CMDS = set()
 ACTOR_OVERRIDE = {"CMD-ER-PARK":"Analyst","CMD-ER-RESUME":"Analyst","CMD-ER-WITHDRAW":"Analyst"}  # CR-77: issuing role
-CMD_ERRORS = {"CMD-ER-DECIDE-MATCH":["SEGREGATION_OF_DUTIES"],"CMD-MRS-ACTIVATE":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD), CR-78 (dependency)
+CMD_ERRORS = {"CMD-ER-DECIDE-MATCH":["SEGREGATION_OF_DUTIES"],"CMD-MRS-ACTIVATE":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD)
 RESOURCE = {"AGG-CONFLICT":("information","conflicts"),"AGG-ER-CASE":("information","er-cases"),"AGG-MATCH-RULESET":("information","match-rulesets")}
 SECURITY_AFFECTING = set()
 CONSUMERS = {
@@ -1372,7 +1372,7 @@ P = {
 }
 SYSTEM_CMDS = set()
 ACTOR_OVERRIDE = {"CMD-AST-START-MAINTENANCE":"Resource Manager","CMD-AST-FAIL-MAINTENANCE":"Resource Manager","CMD-AST-RETURN-TO-SERVICE":"Resource Manager","CMD-AST-MARK-UNSERVICEABLE":"Resource Manager","CMD-AST-RECOVER":"Resource Manager"}  # CR-77: issuing role
-CMD_ERRORS = {"CMD-ALC-APPROVE":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD), CR-78 (dependency)
+CMD_ERRORS = {"CMD-ALC-APPROVE":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD)
 RESOURCE = {"AGG-ASSET":("readiness","assets"),"AGG-MAINTENANCE-ORDER":("readiness","maintenance-orders"),"AGG-ASSET-RESERVATION":("readiness","asset-reservations"),
  "AGG-ASSET-ASSIGNMENT":("readiness","asset-assignments"),"AGG-RESOURCE-POOL":("readiness","resource-pools"),"AGG-ALLOCATION":("readiness","allocations"),
  "AGG-ROLE-REQUIREMENT":("readiness","role-requirements")}
@@ -1521,7 +1521,7 @@ P = {
 }
 SYSTEM_CMDS = set()
 ACTOR_OVERRIDE = {"CMD-MDL-RETIRE":"AI governance authority","CMD-TOL-ENABLE":"Security Officer","CMD-TOL-RETIRE":"Security Officer"}  # CR-77: issuing role
-CMD_ERRORS = {"CMD-MDL-APPROVE":["SEGREGATION_OF_DUTIES"],"CMD-MDL-PROMOTE":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD), CR-78 (dependency)
+CMD_ERRORS = {"CMD-MDL-APPROVE":["SEGREGATION_OF_DUTIES"],"CMD-MDL-PROMOTE":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD)
 RESOURCE = {"AGG-AI-REQUEST":("ai","requests"),"AGG-AI-RESULT":("ai","results"),"AGG-MODEL-VERSION":("ai","models"),
  "AGG-AI-ROUTING":("ai","routings"),"AGG-AI-TOOL":("ai","tools"),"AGG-EVAL-SUITE":("ai","evaluation-suites")}
 SECURITY_AFFECTING = {"EVT-RTG-ACTIVATED","EVT-TOL-DISABLED","EVT-TOL-ACTIVATED"}
@@ -1903,7 +1903,7 @@ P = {
  "CMD-ERS-REGISTER":"legal_basis!:string person:urn entities:array requester!:string","CMD-ERS-APPROVE":"decision_note!:string","CMD-ERS-REJECT":"reason!:string",
 }
 SYSTEM_CMDS = set()
-CMD_ERRORS = {"CMD-RTS-ACTIVATE":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD), CR-78 (dependency)
+CMD_ERRORS = {"CMD-RTS-ACTIVATE":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD)
 RESOURCE = {"AGG-RETENTION-SCHEDULE":("governance","retention-schedules"),"AGG-LEGAL-HOLD":("governance","legal-holds"),
             "AGG-DISPOSITION-RUN":("governance","disposition-runs"),"AGG-ERASURE-REQUEST":("governance","erasure-requests")}
 SECURITY_AFFECTING = set()
@@ -2086,7 +2086,7 @@ P = {
 }
 SYSTEM_CMDS = set()
 ACTOR_OVERRIDE = {"CMD-CRR-RETIRE":"Analyst lead"}  # CR-77: issuing role
-CMD_ERRORS = {"CMD-CRR-ACTIVATE":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD), CR-78 (dependency)
+CMD_ERRORS = {"CMD-CRR-ACTIVATE":["SEGREGATION_OF_DUTIES"]}  # CR-75 (SoD)
 RESOURCE = {"AGG-COORDINATION-CASE":("operations","coordination-cases"),"AGG-CORRELATION-PROPOSAL":("information","correlation-proposals"),"AGG-CORRELATION-RULE":("information","correlation-rules")}
 SECURITY_AFFECTING = set()
 CONSUMERS = {"AGG-COORDINATION-CASE":["Decision requests (SLC-08)","Notification (participants)","Search projection (SLC-05)"],
@@ -2401,6 +2401,7 @@ SLC-19 — Training, Competency & Exercises (R3, third and last R3 slice; G6 hel
 # -*- coding: utf-8 -*-
 # SLC-19 — Training, Competency & Exercises (CAP-08.05, DOM-18+19, BC05), R3 — scope-only design, G6 held (RSK-028)
 SLICE = "SLC-19"
+APPROVED_AT = "2026-09-29"
 AGGS = {}
 def agg(id_, bc, name, tier, purpose, states, terminal, transitions, invariants, entities, reqs, notes=None, personal=False):
     AGGS[id_] = dict(id=id_, bc=bc, name=name, tier=tier, purpose=purpose, states=states, terminal=terminal,

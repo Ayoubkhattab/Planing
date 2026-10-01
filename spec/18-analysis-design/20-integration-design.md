@@ -165,7 +165,7 @@ release: سلطة إصدار ≠ المُعِد ← إرسال عبر اتصال
 
 | المصدر | ما يقوله |
 |---|---|
-| `x-offline-capable: true` في العقود | 6 أوامر: `CMD-TASK-ACCEPT`، `START`، `BLOCK`، `RESUME`، `ADD-RESULT-ITEM`، `SUBMIT` |
+| `x-offline-capable: true` في العقود (قبل CR-79) | 6 أوامر: `CMD-TASK-ACCEPT`، `START`، `BLOCK`، `RESUME`، `ADD-RESULT-ITEM`، `SUBMIT`؛ الآن 12 |
 | `CommandEnvelope.target_command` في `openapi-field-slc11.md` | 12 أمرًا: الستة + `CMD-OBS-RECORD`، `CMD-OBS-AMEND`، `CMD-OBS-ATTACH-EVIDENCE`، `CMD-EVD-REGISTER`، `CMD-ATT-INITIATE-UPLOAD`، `CMD-ATT-COMPLETE-UPLOAD` |
 | `field-sync-protocol.md` §1 | «الأوامر المسموحة فقط (x-offline-capable في SLC-02/SLC-03)» — أي أوامر SLC-02 أيضًا |
 | `field-sync-protocol.md` §3 | يسرد الأوامر الإلحاقية: RECORD، INITIATE/COMPLETE-UPLOAD، EVD-REGISTER، ATTACH-EVIDENCE، ADD-RESULT-ITEM |

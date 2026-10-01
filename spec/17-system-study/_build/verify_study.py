@@ -436,6 +436,17 @@ def v8(sys_trans):
     for aid in aggs:
         if f"| `{aid}` |" not in comp:
             gaps.append(("12", aid, "Aggregate بلا وحدة نشر"))
+    trace = (AD / "25-traceability-matrix.md").read_text(encoding="utf-8") if (AD / "25-traceability-matrix.md").exists() else ""
+    reqs_all = re.findall(r"^### (REQ-[A-Z0-9-]+)", (SPEC / "02-requirements" / "requirements.md").read_text(encoding="utf-8"), re.M)
+    for rid in reqs_all:
+        if f"| {rid} |" not in trace:
+            gaps.append(("25", rid, "متطلب خارج مصفوفة التتبع"))
+    road = (AD / "26-implementation-roadmap.md").read_text(encoding="utf-8") if (AD / "26-implementation-roadmap.md").exists() else ""
+    for aid in aggs:
+        if f"| `{aid}` |" not in trace:
+            gaps.append(("25", aid, "Aggregate خارج مصفوفة التتبع"))
+        if f"| `{aid}` |" not in road:
+            gaps.append(("26", aid, "Aggregate خارج الـBacklog"))
     actor_lists = p3["02-actors-roles.md"].split("### 6.4")[-1]
     for oid in list(cmds) + list(qrys):
         if f"`{oid}`" not in actor_lists:

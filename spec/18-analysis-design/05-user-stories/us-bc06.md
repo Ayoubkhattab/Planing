@@ -1316,9 +1316,9 @@ Scenario Outline: CMD-PTM-EDIT is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| حذف / إنهاء | تقارير ومنتجات | Knowledge Manager / Analysis lead · second approver **[Needs Review]** | `POST /api/v1/knowledge/product-templates/{id}/actions/retire` | POL-PTM-RETIRE |
+| حذف / إنهاء | تقارير ومنتجات | Knowledge Manager / Analysis lead (محسوم: `17-security-design.md` §5) | `POST /api/v1/knowledge/product-templates/{id}/actions/retire` | POL-PTM-RETIRE |
 
-**القصة:** بصفتي **Knowledge Manager / Analysis lead · second approver**، أريد **إحالة قالب المنتج إلى التقاعد**، لكي يتحقق غرض قالب المنتج: قالب منتج بأقسام وربط بيانات، بإصدارات
+**القصة:** بصفتي **Knowledge Manager / Analysis lead**، أريد **إحالة قالب المنتج إلى التقاعد**، لكي يتحقق غرض قالب المنتج: قالب منتج بأقسام وربط بيانات، بإصدارات
 
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE؛ reason; existing products keep their pinned version
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -1330,7 +1330,7 @@ Scenario Outline: CMD-PTM-EDIT is rejected
 ```gherkin
 Scenario: CMD-PTM-RETIRE succeeds
   Given AGG-PRODUCT-TEMPLATE in state ACTIVE and every guard holds
-  When an authorized actor (Knowledge Manager / Analysis lead or second approver) sends CMD-PTM-RETIRE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Knowledge Manager / Analysis lead sends CMD-PTM-RETIRE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes RETIRED
   And EVT-PTM-RETIRED is written to the outbox with one audit record in the same transaction
 

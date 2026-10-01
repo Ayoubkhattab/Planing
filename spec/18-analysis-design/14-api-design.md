@@ -53,7 +53,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الرمز | HTTP | إعادة المحاولة | المعنى |
 |---|---|---|---|
 | `VALIDATION_FAILED` | 400 | لا | حقل إلزامي مفقود أو غير صالح |
-| `AUTHZ_DENIED` | 403→404 | لا | السياسة ترفض. المورد غير المرئي يُعاد `404` بنفس شكل غير الموجود (ADR-P06 البند 5)؛ ويُعاد `403` فقط لمورد يحق للمستخدم رؤيته دون تنفيذ الإجراء (ترويسة `errors-*.md`) — لكن لا عملية تعلن `403` في العقود (§10) |
+| `AUTHZ_DENIED` | 403→404 | لا | السياسة ترفض. المورد غير المرئي يُعاد `404` بنفس شكل غير الموجود (ADR-P06 البند 5)؛ ويُعاد `403` لمورد يراه المستخدم دون أن يحق له الإجراء (ADR-P19)؛ إعلان `403` في العقود بـCR-75 |
+| `MFA_STEP_UP_REQUIRED` | 401 | نعم، بعد المصادقة المعززة | التزام `mfa` غير مستوفى؛ تحدٍّ بقوة المصادقة المطلوبة، وإعادة بنفس `Idempotency-Key` (ADR-P19؛ يُضاف بـCR-75) |
+| `APPROVAL_REQUIRED` | 403 | لا | قرار `REQUIRE_APPROVAL`؛ `details.approver` يسمي دور المعتمِد (ADR-P19؛ يُضاف بـCR-75) |
 | `NOT_FOUND` | 404 | لا | المورد غير موجود أو غير مرئي |
 | `VERSION_CONFLICT` | 409 | نعم (بعد إعادة تحميل المورد وإعادة بناء الأمر) | `If-Match` لا يطابق |
 | `*_INVALID_STATE_TRANSITION` | 409 | لا | الأمر غير مسموح من الحالة الحالية |
@@ -81,7 +83,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الفئة | العمليات | الاصطلاح |
 |---|---|---|
 | داخلية (6) | `CMD-TEN-COMPLETE-PROVISIONING`، `CMD-TEN-FAIL-PROVISIONING`، `CMD-TEN-COMPLETE-CELL-MIGRATION`، `CMD-TEN-COMPLETE-DECOMMISSION`، `CMD-USR-RECORD-FIRST-SIGN-IN` (في `openapi-foundation-internal-slc01.md`)، و`CMD-SIM-START` (`x-internal: true` داخل عقد readiness العام) | يستدعيها النظام بهوية عبء عمل؛ البوابة لا تعرض أي عملية تحمل `x-internal` أو تقع في عقد داخلي |
-| دون اتصال | `x-offline-capable: true` على 6 أوامر (`CMD-TASK-ACCEPT`، `START`، `BLOCK`، `RESUME`، `ADD-RESULT-ITEM`، `SUBMIT`)؛ و`CommandEnvelope` في `openapi-field-slc11.md` يقبل 12 أمرًا (تلك الستة + `CMD-OBS-RECORD`، `CMD-OBS-AMEND`، `CMD-OBS-ATTACH-EVIDENCE`، `CMD-EVD-REGISTER`، `CMD-ATT-INITIATE-UPLOAD`، `CMD-ATT-COMPLETE-UPLOAD`) | الجهاز ينفذها محليًا ويرسلها في جلسة مزامنة داخل `CommandEnvelope` { `client_command_id` (ULID)، `seq`، `prev_hash`، `base_version`، `device_time`، `target_command`، `target_urn`، `payload`، `signature` }؛ عدم مطابقة `base_version` يفتح تعارض مزامنة بدل `VERSION_CONFLICT` (ADR-P09، `11-hexagonal-reference.md` §8). الفرق بين 6 و12 **[Needs Review]** |
+| دون اتصال | `x-offline-capable: true` على 6 أوامر (`CMD-TASK-ACCEPT`، `START`، `BLOCK`، `RESUME`، `ADD-RESULT-ITEM`، `SUBMIT`)؛ و`CommandEnvelope` في `openapi-field-slc11.md` يقبل 12 أمرًا (تلك الستة + `CMD-OBS-RECORD`، `CMD-OBS-AMEND`، `CMD-OBS-ATTACH-EVIDENCE`، `CMD-EVD-REGISTER`، `CMD-ATT-INITIATE-UPLOAD`، `CMD-ATT-COMPLETE-UPLOAD`) — المعتمد الاثنا عشر (S-09، CR-79) | الجهاز ينفذها محليًا ويرسلها في جلسة مزامنة داخل `CommandEnvelope` { `client_command_id` (ULID)، `seq`، `prev_hash`، `base_version`، `device_time`، `target_command`، `target_urn`، `payload`، `signature` }؛ عدم مطابقة `base_version` يفتح تعارض مزامنة بدل `VERSION_CONFLICT` (ADR-P09، `11-hexagonal-reference.md` §8). الفرق بين 6 و12 **[Needs Review]** |
 | العقود العابرة | `QRY-LABEL-CHECK` على `/api/v1/{context}/label-checks` | يقدمه كل سياق يملك موارد معلَّمة، لإعادة فحص العلامات مجمّعة (CR-47) |
 
 ## 8. الإصدارات
@@ -107,9 +109,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | الحالة |
 |---|---|
 | استعلامات التاريخ لإعادة البناء: لا يوجد استعلام تاريخ عام للـAggregate إلا `QRY-TASK-HISTORY` (توجد استعلامات إصدارات وخطوط زمنية خاصة مثل `QRY-ASM-VERSIONS`) | **[Missing]** (مسجل في `11-hexagonal-reference.md` §8) |
-| `403` مذكور في ترويسة `errors-*.md` لكن لا عملية تعلنه في العقود | **[Needs Review]** — إما يُضاف `403` إلى استجابات الأوامر، وإما يُعاد `404` دائمًا (ADR-P06 البند 5) |
-| التزام قبل التنفيذ غير مستوفى (MFA، موافقة — ADR-P17 الخطوة 6) بلا رمز خطأ في أي `errors-*.md` | **[Missing]** — يُعرَّف في `18-error-handling.md` مع `REQUIRE_APPROVAL` / `CONDITIONAL` |
-| `CMD-SIM-START` داخلي (`x-internal`) لكنه في عقد عام | **[Needs Review]** — نقله إلى عقد داخلي أو اعتماد `x-internal` في البوابة |
+| `403` مذكور في ترويسة `errors-*.md` لكن لا عملية تعلنه في العقود | محسوم: `403` للمورد المرئي (ADR-P19)؛ إعلانه في العقود بـCR-75 (جولة تصحيح المصادر) |
+| التزام قبل التنفيذ غير مستوفى (MFA، موافقة — ADR-P17 الخطوة 6) بلا رمز خطأ في أي `errors-*.md` | محسوم: `MFA_STEP_UP_REQUIRED` و`APPROVAL_REQUIRED` (ADR-P19)؛ إضافتهما بـCR-75 |
+| `CMD-SIM-START` داخلي (`x-internal`) لكنه في عقد عام | محسوم: يُنقل إلى عقد داخلي (CR-76، قرار مالك المشروع 2026-10-01) |
 | رموز رفض البوابة (المصادقة، حجم الطلب، نوع المحتوى) غير موثقة في العقود | **[Missing]** — تُضاف في `18-error-handling.md` |
 
 ## 11. الكتالوج

@@ -456,6 +456,9 @@ def command_story(cid, c, a, aggs, pol, reqs_txt, ucs_of, http_of, ops, stats):
     cat = category(a["id"])
     create = is_create(trs)
     actor, narrowed = pick_actor(str(pol.get("subject") or c["الفاعل"]), cid, create)
+    resolved = cid in ACTOR_RESOLUTION
+    if resolved:
+        actor, narrowed = ACTOR_RESOLUTION[cid][0], True
     if not narrowed:
         stats["unnarrowed"] += 1
     fields = payload_fields(c.get("الحمولة (! إلزامي)", ""))
@@ -466,7 +469,7 @@ def command_story(cid, c, a, aggs, pol, reqs_txt, ucs_of, http_of, ops, stats):
     sid = f"US-{a['bc']}-{cid[4:]}"
     to_txt = lambda t: "(بلا تغيير)" if t in UNCHANGED else t  # noqa: E731
     checks = TYPE_CHECK[typ] + ("، C-CRE" if typ == "نظام" and create else "")
-    actor_cell = esc(actor) + ("" if narrowed else " **[Needs Review]**")
+    actor_cell = esc(actor) + ("" if narrowed else " **[Needs Review]**") + (" (محسوم: `17-security-design.md` §5)" if resolved else "")
     L = [f"#### {sid} — {action_phrase(cid, a['id'], aggs)}", "",
          "| النوع | الفئة | الفاعل | الواجهة | السياسة |", "|---|---|---|---|---|",
          f"| {typ} | {cat} | {actor_cell} | `{op.get('method', '?')} {op.get('path', c['HTTP'].strip('`'))}` | {pol.get('id', '—')} |", "",
@@ -1138,6 +1141,8 @@ def build_actors(aggs, cmds, qrys, pol_c, pol_q):
         a = aggs[c["Aggregate"]]
         trs = [t for t in a["trans"] if t["cmd"] == cid]
         roles, narrowed = pick_actor(str(pol_c.get(cid, {}).get("subject") or c["الفاعل"]), cid, is_create(trs))
+        if cid in ACTOR_RESOLUTION:
+            roles, narrowed = ACTOR_RESOLUTION[cid][0], True
         if not narrowed:
             unresolved.append((cid, roles))
             continue
@@ -1222,7 +1227,8 @@ def build_actors(aggs, cmds, qrys, pol_c, pol_q):
     L += ["", "### 6.6 أوامر لم يُحسم فاعلها", "",
           "موضوع السياسة يسرد أدوارًا بأفعالها ولا يشمل أيٌّ منها فعل الأمر؛ لا تُنسب هنا لأي دور، وقصصها معلَّمة **[Needs Review]** "
           "(تُحسم في `17-security-design.md`، المرحلة 4).", "", "| الأمر | الأدوار المذكورة في السياسة |", "|---|---|"]
-    L += [f"| `{c}` | {esc(r)} |" for c, r in unresolved]
+    L += [f"| `{c}` | {esc(r)} |" for c, r in unresolved] if unresolved else \
+        ["| — | لا شيء: الأوامر الـ26 التي لم يحسمها المصدر محسومة في `17-security-design.md` §5 (CR-77) |"]
     L += ["", "### 6.7 أوصاف لم تُصنَّف", "",
           ("| الوصف في المصدر | العمليات |\n|---|---|\n" + "\n".join(f"| {esc(r)} | {', '.join(v)} |" for r, v in sorted(unmapped.items())))
           if unmapped else "لا شيء.", "", END]
@@ -1443,6 +1449,8 @@ def build_use_cases(aggs, cmds, qrys, pol_c, reqs, ucs):
     for cid, c in cmds.items():
         trs = [t for t in aggs[c["Aggregate"]]["trans"] if t["cmd"] == cid]
         roles, narrowed = pick_actor(str(pol_c.get(cid, {}).get("subject") or c["الفاعل"]), cid, is_create(trs))
+        if cid in ACTOR_RESOLUTION:
+            roles, narrowed = ACTOR_RESOLUTION[cid][0], True
         cmd_roles[cid] = (roles, {lab for r in roles.split(" · ") for lab in classify_role(r)} if narrowed else set())
     by_bc, info = defaultdict(list), {}
     for uid, u in sorted(ucs.items(), key=lambda x: int(x[0][3:])):
@@ -1717,6 +1725,472 @@ def build_domain_model(aggs, cmds):
     write_generated(OUT / "07-domain-model.md", None, "\n".join(L))
 
 
+# ------------------------------------------------------------------ 17 security design
+# Issuing role for the commands whose policy subject lists roles without this command's verb (02-actors-roles.md §6.6).
+# Resolved in 17-security-design.md §5 by the paired verb in the same policy; CR-77 carries them back into the policies.
+ACTOR_RESOLUTION = {
+    "CMD-ADP-SUSPEND": ("Administrator", "إيقاف فوري للاحتواء، مقابل register/update"),
+    "CMD-ADP-RESUME": ("second Administrator", "إعادة التشغيل تعادل التفعيل (activate) فتبقى للشخص الثاني؛ يتطلب قاعدة فصل مهام ≠ من أوقفه تضاف بـCR-77"),
+    "CMD-ADP-RETIRE": ("Administrator", "نهاية دورة حياة يملكها من سجّل المحوّل"),
+    "CMD-AMT-DEPRECATE": ("Analysis lead", "مقابل register؛ التفعيل وحده للشخص الثاني"),
+    "CMD-AMT-RETIRE": ("Analysis lead", "مقابل register"),
+    "CMD-AST-START-MAINTENANCE": ("Resource Manager", "عمليات الحالة الفنية (condition) لمدير الموارد"),
+    "CMD-AST-FAIL-MAINTENANCE": ("Resource Manager", "عمليات الحالة الفنية (condition)"),
+    "CMD-AST-RETURN-TO-SERVICE": ("Resource Manager", "عمليات الحالة الفنية (condition)"),
+    "CMD-AST-MARK-UNSERVICEABLE": ("Resource Manager", "عمليات الحالة الفنية (condition)"),
+    "CMD-AST-RECOVER": ("Resource Manager", "مقابل lost (الإبلاغ عن الفقد)"),
+    "CMD-CRR-RETIRE": ("Analyst lead", "مقابل define/edit؛ التفعيل وحده للمعتمِد الثاني"),
+    "CMD-DEV-ROTATE-KEY": ("user", "الشرط «signed by current key; new public key» لا يستوفيه إلا حامل الجهاز"),
+    "CMD-ER-PARK": ("Analyst", "مقابل review/decide؛ الشخص الثاني للتأكيد والتقسيم فقط"),
+    "CMD-ER-RESUME": ("Analyst", "مقابل review/decide"),
+    "CMD-ER-WITHDRAW": ("Analyst", "مقابل propose"),
+    "CMD-MDL-RETIRE": ("AI governance authority", "**استثناء من القاعدة** (القاعدة تعطيه للمهندس عبر deprecate): الإيقاف النهائي من حالة DEPRECATED يقابل reinstate لدى سلطة الحوكمة"),
+    "CMD-OBS-AMEND": ("Field User / Operator / Analyst / adapter service account", "تعديل الملاحظة لمن سجّلها (record)"),
+    "CMD-OBS-ATTACH-EVIDENCE": ("Field User / Operator / Analyst / adapter service account", "إرفاق الدليل لمن سجّل الملاحظة (record)"),
+    "CMD-OBS-RECLASSIFY": ("Analyst", "إعادة التصنيف لمن يتحقق من الملاحظة (validate)"),
+    "CMD-PTM-RETIRE": ("Knowledge Manager / Analysis lead", "مقابل define/edit"),
+    "CMD-SIT-RESUME": ("Analyst / Manager", "مقابل pause"),
+    "CMD-SRC-SUSPEND": ("Analyst", "مقابل register/rate؛ المصدر المحمي يبقى لمسؤول الأمن عبر protection"),
+    "CMD-SRC-REINSTATE": ("Analyst", "مقابل suspend"),
+    "CMD-SRC-RETIRE": ("Analyst", "مقابل register"),
+    "CMD-TOL-ENABLE": ("Security Officer", "مقابل disable"),
+    "CMD-TOL-RETIRE": ("Security Officer", "**استثناء من القاعدة** (القاعدة تعطيه للمهندس عبر register): تفعيل الأداة وتعطيلها لمسؤول الأمن، فإيقافها النهائي له"),
+}
+PERMISSION_OF = [  # REQ-FND-014 permission kinds, by command verb ([Derived])
+    ("Approve", r"^(APPROVE|REJECT|ACTIVATE|PROMOTE|PUBLISH|BASELINE)"),
+    ("Delete", r"^(ERASE|DISPOSE|DESTROY|RETIRE|CANCEL|WITHDRAW|DISCARD|REVOKE|DECOMMISSION)"),
+    ("Export", r"^(EXPORT|DISTRIBUTE)"),
+    ("Share", r"^(SHARE|ADD-PARTICIPANT|DELEGATE)"),
+]
+EXPORT_QUERIES = {"QRY-ATT-DOWNLOAD", "QRY-RUN-ARTIFACT", "QRY-ARC-RETRIEVE"}
+
+
+def permission_kind(cid, a):
+    v = verb_of(cid)
+    if a["id"] in ("AGG-LEGAL-HOLD", "AGG-RETENTION-SCHEDULE"):
+        return "Retain"
+    if a["id"] == "AGG-ARCHIVE-PACKAGE" or v.startswith("ARCHIVE"):
+        return "Archive"
+    for kind, rx in PERMISSION_OF:
+        if re.search(rx, v):
+            return kind
+    return "Edit"
+
+
+def mfa_required(cid, pol):
+    ob = str(pol.get("obligations", ""))
+    m = re.search(r"mfa for ([A-Z-]+)", ob)
+    return "mfa" in ob and (not m or verb_of(cid) == m.group(1))
+
+
+def build_security(aggs, cmds, qrys, pol_c, pol_q, evts):
+    acts = {a["id"]: a for a in load_actors().get("actors", [])}
+    order = list(dict.fromkeys(lab for lab, _ in ROLE_RULES))
+    name = lambda lab: (f"{lab} {acts[lab]['name']}" if lab in acts else f"{lab} {ROLE_LABELS[lab][0]}")  # noqa: E731
+    L = [BEGIN, "", "### 12.1 حسم الفاعل للأوامر الـ26 (CR-77)", "",
+         "| الأمر | الأدوار في السياسة | الفاعل المحسوم | المبرر |", "|---|---|---|---|"]
+    for cid, (role, why) in sorted(ACTOR_RESOLUTION.items()):
+        L.append(f"| `{cid}` | {esc(str(pol_c.get(cid, {}).get('subject', '—')))} | **{esc(role)}** | {why} |")
+    perms = ["View", "Edit", "Approve", "Delete", "Retain", "Archive", "Export", "Share"]
+    matrix = defaultdict(lambda: defaultdict(int))
+    for cid, c in cmds.items():
+        a = aggs[c["Aggregate"]]
+        trs = [t for t in a["trans"] if t["cmd"] == cid]
+        roles, narrowed = pick_actor(str(pol_c.get(cid, {}).get("subject") or c["الفاعل"]), cid, is_create(trs))
+        if cid in ACTOR_RESOLUTION:
+            roles, narrowed = ACTOR_RESOLUTION[cid][0], True
+        for lab in {l_ for r in roles.split(" · ") for l_ in classify_role(r)}:
+            matrix[lab][permission_kind(cid, a)] += 1
+    for qid, q in qrys.items():
+        for lab in {l_ for seg in re.split(r"\s*[;؛,،]\s*|\s+or\s+", query_actor(q, pol_q.get(qid, {}), pol_q)) for l_ in classify_role(seg)}:
+            matrix[lab]["Export" if qid in EXPORT_QUERIES else "View"] += 1
+    L += ["", "### 12.2 مصفوفة الدور × نوع الصلاحية (REQ-FND-014)", "",
+          "أنواع الصلاحية الثمانية في REQ-FND-014 تُمنح منفصلة. كل أمر يُنسب إلى نوع بفعله **[Derived]** (approve/activate/publish → Approve؛ "
+          "retire/cancel/erase/dispose → Delete؛ التجميد والاحتفاظ → Retain؛ الأرشفة → Archive؛ التوزيع والتصدير → Export؛ "
+          "الإشراك والتفويض → Share؛ الباقي → Edit)، وكل استعلام → View عدا التنزيل والاسترجاع (`QRY-ATT-DOWNLOAD`، `QRY-RUN-ARTIFACT`، `QRY-ARC-RETRIEVE`) → Export. الأرقام عدد العمليات.", "",
+          "| الدور | " + " | ".join(perms) + " |", "|---|" + "---|" * len(perms)]
+    for lab in order:
+        if matrix.get(lab):
+            L.append(f"| {name(lab)} | " + " | ".join(str(matrix[lab].get(p, 0) or "—") for p in perms) + " |")
+    mfa = [(c, p) for c, p in sorted(pol_c.items()) if mfa_required(c, p)]
+    L += ["", f"### 12.3 أوامر تشترط المصادقة المعززة ({len(mfa)})", "",
+          "التزام `mfa` قبل التنفيذ: جلسة بقوة مصادقة أدنى تُرفض بـ`401 MFA_STEP_UP_REQUIRED` (ADR-P19، الخطوة 6 في خط الأوامر).", "",
+          "| الأمر | السياق | الالتزامات | الفاعل |", "|---|---|---|---|"]
+    L += [f"| `{c}` | {cmds[c]['_bc']} | {esc(p.get('obligations'))} | {esc(ACTOR_RESOLUTION.get(c, (pick_actor(str(p.get('subject')), c)[0],))[0])} |" for c, p in mfa]
+    sod = [(c, p) for c, p in sorted(pol_c.items()) if str(p.get("segregation_of_duties", "—")) not in ("—", "", "None")
+           and re.search(r"≠|∉|\bnot\b|distinct|second|different|own", str(p.get("segregation_of_duties")), re.I)]
+    L += ["", f"### 12.4 قواعد فصل المهام ({len(sod)})", "",
+          "تُقيَّم في منفذ التخويل بعد تحميل المورد (الخطوة 5)، ويعيد المجال فحص ما يقابلها من ثوابت (`09-business-rules.md`).", "",
+          "| الأمر | السياق | القاعدة |", "|---|---|---|"]
+    L += [f"| `{c}` | {cmds[c]['_bc']} | {esc(p.get('segregation_of_duties'))} |" for c, p in sod]
+    auth_req = [(c, p) for c, p in sorted(pol_c.items()) if str(p.get("segregation_of_duties", "—")) not in ("—", "", "None") and (c, p) not in sod]
+    if auth_req:
+        L += ["", f"قيود سلطة أو تصريح مسجلة في حقل `segregation_of_duties` وليست فصل مهام ({len(auth_req)}):", "", "| الأمر | القيد |", "|---|---|"]
+        L += [f"| `{c}` | {esc(p.get('segregation_of_duties'))} |" for c, p in auth_req]
+    other = [(c, p) for c, p in sorted(pol_c.items()) if re.sub(r"\b(audit|mfa)\b|[;\s]", "", str(p.get("obligations", "")))]
+    L += ["", "### 12.5 التزامات أخرى", "", "| الأمر | الالتزامات |", "|---|---|"]
+    L += [f"| `{c}` | {esc(p.get('obligations'))} |" for c, p in other]
+    L += ["", "### 12.6 سياسات الاستعلامات", "",
+          "`allowed_scope` يُطبَّق قبل العدّ والترتيب؛ «عند الرفض» شكل الاستجابة (ADR-P06).", "",
+          "| الاستعلام | السياق | الموضوع | النطاق المسموح | عند الرفض |", "|---|---|---|---|---|"]
+    for qid in sorted(set(qrys) | set(pol_q)):
+        p = pol_q.get(qid, {})
+        bc = qrys[qid]["_bc"] if qid in qrys else "كل المالكين"
+        L.append(f"| `{qid}` | {bc} | {esc(str(p.get('subject', '—')))} | {esc(str(p.get('allowed_scope', '—')))} | {esc(str(p.get('otherwise', '—')))} |")
+    personal = sorted(x for x in aggs if aggs[x]["personal"])
+    L += ["", "### 12.7 البيانات الشخصية والتصنيف", "",
+          f"- **Aggregates ببيانات شخصية ({len(personal)}):** " + ", ".join(f"`{x}`" for x in personal) +
+          " — حقولها الشخصية مشفرة بمفتاح الموضوع (ADR-P08) ومحوها بإتلافه، عدا ما يبقى بمرجع مستعار في طلب المحو نفسه (INV-ERS-03). "
+          "`key-hierarchy-and-disposition.md` §1 يمد مفتاح الموضوع إلى ادعاءات الكيانات من نوع شخص في BC02، بينما AGG-CLAIM وAGG-ENTITY معلَّمان `personal_data: false` **[Needs Review]** (S-28).",
+          "- **مستوى الأهمية** (REQ-GOV-002: كل كائن T1/T2 يحمل تصنيفًا): " + "؛ ".join(
+              f"{t}: {', '.join(x[4:] for x in sorted(aggs) if str(aggs[x].get('tier', '')).startswith(t))}" for t in ("T1", "T2", "T3")), ""]
+    labels = {}
+    for header, rows in tables((SPEC / "08-security" / "label-derivation-rules.md").read_text(encoding="utf-8")):
+        if header and header[0] == "aggregate":
+            labels.update({r[0]: dict(zip(header, r)) for r in rows})
+    kinds = defaultdict(list)
+    for x in sorted(aggs):
+        src = labels.get(x, {}).get("label_source", "")
+        first = src.split(" ")[0].rstrip(",;")
+        first = "=" if first.startswith(("=", "max(", "min(", "≥")) else first
+        kinds[{"=": "مشتق (= تصنيف كائن مرتبط)", "T3": "T3 — غير ملزم بتصنيف", "": "**[Missing]** (S-26)"}.get(first, first)].append(x[4:])
+    L += ["**مصدر التصنيف لكل Aggregate** (`08-security/label-derivation-rules.md`، القاعدة SL-29):", "",
+          "| مصدر التصنيف | العدد | الـAggregates |", "|---|---|---|"]
+    L += [f"| {k} | {len(v)} | {', '.join(v)} |" for k, v in sorted(kinds.items())]
+    L.append("")
+    sec_ev = sorted(e for e, v in evts.items() if v.get("يؤثر أمنياً") == "نعم")
+    L += [f"### 12.8 الأحداث المؤثرة أمنيًا ({len(sec_ev)})", "",
+          "ترفع إصدار الأمن للموضوع وتبطل ذاكرة القرارات (`15-event-design.md` §7): " + ", ".join(f"`{e}`" for e in sec_ev), ""]
+    threats = []
+    for f in sorted((SPEC / "08-security").glob("threat-model*.md")):
+        text = f.read_text(encoding="utf-8")
+        for header, rows in tables(text):
+            if header and header[0] == "id" and "stride" in header:
+                for r in rows:
+                    d = dict(zip(header, r))
+                    d["_src"] = f.stem
+                    threats.append(d)
+        for tid, rec in md_records(text, "THR").items():
+            if not any(t["id"] == tid for t in threats):
+                threats.append(dict(rec, id=tid, _src=f.stem))
+    privacy = []
+    for header, rows in tables((SPEC / "08-security" / "privacy-threats.md").read_text(encoding="utf-8")):
+        if header and header[0] == "id":
+            privacy += [dict(zip(header, r)) for r in rows]
+    stride = defaultdict(int)
+    for t in threats:
+        stride[t.get("stride", "—")] += 1
+    L += [f"### 12.9 نموذج التهديدات الموحَّد ({len(threats)} تهديدًا)", "",
+          "من `08-security/threat-model.md` (النواة، حسب حدود الثقة) و`threat-model-slcNN.md` (لكل شريحة، حسب المكوّن)، بتصنيف STRIDE.", "",
+          "| STRIDE | العدد |", "|---|---|"] + [f"| {k} | {v} |" for k, v in sorted(stride.items(), key=lambda x: -x[1])]
+    res = [t for t in threats if t.get("residual_risk", "L") not in ("L", "—")]
+    L += ["", f"**مخاطر متبقية فوق المنخفض ({len(res)}):**", "", "| التهديد | المصدر | الحد / المكوّن | STRIDE | التهديد | الضوابط | المتبقي |", "|---|---|---|---|---|---|---|"]
+    L += [f"| {t['id']} | {t['_src']} | {esc(t.get('boundary') or t.get('component', '—'))} | {t.get('stride')} | {esc(t.get('threat'))} | {esc(t.get('controls'))} | {t.get('residual_risk')} |" for t in res]
+    L += ["", f"**تهديدات الخصوصية (LINDDUN، {len(privacy)}):**", "", "| التهديد | الفئة | التهديد | الضابط |", "|---|---|---|---|"]
+    L += [f"| {p_['id']} | {p_.get('category')} | {esc(p_.get('threat'))} | {esc(p_.get('control'))} |" for p_ in privacy]
+    L += ["", "#### الكتالوج الكامل", "", "| التهديد | المصدر | الحد / المكوّن | STRIDE | التهديد | الاحتمال | الأثر | الضوابط | المتبقي |", "|---|---|---|---|---|---|---|---|---|"]
+    L += [f"| {t['id']} | {t['_src']} | {esc(t.get('boundary') or t.get('component', '—'))} | {t.get('stride')} | {esc(t.get('threat'))} | "
+          f"{t.get('likelihood', '—')} | {t.get('impact', '—')} | {esc(t.get('controls'))} | {t.get('residual_risk', '—')} |" for t in threats]
+    L += ["", END]
+    write_generated(OUT / "17-security-design.md", None, "\n".join(L))
+
+
+# ------------------------------------------------------------------ 18 error handling
+def error_category(code, http):
+    if code in ("VALIDATION_FAILED",):
+        return "1. طلب غير صالح"
+    if code in ("AUTHZ_DENIED", "PERMISSION_DENIED", "NOT_FOUND", "SEGREGATION_OF_DUTIES"):
+        return "2. تخويل وعدم إفصاح"
+    if code in ("VERSION_CONFLICT", "IDEMPOTENCY_KEY_REUSED"):
+        return "3. تزامن وعدم تكرار"
+    if code.endswith("_INVALID_STATE_TRANSITION"):
+        return "4. انتقال حالة غير مسموح"
+    if code in ("RATE_LIMITED", "AUDIT_UNAVAILABLE", "POLICY_ENGINE_UNAVAILABLE"):
+        return "6. منصة"
+    return "5. قاعدة عمل أو شرط انتقال"
+
+
+def build_errors(aggs, cmds):
+    codes = {}
+    for f in sorted((SPEC / "05-contracts").glob("errors-*.md")):
+        for header, rows in tables(f.read_text(encoding="utf-8")):
+            if header and header[0] == "الرمز":
+                for r in rows:
+                    c = r[0].strip("`")
+                    d = codes.setdefault(c, {"http": r[1], "retry": r[2], "slices": []})
+                    d["slices"].append(f.stem.replace("errors-", ""))
+    users = defaultdict(list)
+    for cid, c in cmds.items():
+        for e in [x.strip() for x in c["الأخطاء"].split(",") if x.strip() not in ("", "—")]:
+            users[e].append(cid)
+    guard_of = {}  # the whole guard: one clause can describe the effect, not the check (PLAN_EMPTY, QUALITY_RULES_INVALID)
+    for a in aggs.values():
+        for t in a["trans"]:
+            if t.get("error") and t["error"] not in guard_of and t["guard"] not in ("—", ""):
+                guard_of[t["error"]] = (a["id"], t["guard"].replace("\\|", "/"))
+    never = sorted((code, c) for code in codes if code.endswith("_INVALID_STATE_TRANSITION")
+                   for c in users.get(code, []) if not any(reject_states(aggs[cmds[c]["Aggregate"]], c)))
+    states = {st for a in aggs.values() for st in a["open"] + a["final"] + [x for x, _ in a["matrix"]]}
+    referenced, reasons = defaultdict(set), defaultdict(set)
+    for f in sorted(SPEC.rglob("*.md")):
+        rel = f.relative_to(SPEC).as_posix()
+        if rel.startswith(("17-system-study", "18-analysis-design", "05-contracts", "00-governance")):
+            continue
+        text = f.read_text(encoding="utf-8")
+        # asynchronous rejection reasons (a REJECTED state's reason), not HTTP error codes
+        found = set(re.findall(r"\breason\s+([A-Z]{3,}(?:_[A-Z0-9]+)+)\b", text))
+        found |= set(re.findall(r"\bREJECTED with ([A-Z]{3,}(?:_[A-Z0-9]+)+)\b", text))
+        if rel.endswith("allocation-readiness-spec.md"):
+            found |= set(re.findall(r"^\| \d+ \| [^|]+\| ([A-Z]{3,}(?:_[A-Z0-9]+)+) \|$", text, re.M))
+        for m in found - set(codes):
+            reasons[m].add(rel)
+        for m in re.findall(r"\b([A-Z]{3,}(?:_[A-Z0-9]+){1,6})\b", text):
+            if (m.endswith(("_UNAVAILABLE", "_DENIED", "_EXCEEDED", "_REQUIRED", "_CONFLICT", "_TIMEOUT", "_EXPIRED", "_INVALID"))
+                    and m not in codes and m not in states and m not in found):
+                referenced[m].add(rel)
+    for m in reasons:
+        referenced.pop(m, None)
+    by_cat = defaultdict(list)
+    for code, d in codes.items():
+        by_cat[error_category(code, d["http"])].append(code)
+    L = [BEGIN, "", "### 9.1 الملخص", "", "| الفئة | الرموز | HTTP | قابل لإعادة المحاولة |", "|---|---|---|---|"]
+    for cat in sorted(by_cat):
+        ids = by_cat[cat]
+        L.append(f"| {cat} | {len(ids)} | {', '.join(sorted({codes[c]['http'] for c in ids}))} | "
+                 f"{sum(1 for c in ids if codes[c]['retry'] == 'نعم')} |")
+    L.append(f"| **المجموع** | **{len(codes)}** | | {sum(1 for c in codes.values() if c['retry'] == 'نعم')} |")
+    L += ["", f"**أوامر لا يُطلِق فيها رمز `*_INVALID_STATE_TRANSITION` أبدًا ({len(never)})** — الأمر مسموح من كل حالات المصفوفة (S-03): " +
+          ("، ".join(f"`{c}` في `{cmd}`" for c, cmd in never) or "لا شيء") + ".", "",
+          f"**رموز تذكرها المواصفات وليست في كتالوج الأخطاء ({len(referenced)})** **[Needs Review]** (S-27):", "",
+          "| الرمز | أين يُذكر |", "|---|---|"] + [f"| `{k}` | {', '.join(f'`{x}`' for x in sorted(v)[:3])} |" for k, v in sorted(referenced.items())] + [""]
+    L += [f"**رموز أسباب لحالة رفض غير متزامنة ({len(reasons)})** — تُحمل في حقل السبب لحالة `REJECTED` أو مع رمز خطأ، وليست رموز HTTP؛ "
+          "فئة مستقلة عن الكتالوج (§8):", "", "| السبب | أين يُذكر |", "|---|---|"] + \
+         [f"| `{k}` | {', '.join(f'`{x}`' for x in sorted(v)[:3])} |" for k, v in sorted(reasons.items())] + [""]
+    for cat in sorted(by_cat):
+        L += [f"### {cat.replace(cat.split(' ')[0], '9.' + str(int(cat.split('.')[0]) + 1), 1)}", "",
+              "| الرمز | HTTP | إعادة | الأوامر | السياقات | مثال الشرط (Aggregate) |", "|---|---|---|---|---|---|"]
+        for code in sorted(by_cat[cat]):
+            d, cs = codes[code], users.get(code, [])
+            ctx = sorted({cmds[c]["_bc"] for c in cs})
+            ex = guard_of.get(code)
+            L.append(f"| `{code}` | {d['http']} | {d['retry']} | {len(cs) or '— (منصة)'} | {', '.join(ctx) or '—'} | "
+                     f"{esc(short(ex[1], 110)) + ' (' + ex[0][4:] + ')' if ex else '—'} |")
+        L.append("")
+    L.append(END)
+    write_generated(OUT / "18-error-handling.md", None, "\n".join(L))
+    return codes, never
+
+
+# ------------------------------------------------------------------ 12 components
+DU_NAMES = {"DU-01": "Gateway/BFF", "DU-02": "Foundation", "DU-03": "Governance", "DU-04": "Information", "DU-05": "Ingestion",
+            "DU-06": "Intelligence", "DU-07": "Evaluators", "DU-08": "Operations", "DU-09": "Discovery", "DU-10": "Field sync",
+            "DU-11": "Adapters", "DU-12": "Tiles", "DU-13": "Analysis jobs", "DU-14": "Readiness (R2)", "DU-15": "Knowledge (R2)",
+            "DU-16": "AI Serving (R2)"}
+BC_DU = {"BC01": "DU-02", "BC02": "DU-04", "BC03": "DU-06", "BC04": "DU-08", "BC05": "DU-14", "BC06": "DU-15", "BC07": "DU-09", "BC08": "DU-03"}
+AGG_DU = {  # aggregates of a context that spans several units (12-solution/deployment-units.md responsibilities) — [Derived]
+    "AGG-OBSERVATION": "DU-05", "AGG-IMPORT-BATCH": "DU-05", "AGG-ATTACHMENT": "DU-05",
+    "AGG-SYNC-SESSION": "DU-10", "AGG-SYNC-CONFLICT": "DU-10", "AGG-PRELOAD-PACKAGE": "DU-10",
+    "AGG-QUALIFICATION-RECORD": "DU-08",  # R1: BC05's SLC-03 part runs inside DU-08 (11-hexagonal-reference.md §7)
+    "AGG-ADAPTER": "DU-11", "AGG-INTEGRATION-CONNECTION": "DU-11", "AGG-SENSOR-STREAM": "DU-11",
+    "AGG-AI-REQUEST": "DU-16", "AGG-AI-RESULT": "DU-16", "AGG-AI-ROUTING": "DU-16", "AGG-AI-TOOL": "DU-16",
+    "AGG-MODEL-VERSION": "DU-16", "AGG-EVAL-SUITE": "DU-16",
+}
+PATH_DU = {"discovery": "DU-09", "field": "DU-10", "integration": "DU-11", "ai": "DU-16"}
+QRY_DU = {"QRY-SIT-TILE": "DU-12", "QRY-BASE-TILE": "DU-12"}  # tiles are served from the BC07 projection (ADR-P06; 11 §8)
+# streaming membership and alert evaluators (deployment-units.md DU-07): an alert or membership condition is over other
+# contexts' data, so "the command that touches the condition" (C-SYS) reaches DU-07 as an event
+EVALUATED_IN_DU07 = {"AGG-ALERT", "AGG-SITUATION"}
+SLICE_RELEASE = {**{f"SLC-{i:02d}": "R1" for i in (1, 2, 3, 4, 5, 6, 7, 8, 11)}, "SLC-12a": "R1",
+                 **{f"SLC-{i:02d}": "R2" for i in (9, 10, 12, 14, 15, 16)}, **{f"SLC-{i:02d}": "R3" for i in (17, 18, 19)}}  # 01-business/system-definition.md §4
+EXTRA_IN = {"DU-02": ["SCIM — تزويد المستخدمين من مزوّد الهوية"], "DU-05": ["Bulk import + scanner"],
+            "DU-10": ["Sync gateway — CommandEnvelope من الأجهزة"], "DU-11": ["Connectors — الأنظمة الخارجية (ACL)"]}
+EXTRA_OUT = {  # 18-analysis-design/13-project-structure.md §4, 03-domain/context-map.md
+    "DU-02": ["Valkey — نسخ security_version", "Keycloak — اتحاد الهوية"],
+    "DU-03": ["OpenBao / HSM — مخزن المفاتيح وسجل الإتلاف", "S3 Object Lock — مثبتات التدقيق"],
+    "DU-04": ["BC01 OHS — SecurityContext / AuthorityCheck"],
+    "DU-06": ["BC02 OHS — استعلامات as-of"],
+    "DU-07": ["DU-06 — عقد الأوامر الداخلية", "PostgreSQL intelligence — قراءة فقط", "Notifications — BC04"],
+    "DU-08": ["BC05 OHS — EligibilityCheck", "BC01 OHS — AuthorityCheck"],
+    "DU-09": ["OpenSearch — وثائق البحث", "مخزن إسقاطات BC07 (اسم الـschema [Missing])", "OHS المالكين — إشعار وجلب (11 §8)"],
+    "DU-12": ["مخزن إسقاطات BC07 — ميزات البلاطات (PostGIS)", "S3 — الخرائط الأساس (PMTiles)"],
+    "DU-13": ["BC03 — تقارير التشغيل عبر العقد"],
+    "DU-14": ["BC01 OHS — AuthorityCheck", "استعلامات تاريخ المالكين — إعادة البناء"],
+    "DU-15": ["BC01 OHS — AuthorityCheck", "استعلامات تاريخ المالكين — إعادة البناء"],
+    "DU-10": ["أوامر السياقات المالكة عبر عقودها"],
+    "DU-11": ["BC02 commands عبر العقد"],
+    "DU-16": ["vLLM — النماذج", "OpenSearch k-NN — المتجهات", "أوامر المالكين عند قبول AI-RESULT — باسم المراجع"],
+}
+
+
+def du_of(aid, aggs):
+    return AGG_DU.get(aid) or BC_DU[aggs[aid]["bc"]]
+
+
+def build_components(aggs, cmds, qrys, ops):
+    tabs = load_ldm()[0]
+    bc_schemas = defaultdict(set)
+    for s_, bc in SCHEMA_BC.items():
+        bc_schemas[bc].add(s_)
+    by_path = defaultdict(set)
+    for k, c in cmds.items():
+        by_path["/".join(ops.get(k, {}).get("path", "").split("/")[:5])].add(c["Aggregate"])
+    home_q = {}
+    for qid, q in qrys.items():
+        seg = ops.get(qid, {}).get("path", "").split("/")
+        owners = sorted(by_path.get("/".join(seg[:5]), set()))
+        home_q[qid] = QRY_DU.get(qid) or PATH_DU.get(seg[3] if len(seg) > 3 else "") or \
+            (du_of(owners[0], aggs) if owners else BC_DU.get(q["_bc"], "—"))
+    du = defaultdict(lambda: {"aggs": [], "cmds": 0, "qrys": [], "sys": defaultdict(list), "schemas": set(), "personal": False,
+                              "internal": 0, "offline": 0, "storage": False})
+    for aid, a in aggs.items():
+        d = du[du_of(aid, aggs)]
+        d["aggs"].append(aid)
+        d["cmds"] += sum(1 for c in cmds.values() if c["Aggregate"] == aid)
+        d["internal"] += sum(1 for k, c in cmds.items() if c["Aggregate"] == aid and ops.get(k, {}).get("internal"))
+        d["offline"] += sum(1 for k, c in cmds.items() if c["Aggregate"] == aid and ops.get(k, {}).get("offline"))
+        t = main_table(aid, tabs, bc_schemas[a["bc"]])
+        if t:
+            d["schemas"].add(t["schema"])
+        d["personal"] |= a["personal"]
+        d["storage"] |= aid in ("AGG-ATTACHMENT", "AGG-ARCHIVE-PACKAGE", "AGG-PRELOAD-PACKAGE", "AGG-EVIDENCE", "AGG-PRODUCT")
+        for t_ in a["trans"]:
+            if t_["cmd"].startswith("SYS:"):
+                kind = sys_kind(t_["cmd"][4:], t_["guard"])
+                target = "DU-07" if aid in EVALUATED_IN_DU07 and kind in ("مدفوع بحدث", "شرطي بعد أمر") else du_of(aid, aggs)
+                du[target]["sys"][kind].append(f"{aid[4:]}: {t_['cmd'][4:]}")
+    for qid, d_ in home_q.items():
+        du[d_]["qrys"].append(qid)
+    def release(k, d):
+        base = "R2" if k in ("DU-14", "DU-15", "DU-16") else "R1"
+        extra = defaultdict(int)
+        for aid in d["aggs"] if d else []:
+            r = SLICE_RELEASE.get(aggs[aid]["slice"], "?")
+            if r != base:
+                extra[r] += 1
+        return base + "".join(f" + {r} ({n})" for r, n in sorted(extra.items()))
+
+    L = [BEGIN, "", "### 7.1 الملخص", "",
+         "| الوحدة | الـAggregates | أوامر | استعلامات | قواعد `SYS:` (زمني / شرطي / حدث / عامل) | الـschemas | الإصدار |", "|---|---|---|---|---|---|---|"]
+    for k in sorted(DU_NAMES):
+        d = du.get(k)
+        if not d:
+            L.append(f"| {k} {DU_NAMES[k]} | — | — | — | — | — | {release(k, None)} |")
+            continue
+        sysc = " / ".join(str(len(d["sys"].get(x, []))) for x in ("زمني", "شرطي بعد أمر", "مدفوع بحدث", "مدفوع بعامل"))
+        L.append(f"| {k} {DU_NAMES[k]} | {len(d['aggs'])} | {d['cmds']} | {len(d['qrys'])} | {sysc} | {', '.join(f'`{x}`' for x in sorted(d['schemas'])) or '—'} | "
+                 f"{release(k, d)} |")
+    L += ["", "عمود الإصدار: إصدار الوحدة، وبين قوسين عدد الـAggregates التي تصل في إصدار لاحق (من شريحة كل Aggregate، `01-business/system-definition.md` §4).", "",
+          "### 7.2 المكوّنات لكل وحدة", ""]
+    for k in sorted(DU_NAMES):
+        d = du.get(k)
+        if not d or (not d["aggs"] and not d["qrys"] and not d["sys"]):
+            continue
+        L += [f"#### {k} {DU_NAMES[k]}", ""]
+        if k == "DU-14":
+            L += ["تعرض هذه الوحدة حالتها في R2. في R1 يعمل جزء BC05 الخاص بالتأهيل والأهلية (AGG-QUALIFICATION-RECORD، `QRY-ELIG-CHECK`، SLC-03) داخل DU-08 بـschema `readiness`، وينتقل مع بقية BC05 إلى هذه الوحدة في R2 (`11-hexagonal-reference.md` §7). "
+                  "وتضم أيضًا Aggregates الإمداد والتمارين (SLC-18، SLC-19، R3) التي لا يذكرها `deployment-units.md` لـDU-14 — إسناد **[Derived]** من ملكية BC05 (§5).", ""]
+        if k == "DU-07":
+            L += ["لا تملك بيانات ولا خط أوامر: تستهلك الأحداث تدفقيًا، وتقيّم قواعد العضوية والتنبيه، وتصدر أوامر داخلية على عقد DU-06 الذي ينفذها بخط أوامره ويكتب الـoutbox في معاملته (§2). "
+                  "شرط التنبيه يقع على بيانات سياقات أخرى، فـ«الأمر الذي يمس الشرط» (ضابط C-SYS) يصل إليها حدثًا؛ لذا تُقيَّم هنا القواعد المصنفة «شرطي بعد أمر» أيضًا.", "",
+                  "```mermaid", "flowchart LR",
+                  f'  KAFKA["Kafka consumer + inbox"] --> EV["Streaming evaluators — القواعد: {sum(len(v) for v in d["sys"].values())}"]',
+                  '  EV --> RD[("PostgreSQL intelligence — قراءة فقط")]',
+                  '  EV --> CMD["DU-06 — عقد الأوامر الداخلية (Idempotency-Key مشتق من الحدث)"]',
+                  '  EV --> NOTE["Notifications — BC04"]', "```", "",
+                  "| القاعدة (Aggregate: المحفز) |", "|---|"] + [f"| {esc(x)} |" for v in d["sys"].values() for x in v] + [""]
+            continue
+        L += ["```mermaid", "flowchart LR"]
+        L.append('  subgraph IN["Inbound adapters"]')
+        for i_, x in enumerate(EXTRA_IN.get(k, [])):
+            L.append(f'    XIN{i_}["{x}"]')
+        if d["cmds"] or d["qrys"]:
+            L.append(f'    HTTP["HTTP API — {d["cmds"]} أمرًا، {len(d["qrys"])} استعلامًا"]')
+        if d["sys"].get("مدفوع بحدث"):
+            L.append(f'    KAFKA["Kafka consumer + inbox — {len(d["sys"]["مدفوع بحدث"])} قاعدة حدث"]')
+        if d["sys"].get("زمني"):
+            L.append(f'    SCHED["Scheduler — {len(d["sys"]["زمني"])} قاعدة زمنية"]')
+        if d["sys"].get("مدفوع بعامل"):
+            L.append(f'    WORK["Worker reports — {len(d["sys"]["مدفوع بعامل"])} قاعدة"]')
+        L.append("  end")
+        L.append('  subgraph APP["Application"]')
+        L.append('    PIPE["Command pipeline (ADR-P17)"]' if d["cmds"] or d["sys"] else '    PIPE["Query pipeline — authz + re-check"]')
+        if d["cmds"]:
+            L.append(f'    CH["Command handlers ({d["cmds"]})"]')
+        if d["qrys"]:
+            L.append(f'    QH["Query handlers ({len(d["qrys"])})"]')
+        if d["sys"].get("شرطي بعد أمر"):
+            L.append(f'    POST["تقييم شرطي بعد الأمر — {len(d["sys"]["شرطي بعد أمر"])} قاعدة"]')
+        if d["sys"]:
+            L.append(f'    PH["Process handlers ({sum(len(v) for v in d["sys"].values())})"]')
+        L.append("  end")
+        if d["aggs"]:
+            L.append('  subgraph DOM["Domain"]')
+            for aid in sorted(d["aggs"]):
+                L.append(f'    {aid.replace("-", "_")}["{aid[4:]}"]')
+            L.append("  end")
+        L.append('  subgraph OUT["Outbound adapters"]')
+        for sch in sorted(d["schemas"]):
+            L.append(f'    DB_{sch}[("PostgreSQL {sch}")]')
+        L.append('    OPA["OPA embedded PDP"]')
+        if d["qrys"]:
+            L.append('    RECHECK["Result re-check: security_version + LabelCheck"]')
+        if d["personal"]:
+            L.append('    KMS["OpenBao / HSM — subject keys"]')
+        if d["storage"]:
+            L.append('    S3[("Object storage")]')
+        if d["cmds"] or d["sys"]:
+            L.append('    BUS["Kafka outbox relay (CDC)"]')
+        for i_, x in enumerate(EXTRA_OUT.get(k, [])):
+            L.append(f'    XOUT{i_}["{x}"]')
+        L.append("  end")
+        for i_ in range(len(EXTRA_IN.get(k, []))):
+            L.append(f"  XIN{i_} --> PIPE")
+        for i_ in range(len(EXTRA_OUT.get(k, []))):
+            L.append(f"  PIPE --> XOUT{i_}")
+        if d["cmds"] or d["qrys"]:
+            L.append("  HTTP --> PIPE")
+        if d["sys"].get("شرطي بعد أمر"):
+            L += ["  CH --> POST", "  POST --> PH"]
+        for n in ("KAFKA", "SCHED", "WORK"):
+            if any(f'    {n}[' in x for x in L[-60:]):
+                L.append(f"  {n} --> PH")
+        if d["cmds"]:
+            L.append("  PIPE --> CH")
+        if d["qrys"]:
+            L.append("  PIPE --> QH")
+        if d["sys"]:
+            L.append("  PH --> PIPE")
+        if d["aggs"] and d["cmds"]:
+            L.append("  CH --> DOM")
+        for sch in sorted(d["schemas"]):
+            L.append(f"  DOM --> DB_{sch}" if d["aggs"] else f"  PIPE --> DB_{sch}")
+        L.append("  PIPE --> OPA")
+        if d["qrys"]:
+            L.append("  QH --> RECHECK")
+        if d["personal"]:
+            L.append("  DOM --> KMS")
+        if d["storage"]:
+            L.append("  DOM --> S3")
+        if d["cmds"] or d["sys"]:
+            L.append("  PIPE --> BUS")
+        L += ["```", ""]
+        L += ["| الـAggregate | الأوامر | الاستعلامات |", "|---|---|---|"]
+        for aid in sorted(d["aggs"]):
+            L.append(f"| `{aid}` | {sum(1 for c in cmds.values() if c['Aggregate'] == aid)} | "
+                     f"{sum(1 for q in d['qrys'] if qrys[q]['_bc'] == aggs[aid]['bc'] and q.split('-')[1] == next((c.split('-')[1] for c in cmds if cmds[c]['Aggregate'] == aid), ''))} |")
+        extra = [q for q in d["qrys"] if not any(q.split("-")[1] == c.split("-")[1] for c in cmds if du_of(cmds[c]["Aggregate"], aggs) == k)]
+        if extra:
+            L.append(f"\n**استعلامات بلا Aggregate في الوحدة:** " + ", ".join(f"`{q}`" for q in sorted(extra)))
+        for kind, items in sorted(d["sys"].items()):
+            L.append(f"\n**قواعد `SYS:` ({kind}):** " + "؛ ".join(esc(x) for x in items))
+        if d["internal"] or d["offline"]:
+            L.append(f"\n**عمليات خاصة:** داخلية {d['internal']}، دون اتصال {d['offline']} (`14-api-design.md` §7).")
+        L.append("")
+    L.append(END)
+    write_generated(OUT / "12-components.md", None, "\n".join(L))
+    return du
+
+
 # ------------------------------------------------------------------ writer
 def write_generated(path, header, block):
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -1750,6 +2224,9 @@ def main():
     build_requirements(aggs, reqs, ucs, qrys)
     build_use_cases(aggs, cmds, qrys, pol_c, reqs, ucs)
     build_domain_model(aggs, cmds)
+    build_security(aggs, cmds, qrys, pol_c, pol_q, evts)
+    build_errors(aggs, cmds)
+    build_components(aggs, cmds, qrys, ops)
     total = sum(sum(v.values()) for v in stats.values())
     print(f"stories={total} (commands={sum(1 for k in story_ids if k.startswith('CMD-'))}, "
           f"queries={sum(1 for k in story_ids if k.startswith('QRY-'))}, sys={sum(v.get('نظام (SYS)', 0) for v in stats.values())}) "

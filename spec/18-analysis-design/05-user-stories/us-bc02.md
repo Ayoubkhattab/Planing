@@ -1763,9 +1763,9 @@ Scenario Outline: CMD-CRR-EDIT is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| حذف / إنهاء | تحليل | Analyst lead · second approver **[Needs Review]** | `POST /api/v1/information/correlation-rules/{id}/actions/retire` | POL-CRR-RETIRE |
+| حذف / إنهاء | تحليل | Analyst lead (محسوم: `17-security-design.md` §5) | `POST /api/v1/information/correlation-rules/{id}/actions/retire` | POL-CRR-RETIRE |
 
-**القصة:** بصفتي **Analyst lead · second approver**، أريد **إحالة قاعدة الربط إلى التقاعد**، لكي يتحقق غرض قاعدة الربط: قاعدة ربط زماني-مكاني بمعاملات وعتبة وتقييم
+**القصة:** بصفتي **Analyst lead**، أريد **إحالة قاعدة الربط إلى التقاعد**، لكي يتحقق غرض قاعدة الربط: قاعدة ربط زماني-مكاني بمعاملات وعتبة وتقييم
 
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE؛ reason
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -1777,7 +1777,7 @@ Scenario Outline: CMD-CRR-EDIT is rejected
 ```gherkin
 Scenario: CMD-CRR-RETIRE succeeds
   Given AGG-CORRELATION-RULE in state ACTIVE and every guard holds
-  When an authorized actor (Analyst lead or second approver) sends CMD-CRR-RETIRE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Analyst lead sends CMD-CRR-RETIRE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes RETIRED
   And EVT-CRR-RETIRED is written to the outbox with one audit record in the same transaction
 
@@ -2268,9 +2268,9 @@ Scenario Outline: CMD-ER-DECIDE-NOT-MATCH is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | تحليل | Analyst · second Analyst **[Needs Review]** | `POST /api/v1/information/er-cases/{id}/actions/park` | POL-ER-PARK |
+| سير عمل | تحليل | Analyst (محسوم: `17-security-design.md` §5) | `POST /api/v1/information/er-cases/{id}/actions/park` | POL-ER-PARK |
 
-**القصة:** بصفتي **Analyst · second Analyst**، أريد **تأجيل حالة مطابقة الكيانات**، لكي يتحقق غرض حالة مطابقة الكيانات: حالة مطابقة بين كيانين؛ قرارها ينشئ أو يغلق روابط التطابق
+**القصة:** بصفتي **Analyst**، أريد **تأجيل حالة مطابقة الكيانات**، لكي يتحقق غرض حالة مطابقة الكيانات: حالة مطابقة بين كيانين؛ قرارها ينشئ أو يغلق روابط التطابق
 
 - **الشروط المسبقة:** الحالة الحالية: UNDER_REVIEW؛ rationale; insufficient evidence
 - **المدخلات:** `rationale`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -2282,7 +2282,7 @@ Scenario Outline: CMD-ER-DECIDE-NOT-MATCH is rejected
 ```gherkin
 Scenario: CMD-ER-PARK succeeds
   Given AGG-ER-CASE in state UNDER_REVIEW and every guard holds
-  When an authorized actor (Analyst or second Analyst) sends CMD-ER-PARK with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Analyst sends CMD-ER-PARK with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes POSSIBLE_DUPLICATE
   And EVT-ER-PARKED is written to the outbox with one audit record in the same transaction
 
@@ -2375,9 +2375,9 @@ Scenario Outline: CMD-ER-REQUEST-SPLIT is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | تحليل | Analyst · second Analyst **[Needs Review]** | `POST /api/v1/information/er-cases/{id}/actions/resume` | POL-ER-RESUME |
+| سير عمل | تحليل | Analyst (محسوم: `17-security-design.md` §5) | `POST /api/v1/information/er-cases/{id}/actions/resume` | POL-ER-RESUME |
 
-**القصة:** بصفتي **Analyst · second Analyst**، أريد **استئناف حالة مطابقة الكيانات**، لكي يتحقق غرض حالة مطابقة الكيانات: حالة مطابقة بين كيانين؛ قرارها ينشئ أو يغلق روابط التطابق
+**القصة:** بصفتي **Analyst**، أريد **استئناف حالة مطابقة الكيانات**، لكي يتحقق غرض حالة مطابقة الكيانات: حالة مطابقة بين كيانين؛ قرارها ينشئ أو يغلق روابط التطابق
 
 - **الشروط المسبقة:** الحالة الحالية: POSSIBLE_DUPLICATE؛ new evidence or reason
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -2389,7 +2389,7 @@ Scenario Outline: CMD-ER-REQUEST-SPLIT is rejected
 ```gherkin
 Scenario: CMD-ER-RESUME succeeds
   Given AGG-ER-CASE in state POSSIBLE_DUPLICATE and every guard holds
-  When an authorized actor (Analyst or second Analyst) sends CMD-ER-RESUME with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Analyst sends CMD-ER-RESUME with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes UNDER_REVIEW
   And EVT-ER-RESUMED is written to the outbox with one audit record in the same transaction
 
@@ -2483,9 +2483,9 @@ Scenario Outline: CMD-ER-START-REVIEW is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| حذف / إنهاء | تحليل | Analyst · second Analyst **[Needs Review]** | `POST /api/v1/information/er-cases/{id}/actions/withdraw` | POL-ER-WITHDRAW |
+| حذف / إنهاء | تحليل | Analyst (محسوم: `17-security-design.md` §5) | `POST /api/v1/information/er-cases/{id}/actions/withdraw` | POL-ER-WITHDRAW |
 
-**القصة:** بصفتي **Analyst · second Analyst**، أريد **سحب حالة مطابقة الكيانات**، لكي يتحقق غرض حالة مطابقة الكيانات: حالة مطابقة بين كيانين؛ قرارها ينشئ أو يغلق روابط التطابق
+**القصة:** بصفتي **Analyst**، أريد **سحب حالة مطابقة الكيانات**، لكي يتحقق غرض حالة مطابقة الكيانات: حالة مطابقة بين كيانين؛ قرارها ينشئ أو يغلق روابط التطابق
 
 - **الشروط المسبقة:** الحالة الحالية: CANDIDATE, UNDER_REVIEW, POSSIBLE_DUPLICATE؛ reason (e.g. entity retired, duplicate case)
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -2497,7 +2497,7 @@ Scenario Outline: CMD-ER-START-REVIEW is rejected
 ```gherkin
 Scenario: CMD-ER-WITHDRAW succeeds
   Given AGG-ER-CASE in state CANDIDATE or UNDER_REVIEW or POSSIBLE_DUPLICATE and every guard holds
-  When an authorized actor (Analyst or second Analyst) sends CMD-ER-WITHDRAW with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Analyst sends CMD-ER-WITHDRAW with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes WITHDRAWN
   And EVT-ER-WITHDRAWN is written to the outbox with one audit record in the same transaction
 
@@ -3388,9 +3388,9 @@ Scenario: QRY-MRS-GET hides an item the caller may not see
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| تعديل | أساسية | Field User / Operator / Analyst / adapter service account · Analyst **[Needs Review]** | `POST /api/v1/information/observations/{id}/actions/amend` | POL-OBS-AMEND |
+| تعديل | أساسية | Field User / Operator / Analyst / adapter service account (محسوم: `17-security-design.md` §5) | `POST /api/v1/information/observations/{id}/actions/amend` | POL-OBS-AMEND |
 
-**القصة:** بصفتي **Field User / Operator / Analyst / adapter service account · Analyst**، أريد **تعديل الملاحظة بإصدار جديد**، لكي يتحقق غرض الملاحظة: ما رصده مصدر في زمن ومكان؛ غير قابل للتعديل بعد الاعتماد
+**القصة:** بصفتي **Field User / Operator / Analyst / adapter service account**، أريد **تعديل الملاحظة بإصدار جديد**، لكي يتحقق غرض الملاحظة: ما رصده مصدر في زمن ومكان؛ غير قابل للتعديل بعد الاعتماد
 
 - **الشروط المسبقة:** الحالة الحالية: RECORDED؛ actor = observer or Analyst; new version; reason
 - **المدخلات:** `changes`!: object, `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -3402,7 +3402,7 @@ Scenario: QRY-MRS-GET hides an item the caller may not see
 ```gherkin
 Scenario: CMD-OBS-AMEND succeeds
   Given AGG-OBSERVATION in state RECORDED and every guard holds
-  When an authorized actor (Field User / Operator / Analyst / adapter service account or Analyst) sends CMD-OBS-AMEND with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Field User / Operator / Analyst / adapter service account sends CMD-OBS-AMEND with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state is unchanged and the version increases by one
   And EVT-OBS-AMENDED is written to the outbox with one audit record in the same transaction
 
@@ -3424,9 +3424,9 @@ Scenario Outline: CMD-OBS-AMEND is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| تعديل | أساسية | Field User / Operator / Analyst / adapter service account · Analyst **[Needs Review]** | `POST /api/v1/information/observations/{id}/actions/attach-evidence` | POL-OBS-ATTACH-EVIDENCE |
+| تعديل | أساسية | Field User / Operator / Analyst / adapter service account (محسوم: `17-security-design.md` §5) | `POST /api/v1/information/observations/{id}/actions/attach-evidence` | POL-OBS-ATTACH-EVIDENCE |
 
-**القصة:** بصفتي **Field User / Operator / Analyst / adapter service account · Analyst**، أريد **إرفاق دليل بـالملاحظة**، لكي يتحقق غرض الملاحظة: ما رصده مصدر في زمن ومكان؛ غير قابل للتعديل بعد الاعتماد
+**القصة:** بصفتي **Field User / Operator / Analyst / adapter service account**، أريد **إرفاق دليل بـالملاحظة**، لكي يتحقق غرض الملاحظة: ما رصده مصدر في زمن ومكان؛ غير قابل للتعديل بعد الاعتماد
 
 - **الشروط المسبقة:** الحالة الحالية: RECORDED؛ evidence REGISTERED or SEALED
 - **المدخلات:** `evidence`!: urn — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -3438,7 +3438,7 @@ Scenario Outline: CMD-OBS-AMEND is rejected
 ```gherkin
 Scenario: CMD-OBS-ATTACH-EVIDENCE succeeds
   Given AGG-OBSERVATION in state RECORDED and every guard holds
-  When an authorized actor (Field User / Operator / Analyst / adapter service account or Analyst) sends CMD-OBS-ATTACH-EVIDENCE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Field User / Operator / Analyst / adapter service account sends CMD-OBS-ATTACH-EVIDENCE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state is unchanged and the version increases by one
   And EVT-OBS-EVIDENCE-ATTACHED is written to the outbox with one audit record in the same transaction
 
@@ -3460,9 +3460,9 @@ Scenario Outline: CMD-OBS-ATTACH-EVIDENCE is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| تعديل | أساسية | Field User / Operator / Analyst / adapter service account · Analyst **[Needs Review]** | `POST /api/v1/information/observations/{id}/actions/reclassify` | POL-OBS-RECLASSIFY |
+| تعديل | أساسية | Analyst (محسوم: `17-security-design.md` §5) | `POST /api/v1/information/observations/{id}/actions/reclassify` | POL-OBS-RECLASSIFY |
 
-**القصة:** بصفتي **Field User / Operator / Analyst / adapter service account · Analyst**، أريد **إعادة تصنيف الملاحظة**، لكي يتحقق غرض الملاحظة: ما رصده مصدر في زمن ومكان؛ غير قابل للتعديل بعد الاعتماد
+**القصة:** بصفتي **Analyst**، أريد **إعادة تصنيف الملاحظة**، لكي يتحقق غرض الملاحظة: ما رصده مصدر في زمن ومكان؛ غير قابل للتعديل بعد الاعتماد
 
 - **الشروط المسبقة:** الحالة الحالية: RECORDED, VALIDATED, REJECTED؛ authority per tenant policy (REQ-GOV-004); new version; bumps object security_version
 - **المدخلات:** `label`!: Label, `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -3474,7 +3474,7 @@ Scenario Outline: CMD-OBS-ATTACH-EVIDENCE is rejected
 ```gherkin
 Scenario: CMD-OBS-RECLASSIFY succeeds
   Given AGG-OBSERVATION in state RECORDED or VALIDATED or REJECTED and every guard holds
-  When an authorized actor (Field User / Operator / Analyst / adapter service account or Analyst) sends CMD-OBS-RECLASSIFY with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Analyst sends CMD-OBS-RECLASSIFY with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state is unchanged and the version increases by one
   And EVT-OBS-RECLASSIFIED is written to the outbox with one audit record in the same transaction
 
@@ -4126,9 +4126,9 @@ Scenario Outline: CMD-SRC-REGISTER is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | أساسية | Analyst · Security Officer **[Needs Review]** | `POST /api/v1/information/sources/{id}/actions/reinstate` | POL-SRC-REINSTATE |
+| سير عمل | أساسية | Analyst (محسوم: `17-security-design.md` §5) | `POST /api/v1/information/sources/{id}/actions/reinstate` | POL-SRC-REINSTATE |
 
-**القصة:** بصفتي **Analyst · Security Officer**، أريد **إعادة المصدر إلى السريان**، لكي يتحقق غرض المصدر: جهة أو نظام أو مستشعر ينتج معلومات، مع موثوقية مؤرخة وحماية هوية
+**القصة:** بصفتي **Analyst**، أريد **إعادة المصدر إلى السريان**، لكي يتحقق غرض المصدر: جهة أو نظام أو مستشعر ينتج معلومات، مع موثوقية مؤرخة وحماية هوية
 
 - **الشروط المسبقة:** الحالة الحالية: SUSPENDED؛ لا شروط إضافية
 - **المدخلات:** لا حمولة — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -4140,7 +4140,7 @@ Scenario Outline: CMD-SRC-REGISTER is rejected
 ```gherkin
 Scenario: CMD-SRC-REINSTATE succeeds
   Given AGG-SOURCE in state SUSPENDED and every guard holds
-  When an authorized actor (Analyst or Security Officer) sends CMD-SRC-REINSTATE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Analyst sends CMD-SRC-REINSTATE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes ACTIVE
   And EVT-SRC-REINSTATED is written to the outbox with one audit record in the same transaction
 
@@ -4161,9 +4161,9 @@ Scenario Outline: CMD-SRC-REINSTATE is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| حذف / إنهاء | أساسية | Analyst · Security Officer **[Needs Review]** | `POST /api/v1/information/sources/{id}/actions/retire` | POL-SRC-RETIRE |
+| حذف / إنهاء | أساسية | Analyst (محسوم: `17-security-design.md` §5) | `POST /api/v1/information/sources/{id}/actions/retire` | POL-SRC-RETIRE |
 
-**القصة:** بصفتي **Analyst · Security Officer**، أريد **إحالة المصدر إلى التقاعد**، لكي يتحقق غرض المصدر: جهة أو نظام أو مستشعر ينتج معلومات، مع موثوقية مؤرخة وحماية هوية
+**القصة:** بصفتي **Analyst**، أريد **إحالة المصدر إلى التقاعد**، لكي يتحقق غرض المصدر: جهة أو نظام أو مستشعر ينتج معلومات، مع موثوقية مؤرخة وحماية هوية
 
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE, SUSPENDED؛ reason; history retained
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -4175,7 +4175,7 @@ Scenario Outline: CMD-SRC-REINSTATE is rejected
 ```gherkin
 Scenario: CMD-SRC-RETIRE succeeds
   Given AGG-SOURCE in state ACTIVE or SUSPENDED and every guard holds
-  When an authorized actor (Analyst or Security Officer) sends CMD-SRC-RETIRE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Analyst sends CMD-SRC-RETIRE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes RETIRED
   And EVT-SRC-RETIRED is written to the outbox with one audit record in the same transaction
 
@@ -4233,9 +4233,9 @@ Scenario Outline: CMD-SRC-SET-PROTECTION is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | أساسية | Analyst · Security Officer **[Needs Review]** | `POST /api/v1/information/sources/{id}/actions/suspend` | POL-SRC-SUSPEND |
+| سير عمل | أساسية | Analyst (محسوم: `17-security-design.md` §5) | `POST /api/v1/information/sources/{id}/actions/suspend` | POL-SRC-SUSPEND |
 
-**القصة:** بصفتي **Analyst · Security Officer**، أريد **تعليق المصدر**، لكي يتحقق غرض المصدر: جهة أو نظام أو مستشعر ينتج معلومات، مع موثوقية مؤرخة وحماية هوية
+**القصة:** بصفتي **Analyst**، أريد **تعليق المصدر**، لكي يتحقق غرض المصدر: جهة أو نظام أو مستشعر ينتج معلومات، مع موثوقية مؤرخة وحماية هوية
 
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE؛ reason
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -4247,7 +4247,7 @@ Scenario Outline: CMD-SRC-SET-PROTECTION is rejected
 ```gherkin
 Scenario: CMD-SRC-SUSPEND succeeds
   Given AGG-SOURCE in state ACTIVE and every guard holds
-  When an authorized actor (Analyst or Security Officer) sends CMD-SRC-SUSPEND with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Analyst sends CMD-SRC-SUSPEND with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes SUSPENDED
   And EVT-SRC-SUSPENDED is written to the outbox with one audit record in the same transaction
 

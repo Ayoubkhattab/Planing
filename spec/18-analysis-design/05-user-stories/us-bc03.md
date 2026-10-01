@@ -1097,9 +1097,9 @@ Scenario Outline: CMD-AMT-ACTIVATE is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | تحليل | Analysis lead · second lead or Administrator **[Needs Review]** | `POST /api/v1/intelligence/analysis-methods/{id}/actions/deprecate` | POL-AMT-DEPRECATE |
+| سير عمل | تحليل | Analysis lead (محسوم: `17-security-design.md` §5) | `POST /api/v1/intelligence/analysis-methods/{id}/actions/deprecate` | POL-AMT-DEPRECATE |
 
-**القصة:** بصفتي **Analysis lead · second lead or Administrator**، أريد **إهمال طريقة التحليل (إيقاف الاستخدام الجديد)**، لكي يتحقق غرض طريقة التحليل: طريقة تحليل بإصدار وبيئة تنفيذ ثابتة
+**القصة:** بصفتي **Analysis lead**، أريد **إهمال طريقة التحليل (إيقاف الاستخدام الجديد)**، لكي يتحقق غرض طريقة التحليل: طريقة تحليل بإصدار وبيئة تنفيذ ثابتة
 
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE؛ reason; no new runs; reproduction still allowed
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -1111,7 +1111,7 @@ Scenario Outline: CMD-AMT-ACTIVATE is rejected
 ```gherkin
 Scenario: CMD-AMT-DEPRECATE succeeds
   Given AGG-ANALYSIS-METHOD in state ACTIVE and every guard holds
-  When an authorized actor (Analysis lead or second lead or Administrator) sends CMD-AMT-DEPRECATE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Analysis lead sends CMD-AMT-DEPRECATE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes DEPRECATED
   And EVT-AMT-DEPRECATED is written to the outbox with one audit record in the same transaction
 
@@ -1168,9 +1168,9 @@ Scenario Outline: CMD-AMT-REGISTER is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| حذف / إنهاء | تحليل | Analysis lead · second lead or Administrator **[Needs Review]** | `POST /api/v1/intelligence/analysis-methods/{id}/actions/retire` | POL-AMT-RETIRE |
+| حذف / إنهاء | تحليل | Analysis lead (محسوم: `17-security-design.md` §5) | `POST /api/v1/intelligence/analysis-methods/{id}/actions/retire` | POL-AMT-RETIRE |
 
-**القصة:** بصفتي **Analysis lead · second lead or Administrator**، أريد **إحالة طريقة التحليل إلى التقاعد**، لكي يتحقق غرض طريقة التحليل: طريقة تحليل بإصدار وبيئة تنفيذ ثابتة
+**القصة:** بصفتي **Analysis lead**، أريد **إحالة طريقة التحليل إلى التقاعد**، لكي يتحقق غرض طريقة التحليل: طريقة تحليل بإصدار وبيئة تنفيذ ثابتة
 
 - **الشروط المسبقة:** الحالة الحالية: DEPRECATED؛ no run of this version backs a PUBLISHED or SUPERSEDED assessment (reproducibility preserved)
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -1182,7 +1182,7 @@ Scenario Outline: CMD-AMT-REGISTER is rejected
 ```gherkin
 Scenario: CMD-AMT-RETIRE succeeds
   Given AGG-ANALYSIS-METHOD in state DEPRECATED and every guard holds
-  When an authorized actor (Analysis lead or second lead or Administrator) sends CMD-AMT-RETIRE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Analysis lead sends CMD-AMT-RETIRE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes RETIRED
   And EVT-AMT-RETIRED is written to the outbox with one audit record in the same transaction
 
@@ -2311,9 +2311,9 @@ Scenario Outline: CMD-SIT-RECLASSIFY is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | أساسية | Analyst / Manager · Security Officer **[Needs Review]** | `POST /api/v1/intelligence/situations/{id}/actions/resume` | POL-SIT-RESUME |
+| سير عمل | أساسية | Analyst / Manager (محسوم: `17-security-design.md` §5) | `POST /api/v1/intelligence/situations/{id}/actions/resume` | POL-SIT-RESUME |
 
-**القصة:** بصفتي **Analyst / Manager · Security Officer**، أريد **استئناف الموقف**، لكي يتحقق غرض الموقف: سياق تشغيلي بامتداد وزمن ومعايير عضوية؛ محتواه إسقاط (ADR-P07)
+**القصة:** بصفتي **Analyst / Manager**، أريد **استئناف الموقف**، لكي يتحقق غرض الموقف: سياق تشغيلي بامتداد وزمن ومعايير عضوية؛ محتواه إسقاط (ADR-P07)
 
 - **الشروط المسبقة:** الحالة الحالية: PAUSED؛ membership re-evaluated from current state
 - **المدخلات:** لا حمولة — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -2325,7 +2325,7 @@ Scenario Outline: CMD-SIT-RECLASSIFY is rejected
 ```gherkin
 Scenario: CMD-SIT-RESUME succeeds
   Given AGG-SITUATION in state PAUSED and every guard holds
-  When an authorized actor (Analyst / Manager or Security Officer) sends CMD-SIT-RESUME with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Analyst / Manager sends CMD-SIT-RESUME with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes ACTIVE
   And EVT-SIT-RESUMED is written to the outbox with one audit record in the same transaction
 

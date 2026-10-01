@@ -381,9 +381,9 @@ Scenario Outline: CMD-AST-DISPOSE is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | أساسية | Resource Manager · disposal authority · Security Officer **[Needs Review]** | `POST /api/v1/readiness/assets/{id}/actions/fail-maintenance` | POL-AST-FAIL-MAINTENANCE |
+| سير عمل | أساسية | Resource Manager (محسوم: `17-security-design.md` §5) | `POST /api/v1/readiness/assets/{id}/actions/fail-maintenance` | POL-AST-FAIL-MAINTENANCE |
 
-**القصة:** بصفتي **Resource Manager · disposal authority · Security Officer**، أريد **تسجيل فشل صيانة الأصل**، لكي يتحقق غرض الأصل: أصل مادي بملكية وحيازة وحالة وقدرات وشهادات وصيانة
+**القصة:** بصفتي **Resource Manager**، أريد **تسجيل فشل صيانة الأصل**، لكي يتحقق غرض الأصل: أصل مادي بملكية وحيازة وحالة وقدرات وشهادات وصيانة
 
 - **الشروط المسبقة:** الحالة الحالية: UNDER_MAINTENANCE؛ maintenance order COMPLETED with outcome failed; reason
 - **المدخلات:** `maintenance_order`!: urn, `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -395,7 +395,7 @@ Scenario Outline: CMD-AST-DISPOSE is rejected
 ```gherkin
 Scenario: CMD-AST-FAIL-MAINTENANCE succeeds
   Given AGG-ASSET in state UNDER_MAINTENANCE and every guard holds
-  When an authorized actor (Resource Manager or disposal authority or Security Officer) sends CMD-AST-FAIL-MAINTENANCE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Resource Manager sends CMD-AST-FAIL-MAINTENANCE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes UNSERVICEABLE
   And EVT-AST-UNSERVICEABLE is written to the outbox with one audit record in the same transaction
 
@@ -417,9 +417,9 @@ Scenario Outline: CMD-AST-FAIL-MAINTENANCE is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | أساسية | Resource Manager · disposal authority · Security Officer **[Needs Review]** | `POST /api/v1/readiness/assets/{id}/actions/mark-unserviceable` | POL-AST-MARK-UNSERVICEABLE |
+| سير عمل | أساسية | Resource Manager (محسوم: `17-security-design.md` §5) | `POST /api/v1/readiness/assets/{id}/actions/mark-unserviceable` | POL-AST-MARK-UNSERVICEABLE |
 
-**القصة:** بصفتي **Resource Manager · disposal authority · Security Officer**، أريد **تعليم الأصل كغير صالح للخدمة**، لكي يتحقق غرض الأصل: أصل مادي بملكية وحيازة وحالة وقدرات وشهادات وصيانة
+**القصة:** بصفتي **Resource Manager**، أريد **تعليم الأصل كغير صالح للخدمة**، لكي يتحقق غرض الأصل: أصل مادي بملكية وحيازة وحالة وقدرات وشهادات وصيانة
 
 - **الشروط المسبقة:** الحالة الحالية: IN_SERVICE؛ reason; active assignments are notified; future reservations flagged
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -431,7 +431,7 @@ Scenario Outline: CMD-AST-FAIL-MAINTENANCE is rejected
 ```gherkin
 Scenario: CMD-AST-MARK-UNSERVICEABLE succeeds
   Given AGG-ASSET in state IN_SERVICE and every guard holds
-  When an authorized actor (Resource Manager or disposal authority or Security Officer) sends CMD-AST-MARK-UNSERVICEABLE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Resource Manager sends CMD-AST-MARK-UNSERVICEABLE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes UNSERVICEABLE
   And EVT-AST-UNSERVICEABLE is written to the outbox with one audit record in the same transaction
 
@@ -489,9 +489,9 @@ Scenario Outline: CMD-AST-RECLASSIFY is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | أساسية | Resource Manager · disposal authority · Security Officer **[Needs Review]** | `POST /api/v1/readiness/assets/{id}/actions/recover` | POL-AST-RECOVER |
+| سير عمل | أساسية | Resource Manager (محسوم: `17-security-design.md` §5) | `POST /api/v1/readiness/assets/{id}/actions/recover` | POL-AST-RECOVER |
 
-**القصة:** بصفتي **Resource Manager · disposal authority · Security Officer**، أريد **استعادة الأصل**، لكي يتحقق غرض الأصل: أصل مادي بملكية وحيازة وحالة وقدرات وشهادات وصيانة
+**القصة:** بصفتي **Resource Manager**، أريد **استعادة الأصل**، لكي يتحقق غرض الأصل: أصل مادي بملكية وحيازة وحالة وقدرات وشهادات وصيانة
 
 - **الشروط المسبقة:** الحالة الحالية: LOST؛ found; inspection required before service
 - **المدخلات:** `note`: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -503,7 +503,7 @@ Scenario Outline: CMD-AST-RECLASSIFY is rejected
 ```gherkin
 Scenario: CMD-AST-RECOVER succeeds
   Given AGG-ASSET in state LOST and every guard holds
-  When an authorized actor (Resource Manager or disposal authority or Security Officer) sends CMD-AST-RECOVER with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Resource Manager sends CMD-AST-RECOVER with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes UNSERVICEABLE
   And EVT-AST-RECOVERED is written to the outbox with one audit record in the same transaction
 
@@ -595,9 +595,9 @@ Scenario Outline: CMD-AST-REPORT-LOST is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | أساسية | Resource Manager · disposal authority · Security Officer **[Needs Review]** | `POST /api/v1/readiness/assets/{id}/actions/return-to-service` | POL-AST-RETURN-TO-SERVICE |
+| سير عمل | أساسية | Resource Manager (محسوم: `17-security-design.md` §5) | `POST /api/v1/readiness/assets/{id}/actions/return-to-service` | POL-AST-RETURN-TO-SERVICE |
 
-**القصة:** بصفتي **Resource Manager · disposal authority · Security Officer**، أريد **إعادة الأصل إلى الخدمة**، لكي يتحقق غرض الأصل: أصل مادي بملكية وحيازة وحالة وقدرات وشهادات وصيانة
+**القصة:** بصفتي **Resource Manager**، أريد **إعادة الأصل إلى الخدمة**، لكي يتحقق غرض الأصل: أصل مادي بملكية وحيازة وحالة وقدرات وشهادات وصيانة
 
 - **الشروط المسبقة:** الحالة الحالية: UNDER_MAINTENANCE؛ maintenance order COMPLETED; condition serviceable; required certifications valid
 - **المدخلات:** `maintenance_order`!: urn — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -609,7 +609,7 @@ Scenario Outline: CMD-AST-REPORT-LOST is rejected
 ```gherkin
 Scenario: CMD-AST-RETURN-TO-SERVICE succeeds
   Given AGG-ASSET in state UNDER_MAINTENANCE and every guard holds
-  When an authorized actor (Resource Manager or disposal authority or Security Officer) sends CMD-AST-RETURN-TO-SERVICE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Resource Manager sends CMD-AST-RETURN-TO-SERVICE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes IN_SERVICE
   And EVT-AST-RETURNED-TO-SERVICE is written to the outbox with one audit record in the same transaction
 
@@ -667,9 +667,9 @@ Scenario Outline: CMD-AST-SET-CERTIFICATION is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | أساسية | Resource Manager · disposal authority · Security Officer **[Needs Review]** | `POST /api/v1/readiness/assets/{id}/actions/start-maintenance` | POL-AST-START-MAINTENANCE |
+| سير عمل | أساسية | Resource Manager (محسوم: `17-security-design.md` §5) | `POST /api/v1/readiness/assets/{id}/actions/start-maintenance` | POL-AST-START-MAINTENANCE |
 
-**القصة:** بصفتي **Resource Manager · disposal authority · Security Officer**، أريد **بدء صيانة الأصل**، لكي يتحقق غرض الأصل: أصل مادي بملكية وحيازة وحالة وقدرات وشهادات وصيانة
+**القصة:** بصفتي **Resource Manager**، أريد **بدء صيانة الأصل**، لكي يتحقق غرض الأصل: أصل مادي بملكية وحيازة وحالة وقدرات وشهادات وصيانة
 
 - **الشروط المسبقة:** الحالة الحالية: IN_SERVICE, UNSERVICEABLE؛ maintenance order IN_PROGRESS for this asset
 - **المدخلات:** `maintenance_order`!: urn — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -681,7 +681,7 @@ Scenario Outline: CMD-AST-SET-CERTIFICATION is rejected
 ```gherkin
 Scenario: CMD-AST-START-MAINTENANCE succeeds
   Given AGG-ASSET in state IN_SERVICE or UNSERVICEABLE and every guard holds
-  When an authorized actor (Resource Manager or disposal authority or Security Officer) sends CMD-AST-START-MAINTENANCE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Resource Manager sends CMD-AST-START-MAINTENANCE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes UNDER_MAINTENANCE
   And EVT-AST-MAINTENANCE-STARTED is written to the outbox with one audit record in the same transaction
 

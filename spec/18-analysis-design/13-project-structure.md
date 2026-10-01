@@ -127,7 +127,7 @@ services/du-08-operations/
 | du-04-information | bc02 | HTTP، Kafka | PostgreSQL `information`، OPA، BC01 | R1 |
 | du-05-ingestion | bc02 | HTTP عالي المعدل، استيراد، ماسح | PostgreSQL `information`، S3 | R1 |
 | du-06-intelligence | bc03 | HTTP، Kafka | PostgreSQL `intelligence`، OPA، BC02 as-of | R1 |
-| du-07-evaluators | bc03 | Kafka (تدفقي، ≤ 5 ث) | PostgreSQL `intelligence`، إشعارات | R1 |
+| du-07-evaluators | bc03 | Kafka (تدفقي، ≤ 5 ث) | PostgreSQL `intelligence` قراءةً فقط، أوامر DU-06 الداخلية (لا outbox خاص بها)، إشعارات | R1 |
 | du-08-operations | bc04 (+ جزء bc05 في R1: التأهيل والأهلية، SLC-03) | HTTP، Kafka، scheduler | PostgreSQL `operations` (+ `readiness` في R1)، BC05 Eligibility، BC01 Authority | R1 |
 | du-09-discovery | bc07 | HTTP (بحث/رسم)، Kafka (بناة الإسقاطات) | OpenSearch، مخزن الإسقاطات في PostgreSQL (slc-05) | R1 |
 | du-10-field-sync | bc07 | بوابة المزامنة | PostgreSQL `field`، أوامر السياقات المالكة، S3 (الحزم) | R1 |

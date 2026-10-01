@@ -18,7 +18,7 @@ notes: HAP-02
 
 ## slices
 
-_18 items_
+_21 items_
 
 ### SLC-00
 

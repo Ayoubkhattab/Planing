@@ -1897,16 +1897,17 @@ def build_security(aggs, cmds, qrys, pol_c, pol_q, evts):
 
 # ------------------------------------------------------------------ 18 error handling
 def error_category(code, http):
-    if code in ("VALIDATION_FAILED",):
+    if code in ("VALIDATION_FAILED", "PAYLOAD_TOO_LARGE", "UNSUPPORTED_MEDIA_TYPE"):
         return "1. طلب غير صالح"
-    if code in ("AUTHZ_DENIED", "PERMISSION_DENIED", "NOT_FOUND", "SEGREGATION_OF_DUTIES"):
-        return "2. تخويل وعدم إفصاح"
+    if code in ("AUTHZ_DENIED", "PERMISSION_DENIED", "NOT_FOUND", "SEGREGATION_OF_DUTIES", "UNAUTHENTICATED", "MFA_STEP_UP_REQUIRED",
+                "APPROVAL_REQUIRED"):
+        return "2. مصادقة وتخويل وعدم إفصاح"
     if code in ("VERSION_CONFLICT", "IDEMPOTENCY_KEY_REUSED"):
         return "3. تزامن وعدم تكرار"
     if code.endswith("_INVALID_STATE_TRANSITION"):
         return "4. انتقال حالة غير مسموح"
-    if code in ("RATE_LIMITED", "AUDIT_UNAVAILABLE", "POLICY_ENGINE_UNAVAILABLE"):
-        return "6. منصة"
+    if code in ("RATE_LIMITED", "AUDIT_UNAVAILABLE", "POLICY_ENGINE_UNAVAILABLE", "DEPENDENCY_UNAVAILABLE", "ELIGIBILITY_UNAVAILABLE"):
+        return "6. منصة واعتماديات"
     return "5. قاعدة عمل أو شرط انتقال"
 
 

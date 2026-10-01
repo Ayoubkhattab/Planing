@@ -11,7 +11,7 @@ approved_at: '2026-09-24'
 
 # Error Catalog — SLC-02
 
-`AUTHZ_DENIED` لا يُعاد للعميل كما هو عند موارد غير مرئية: يُعاد `NOT_FOUND` بنفس الشكل (ADR-P06 §5). يُعاد `403` فقط لمورد يحق للمستخدم رؤيته دون تنفيذ الإجراء.
+`AUTHZ_DENIED` لا يُعاد للعميل كما هو عند مورد لا يحق للمستدعي رؤيته: يُعاد `NOT_FOUND` بنفس الشكل (ADR-P06 §5 كما عدّله ADR-P19). يُعاد `403` لمورد يحق للمستخدم رؤيته دون تنفيذ الإجراء، أو لأمر إنشاء مرفوض. التزام `mfa` غير مستوفى يُعاد `401 MFA_STEP_UP_REQUIRED` ويُعاد الطلب بعد المصادقة المعززة بنفس `Idempotency-Key`؛ قرار `REQUIRE_APPROVAL` يُعاد `403 APPROVAL_REQUIRED`. ترويسة `Retry-After` ترافق 429 و503 القابل لإعادة المحاولة (CR-78).
 
 | الرمز | HTTP | retryable | عدد الأوامر | الأوامر |
 |---|---|---|---|---|
@@ -51,7 +51,7 @@ approved_at: '2026-09-24'
 | `REASON_REQUIRED` | 422 | لا | 19 | CMD-ADP-RETIRE, CMD-ADP-SUSPEND, CMD-CLM-CORRECT, CMD-CLM-RETRACT, CMD-ENT-REINSTATE, CMD-ENT-RETIRE, CMD-EVD-WITHDRAW, CMD-EVL-UNLINK, CMD-EXT-END, CMD-IMP-ACC… |
 | `RELATIONSHIP_INVALID` | 422 | لا | 1 | CMD-REL-REGISTER |
 | `RELATIONSHIP_INVALID_STATE_TRANSITION` | 409 | لا | 3 | CMD-REL-RECLASSIFY, CMD-REL-REINSTATE, CMD-REL-RETIRE |
-| `SEGREGATION_OF_DUTIES` | 422 | لا | 3 | CMD-ADP-ACTIVATE, CMD-OBS-VALIDATE, CMD-SRC-SET-PROTECTION |
+| `SEGREGATION_OF_DUTIES` | 422 | لا | 4 | CMD-ADP-ACTIVATE, CMD-ADP-RESUME, CMD-OBS-VALIDATE, CMD-SRC-SET-PROTECTION |
 | `SOURCE_INVALID` | 422 | لا | 1 | CMD-SRC-REGISTER |
 | `SOURCE_INVALID_STATE_TRANSITION` | 409 | لا | 7 | CMD-SRC-RATE-RELIABILITY, CMD-SRC-RECLASSIFY, CMD-SRC-REINSTATE, CMD-SRC-RETIRE, CMD-SRC-SET-PROTECTION, CMD-SRC-SUSPEND, CMD-SRC-UPDATE-PROFILE |
 | `VALIDATION_FAILED` | 400 | لا | 57 | CMD-ADP-ACTIVATE, CMD-ADP-REGISTER, CMD-ADP-RESUME, CMD-ADP-RETIRE, CMD-ADP-SUSPEND, CMD-ADP-UPDATE-MAPPING, CMD-ATT-COMPLETE-UPLOAD, CMD-ATT-ERASE, CMD-ATT-INI… |
@@ -60,3 +60,9 @@ approved_at: '2026-09-24'
 | `RATE_LIMITED` | 429 | نعم | — | platform-wide |
 | `AUDIT_UNAVAILABLE` | 503 | لا | — | platform-wide |
 | `POLICY_ENGINE_UNAVAILABLE` | 503 (request denied) | نعم | — | platform-wide |
+| `UNAUTHENTICATED` | 401 | لا | — | platform-wide |
+| `MFA_STEP_UP_REQUIRED` | 401 | نعم | — | platform-wide |
+| `APPROVAL_REQUIRED` | 403 | لا | — | platform-wide |
+| `PAYLOAD_TOO_LARGE` | 413 | لا | — | platform-wide |
+| `UNSUPPORTED_MEDIA_TYPE` | 415 | لا | — | platform-wide |
+| `DEPENDENCY_UNAVAILABLE` | 503 | نعم | — | platform-wide |

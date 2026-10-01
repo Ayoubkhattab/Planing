@@ -41,7 +41,7 @@ Q16 → Compartments تفرض تصفية مفهرسة + تقسيم للمستو�
 2. The PDP converts the caller's authorization into an **allowed-scope filter** that the query engine applies **before** scoring, counting and faceting.
 3. Returned hits are re-checked against an authoritative **security-version table** (fast key-value) so revocations apply on the next request regardless of index lag (REQ-GOV-004).
 4. Counts, facets, suggestions and 'did you mean' are computed only over the pre-filtered set. No 'N results hidden' messages.
-5. Not-found and forbidden return the same response shape and status.
+5. Not-found and forbidden return the same response shape and status **for resources the caller may not see** (amended by ADR-P19, CR-75: a visible resource whose action is denied answers `403 AUTHZ_DENIED`).
 6. Map tiles: cache key = tile + layer + security-scope hash; operational layers above the lowest level are never shared-cached; base layers explicitly marked unclassified may be shared.
 
 ## Rationale
@@ -61,6 +61,9 @@ QAS-SEC-002, QAS-SEC-003, QAS-SEC-004, FIT-03
 
 ## Previously Blocked By
 UNK-006
+
+## Amendment (Phase 3.8, ADR-P19, CR-75)
+Item 5 applies to resources the caller may not see: they answer `404 NOT_FOUND` with the same shape as a missing resource, and nothing about them is returned. A resource the caller can see (a `view` decision returns `ALLOW` or `REDACT`) whose action is denied answers `403 AUTHZ_DENIED` with a closed-list `reason_code`; a denied create answers `403` because no resource exists to disclose. The amendment was chosen by the project owner on 2026-10-01 (ADR-P19).
 
 ## Amendment (SLC-05, CR-47)
 Step 3 is implemented as follows: **subjects** — the BC01 security-version key-value store (unchanged); **objects** — a batched `LabelCheck` call to each owning context for the returned page (OHS contract in `05-contracts/openapi-discovery-slc05.md`). No central object-label table is maintained, so no context writes into another context's store. Search indexes facts with their own labels so hidden claim values cannot match (SPEC-DISCOVERY §3.1).

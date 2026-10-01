@@ -22,7 +22,7 @@ _29 items_
 | POL-PTM-DEFINE | CMD-PTM-DEFINE | Knowledge Manager / Analysis lead (define, edit) · second approver (activate) | AGG-PRODUCT-TEMPLATE | tenant match; object visible | — | ALLOW | DENY | audit |
 | POL-PTM-EDIT | CMD-PTM-EDIT | Knowledge Manager / Analysis lead (define, edit) · second approver (activate) | AGG-PRODUCT-TEMPLATE | tenant match; object visible | — | ALLOW | DENY | audit |
 | POL-PTM-ACTIVATE | CMD-PTM-ACTIVATE | Knowledge Manager / Analysis lead (define, edit) · second approver (activate) | AGG-PRODUCT-TEMPLATE | tenant match; object visible | approver ≠ author | ALLOW | DENY | audit |
-| POL-PTM-RETIRE | CMD-PTM-RETIRE | Knowledge Manager / Analysis lead (define, edit) · second approver (activate) | AGG-PRODUCT-TEMPLATE | tenant match; object visible | — | ALLOW | DENY | audit |
+| POL-PTM-RETIRE | CMD-PTM-RETIRE | Knowledge Manager / Analysis lead (retire) — issuing role named by CR-77 | AGG-PRODUCT-TEMPLATE | tenant match; object visible | — | ALLOW | DENY | audit |
 | POL-PRD-CREATE | CMD-PRD-CREATE | Analyst / Planner (create, generate, edit, submit, discard) · reviewer (return, approve) · Manager (withdraw) | AGG-PRODUCT | tenant match; object visible | — | ALLOW | DENY | audit |
 | POL-PRD-GENERATE | CMD-PRD-GENERATE | Analyst / Planner (create, generate, edit, submit, discard) · reviewer (return, approve) · Manager (withdraw) | AGG-PRODUCT | tenant match; object visible | — | ALLOW | DENY | audit |
 | POL-PRD-EDIT-NARRATIVE | CMD-PRD-EDIT-NARRATIVE | Analyst / Planner (create, generate, edit, submit, discard) · reviewer (return, approve) · Manager (withdraw) | AGG-PRODUCT | tenant match; object visible | — | ALLOW | DENY | audit |
@@ -100,7 +100,7 @@ command_policies:
   obligations: audit
 - id: POL-PTM-RETIRE
   command: CMD-PTM-RETIRE
-  subject: Knowledge Manager / Analysis lead (define, edit) · second approver (activate)
+  subject: Knowledge Manager / Analysis lead (retire) — issuing role named by CR-77
   resource: AGG-PRODUCT-TEMPLATE
   context_conditions: tenant match; object visible
   segregation_of_duties: —

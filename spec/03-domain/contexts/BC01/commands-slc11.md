@@ -19,7 +19,7 @@ _7 commands_
 |---|---|---|---|---|---|---|---|---|
 | CMD-DEV-ENROLL | AGG-DEVICE | `POST /api/v1/foundation/devices` | لا | user (enroll, report lost) · Administrator / MDM policy (confirm, suspend, reinstate, retire) · Security Officer (lost, retire override) | POL-DEV-ENROLL | `user!:urn public_key!:string platform!:enum(android,ios) mdm_ref:string` | EVT-DEV-ENROLL-REQUESTED | AUTHZ_DENIED, DEVICE_LIMIT_REACHED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-DEV-CONFIRM | AGG-DEVICE | `POST /api/v1/foundation/devices/{id}/actions/confirm` | لا | user (enroll, report lost) · Administrator / MDM policy (confirm, suspend, reinstate, retire) · Security Officer (lost, retire override) | POL-DEV-CONFIRM | `attestation!:string` | EVT-DEV-ACTIVATED | ATTESTATION_FAILED, AUTHZ_DENIED, DEVICE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-DEV-ROTATE-KEY | AGG-DEVICE | `POST /api/v1/foundation/devices/{id}/actions/rotate-key` | لا | user (enroll, report lost) · Administrator / MDM policy (confirm, suspend, reinstate, retire) · Security Officer (lost, retire override) | POL-DEV-ROTATE-KEY | `new_public_key!:string signature!:string` | EVT-DEV-KEY-ROTATED | AUTHZ_DENIED, DEVICE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, SIGNATURE_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-DEV-ROTATE-KEY | AGG-DEVICE | `POST /api/v1/foundation/devices/{id}/actions/rotate-key` | لا | user | POL-DEV-ROTATE-KEY | `new_public_key!:string signature!:string` | EVT-DEV-KEY-ROTATED | AUTHZ_DENIED, DEVICE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, SIGNATURE_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-DEV-SUSPEND | AGG-DEVICE | `POST /api/v1/foundation/devices/{id}/actions/suspend` | لا | user (enroll, report lost) · Administrator / MDM policy (confirm, suspend, reinstate, retire) · Security Officer (lost, retire override) | POL-DEV-SUSPEND | `reason!:string` | EVT-DEV-SUSPENDED | AUTHZ_DENIED, DEVICE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-DEV-REINSTATE | AGG-DEVICE | `POST /api/v1/foundation/devices/{id}/actions/reinstate` | لا | user (enroll, report lost) · Administrator / MDM policy (confirm, suspend, reinstate, retire) · Security Officer (lost, retire override) | POL-DEV-REINSTATE | `reason!:string` | EVT-DEV-REINSTATED | AUTHZ_DENIED, DEVICE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-DEV-REPORT-LOST | AGG-DEVICE | `POST /api/v1/foundation/devices/{id}/actions/report-lost` | لا | user (enroll, report lost) · Administrator / MDM policy (confirm, suspend, reinstate, retire) · Security Officer (lost, retire override) | POL-DEV-REPORT-LOST | `lost_at!:date-time note:string` | EVT-DEV-REPORTED-LOST | AUTHZ_DENIED, DEVICE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
@@ -112,8 +112,7 @@ commands:
   - /api/v1/foundation/devices/{id}/actions/rotate-key
   internal: false
   policy: POL-DEV-ROTATE-KEY
-  actors: user (enroll, report lost) · Administrator / MDM policy (confirm, suspend,
-    reinstate, retire) · Security Officer (lost, retire override)
+  actors: user
   payload: new_public_key!:string signature!:string
   offline_capable: false
   idempotency_key: required

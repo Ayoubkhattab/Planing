@@ -25,17 +25,17 @@ _19 commands_
 | CMD-CNF-REOPEN | AGG-CONFLICT | `POST /api/v1/information/conflicts/{id}/actions/reopen` | لا | Analyst (raise, review, resolve, accept, reopen) · Analyst lead (assign) | POL-CNF-REOPEN | `reason!:string evidence:array` | EVT-CNF-REOPENED | AUTHZ_DENIED, CONFLICT_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ER-PROPOSE | AGG-ER-CASE | `POST /api/v1/information/er-cases` | لا | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | POL-ER-PROPOSE | `left!:urn right!:urn rationale!:string agent:urn` | EVT-ER-PROPOSED | AUTHZ_DENIED, ER_PAIR_INVALID, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ER-START-REVIEW | AGG-ER-CASE | `POST /api/v1/information/er-cases/{id}/actions/start-review` | لا | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | POL-ER-START-REVIEW | `—` | EVT-ER-REVIEW-STARTED | AUTHZ_DENIED, ER_CASE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REVIEWER_NOT_CLEARED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-ER-DECIDE-MATCH | AGG-ER-CASE | `POST /api/v1/information/er-cases/{id}/actions/decide-match` | لا | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | POL-ER-DECIDE-MATCH | `rationale!:string second_reviewer:urn` | EVT-ER-MATCHED | AUTHZ_DENIED, ER_CASE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, MATCH_CONTRADICTS_NOT_A_MATCH, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-ER-DECIDE-MATCH | AGG-ER-CASE | `POST /api/v1/information/er-cases/{id}/actions/decide-match` | لا | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | POL-ER-DECIDE-MATCH | `rationale!:string second_reviewer:urn` | EVT-ER-MATCHED | AUTHZ_DENIED, ER_CASE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, MATCH_CONTRADICTS_NOT_A_MATCH, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ER-DECIDE-NOT-MATCH | AGG-ER-CASE | `POST /api/v1/information/er-cases/{id}/actions/decide-not-match` | لا | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | POL-ER-DECIDE-NOT-MATCH | `rationale!:string` | EVT-ER-NOT-MATCHED | AUTHZ_DENIED, ER_CASE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-ER-PARK | AGG-ER-CASE | `POST /api/v1/information/er-cases/{id}/actions/park` | لا | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | POL-ER-PARK | `rationale!:string` | EVT-ER-PARKED | AUTHZ_DENIED, ER_CASE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-ER-RESUME | AGG-ER-CASE | `POST /api/v1/information/er-cases/{id}/actions/resume` | لا | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | POL-ER-RESUME | `reason!:string` | EVT-ER-RESUMED | AUTHZ_DENIED, ER_CASE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-ER-PARK | AGG-ER-CASE | `POST /api/v1/information/er-cases/{id}/actions/park` | لا | Analyst | POL-ER-PARK | `rationale!:string` | EVT-ER-PARKED | AUTHZ_DENIED, ER_CASE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-ER-RESUME | AGG-ER-CASE | `POST /api/v1/information/er-cases/{id}/actions/resume` | لا | Analyst | POL-ER-RESUME | `reason!:string` | EVT-ER-RESUMED | AUTHZ_DENIED, ER_CASE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ER-REQUEST-SPLIT | AGG-ER-CASE | `POST /api/v1/information/er-cases/{id}/actions/request-split` | لا | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | POL-ER-REQUEST-SPLIT | `reason!:string evidence:array` | EVT-ER-SPLIT-REQUESTED | AUTHZ_DENIED, ER_CASE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ER-CONFIRM-MATCH | AGG-ER-CASE | `POST /api/v1/information/er-cases/{id}/actions/confirm-match` | لا | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | POL-ER-CONFIRM-MATCH | `rationale!:string` | EVT-ER-MATCH-CONFIRMED | AUTHZ_DENIED, ER_CASE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ER-SPLIT | AGG-ER-CASE | `POST /api/v1/information/er-cases/{id}/actions/split` | لا | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | POL-ER-SPLIT | `rationale!:string record_not_a_match!:boolean` | EVT-ER-SPLIT | AUTHZ_DENIED, ER_CASE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-ER-WITHDRAW | AGG-ER-CASE | `POST /api/v1/information/er-cases/{id}/actions/withdraw` | لا | Analyst (propose, review, decide, request split) · second Analyst (confirm/split, large clusters) | POL-ER-WITHDRAW | `reason!:string` | EVT-ER-WITHDRAWN | AUTHZ_DENIED, ER_CASE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-ER-WITHDRAW | AGG-ER-CASE | `POST /api/v1/information/er-cases/{id}/actions/withdraw` | لا | Analyst | POL-ER-WITHDRAW | `reason!:string` | EVT-ER-WITHDRAWN | AUTHZ_DENIED, ER_CASE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-MRS-DRAFT | AGG-MATCH-RULESET | `POST /api/v1/information/match-rulesets` | لا | Analyst lead (draft, edit) · Administrator ≠ author (activate) | POL-MRS-DRAFT | `entity_type!:string based_on:urn` | EVT-MRS-DRAFTED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-MRS-EDIT | AGG-MATCH-RULESET | `POST /api/v1/information/match-rulesets/{id}/actions/edit` | لا | Analyst lead (draft, edit) · Administrator ≠ author (activate) | POL-MRS-EDIT | `blocking_keys!:array features!:array thresholds!:object evaluation_attachment!:urn` | EVT-MRS-EDITED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, MATCH_RULESET_INVALID_STATE_TRANSITION, RULESET_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-MRS-ACTIVATE | AGG-MATCH-RULESET | `POST /api/v1/information/match-rulesets/{id}/actions/activate` | لا | Analyst lead (draft, edit) · Administrator ≠ author (activate) | POL-MRS-ACTIVATE | `—` | EVT-MRS-ACTIVATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, MATCH_RULESET_INVALID_STATE_TRANSITION, RULESET_BELOW_TARGET, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-MRS-ACTIVATE | AGG-MATCH-RULESET | `POST /api/v1/information/match-rulesets/{id}/actions/activate` | لا | Analyst lead (draft, edit) · Administrator ≠ author (activate) | POL-MRS-ACTIVATE | `—` | EVT-MRS-ACTIVATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, MATCH_RULESET_INVALID_STATE_TRANSITION, RULESET_BELOW_TARGET, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
 
 **مشترك لكل الأوامر:** `Idempotency-Key` إلزامي؛ `If-Match` إلزامي لغير أوامر الإنشاء؛ `X-Purpose` و`X-Correlation-Id` إلزاميان؛ الاستجابة `202` مع `ResourceRef {urn, id, version, state}` أو `201` للإنشاء.
 
@@ -283,6 +283,7 @@ commands:
   - ER_CASE_INVALID_STATE_TRANSITION
   - IDEMPOTENCY_KEY_REUSED
   - MATCH_CONTRADICTS_NOT_A_MATCH
+  - SEGREGATION_OF_DUTIES
   - VALIDATION_FAILED
   - VERSION_CONFLICT
   creates: false
@@ -352,8 +353,7 @@ commands:
   - /api/v1/information/er-cases/{id}/actions/park
   internal: false
   policy: POL-ER-PARK
-  actors: Analyst (propose, review, decide, request split) · second Analyst (confirm/split,
-    large clusters)
+  actors: Analyst
   payload: rationale!:string
   offline_capable: false
   idempotency_key: required
@@ -380,8 +380,7 @@ commands:
   - /api/v1/information/er-cases/{id}/actions/resume
   internal: false
   policy: POL-ER-RESUME
-  actors: Analyst (propose, review, decide, request split) · second Analyst (confirm/split,
-    large clusters)
+  actors: Analyst
   payload: reason!:string
   offline_capable: false
   idempotency_key: required
@@ -495,8 +494,7 @@ commands:
   - /api/v1/information/er-cases/{id}/actions/withdraw
   internal: false
   policy: POL-ER-WITHDRAW
-  actors: Analyst (propose, review, decide, request split) · second Analyst (confirm/split,
-    large clusters)
+  actors: Analyst
   payload: reason!:string
   offline_capable: false
   idempotency_key: required
@@ -569,6 +567,7 @@ commands:
   - IDEMPOTENCY_KEY_REUSED
   - MATCH_RULESET_INVALID_STATE_TRANSITION
   - RULESET_BELOW_TARGET
+  - SEGREGATION_OF_DUTIES
   - VALIDATION_FAILED
   - VERSION_CONFLICT
   creates: false

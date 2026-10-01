@@ -1,9 +1,9 @@
 ---
-id: OPENAPI-BC01-SLC16
+id: OPENAPI-BC05-INTERNAL
 type: api-contract
-title: Foundation API (BC01) — SLC-16
+title: Readiness Internal API — system commands (SLC-19)
 wave: W6
-slice: SLC-16
+slice: SLC-19
 tier: T1
 status: APPROVED_DELEGATED
 approved_by: Claude (acting decision owner, delegated by project owner)
@@ -17,24 +17,22 @@ traces:
   - REQ-PLT-009
 ---
 
-# Foundation API (BC01) — SLC-16
+# Readiness Internal API — system commands (SLC-19)
 
-المسارات `/api/v1/{context}/{resource}`؛ الأوامر `POST …/actions/{action}` مع `Idempotency-Key` و`If-Match`؛ الاستعلامات تقبل `valid_at` و`known_at` حيث تنطبق؛ القوائم بمؤشر؛ الأخطاء بنموذج ApiError.
+أوامر داخلية بهوية عبء عمل فقط.
 
-_3 operations · validated with openapi-spec-validator_
+_1 operations · validated with openapi-spec-validator_
 
 | Method | Path | Operation |
 |---|---|---|
-| POST | `/api/v1/foundation/hr-sync-proposals/{id}/actions/approve` | CMD-HRS-APPROVE |
-| POST | `/api/v1/foundation/hr-sync-proposals/{id}/actions/reject` | CMD-HRS-REJECT |
-| GET | `/api/v1/foundation/hr-sync-proposals` | QRY-HRS-QUEUE |
+| POST | `/api/v1/readiness/simulations` | CMD-SIM-START |
 
 ```yaml
 openapi: 3.1.0
 info:
-  title: Foundation API (BC01) — SLC-16
+  title: Readiness Internal API (system commands)
   version: 1.0.0
-  description: Generated from SLC-16 domain specification. Do not edit by hand.
+  description: Generated from SLC-19 domain specification. Do not edit by hand.
 servers:
 - url: https://{cell}.platform.local
   variables:
@@ -43,36 +41,33 @@ servers:
 security:
 - bearer: []
 paths:
-  /api/v1/foundation/hr-sync-proposals/{id}/actions/approve:
+  /api/v1/readiness/simulations:
     post:
-      operationId: CMD-HRS-APPROVE
-      summary: CMD-HRS-APPROVE
-      x-aggregate: AGG-HR-SYNC-PROPOSAL
-      x-policy: POL-HRS-APPROVE
+      operationId: CMD-SIM-START
+      summary: CMD-SIM-START
+      x-aggregate: AGG-SIMULATION
+      x-policy: POL-SIM-START
       x-events:
-      - EVT-HRS-APPROVED
+      - EVT-SIM-STARTED
       x-error-codes:
       - AUTHZ_DENIED
-      - HR_SYNC_PROPOSAL_INVALID_STATE_TRANSITION
       - IDEMPOTENCY_KEY_REUSED
-      - OWNER_REJECTED
+      - SIMULATION_INVALID
       - VALIDATION_FAILED
       - VERSION_CONFLICT
       x-offline-capable: false
       parameters:
-      - $ref: '#/components/parameters/Id'
       - $ref: '#/components/parameters/Idempotency-Key'
       - $ref: '#/components/parameters/X-Purpose'
       - $ref: '#/components/parameters/X-Correlation-Id'
-      - $ref: '#/components/parameters/If-Match'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HrsApproveCommand'
+              $ref: '#/components/schemas/SimStartCommand'
       responses:
-        '202':
+        '201':
           description: accepted
           content:
             application/json:
@@ -92,93 +87,6 @@ paths:
           $ref: '#/components/responses/PayloadTooLarge'
         '415':
           $ref: '#/components/responses/UnsupportedMediaType'
-        '422':
-          $ref: '#/components/responses/Unprocessable'
-        '429':
-          $ref: '#/components/responses/RateLimited'
-        '503':
-          $ref: '#/components/responses/Unavailable'
-  /api/v1/foundation/hr-sync-proposals/{id}/actions/reject:
-    post:
-      operationId: CMD-HRS-REJECT
-      summary: CMD-HRS-REJECT
-      x-aggregate: AGG-HR-SYNC-PROPOSAL
-      x-policy: POL-HRS-REJECT
-      x-events:
-      - EVT-HRS-REJECTED
-      x-error-codes:
-      - AUTHZ_DENIED
-      - HR_SYNC_PROPOSAL_INVALID_STATE_TRANSITION
-      - IDEMPOTENCY_KEY_REUSED
-      - REASON_REQUIRED
-      - VALIDATION_FAILED
-      - VERSION_CONFLICT
-      x-offline-capable: false
-      parameters:
-      - $ref: '#/components/parameters/Id'
-      - $ref: '#/components/parameters/Idempotency-Key'
-      - $ref: '#/components/parameters/X-Purpose'
-      - $ref: '#/components/parameters/X-Correlation-Id'
-      - $ref: '#/components/parameters/If-Match'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/HrsRejectCommand'
-      responses:
-        '202':
-          description: accepted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ResourceRef'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
-        '413':
-          $ref: '#/components/responses/PayloadTooLarge'
-        '415':
-          $ref: '#/components/responses/UnsupportedMediaType'
-        '422':
-          $ref: '#/components/responses/Unprocessable'
-        '429':
-          $ref: '#/components/responses/RateLimited'
-        '503':
-          $ref: '#/components/responses/Unavailable'
-  /api/v1/foundation/hr-sync-proposals:
-    get:
-      operationId: QRY-HRS-QUEUE
-      summary: Pending HR proposals by unit and change kind (leave first)
-      x-authorized: Administrator in scope, Security Officer
-      x-requirement: REQ-INT-004
-      parameters:
-      - $ref: '#/components/parameters/X-Purpose'
-      - $ref: '#/components/parameters/X-Correlation-Id'
-      - $ref: '#/components/parameters/Cursor'
-      - $ref: '#/components/parameters/Limit'
-      responses:
-        '200':
-          description: ok
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Page'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '409':
-          $ref: '#/components/responses/Conflict'
         '422':
           $ref: '#/components/responses/Unprocessable'
         '429':
@@ -718,18 +626,19 @@ components:
     TemporalParams:
       type: object
       description: valid_at, known_at query parameters (ISO 8601; default now)
-    HrsApproveCommand:
+    SimStartCommand:
       type: object
       properties:
-        note:
+        exercise:
+          $ref: '#/components/schemas/Urn'
+        scenario:
+          $ref: '#/components/schemas/Urn'
+        started_at:
           type: string
-      additionalProperties: false
-    HrsRejectCommand:
-      type: object
-      properties:
-        reason:
-          type: string
+          format: date-time
       additionalProperties: false
       required:
-      - reason
+      - exercise
+      - scenario
+      - started_at
 ```

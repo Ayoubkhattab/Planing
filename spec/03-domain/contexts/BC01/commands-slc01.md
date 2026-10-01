@@ -25,7 +25,7 @@ _58 commands_
 | CMD-TEN-REACTIVATE | AGG-TENANT | `POST /api/v1/foundation/tenants/{id}/actions/reactivate` | لا | Platform Operator (provision, migrate, decommission) / Tenant Administrator (quotas view) | POL-TEN-REACTIVATE | `—` | EVT-TEN-REACTIVATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, TENANT_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TEN-START-CELL-MIGRATION | AGG-TENANT | `POST /api/v1/foundation/tenants/{id}/actions/start-cell-migration` | لا | Platform Operator (provision, migrate, decommission) / Tenant Administrator (quotas view) | POL-TEN-START-CELL-MIGRATION | `target_cell!:string` | EVT-TEN-MIGRATION-STARTED | AUTHZ_DENIED, CELL_UNAVAILABLE, IDEMPOTENCY_KEY_REUSED, TENANT_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TEN-COMPLETE-CELL-MIGRATION | AGG-TENANT | `POST /api/v1/foundation/tenants/{id}/actions/complete-cell-migration` | نعم | system (workload identity) | POL-TEN-COMPLETE-CELL-MIGRATION | `reconciliation_report!:string` | EVT-TEN-MIGRATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, MIGRATION_NOT_RECONCILED, TENANT_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-TEN-START-DECOMMISSION | AGG-TENANT | `POST /api/v1/foundation/tenants/{id}/actions/start-decommission` | لا | Platform Operator (provision, migrate, decommission) / Tenant Administrator (quotas view) | POL-TEN-START-DECOMMISSION | `reason!:string second_approver!:urn` | EVT-TEN-DECOMMISSION-STARTED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, LEGAL_HOLD_ACTIVE, TENANT_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-TEN-START-DECOMMISSION | AGG-TENANT | `POST /api/v1/foundation/tenants/{id}/actions/start-decommission` | لا | Platform Operator (provision, migrate, decommission) / Tenant Administrator (quotas view) | POL-TEN-START-DECOMMISSION | `reason!:string second_approver!:urn` | EVT-TEN-DECOMMISSION-STARTED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, LEGAL_HOLD_ACTIVE, SEGREGATION_OF_DUTIES, TENANT_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TEN-COMPLETE-DECOMMISSION | AGG-TENANT | `POST /api/v1/foundation/tenants/{id}/actions/complete-decommission` | نعم | system (workload identity) | POL-TEN-COMPLETE-DECOMMISSION | `—` | EVT-TEN-DECOMMISSIONED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, TENANT_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TEN-UPDATE-QUOTAS | AGG-TENANT | `POST /api/v1/foundation/tenants/{id}/actions/update-quotas` | لا | Platform Operator (provision, migrate, decommission) / Tenant Administrator (quotas view) | POL-TEN-UPDATE-QUOTAS | `quotas!:TenantQuotas` | EVT-TEN-QUOTAS-UPDATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, QUOTA_EXCEEDS_CAPACITY, TENANT_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ORG-CREATE | AGG-ORGANIZATION | `POST /api/v1/foundation/organizations` | لا | Administrator (in scope) | POL-ORG-CREATE | `name!:LocalizedName root_unit_name!:LocalizedName` | EVT-ORG-CREATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, ORG_NAME_TAKEN, VALIDATION_FAILED, VERSION_CONFLICT |
@@ -60,16 +60,16 @@ _58 commands_
 | CMD-ROL-SET-PERMISSIONS | AGG-ROLE | `POST /api/v1/foundation/roles/{id}/actions/set-permissions` | لا | Administrator | POL-ROL-SET-PERMISSIONS | `permissions!:array` | EVT-ROL-PERMISSIONS-CHANGED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, ROLE_INVALID_STATE_TRANSITION, SYSTEM_ROLE_LOCKED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ROL-ACTIVATE | AGG-ROLE | `POST /api/v1/foundation/roles/{id}/actions/activate` | لا | Administrator | POL-ROL-ACTIVATE | `—` | EVT-ROL-ACTIVATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, ROLE_EMPTY, ROLE_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ROL-RETIRE | AGG-ROLE | `POST /api/v1/foundation/roles/{id}/actions/retire` | لا | Administrator | POL-ROL-RETIRE | `reason!:string` | EVT-ROL-RETIRED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, ROLE_INVALID_STATE_TRANSITION, ROLE_IN_USE, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-RAS-ASSIGN | AGG-ROLE-ASSIGNMENT | `POST /api/v1/foundation/role-assignments` | لا | Administrator (in scope, not self) | POL-RAS-ASSIGN | `user!:urn role!:urn org_scope!:urn include_descendants!:boolean valid_from!:date-time valid_to:date-time` | EVT-RAS-ASSIGNED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SOD_ROLE_CONFLICT, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-RAS-ASSIGN | AGG-ROLE-ASSIGNMENT | `POST /api/v1/foundation/role-assignments` | لا | Administrator (in scope, not self) | POL-RAS-ASSIGN | `user!:urn role!:urn org_scope!:urn include_descendants!:boolean valid_from!:date-time valid_to:date-time` | EVT-RAS-ASSIGNED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SEGREGATION_OF_DUTIES, SOD_ROLE_CONFLICT, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-RAS-REVOKE | AGG-ROLE-ASSIGNMENT | `POST /api/v1/foundation/role-assignments/{id}/actions/revoke` | لا | Administrator (in scope, not self) | POL-RAS-REVOKE | `reason!:string` | EVT-RAS-REVOKED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, ROLE_ASSIGNMENT_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-AUT-GRANT | AGG-AUTHORITY-GRANT | `POST /api/v1/foundation/authority-grants` | لا | holder of authority.grant; Executive approves | POL-AUT-GRANT | `holder!:urn decision_types!:array org_scope!:urn include_descendants!:boolean limits:object valid_from!:date-time valid_to:date-time delegable!:boolean` | EVT-AUT-GRANT-REQUESTED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, PERMISSION_DENIED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-AUT-APPROVE-GRANT | AGG-AUTHORITY-GRANT | `POST /api/v1/foundation/authority-grants/{id}/actions/approve-grant` | لا | holder of authority.grant; Executive approves | POL-AUT-APPROVE-GRANT | `—` | EVT-AUT-GRANTED | AUTHORITY_GRANT_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-AUT-REJECT-GRANT | AGG-AUTHORITY-GRANT | `POST /api/v1/foundation/authority-grants/{id}/actions/reject-grant` | لا | holder of authority.grant; Executive approves | POL-AUT-REJECT-GRANT | `reason!:string` | EVT-AUT-GRANT-REJECTED | AUTHORITY_GRANT_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-AUT-DELEGATE | AGG-AUTHORITY-GRANT | `POST /api/v1/foundation/authority-grants/{id}/actions/delegate` | لا | holder of authority.grant; Executive approves | POL-AUT-DELEGATE | `delegate!:urn decision_types!:array org_scope!:urn include_descendants!:boolean limits:object valid_from!:date-time valid_to!:date-time delegable!:boolean` | EVT-AUT-DELEGATED | AUTHORITY_EXCEEDS_DELEGATOR, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-AUT-DELEGATE | AGG-AUTHORITY-GRANT | `POST /api/v1/foundation/authority-grants/{id}/actions/delegate` | لا | holder of authority.grant; Executive approves | POL-AUT-DELEGATE | `delegate!:urn decision_types!:array org_scope!:urn include_descendants!:boolean limits:object valid_from!:date-time valid_to!:date-time delegable!:boolean` | EVT-AUT-DELEGATED | AUTHORITY_EXCEEDS_DELEGATOR, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-AUT-SUSPEND | AGG-AUTHORITY-GRANT | `POST /api/v1/foundation/authority-grants/{id}/actions/suspend` | لا | holder of authority.grant; Executive approves | POL-AUT-SUSPEND | `reason!:string` | EVT-AUT-SUSPENDED | AUTHORITY_GRANT_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-AUT-RESUME | AGG-AUTHORITY-GRANT | `POST /api/v1/foundation/authority-grants/{id}/actions/resume` | لا | holder of authority.grant; Executive approves | POL-AUT-RESUME | `—` | EVT-AUT-RESUMED | AUTHORITY_GRANT_INVALID_STATE_TRANSITION, AUTHZ_DENIED, GRANT_EXPIRED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-AUT-REVOKE | AGG-AUTHORITY-GRANT | `POST /api/v1/foundation/authority-grants/{id}/actions/revoke` | لا | holder of authority.grant; Executive approves | POL-AUT-REVOKE | `reason!:string` | EVT-AUT-REVOKED | AUTHORITY_GRANT_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-CLR-GRANT | AGG-CLEARANCE | `POST /api/v1/foundation/clearances` | لا | Security Officer | POL-CLR-GRANT | `user!:urn level!:string compartments!:array caveat_attributes:object valid_to:date-time` | EVT-CLR-REQUESTED | AUTHZ_DENIED, CLEARANCE_EXISTS, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-CLR-GRANT | AGG-CLEARANCE | `POST /api/v1/foundation/clearances` | لا | Security Officer | POL-CLR-GRANT | `user!:urn level!:string compartments!:array caveat_attributes:object valid_to:date-time` | EVT-CLR-REQUESTED | AUTHZ_DENIED, CLEARANCE_EXISTS, IDEMPOTENCY_KEY_REUSED, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-CLR-APPROVE | AGG-CLEARANCE | `POST /api/v1/foundation/clearances/{id}/actions/approve` | لا | Security Officer | POL-CLR-APPROVE | `—` | EVT-CLR-GRANTED | AUTHZ_DENIED, CLEARANCE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-CLR-MODIFY | AGG-CLEARANCE | `POST /api/v1/foundation/clearances/{id}/actions/modify` | لا | Security Officer | POL-CLR-MODIFY | `level!:string compartments!:array caveat_attributes:object` | EVT-CLR-MODIFIED | AUTHZ_DENIED, CLEARANCE_INVALID, CLEARANCE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-CLR-SUSPEND | AGG-CLEARANCE | `POST /api/v1/foundation/clearances/{id}/actions/suspend` | لا | Security Officer | POL-CLR-SUSPEND | `reason!:string` | EVT-CLR-SUSPENDED | AUTHZ_DENIED, CLEARANCE_INVALID_STATE_TRANSITION, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
@@ -318,6 +318,7 @@ commands:
   - AUTHZ_DENIED
   - IDEMPOTENCY_KEY_REUSED
   - LEGAL_HOLD_ACTIVE
+  - SEGREGATION_OF_DUTIES
   - TENANT_INVALID_STATE_TRANSITION
   - VALIDATION_FAILED
   - VERSION_CONFLICT
@@ -1255,6 +1256,7 @@ commands:
   errors:
   - AUTHZ_DENIED
   - IDEMPOTENCY_KEY_REUSED
+  - SEGREGATION_OF_DUTIES
   - SOD_ROLE_CONFLICT
   - VALIDATION_FAILED
   - VERSION_CONFLICT
@@ -1393,6 +1395,7 @@ commands:
   - AUTHORITY_EXCEEDS_DELEGATOR
   - AUTHZ_DENIED
   - IDEMPOTENCY_KEY_REUSED
+  - SEGREGATION_OF_DUTIES
   - VALIDATION_FAILED
   - VERSION_CONFLICT
   creates: true
@@ -1504,6 +1507,7 @@ commands:
   - AUTHZ_DENIED
   - CLEARANCE_EXISTS
   - IDEMPOTENCY_KEY_REUSED
+  - SEGREGATION_OF_DUTIES
   - VALIDATION_FAILED
   - VERSION_CONFLICT
   creates: true

@@ -97,6 +97,7 @@ Scenario Outline: CMD-AUT-DELEGATE is rejected
     | AUTHORITY_EXCEEDS_DELEGATOR | 422 | لم يتحقق الشرط: parent grant effective and delegable; delegate ≠ delegator |
     | AUTHZ_DENIED | 403→404 | السياسة POL-AUT-DELEGATE ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
+    | SEGREGATION_OF_DUTIES | 422 | فصل المهام: delegate ≠ delegator |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: delegate, decision_types, org_scope, include_descendants, valid_from, valid_to, delegable |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -419,6 +420,7 @@ Scenario Outline: CMD-CLR-GRANT is rejected
     | AUTHZ_DENIED | 403→404 | السياسة POL-CLR-GRANT ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | CLEARANCE_EXISTS | 422 | لم يتحقق الشرط: level and compartments exist in ACTIVE scheme; subject has no other non-terminal clearance |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
+    | SEGREGATION_OF_DUTIES | 422 | فصل المهام: requester ≠ subject |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: user, level, compartments |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -772,7 +774,7 @@ Scenario Outline: CMD-DEV-RETIRE is rejected
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE؛ signed by current key; new public key
 - **المدخلات:** `new_public_key`!: string, `signature`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
 - **المخرجات:** الحالة ← (بلا تغيير)؛ الحدث EVT-DEV-KEY-ROTATED؛ الاستجابة `ResourceRef` (urn، id، version، state)
-- **الصلاحية:** user (enroll, report lost) · Administrator / MDM policy (confirm, suspend, reinstate, retire) · Security Officer (lost, retire override)؛ الشروط: tenant match; device ACTIVE where applicable; device signature for SYN؛ فصل المهام: —؛ الالتزامات: audit
+- **الصلاحية:** user (rotate key) — issuing role named by CR-77؛ الشروط: tenant match; device ACTIVE where applicable; device signature for SYN؛ فصل المهام: —؛ الالتزامات: audit
 - **الربط:** `CMD-DEV-ROTATE-KEY` · `AGG-DEVICE` · متطلبات: REQ-OFF-005 · حالات استخدام: UC-093
 - **ضوابط النوع والفئة:** C-UPD، K-INT (التعريف في [00-guide.md](00-guide.md))
 
@@ -1696,6 +1698,7 @@ Scenario Outline: CMD-RAS-ASSIGN is rejected
     | code | http | condition |
     | AUTHZ_DENIED | 403→404 | السياسة POL-RAS-ASSIGN ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
+    | SEGREGATION_OF_DUTIES | 422 | فصل المهام: assigner ≠ user; SoD role pairs |
     | SOD_ROLE_CONFLICT | 422 | لم يتحقق الشرط: role ACTIVE; no SoD-incompatible active role |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: user, role, org_scope, include_descendants, valid_from |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
@@ -2249,6 +2252,7 @@ Scenario Outline: CMD-TEN-START-DECOMMISSION is rejected
     | AUTHZ_DENIED | 403→404 | السياسة POL-TEN-START-DECOMMISSION ترفض: يُعاد 404 بنفس شكل المورد غير الموجود، و403 فقط إن كان المورد مرئيًا له دون الإذن بالإجراء (`errors-*.md`) |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | LEGAL_HOLD_ACTIVE | 422 | لم يتحقق الشرط: no active legal hold (BC08 query) |
+    | SEGREGATION_OF_DUTIES | 422 | فصل المهام: two distinct platform operators |
     | TENANT_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: DECOMMISSIONED, DECOMMISSIONING, MIGRATING, PROVISIONING, PROVISIONING_FAILED |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: reason, second_approver |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |

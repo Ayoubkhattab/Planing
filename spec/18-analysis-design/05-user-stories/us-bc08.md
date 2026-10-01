@@ -61,6 +61,7 @@ Scenario Outline: CMD-CLS-ACTIVATE is rejected
     | CLASSIFICATION_SCHEME_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ACTIVE, DISCARDED, SUPERSEDED |
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | SCHEME_INVALID | 422 | لم يتحقق الشرط: validation passes; effective_from ≥ now; approver ≠ drafter; previous ACTIVE → SUPERSEDED in same transaction |
+    | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ drafter |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: effective_from |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```
@@ -1114,6 +1115,7 @@ Scenario Outline: CMD-RTS-ACTIVATE is rejected
     | IDEMPOTENCY_KEY_REUSED | 422 | نفس Idempotency-Key مع حمولة مختلفة |
     | RETENTION_SCHEDULE_INVALID_STATE_TRANSITION | 409 | الحالة الحالية واحدة من: ACTIVE, DISCARDED, SUPERSEDED |
     | SCHEDULE_INCOMPLETE | 422 | لم يتحقق الشرط: every record class in RD-RECORD-CLASSES has exactly one rule (REQ-GOV-006); approver = Legal/Compliance authority ≠ drafter; previous ACTIVE → SUPERSEDED in the same transaction |
+    | SEGREGATION_OF_DUTIES | 422 | فصل المهام: approver ≠ drafter |
     | VALIDATION_FAILED | 400 | حقل إلزامي مفقود أو غير صالح: effective_from |
     | VERSION_CONFLICT | 409 | قيمة If-Match لا تطابق الإصدار الحالي (يُفحص بعد التخويل الكامل؛ يُعاد بعد تحميل المورد) |
 ```

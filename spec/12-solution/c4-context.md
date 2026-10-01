@@ -26,7 +26,7 @@ flowchart LR
     IDP[Tenant Identity Provider<br/>OIDC / SAML / SCIM]
     GIS[GIS services<br/>OGC / files]
     WX[Weather feeds]
-    SEN[Sensors]
+    SEN[Sensors — R2]
     ERP[ERP / HRIS / DMS — R2]
     MDM[MDM / push relay]
     HSM[Site HSM]
@@ -34,7 +34,8 @@ flowchart LR
   FU & AN & PL & SO & AD --> P
   OP -->|operator plane, break-glass only for tenant data| P
   IDP -->|federation, provisioning| P
-  GIS & WX & SEN -->|adapters, ACL| P
+  GIS & WX -->|adapters, ACL| P
+  SEN -.->|R2, adapters, ACL| P
   ERP -.->|R2| P
   P -->|push relay| MDM
   P -->|PKCS#11| HSM

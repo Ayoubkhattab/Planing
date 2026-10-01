@@ -42,7 +42,7 @@ _39 items_
 ### POL-AST-MARK-UNSERVICEABLE
 
 - **command:** CMD-AST-MARK-UNSERVICEABLE
-- **subject:** Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify)
+- **subject:** Resource Manager (mark unserviceable) — issuing role named by CR-77
 - **resource:** AGG-ASSET
 - **context_conditions:** tenant match; object visible; owner/pool scope
 - **segregation_of_duties:** —
@@ -53,7 +53,7 @@ _39 items_
 ### POL-AST-START-MAINTENANCE
 
 - **command:** CMD-AST-START-MAINTENANCE
-- **subject:** Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify)
+- **subject:** Resource Manager (start maintenance) — issuing role named by CR-77
 - **resource:** AGG-ASSET
 - **context_conditions:** tenant match; object visible; owner/pool scope
 - **segregation_of_duties:** —
@@ -64,7 +64,7 @@ _39 items_
 ### POL-AST-RETURN-TO-SERVICE
 
 - **command:** CMD-AST-RETURN-TO-SERVICE
-- **subject:** Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify)
+- **subject:** Resource Manager (return to service) — issuing role named by CR-77
 - **resource:** AGG-ASSET
 - **context_conditions:** tenant match; object visible; owner/pool scope
 - **segregation_of_duties:** —
@@ -75,7 +75,7 @@ _39 items_
 ### POL-AST-FAIL-MAINTENANCE
 
 - **command:** CMD-AST-FAIL-MAINTENANCE
-- **subject:** Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify)
+- **subject:** Resource Manager (fail maintenance) — issuing role named by CR-77
 - **resource:** AGG-ASSET
 - **context_conditions:** tenant match; object visible; owner/pool scope
 - **segregation_of_duties:** —
@@ -119,7 +119,7 @@ _39 items_
 ### POL-AST-RECOVER
 
 - **command:** CMD-AST-RECOVER
-- **subject:** Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify)
+- **subject:** Resource Manager (recover) — issuing role named by CR-77
 - **resource:** AGG-ASSET
 - **context_conditions:** tenant match; object visible; owner/pool scope
 - **segregation_of_duties:** —
@@ -488,8 +488,7 @@ command_policies:
   obligations: audit
 - id: POL-AST-MARK-UNSERVICEABLE
   command: CMD-AST-MARK-UNSERVICEABLE
-  subject: Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security
-    Officer (reclassify)
+  subject: Resource Manager (mark unserviceable) — issuing role named by CR-77
   resource: AGG-ASSET
   context_conditions: tenant match; object visible; owner/pool scope
   segregation_of_duties: —
@@ -498,8 +497,7 @@ command_policies:
   obligations: audit
 - id: POL-AST-START-MAINTENANCE
   command: CMD-AST-START-MAINTENANCE
-  subject: Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security
-    Officer (reclassify)
+  subject: Resource Manager (start maintenance) — issuing role named by CR-77
   resource: AGG-ASSET
   context_conditions: tenant match; object visible; owner/pool scope
   segregation_of_duties: —
@@ -508,8 +506,7 @@ command_policies:
   obligations: audit
 - id: POL-AST-RETURN-TO-SERVICE
   command: CMD-AST-RETURN-TO-SERVICE
-  subject: Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security
-    Officer (reclassify)
+  subject: Resource Manager (return to service) — issuing role named by CR-77
   resource: AGG-ASSET
   context_conditions: tenant match; object visible; owner/pool scope
   segregation_of_duties: —
@@ -518,8 +515,7 @@ command_policies:
   obligations: audit
 - id: POL-AST-FAIL-MAINTENANCE
   command: CMD-AST-FAIL-MAINTENANCE
-  subject: Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security
-    Officer (reclassify)
+  subject: Resource Manager (fail maintenance) — issuing role named by CR-77
   resource: AGG-ASSET
   context_conditions: tenant match; object visible; owner/pool scope
   segregation_of_duties: —
@@ -558,8 +554,7 @@ command_policies:
   obligations: audit
 - id: POL-AST-RECOVER
   command: CMD-AST-RECOVER
-  subject: Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security
-    Officer (reclassify)
+  subject: Resource Manager (recover) — issuing role named by CR-77
   resource: AGG-ASSET
   context_conditions: tenant match; object visible; owner/pool scope
   segregation_of_duties: —

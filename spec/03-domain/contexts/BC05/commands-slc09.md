@@ -19,14 +19,14 @@ _39 commands_
 |---|---|---|---|---|---|---|---|---|
 | CMD-AST-REGISTER | AGG-ASSET | `POST /api/v1/readiness/assets` | لا | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | POL-AST-REGISTER | `asset_type!:string name!:LocalizedName owner_org!:urn custody_holder!:urn linked_entity:urn capabilities!:array serial:string label!:Label` | EVT-AST-REGISTERED | ASSET_INVALID, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-AST-UPDATE-CONDITION | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/update-condition` | لا | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | POL-AST-UPDATE-CONDITION | `grade!:string inspector!:urn notes:string` | EVT-AST-CONDITION-UPDATED | ASSET_INVALID_STATE_TRANSITION, AUTHZ_DENIED, CONDITION_INVALID, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-AST-MARK-UNSERVICEABLE | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/mark-unserviceable` | لا | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | POL-AST-MARK-UNSERVICEABLE | `reason!:string` | EVT-AST-UNSERVICEABLE | ASSET_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-AST-START-MAINTENANCE | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/start-maintenance` | لا | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | POL-AST-START-MAINTENANCE | `maintenance_order!:urn` | EVT-AST-MAINTENANCE-STARTED | ASSET_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, MAINTENANCE_ORDER_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-AST-RETURN-TO-SERVICE | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/return-to-service` | لا | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | POL-AST-RETURN-TO-SERVICE | `maintenance_order!:urn` | EVT-AST-RETURNED-TO-SERVICE | ASSET_INVALID_STATE_TRANSITION, ASSET_NOT_SERVICEABLE, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-AST-FAIL-MAINTENANCE | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/fail-maintenance` | لا | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | POL-AST-FAIL-MAINTENANCE | `maintenance_order!:urn reason!:string` | EVT-AST-UNSERVICEABLE | ASSET_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-AST-MARK-UNSERVICEABLE | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/mark-unserviceable` | لا | Resource Manager | POL-AST-MARK-UNSERVICEABLE | `reason!:string` | EVT-AST-UNSERVICEABLE | ASSET_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-AST-START-MAINTENANCE | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/start-maintenance` | لا | Resource Manager | POL-AST-START-MAINTENANCE | `maintenance_order!:urn` | EVT-AST-MAINTENANCE-STARTED | ASSET_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, MAINTENANCE_ORDER_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-AST-RETURN-TO-SERVICE | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/return-to-service` | لا | Resource Manager | POL-AST-RETURN-TO-SERVICE | `maintenance_order!:urn` | EVT-AST-RETURNED-TO-SERVICE | ASSET_INVALID_STATE_TRANSITION, ASSET_NOT_SERVICEABLE, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-AST-FAIL-MAINTENANCE | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/fail-maintenance` | لا | Resource Manager | POL-AST-FAIL-MAINTENANCE | `maintenance_order!:urn reason!:string` | EVT-AST-UNSERVICEABLE | ASSET_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-AST-TRANSFER-CUSTODY | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/transfer-custody` | لا | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | POL-AST-TRANSFER-CUSTODY | `new_holder!:urn reason!:string` | EVT-AST-CUSTODY-TRANSFERRED | ASSET_INVALID_STATE_TRANSITION, AUTHZ_DENIED, CUSTODY_INVALID, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-AST-SET-CERTIFICATION | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/set-certification` | لا | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | POL-AST-SET-CERTIFICATION | `code!:string issuer!:string valid_from!:date-time valid_to!:date-time evidence:urn` | EVT-AST-CERTIFICATION-SET | ASSET_INVALID_STATE_TRANSITION, AUTHZ_DENIED, CERTIFICATION_INVALID, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-AST-REPORT-LOST | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/report-lost` | لا | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | POL-AST-REPORT-LOST | `reason!:string` | EVT-AST-REPORTED-LOST | ASSET_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-AST-RECOVER | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/recover` | لا | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | POL-AST-RECOVER | `note:string` | EVT-AST-RECOVERED | ASSET_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-AST-RECOVER | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/recover` | لا | Resource Manager | POL-AST-RECOVER | `note:string` | EVT-AST-RECOVERED | ASSET_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-AST-DISPOSE | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/dispose` | لا | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | POL-AST-DISPOSE | `decision!:urn reason!:string` | EVT-AST-DISPOSED | ASSET_INVALID_STATE_TRANSITION, AUTHORITY_REQUIRED, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-AST-RECLASSIFY | AGG-ASSET | `POST /api/v1/readiness/assets/{id}/actions/reclassify` | لا | Resource Manager (register, condition, custody, certification, lost) · disposal authority (dispose) · Security Officer (reclassify) | POL-AST-RECLASSIFY | `label!:Label reason!:string` | EVT-AST-RECLASSIFIED | ASSET_INVALID_STATE_TRANSITION, AUTHZ_DENIED, CLASSIFICATION_CHANGE_NOT_AUTHORIZED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-MNT-PLAN | AGG-MAINTENANCE-ORDER | `POST /api/v1/readiness/maintenance-orders` | لا | Resource Manager / technician | POL-MNT-PLAN | `asset!:urn kind!:enum(scheduled,corrective) window!:Interval description!:LocalizedName` | EVT-MNT-PLANNED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, MAINTENANCE_OVERLAP, VALIDATION_FAILED, VERSION_CONFLICT |
@@ -47,7 +47,7 @@ _39 commands_
 | CMD-RPL-RESUME | AGG-RESOURCE-POOL | `POST /api/v1/readiness/resource-pools/{id}/actions/resume` | لا | Resource Manager | POL-RPL-RESUME | `—` | EVT-RPL-RESUMED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, RESOURCE_POOL_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-RPL-CLOSE | AGG-RESOURCE-POOL | `POST /api/v1/readiness/resource-pools/{id}/actions/close` | لا | Resource Manager | POL-RPL-CLOSE | `reason!:string` | EVT-RPL-CLOSED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, POOL_HAS_COMMITMENTS, RESOURCE_POOL_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ALC-REQUEST | AGG-ALLOCATION | `POST /api/v1/readiness/allocations` | لا | Planner (request, release) · allocation authority (approve, reject, pre-empt) · task assignee (consumption) | POL-ALC-REQUEST | `pool!:urn quantity!:number window!:Interval priority!:integer target!:urn justification:string` | EVT-ALC-REQUESTED | ALLOCATION_INVALID, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-ALC-APPROVE | AGG-ALLOCATION | `POST /api/v1/readiness/allocations/{id}/actions/approve` | لا | Planner (request, release) · allocation authority (approve, reject, pre-empt) · task assignee (consumption) | POL-ALC-APPROVE | `note:string` | EVT-ALC-COMMITTED | ALLOCATION_INVALID_STATE_TRANSITION, AUTHZ_DENIED, CAPACITY_UNAVAILABLE, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-ALC-APPROVE | AGG-ALLOCATION | `POST /api/v1/readiness/allocations/{id}/actions/approve` | لا | Planner (request, release) · allocation authority (approve, reject, pre-empt) · task assignee (consumption) | POL-ALC-APPROVE | `note:string` | EVT-ALC-COMMITTED | ALLOCATION_INVALID_STATE_TRANSITION, AUTHZ_DENIED, CAPACITY_UNAVAILABLE, IDEMPOTENCY_KEY_REUSED, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ALC-REJECT | AGG-ALLOCATION | `POST /api/v1/readiness/allocations/{id}/actions/reject` | لا | Planner (request, release) · allocation authority (approve, reject, pre-empt) · task assignee (consumption) | POL-ALC-REJECT | `reason!:string` | EVT-ALC-REJECTED | ALLOCATION_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ALC-RECORD-CONSUMPTION | AGG-ALLOCATION | `POST /api/v1/readiness/allocations/{id}/actions/record-consumption` | لا | Planner (request, release) · allocation authority (approve, reject, pre-empt) · task assignee (consumption) | POL-ALC-RECORD-CONSUMPTION | `quantity!:number at!:date-time note:string` | EVT-ALC-CONSUMED | ALLOCATION_INVALID_STATE_TRANSITION, AUTHZ_DENIED, CONSUMPTION_INVALID, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-ALC-PREEMPT | AGG-ALLOCATION | `POST /api/v1/readiness/allocations/{id}/actions/preempt` | لا | Planner (request, release) · allocation authority (approve, reject, pre-empt) · task assignee (consumption) | POL-ALC-PREEMPT | `decision!:urn preempting_allocation!:urn` | EVT-ALC-PREEMPTED | ALLOCATION_INVALID_STATE_TRANSITION, AUTHORITY_REQUIRED, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
@@ -149,8 +149,7 @@ commands:
   - /api/v1/readiness/assets/{id}/actions/mark-unserviceable
   internal: false
   policy: POL-AST-MARK-UNSERVICEABLE
-  actors: Resource Manager (register, condition, custody, certification, lost) · disposal
-    authority (dispose) · Security Officer (reclassify)
+  actors: Resource Manager
   payload: reason!:string
   offline_capable: false
   idempotency_key: required
@@ -178,8 +177,7 @@ commands:
   - /api/v1/readiness/assets/{id}/actions/start-maintenance
   internal: false
   policy: POL-AST-START-MAINTENANCE
-  actors: Resource Manager (register, condition, custody, certification, lost) · disposal
-    authority (dispose) · Security Officer (reclassify)
+  actors: Resource Manager
   payload: maintenance_order!:urn
   offline_capable: false
   idempotency_key: required
@@ -207,8 +205,7 @@ commands:
   - /api/v1/readiness/assets/{id}/actions/return-to-service
   internal: false
   policy: POL-AST-RETURN-TO-SERVICE
-  actors: Resource Manager (register, condition, custody, certification, lost) · disposal
-    authority (dispose) · Security Officer (reclassify)
+  actors: Resource Manager
   payload: maintenance_order!:urn
   offline_capable: false
   idempotency_key: required
@@ -235,8 +232,7 @@ commands:
   - /api/v1/readiness/assets/{id}/actions/fail-maintenance
   internal: false
   policy: POL-AST-FAIL-MAINTENANCE
-  actors: Resource Manager (register, condition, custody, certification, lost) · disposal
-    authority (dispose) · Security Officer (reclassify)
+  actors: Resource Manager
   payload: maintenance_order!:urn reason!:string
   offline_capable: false
   idempotency_key: required
@@ -352,8 +348,7 @@ commands:
   - /api/v1/readiness/assets/{id}/actions/recover
   internal: false
   policy: POL-AST-RECOVER
-  actors: Resource Manager (register, condition, custody, certification, lost) · disposal
-    authority (dispose) · Security Officer (reclassify)
+  actors: Resource Manager
   payload: note:string
   offline_capable: false
   idempotency_key: required
@@ -924,6 +919,7 @@ commands:
   - AUTHZ_DENIED
   - CAPACITY_UNAVAILABLE
   - IDEMPOTENCY_KEY_REUSED
+  - SEGREGATION_OF_DUTIES
   - VALIDATION_FAILED
   - VERSION_CONFLICT
   creates: false

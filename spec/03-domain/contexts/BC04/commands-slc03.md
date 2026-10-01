@@ -17,11 +17,11 @@ _28 commands_
 
 | الأمر | Aggregate | HTTP | داخلي | الفاعل | السياسة | الحمولة (! إلزامي) | الأحداث | الأخطاء |
 |---|---|---|---|---|---|---|---|---|
-| CMD-TASK-CREATE | AGG-TASK | `POST /api/v1/operations/tasks` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-CREATE | `task_type!:urn title!:LocalizedName description:LocalizedName plan_ref:urn incident_ref:urn ad_hoc_reason:string owner!:urn org_scope!:urn due_at:date-time dependencies:array follow_up_of:urn label!:Label` | EVT-TASK-CREATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, TASK_INVALID, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-TASK-CREATE | AGG-TASK | `POST /api/v1/operations/tasks` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-CREATE | `task_type!:urn title!:LocalizedName description:LocalizedName plan_ref:urn incident_ref:urn ad_hoc_reason:string owner!:urn org_scope!:urn due_at:date-time dependencies:array follow_up_of:urn label!:Label` | EVT-TASK-CREATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, TASK_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TASK-EDIT | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/edit` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-EDIT | `title:LocalizedName description:LocalizedName criteria:array dependencies:array` | EVT-TASK-EDITED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, TASK_INVALID, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TASK-MARK-READY | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/mark-ready` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-MARK-READY | `—` | EVT-TASK-READIED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, TASK_INVALID_STATE_TRANSITION, TASK_NOT_READY, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-TASK-ASSIGN | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/assign` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-ASSIGN | `assignee!:urn note:string` | EVT-TASK-ASSIGNED | ASSIGNEE_NOT_ELIGIBLE, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-TASK-REASSIGN | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/reassign` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-REASSIGN | `assignee!:urn reason!:string` | EVT-TASK-REASSIGNED | ASSIGNEE_NOT_ELIGIBLE, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-TASK-ASSIGN | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/assign` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-ASSIGN | `assignee!:urn note:string` | EVT-TASK-ASSIGNED | ASSIGNEE_NOT_ELIGIBLE, AUTHZ_DENIED, ELIGIBILITY_UNAVAILABLE, IDEMPOTENCY_KEY_REUSED, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-TASK-REASSIGN | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/reassign` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-REASSIGN | `assignee!:urn reason!:string` | EVT-TASK-REASSIGNED | ASSIGNEE_NOT_ELIGIBLE, AUTHZ_DENIED, ELIGIBILITY_UNAVAILABLE, IDEMPOTENCY_KEY_REUSED, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TASK-ACCEPT | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/accept` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-ACCEPT | `—` | EVT-TASK-ACCEPTED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, NOT_ASSIGNEE, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TASK-DECLINE | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/decline` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-DECLINE | `reason!:string` | EVT-TASK-DECLINED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TASK-START | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/start` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-START | `—` | EVT-TASK-STARTED | AUTHZ_DENIED, DEPENDENCIES_NOT_MET, IDEMPOTENCY_KEY_REUSED, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
@@ -35,11 +35,11 @@ _28 commands_
 | CMD-TASK-REJECT | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/reject` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-REJECT | `reason!:string create_follow_up!:boolean` | EVT-TASK-REJECTED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TASK-COMPLETE | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/complete` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-COMPLETE | `attestations!:array` | EVT-TASK-COMPLETED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, TASK_CRITERIA_NOT_MET, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TASK-CLOSE | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/close` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-CLOSE | `note:string` | EVT-TASK-CLOSED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, OPEN_FOLLOW_UPS, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-TASK-CANCEL | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/cancel` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-CANCEL | `reason!:string` | EVT-TASK-CANCELLED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-TASK-CANCEL | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/cancel` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-CANCEL | `reason!:string` | EVT-TASK-CANCELLED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, TASK_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TASK-ESCALATE | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/escalate` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-ESCALATE | `reason!:string` | EVT-TASK-ESCALATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TASK-SET-DUE | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/set-due` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-SET-DUE | `due_at!:date-time reason!:string` | EVT-TASK-DUE-CHANGED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TASK-SUSPEND | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/suspend` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-SUSPEND | `reason!:string` | EVT-TASK-SUSPENDED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-TASK-UNSUSPEND | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/unsuspend` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-UNSUSPEND | `reason!:string` | EVT-TASK-UNSUSPENDED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, NOT_SUSPENDED, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-TASK-UNSUSPEND | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/unsuspend` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-UNSUSPEND | `reason!:string` | EVT-TASK-UNSUSPENDED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, NOT_SUSPENDED, TASK_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TASK-RECLASSIFY | AGG-TASK | `POST /api/v1/operations/tasks/{id}/actions/reclassify` | لا | Planner/Manager in scope (create, edit, assign, set due, cancel, suspend) · assignee (accept, decline, start, block, resume, add result, submit) · reviewer (review, return, approve, reject, complete) | POL-TASK-RECLASSIFY | `label!:Label reason!:string` | EVT-TASK-RECLASSIFIED | AUTHZ_DENIED, CLASSIFICATION_CHANGE_NOT_AUTHORIZED, IDEMPOTENCY_KEY_REUSED, TASK_INVALID_STATE_TRANSITION, TASK_SUSPENDED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TTY-DEFINE | AGG-TASK-TYPE | `POST /api/v1/operations/task-types` | لا | Administrator / Planner lead | POL-TTY-DEFINE | `code!:string name!:LocalizedName` | EVT-TTY-DEFINED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, TASK_TYPE_CODE_TAKEN, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-TTY-EDIT | AGG-TASK-TYPE | `POST /api/v1/operations/task-types/{id}/actions/edit` | لا | Administrator / Planner lead | POL-TTY-EDIT | `qualification_requirements!:array criteria_templates!:array escalation!:object expires_on_due!:boolean review_steps:integer` | EVT-TTY-EDITED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, TASK_TYPE_INVALID, TASK_TYPE_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
@@ -71,7 +71,6 @@ commands:
   - AUTHZ_DENIED
   - IDEMPOTENCY_KEY_REUSED
   - TASK_INVALID
-  - TASK_SUSPENDED
   - VALIDATION_FAILED
   - VERSION_CONFLICT
   creates: true
@@ -166,6 +165,7 @@ commands:
   errors:
   - ASSIGNEE_NOT_ELIGIBLE
   - AUTHZ_DENIED
+  - ELIGIBILITY_UNAVAILABLE
   - IDEMPOTENCY_KEY_REUSED
   - TASK_INVALID_STATE_TRANSITION
   - TASK_SUSPENDED
@@ -199,6 +199,7 @@ commands:
   errors:
   - ASSIGNEE_NOT_ELIGIBLE
   - AUTHZ_DENIED
+  - ELIGIBILITY_UNAVAILABLE
   - IDEMPOTENCY_KEY_REUSED
   - TASK_INVALID_STATE_TRANSITION
   - TASK_SUSPENDED
@@ -633,7 +634,6 @@ commands:
   - IDEMPOTENCY_KEY_REUSED
   - REASON_REQUIRED
   - TASK_INVALID_STATE_TRANSITION
-  - TASK_SUSPENDED
   - VALIDATION_FAILED
   - VERSION_CONFLICT
   creates: false
@@ -765,7 +765,6 @@ commands:
   - IDEMPOTENCY_KEY_REUSED
   - NOT_SUSPENDED
   - TASK_INVALID_STATE_TRANSITION
-  - TASK_SUSPENDED
   - VALIDATION_FAILED
   - VERSION_CONFLICT
   creates: false

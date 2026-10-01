@@ -33,8 +33,8 @@ _32 commands_
 | CMD-ACS-RECLASSIFY | AGG-ANALYSIS-CASE | `POST /api/v1/intelligence/analysis-cases/{id}/actions/reclassify` | لا | Analyst (owner) · Security Officer (reclassify) | POL-ACS-RECLASSIFY | `label!:Label reason!:string` | EVT-ACS-RECLASSIFIED | ANALYSIS_CASE_INVALID_STATE_TRANSITION, AUTHZ_DENIED, CLASSIFICATION_CHANGE_NOT_AUTHORIZED, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-AMT-REGISTER | AGG-ANALYSIS-METHOD | `POST /api/v1/intelligence/analysis-methods` | لا | Analysis lead (register) · second lead or Administrator (activate) | POL-AMT-REGISTER | `code!:string version!:string parameter_schema!:object image_digest!:string deterministic!:boolean description!:LocalizedName` | EVT-AMT-REGISTERED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, METHOD_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-AMT-ACTIVATE | AGG-ANALYSIS-METHOD | `POST /api/v1/intelligence/analysis-methods/{id}/actions/activate` | لا | Analysis lead (register) · second lead or Administrator (activate) | POL-AMT-ACTIVATE | `validation_report!:urn` | EVT-AMT-ACTIVATED | ANALYSIS_METHOD_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-AMT-DEPRECATE | AGG-ANALYSIS-METHOD | `POST /api/v1/intelligence/analysis-methods/{id}/actions/deprecate` | لا | Analysis lead (register) · second lead or Administrator (activate) | POL-AMT-DEPRECATE | `reason!:string` | EVT-AMT-DEPRECATED | ANALYSIS_METHOD_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-AMT-RETIRE | AGG-ANALYSIS-METHOD | `POST /api/v1/intelligence/analysis-methods/{id}/actions/retire` | لا | Analysis lead (register) · second lead or Administrator (activate) | POL-AMT-RETIRE | `reason!:string` | EVT-AMT-RETIRED | ANALYSIS_METHOD_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, METHOD_BACKS_PUBLISHED_WORK, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-AMT-DEPRECATE | AGG-ANALYSIS-METHOD | `POST /api/v1/intelligence/analysis-methods/{id}/actions/deprecate` | لا | Analysis lead | POL-AMT-DEPRECATE | `reason!:string` | EVT-AMT-DEPRECATED | ANALYSIS_METHOD_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-AMT-RETIRE | AGG-ANALYSIS-METHOD | `POST /api/v1/intelligence/analysis-methods/{id}/actions/retire` | لا | Analysis lead | POL-AMT-RETIRE | `reason!:string` | EVT-AMT-RETIRED | ANALYSIS_METHOD_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, METHOD_BACKS_PUBLISHED_WORK, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-RUN-SUBMIT | AGG-ANALYSIS-RUN | `POST /api/v1/intelligence/analysis-runs` | لا | Analyst (submit, reproduce, cancel) | POL-RUN-SUBMIT | `case!:urn method!:urn parameters!:object inputs!:array scenario:string assumptions:array seed:integer label!:Label` | EVT-RUN-QUEUED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, RUN_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-RUN-REPRODUCE | AGG-ANALYSIS-RUN | `POST /api/v1/intelligence/analysis-runs/{id}/actions/reproduce` | لا | Analyst (submit, reproduce, cancel) | POL-RUN-REPRODUCE | `source_run!:urn` | EVT-RUN-QUEUED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REPRODUCTION_NOT_ALLOWED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-RUN-CANCEL | AGG-ANALYSIS-RUN | `POST /api/v1/intelligence/analysis-runs/{id}/actions/cancel` | لا | Analyst (submit, reproduce, cancel) | POL-RUN-CANCEL | `reason!:string` | EVT-RUN-CANCELLED | ANALYSIS_RUN_INVALID_STATE_TRANSITION, AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, VALIDATION_FAILED, VERSION_CONFLICT |
@@ -520,7 +520,7 @@ commands:
   - /api/v1/intelligence/analysis-methods/{id}/actions/deprecate
   internal: false
   policy: POL-AMT-DEPRECATE
-  actors: Analysis lead (register) · second lead or Administrator (activate)
+  actors: Analysis lead
   payload: reason!:string
   offline_capable: false
   idempotency_key: required
@@ -548,7 +548,7 @@ commands:
   - /api/v1/intelligence/analysis-methods/{id}/actions/retire
   internal: false
   policy: POL-AMT-RETIRE
-  actors: Analysis lead (register) · second lead or Administrator (activate)
+  actors: Analysis lead
   payload: reason!:string
   offline_capable: false
   idempotency_key: required

@@ -39,7 +39,7 @@ _20 items_
 | THR-017 | PDP | DoS | تعطل PDP يوقف المنصة | M | H | PDP في critical tier، نسخ متعددة، ذاكرة قرارات قصيرة؛ fail-closed مقبول كخطر متبقٍ | M |
 | THR-018 | ER | Tampering | دمج كيانات خاطئ متعمد لإخفاء معلومة | L | M | الدمج قرار مدقق وقابل للعكس؛ حد العنقود | L |
 | THR-019 | supply chain | Tampering | مكتبة أو صورة حاوية ملوثة | M | H | SBOM، توقيع الصور، مرآة داخلية للحزم (بيئة معزولة) | M |
-| THR-020 | TB-01 | Info Disclosure | رسالة خطأ تكشف وجود كائن | M | M | نفس شكل not-found/forbidden (ADR-P06 §5) | L |
+| THR-020 | TB-01 | Info Disclosure | رسالة خطأ تكشف وجود كائن | M | M | نفس شكل not-found للموارد غير المرئية للمستدعي (ADR-P06 §5 كما عدّله ADR-P19)؛ 403 لمورد مرئي فقط، و`reason_code` من قائمة مغلقة لا تحمل بيانات المورد | L |
 
 ---
 
@@ -206,7 +206,7 @@ threats:
   threat: رسالة خطأ تكشف وجود كائن
   likelihood: M
   impact: M
-  controls: نفس شكل not-found/forbidden (ADR-P06 §5)
+  controls: نفس شكل not-found للموارد غير المرئية للمستدعي (ADR-P06 §5 كما عدّله ADR-P19)؛ 403 لمورد مرئي فقط، و`reason_code` من قائمة مغلقة لا تحمل بيانات المورد
   residual_risk: L
 ```
 

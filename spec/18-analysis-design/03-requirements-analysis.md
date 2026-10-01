@@ -444,7 +444,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 ### 3.5 سيناريوهات الجودة
 
-95 سيناريو في `02-requirements/quality-scenarios.md`؛ مصفوفة التحقق `15-traceability/quality-verification-matrix.md` تغطي 91 منها. غير المغطاة: QAS-LOG-001, QAS-LOG-002, QAS-TRX-001, QAS-TRX-002 **[Missing]**.
+95 سيناريو في `02-requirements/quality-scenarios.md`؛ مصفوفة التحقق `15-traceability/quality-verification-matrix.md` تغطي 95 منها. غير المغطاة: لا شيء **[Missing]**.
 
 | الخاصية | العدد | السيناريوهات |
 |---|---|---|
@@ -529,8 +529,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 | QAS-GOV-001 | compliance | H/H | daily disposition evaluation | candidates computed ≤ 1 h; 0 held records destroyed | WL-14 | disposition run test at design volume | pre-G8 |
 | QAS-INT-001 | reliability | H/M | ERP adapter outage 4 h | no data loss; backlog processed ≤ 1 h after recovery | R2 | adapter outage/backlog test | pre-G8-R2 (recalibrate after R1 pilot) |
 | QAS-KNW-001 | usability | H/M | planner creates a plan for a known task type | relevant published lessons suggested in ≥ 80 % of cases in pilot | R2 | pilot usability measurement | pilot (recalibrate after R1 pilot) |
-| QAS-LOG-001 | integrity | H/M | concurrent logistics requests and task/plan allocations on the same resource pool | 0 over-commitment across combined demand; deterministic priority order (shared mechanism with QAS-RES-001) | R3 | **[Missing]** | — |
-| QAS-LOG-002 | performance | H/M | shipment dispatched to its destination | transit duration within target (tagged: recalibrate after Pilot R1 and R2 — RSK-028) | R3 | **[Missing]** | — |
+| QAS-LOG-001 | integrity | H/M | concurrent logistics requests and task/plan allocations on the same resource pool | 0 over-commitment across combined demand; deterministic priority order (shared mechanism with QAS-RES-001) | R3 | TST-SLC18-INVARIANTS + shared capacity-ledger concurrency tests (QAS-RES-001) | CI + pilot (recalibrate after R1 and R2 pilot — RSK-028) |
+| QAS-LOG-002 | performance | H/M | shipment dispatched to its destination | transit duration within target (tagged: recalibrate after Pilot R1 and R2 — RSK-028) | R3 | TST-SHIPMENT-SM + transit-time measurement in pilot | pilot (recalibrate after R1 and R2 pilot — RSK-028) |
 | QAS-OBS-001 | observability | M/M | investigates a failed request | 100 % of requests traceable end to end | — | trace completeness sampling | pilot |
 | QAS-OFF-001 | offline | H/H | works 72 h offline then reconnects on a 1 Mbps link | 1,000 queued commands synced ≤ 10 min; 0 silent overwrites; 0 duplicates | WL-12 | field sync tests with interruption injection + device tests | CI + field pilot |
 | QAS-OFF-002 | security | H/H | user's clearance reduced while device offline | packages revoked and purged on next contact; commands evaluated under current authorization | WL-12 | field sync tests with interruption injection + device tests | CI + field pilot |
@@ -596,8 +596,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 | QAS-TRC-001 | traceability | H/M | follows a decision back to its sources | 100 % of decisions and T1 derived objects traceable to sources | — | lineage / basis e2e tests | CI |
 | QAS-TRC-002 | reproducibility | M/M | re-executes a recorded deterministic analysis run | 100 % | WL-11 | lineage / basis e2e tests | CI |
 | QAS-TRC-003 | traceability | H/M | auditor asks for a decision's basis | authority chain, pinned citations and claims as known at decision time returned; 100 % of decisions | WL-01 | lineage / basis e2e tests | CI |
-| QAS-TRX-001 | integrity | H/M | a simulation run nears completion (CMD-SIM-COMPLETE sent) with at least one exercise part… | 0 simulations reach COMPLETED with a participant lacking at least one recorded evaluation (INV-SIM-02) | R3 | **[Missing]** | — |
-| QAS-TRX-002 | performance | H/M | an inject delivered during a live simulation run | 'inject delivery recorded within target latency (tagged: recalibrate after Pilot R1 and R2 — RSK-028)' | R3 | **[Missing]** | — |
+| QAS-TRX-001 | integrity | H/M | a simulation run nears completion (CMD-SIM-COMPLETE sent) with at least one exercise part… | 0 simulations reach COMPLETED with a participant lacking at least one recorded evaluation (INV-SIM-02) | R3 | TST-SLC19-INVARIANTS + TST-SIMULATION-SM | CI |
+| QAS-TRX-002 | performance | H/M | an inject delivered during a live simulation run | 'inject delivery recorded within target latency (tagged: recalibrate after Pilot R1 and R2 — RSK-028)' | R3 | TST-SIMULATION-SM + load harness | CI + pilot (recalibrate after R1 and R2 pilot — RSK-028) |
 | QAS-USA-001 | usability | M/M | records an observation with one photo on the mobile app | median ≤ 60 s in usability test with 10 field users | WL-12 | usability test with 10 field users; Arabic name recall test set | pilot |
 | QAS-USA-002 | usability | H/H | searches a name with Arabic spelling variants or Latin transliteration | recall ≥ 95 % on the Arabic name test set | WL-02 | usability test with 10 field users; Arabic name recall test set | pilot |
 

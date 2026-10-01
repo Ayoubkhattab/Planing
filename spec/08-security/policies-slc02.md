@@ -88,7 +88,7 @@ _57 items_
 ### POL-SRC-SUSPEND
 
 - **command:** CMD-SRC-SUSPEND
-- **subject:** Analyst (register, rate, profile) · Security Officer (protection, reclassify)
+- **subject:** Analyst (suspend) — issuing role named by CR-77
 - **resource:** AGG-SOURCE
 - **context_conditions:** tenant match; object visible to subject (label ≤ clearance); write permission in org scope
 - **segregation_of_duties:** —
@@ -99,7 +99,7 @@ _57 items_
 ### POL-SRC-REINSTATE
 
 - **command:** CMD-SRC-REINSTATE
-- **subject:** Analyst (register, rate, profile) · Security Officer (protection, reclassify)
+- **subject:** Analyst (reinstate) — issuing role named by CR-77
 - **resource:** AGG-SOURCE
 - **context_conditions:** tenant match; object visible to subject (label ≤ clearance); write permission in org scope
 - **segregation_of_duties:** —
@@ -110,7 +110,7 @@ _57 items_
 ### POL-SRC-RETIRE
 
 - **command:** CMD-SRC-RETIRE
-- **subject:** Analyst (register, rate, profile) · Security Officer (protection, reclassify)
+- **subject:** Analyst (retire) — issuing role named by CR-77
 - **resource:** AGG-SOURCE
 - **context_conditions:** tenant match; object visible to subject (label ≤ clearance); write permission in org scope
 - **segregation_of_duties:** —
@@ -132,7 +132,7 @@ _57 items_
 ### POL-OBS-AMEND
 
 - **command:** CMD-OBS-AMEND
-- **subject:** Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject)
+- **subject:** Field User / Operator / Analyst / adapter service account (amend) — issuing role named by CR-77
 - **resource:** AGG-OBSERVATION
 - **context_conditions:** tenant match; object visible to subject (label ≤ clearance); write permission in org scope
 - **segregation_of_duties:** —
@@ -143,7 +143,7 @@ _57 items_
 ### POL-OBS-ATTACH-EVIDENCE
 
 - **command:** CMD-OBS-ATTACH-EVIDENCE
-- **subject:** Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject)
+- **subject:** Field User / Operator / Analyst / adapter service account (attach evidence) — issuing role named by CR-77
 - **resource:** AGG-OBSERVATION
 - **context_conditions:** tenant match; object visible to subject (label ≤ clearance); write permission in org scope
 - **segregation_of_duties:** —
@@ -154,7 +154,7 @@ _57 items_
 ### POL-OBS-RECLASSIFY
 
 - **command:** CMD-OBS-RECLASSIFY
-- **subject:** Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject)
+- **subject:** Analyst (reclassify) — issuing role named by CR-77
 - **resource:** AGG-OBSERVATION
 - **context_conditions:** tenant match; object visible to subject (label ≤ clearance); write permission in org scope
 - **segregation_of_duties:** —
@@ -627,7 +627,7 @@ _57 items_
 ### POL-ADP-SUSPEND
 
 - **command:** CMD-ADP-SUSPEND
-- **subject:** Administrator (register, update) · second Administrator (activate)
+- **subject:** Administrator (suspend) — issuing role named by CR-77
 - **resource:** AGG-ADAPTER
 - **context_conditions:** tenant match; object visible to subject (label ≤ clearance); write permission in org scope
 - **segregation_of_duties:** —
@@ -638,10 +638,10 @@ _57 items_
 ### POL-ADP-RESUME
 
 - **command:** CMD-ADP-RESUME
-- **subject:** Administrator (register, update) · second Administrator (activate)
+- **subject:** second Administrator (resume) — issuing role named by CR-77
 - **resource:** AGG-ADAPTER
 - **context_conditions:** tenant match; object visible to subject (label ≤ clearance); write permission in org scope
-- **segregation_of_duties:** —
+- **segregation_of_duties:** resumer ≠ the Administrator who suspended (CR-77)
 - **decision:** ALLOW
 - **otherwise:** DENY (not-found shape if object invisible)
 - **obligations:** audit
@@ -649,7 +649,7 @@ _57 items_
 ### POL-ADP-RETIRE
 
 - **command:** CMD-ADP-RETIRE
-- **subject:** Administrator (register, update) · second Administrator (activate)
+- **subject:** Administrator (retire) — issuing role named by CR-77
 - **resource:** AGG-ADAPTER
 - **context_conditions:** tenant match; object visible to subject (label ≤ clearance); write permission in org scope
 - **segregation_of_duties:** —
@@ -747,7 +747,7 @@ command_policies:
   obligations: audit
 - id: POL-SRC-SUSPEND
   command: CMD-SRC-SUSPEND
-  subject: Analyst (register, rate, profile) · Security Officer (protection, reclassify)
+  subject: Analyst (suspend) — issuing role named by CR-77
   resource: AGG-SOURCE
   context_conditions: tenant match; object visible to subject (label ≤ clearance); write permission in org scope
   segregation_of_duties: —
@@ -756,7 +756,7 @@ command_policies:
   obligations: audit
 - id: POL-SRC-REINSTATE
   command: CMD-SRC-REINSTATE
-  subject: Analyst (register, rate, profile) · Security Officer (protection, reclassify)
+  subject: Analyst (reinstate) — issuing role named by CR-77
   resource: AGG-SOURCE
   context_conditions: tenant match; object visible to subject (label ≤ clearance); write permission in org scope
   segregation_of_duties: —
@@ -765,7 +765,7 @@ command_policies:
   obligations: audit
 - id: POL-SRC-RETIRE
   command: CMD-SRC-RETIRE
-  subject: Analyst (register, rate, profile) · Security Officer (protection, reclassify)
+  subject: Analyst (retire) — issuing role named by CR-77
   resource: AGG-SOURCE
   context_conditions: tenant match; object visible to subject (label ≤ clearance); write permission in org scope
   segregation_of_duties: —
@@ -783,7 +783,7 @@ command_policies:
   obligations: audit
 - id: POL-OBS-AMEND
   command: CMD-OBS-AMEND
-  subject: Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject)
+  subject: Field User / Operator / Analyst / adapter service account (amend) — issuing role named by CR-77
   resource: AGG-OBSERVATION
   context_conditions: tenant match; object visible to subject (label ≤ clearance); write permission in org scope
   segregation_of_duties: —
@@ -792,7 +792,7 @@ command_policies:
   obligations: audit
 - id: POL-OBS-ATTACH-EVIDENCE
   command: CMD-OBS-ATTACH-EVIDENCE
-  subject: Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject)
+  subject: Field User / Operator / Analyst / adapter service account (attach evidence) — issuing role named by CR-77
   resource: AGG-OBSERVATION
   context_conditions: tenant match; object visible to subject (label ≤ clearance); write permission in org scope
   segregation_of_duties: —
@@ -801,7 +801,7 @@ command_policies:
   obligations: audit
 - id: POL-OBS-RECLASSIFY
   command: CMD-OBS-RECLASSIFY
-  subject: Field User / Operator / Analyst / adapter service account (record) · Analyst (validate, reject)
+  subject: Analyst (reclassify) — issuing role named by CR-77
   resource: AGG-OBSERVATION
   context_conditions: tenant match; object visible to subject (label ≤ clearance); write permission in org scope
   segregation_of_duties: —
@@ -1194,7 +1194,7 @@ command_policies:
   obligations: audit
 - id: POL-ADP-SUSPEND
   command: CMD-ADP-SUSPEND
-  subject: Administrator (register, update) · second Administrator (activate)
+  subject: Administrator (suspend) — issuing role named by CR-77
   resource: AGG-ADAPTER
   context_conditions: tenant match; object visible to subject (label ≤ clearance); write permission in org scope
   segregation_of_duties: —
@@ -1203,16 +1203,16 @@ command_policies:
   obligations: audit
 - id: POL-ADP-RESUME
   command: CMD-ADP-RESUME
-  subject: Administrator (register, update) · second Administrator (activate)
+  subject: second Administrator (resume) — issuing role named by CR-77
   resource: AGG-ADAPTER
   context_conditions: tenant match; object visible to subject (label ≤ clearance); write permission in org scope
-  segregation_of_duties: —
+  segregation_of_duties: resumer ≠ the Administrator who suspended (CR-77)
   decision: ALLOW
   otherwise: DENY (not-found shape if object invisible)
   obligations: audit
 - id: POL-ADP-RETIRE
   command: CMD-ADP-RETIRE
-  subject: Administrator (register, update) · second Administrator (activate)
+  subject: Administrator (retire) — issuing role named by CR-77
   resource: AGG-ADAPTER
   context_conditions: tenant match; object visible to subject (label ≤ clearance); write permission in org scope
   segregation_of_duties: —

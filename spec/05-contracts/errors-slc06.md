@@ -11,7 +11,7 @@ approved_at: '2026-09-24'
 
 # Error Catalog — SLC-06
 
-`AUTHZ_DENIED` لا يُعاد للعميل كما هو عند موارد غير مرئية: يُعاد `NOT_FOUND` بنفس الشكل (ADR-P06 §5). يُعاد `403` فقط لمورد يحق للمستخدم رؤيته دون تنفيذ الإجراء.
+`AUTHZ_DENIED` لا يُعاد للعميل كما هو عند مورد لا يحق للمستدعي رؤيته: يُعاد `NOT_FOUND` بنفس الشكل (ADR-P06 §5 كما عدّله ADR-P19). يُعاد `403` لمورد يحق للمستخدم رؤيته دون تنفيذ الإجراء، أو لأمر إنشاء مرفوض. التزام `mfa` غير مستوفى يُعاد `401 MFA_STEP_UP_REQUIRED` ويُعاد الطلب بعد المصادقة المعززة بنفس `Idempotency-Key`؛ قرار `REQUIRE_APPROVAL` يُعاد `403 APPROVAL_REQUIRED`. ترويسة `Retry-After` ترافق 429 و503 القابل لإعادة المحاولة (CR-78).
 
 | الرمز | HTTP | retryable | عدد الأوامر | الأوامر |
 |---|---|---|---|---|
@@ -40,3 +40,9 @@ approved_at: '2026-09-24'
 | `AUDIT_UNAVAILABLE` | 503 | لا | — | platform-wide |
 | `SEGREGATION_OF_DUTIES` | 422 | لا | — | platform-wide |
 | `POLICY_ENGINE_UNAVAILABLE` | 503 (request denied) | نعم | — | platform-wide |
+| `UNAUTHENTICATED` | 401 | لا | — | platform-wide |
+| `MFA_STEP_UP_REQUIRED` | 401 | نعم | — | platform-wide |
+| `APPROVAL_REQUIRED` | 403 | لا | — | platform-wide |
+| `PAYLOAD_TOO_LARGE` | 413 | لا | — | platform-wide |
+| `UNSUPPORTED_MEDIA_TYPE` | 415 | لا | — | platform-wide |
+| `DEPENDENCY_UNAVAILABLE` | 503 | نعم | — | platform-wide |

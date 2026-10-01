@@ -15,7 +15,7 @@ consumers: []
 
 ## corrections
 
-_80 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-80 in Phase 3.8 — 18-analysis-design)
+_81 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-81 in Phase 3.8 — 18-analysis-design)
 
 ### CR-01
 
@@ -616,7 +616,7 @@ _80 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-80 in Phase 3.8 — 18-an
 - **correction:** Per ADR-P19: declare 401 and 403 responses on every command operation; add MFA_STEP_UP_REQUIRED (401, retryable after step-up) and APPROVAL_REQUIRED (403, not retryable) as platform-wide codes in the error catalogs, with ApiError.details.approver; add SEGREGATION_OF_DUTIES to the error lists of the 12 commands that have a separation rule but do not declare it; amend ADR-P06 item 5, THR-020 and PRV-04 so that the identical not-found response applies to resources the caller may not see. Applied through the spec tooling (slice_contracts) so that V5 round trip stays exact.
 - **target_wave:** Phase 3.8 — source-correction round
 - **origin:** ADR-P19; 18-analysis-design/00-index.md §6 S-07
-- **status:** APPROVED — pending application
+- **status:** APPLIED (Phase 3.8 source-correction round): slice_contracts declares 401 on every operation, 403 on commands, 413/415 on operations with a body (shared components.responses); MFA_STEP_UP_REQUIRED and APPROVAL_REQUIRED in every error catalog; SEGREGATION_OF_DUTIES on the 12 commands (CMD_ERRORS); ADR-P06 item 5, THR-020 and PRV-04 amended; SLC-19 contract and catalog edited by hand (DEBT-002)
 
 ### CR-76
 
@@ -624,7 +624,7 @@ _80 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-80 in Phase 3.8 — 18-an
 - **correction:** Move CMD-SIM-START to an internal readiness contract (as openapi-foundation-internal-slc01.md does for BC01) so that the gateway never exposes it; keep x-internal.
 - **target_wave:** Phase 3.8 — source-correction round
 - **origin:** Project owner decision 2026-10-01; S-08
-- **status:** APPROVED — pending application
+- **status:** APPLIED (Phase 3.8 source-correction round): CMD-SIM-START removed from openapi-readiness-slc19.md and published in openapi-readiness-internal-slc19.md; slice_contracts writes one internal contract per context with system commands
 
 ### CR-77
 
@@ -632,7 +632,7 @@ _80 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-80 in Phase 3.8 — 18-an
 - **correction:** Name the issuing role in each of the 26 policy subjects as resolved in 18-analysis-design/17-security-design.md §5 and §12.1 (rule: the paired verb in the same policy — resume↔pause/suspend, enable↔disable, retire↔deprecate/define/register, maintenance↔condition — without contradicting the transition guard; exceptions CMD-MDL-RETIRE and CMD-TOL-RETIRE recorded there). Add a separation rule to POL-ADP-RESUME (resumer ≠ the Administrator who suspended).
 - **target_wave:** Phase 3.8 — source-correction round
 - **origin:** 17-security-design.md §5; 02-actors-roles.md §6.6
-- **status:** APPROVED_DELEGATED — pending application
+- **status:** APPLIED (Phase 3.8 source-correction round): 26 policy subjects name the issuing role (policies-slc02/04/06/07/09/10/11/12/15); the command catalogs carry the same actor (ACTOR_OVERRIDE); POL-ADP-RESUME has its separation rule and CMD-ADP-RESUME declares SEGREGATION_OF_DUTIES
 
 ### CR-78
 
@@ -640,7 +640,7 @@ _80 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-80 in Phase 3.8 — 18-an
 - **correction:** Add platform-wide codes UNAUTHENTICATED (401), PAYLOAD_TOO_LARGE (413), UNSUPPORTED_MEDIA_TYPE (415) and DEPENDENCY_UNAVAILABLE (503, retryable); add ELIGIBILITY_UNAVAILABLE (503, retryable), which eligibility-rules.md and invariants-slc03.md already name, to errors-slc03 and to the error lists of CMD-TASK-ASSIGN and CMD-TASK-REASSIGN; declare Retry-After on 429 and on retryable 503 responses (not on AUDIT_UNAVAILABLE while it is not retryable); applied through the spec tooling. Amended 2026-10-01 after the independent review, before application.
 - **target_wave:** Phase 3.8 — source-correction round
 - **origin:** 18-error-handling.md §8; S-27
-- **status:** APPROVED_DELEGATED — pending application
+- **status:** APPLIED (Phase 3.8 source-correction round): UNAUTHENTICATED, PAYLOAD_TOO_LARGE, UNSUPPORTED_MEDIA_TYPE and DEPENDENCY_UNAVAILABLE in every error catalog; ELIGIBILITY_UNAVAILABLE (503, retryable) on CMD-TASK-ASSIGN and CMD-TASK-REASSIGN; Retry-After on the 429 and 503 responses
 
 ### CR-79
 
@@ -648,7 +648,7 @@ _80 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-80 in Phase 3.8 — 18-an
 - **correction:** Mark the six SLC-02 operations CMD-OBS-RECORD, CMD-OBS-AMEND, CMD-OBS-ATTACH-EVIDENCE, CMD-EVD-REGISTER, CMD-ATT-INITIATE-UPLOAD and CMD-ATT-COMPLETE-UPLOAD x-offline-capable: true, so that the offline set is the 12 commands CommandEnvelope accepts; applied through the spec tooling (slice_contracts).
 - **target_wave:** Phase 3.8 — source-correction round
 - **origin:** Project owner decision 2026-10-01; 18-analysis-design/20-integration-design.md §7; S-09
-- **status:** APPROVED — pending application
+- **status:** APPLIED (Phase 3.8 source-correction round): OFFLINE set in slc02 data; the six SLC-02 operations carry x-offline-capable: true
 
 ### CR-80
 
@@ -656,7 +656,15 @@ _80 items_ (CR-66..CR-72 added in Phase 3.7; CR-73..CR-80 in Phase 3.8 — 18-an
 - **correction:** Scope the idempotency key to the caller: key (tenant_id, principal_id, key), and match a stored response only for the same principal; the pipeline order is unchanged.
 - **target_wave:** Phase 3.8 — source-correction round
 - **origin:** 18-analysis-design/18-error-handling.md §4; independent review 2026-10-01
-- **status:** APPROVED_DELEGATED — pending application
+- **status:** APPLIED (Phase 3.8 source-correction round): idempotency_keys keyed (tenant_id, principal_id, key) in 06-data/logical-model/slc-01.md
+
+### CR-81
+
+- **issue:** Mechanical inconsistencies in the ratified sources found by the analysis-and-design study (18-analysis-design/00-index.md §6): S-01 three aggregates omit their terminal states from the state list, so the state × command matrix and acceptance scenarios lack terminal rows; S-02 TASK_SUSPENDED was declared on every AGG-TASK command although INV-TASK-06 exempts UNSUSPEND and CANCEL and CREATE has no flag yet; S-12 sensors drawn as R1 in the C4 context; S-13 RSK-028 mitigation overtaken by the R3 designs; S-14 and S-25 wrong item counts; S-18 four quality scenarios without a verification row; S-19 VS04/VS05 coverage still none.
+- **correction:** AGG-INCIDENT, AGG-LOGISTICS-REQUEST and AGG-SHIPMENT list their terminal states (slc17/slc18 data, regenerated); TASK_SUSPENDED declared per command (CMD_ERRORS) on the 21 commands INV-TASK-06 covers; sensors marked R2 with a dashed edge in c4-context.md; RSK-028 carries a dated update; slices.md 21 items, quality-scenarios.md 95 items; verification rows for QAS-LOG-001/002 and QAS-TRX-001/002; VS04 and VS05 cite UC-140..144 and UC-160..163.
+- **target_wave:** Phase 3.8 — source-correction round
+- **origin:** 18-analysis-design/00-index.md §6 S-01, S-02, S-12, S-13, S-14, S-18, S-19, S-25
+- **status:** APPLIED (Phase 3.8 source-correction round) — APPROVED_DELEGATED
 
 ---
 
@@ -1217,7 +1225,10 @@ corrections:
     Applied through the spec tooling (slice_contracts) so that V5 round trip stays exact.'
   target_wave: Phase 3.8 — source-correction round
   origin: ADR-P19; 18-analysis-design/00-index.md §6 S-07
-  status: APPROVED — pending application
+  status: 'APPLIED (Phase 3.8 source-correction round): slice_contracts declares 401 on every operation, 403 on commands, 413/415
+    on operations with a body (shared components.responses); MFA_STEP_UP_REQUIRED and APPROVAL_REQUIRED in every error catalog;
+    SEGREGATION_OF_DUTIES on the 12 commands (CMD_ERRORS); ADR-P06 item 5, THR-020 and PRV-04 amended; SLC-19 contract and catalog
+    edited by hand (DEBT-002)'
 - id: CR-76
   issue: 'CMD-SIM-START is system-issued (x-internal: true, catalog داخلي = نعم) but is published in the public readiness
     contract openapi-readiness-slc19.md (source issue S-08).'
@@ -1225,7 +1236,8 @@ corrections:
     so that the gateway never exposes it; keep x-internal.
   target_wave: Phase 3.8 — source-correction round
   origin: Project owner decision 2026-10-01; S-08
-  status: APPROVED — pending application
+  status: 'APPLIED (Phase 3.8 source-correction round): CMD-SIM-START removed from openapi-readiness-slc19.md and published
+    in openapi-readiness-internal-slc19.md; slice_contracts writes one internal contract per context with system commands'
 - id: CR-77
   issue: 26 command policies list several roles with verb lists, none of which names the command's verb, so the issuing role
     is undefined (18-analysis-design/02-actors-roles.md §6.6).
@@ -1235,7 +1247,9 @@ corrections:
     there). Add a separation rule to POL-ADP-RESUME (resumer ≠ the Administrator who suspended).'
   target_wave: Phase 3.8 — source-correction round
   origin: 17-security-design.md §5; 02-actors-roles.md §6.6
-  status: APPROVED_DELEGATED — pending application
+  status: 'APPLIED (Phase 3.8 source-correction round): 26 policy subjects name the issuing role (policies-slc02/04/06/07/09/10/11/12/15);
+    the command catalogs carry the same actor (ACTOR_OVERRIDE); POL-ADP-RESUME has its separation rule and CMD-ADP-RESUME declares
+    SEGREGATION_OF_DUTIES'
 - id: CR-78
   issue: The contracts define no code for a missing or expired token (401), an oversized request (413), an unsupported media
     type (415) or a fail-closed dependency call to another context; no Retry-After header for 429/503 (18-analysis-design/18-error-handling.md
@@ -1247,7 +1261,9 @@ corrections:
     2026-10-01 after the independent review, before application.
   target_wave: Phase 3.8 — source-correction round
   origin: 18-error-handling.md §8; S-27
-  status: APPROVED_DELEGATED — pending application
+  status: 'APPLIED (Phase 3.8 source-correction round): UNAUTHENTICATED, PAYLOAD_TOO_LARGE, UNSUPPORTED_MEDIA_TYPE and DEPENDENCY_UNAVAILABLE
+    in every error catalog; ELIGIBILITY_UNAVAILABLE (503, retryable) on CMD-TASK-ASSIGN and CMD-TASK-REASSIGN; Retry-After on
+    the 429 and 503 responses'
 - id: CR-79
   issue: No contract operation outside SLC-03 carries x-offline-capable, yet field-sync-protocol.md §1/§3, CommandEnvelope.target_command
     in openapi-field-slc11.md and REQ-OFF-001 all assume offline capture of observations, evidence and attachments (source
@@ -1257,7 +1273,8 @@ corrections:
     applied through the spec tooling (slice_contracts).'
   target_wave: Phase 3.8 — source-correction round
   origin: Project owner decision 2026-10-01; 18-analysis-design/20-integration-design.md §7; S-09
-  status: APPROVED — pending application
+  status: 'APPLIED (Phase 3.8 source-correction round): OFFLINE set in slc02 data; the six SLC-02 operations carry x-offline-capable:
+    true'
 - id: CR-80
   issue: idempotency_keys is keyed (tenant_id, key) in 06-data/logical-model/slc-01.md, so another caller in the same tenant
     who reuses a key receives the stored ResourceRef or IDEMPOTENCY_KEY_REUSED at pipeline step 3, before full authorization
@@ -1266,7 +1283,21 @@ corrections:
     for the same principal; the pipeline order is unchanged.'
   target_wave: Phase 3.8 — source-correction round
   origin: 18-analysis-design/18-error-handling.md §4; independent review 2026-10-01
-  status: APPROVED_DELEGATED — pending application
+  status: 'APPLIED (Phase 3.8 source-correction round): idempotency_keys keyed (tenant_id, principal_id, key) in 06-data/logical-model/slc-01.md'
+- id: CR-81
+  issue: 'Mechanical inconsistencies in the ratified sources found by the analysis-and-design study (18-analysis-design/00-index.md
+    §6): S-01 three aggregates omit their terminal states from the state list, so the state × command matrix and acceptance
+    scenarios lack terminal rows; S-02 TASK_SUSPENDED was declared on every AGG-TASK command although INV-TASK-06 exempts
+    UNSUSPEND and CANCEL and CREATE has no flag yet; S-12 sensors drawn as R1 in the C4 context; S-13 RSK-028 mitigation overtaken
+    by the R3 designs; S-14 and S-25 wrong item counts; S-18 four quality scenarios without a verification row; S-19 VS04/VS05
+    coverage still none.'
+  correction: AGG-INCIDENT, AGG-LOGISTICS-REQUEST and AGG-SHIPMENT list their terminal states (slc17/slc18 data, regenerated);
+    TASK_SUSPENDED declared per command (CMD_ERRORS) on the 21 commands INV-TASK-06 covers; sensors marked R2 with a dashed
+    edge in c4-context.md; RSK-028 carries a dated update; slices.md 21 items, quality-scenarios.md 95 items; verification
+    rows for QAS-LOG-001/002 and QAS-TRX-001/002; VS04 and VS05 cite UC-140..144 and UC-160..163.
+  target_wave: Phase 3.8 — source-correction round
+  origin: 18-analysis-design/00-index.md §6 S-01, S-02, S-12, S-13, S-14, S-18, S-19, S-25
+  status: APPLIED (Phase 3.8 source-correction round) — APPROVED_DELEGATED
 ```
 
 </details>

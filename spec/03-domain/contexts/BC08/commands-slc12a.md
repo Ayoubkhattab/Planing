@@ -19,7 +19,7 @@ _15 commands_
 |---|---|---|---|---|---|---|---|---|
 | CMD-RTS-DRAFT | AGG-RETENTION-SCHEDULE | `POST /api/v1/governance/retention-schedules` | لا | Archivist (draft, edit, discard) · Legal/Compliance authority (activate) | POL-RTS-DRAFT | `based_on:urn` | EVT-RTS-DRAFTED | AUTHZ_DENIED, DRAFT_EXISTS, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-RTS-EDIT | AGG-RETENTION-SCHEDULE | `POST /api/v1/governance/retention-schedules/{id}/actions/edit` | لا | Archivist (draft, edit, discard) · Legal/Compliance authority (activate) | POL-RTS-EDIT | `rules!:array` | EVT-RTS-EDITED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, RETENTION_SCHEDULE_INVALID_STATE_TRANSITION, SCHEDULE_INVALID, VALIDATION_FAILED, VERSION_CONFLICT |
-| CMD-RTS-ACTIVATE | AGG-RETENTION-SCHEDULE | `POST /api/v1/governance/retention-schedules/{id}/actions/activate` | لا | Archivist (draft, edit, discard) · Legal/Compliance authority (activate) | POL-RTS-ACTIVATE | `effective_from!:date-time retroactive_classes:array` | EVT-RTS-ACTIVATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, RETENTION_SCHEDULE_INVALID_STATE_TRANSITION, SCHEDULE_INCOMPLETE, VALIDATION_FAILED, VERSION_CONFLICT |
+| CMD-RTS-ACTIVATE | AGG-RETENTION-SCHEDULE | `POST /api/v1/governance/retention-schedules/{id}/actions/activate` | لا | Archivist (draft, edit, discard) · Legal/Compliance authority (activate) | POL-RTS-ACTIVATE | `effective_from!:date-time retroactive_classes:array` | EVT-RTS-ACTIVATED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, RETENTION_SCHEDULE_INVALID_STATE_TRANSITION, SCHEDULE_INCOMPLETE, SEGREGATION_OF_DUTIES, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-RTS-DISCARD | AGG-RETENTION-SCHEDULE | `POST /api/v1/governance/retention-schedules/{id}/actions/discard` | لا | Archivist (draft, edit, discard) · Legal/Compliance authority (activate) | POL-RTS-DISCARD | `reason!:string` | EVT-RTS-DISCARDED | AUTHZ_DENIED, IDEMPOTENCY_KEY_REUSED, REASON_REQUIRED, RETENTION_SCHEDULE_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-LHD-PLACE | AGG-LEGAL-HOLD | `POST /api/v1/governance/legal-holds` | لا | Legal/Compliance authority (place, extend, request/approve/cancel release) | POL-LHD-PLACE | `name!:string legal_reference!:string scope!:array` | EVT-LHD-PLACED | AUTHZ_DENIED, HOLD_INVALID, IDEMPOTENCY_KEY_REUSED, VALIDATION_FAILED, VERSION_CONFLICT |
 | CMD-LHD-EXTEND | AGG-LEGAL-HOLD | `POST /api/v1/governance/legal-holds/{id}/actions/extend` | لا | Legal/Compliance authority (place, extend, request/approve/cancel release) | POL-LHD-EXTEND | `scope!:array reason!:string` | EVT-LHD-EXTENDED | AUTHZ_DENIED, HOLD_INVALID, IDEMPOTENCY_KEY_REUSED, LEGAL_HOLD_INVALID_STATE_TRANSITION, VALIDATION_FAILED, VERSION_CONFLICT |
@@ -113,6 +113,7 @@ commands:
   - IDEMPOTENCY_KEY_REUSED
   - RETENTION_SCHEDULE_INVALID_STATE_TRANSITION
   - SCHEDULE_INCOMPLETE
+  - SEGREGATION_OF_DUTIES
   - VALIDATION_FAILED
   - VERSION_CONFLICT
   creates: false

@@ -11,7 +11,7 @@ approved_at: '2026-09-24'
 
 # Error Catalog — SLC-03
 
-`AUTHZ_DENIED` لا يُعاد للعميل كما هو عند موارد غير مرئية: يُعاد `NOT_FOUND` بنفس الشكل (ADR-P06 §5). يُعاد `403` فقط لمورد يحق للمستخدم رؤيته دون تنفيذ الإجراء.
+`AUTHZ_DENIED` لا يُعاد للعميل كما هو عند مورد لا يحق للمستدعي رؤيته: يُعاد `NOT_FOUND` بنفس الشكل (ADR-P06 §5 كما عدّله ADR-P19). يُعاد `403` لمورد يحق للمستخدم رؤيته دون تنفيذ الإجراء، أو لأمر إنشاء مرفوض. التزام `mfa` غير مستوفى يُعاد `401 MFA_STEP_UP_REQUIRED` ويُعاد الطلب بعد المصادقة المعززة بنفس `Idempotency-Key`؛ قرار `REQUIRE_APPROVAL` يُعاد `403 APPROVAL_REQUIRED`. ترويسة `Retry-After` ترافق 429 و503 القابل لإعادة المحاولة (CR-78).
 
 | الرمز | HTTP | retryable | عدد الأوامر | الأوامر |
 |---|---|---|---|---|
@@ -19,6 +19,7 @@ approved_at: '2026-09-24'
 | `AUTHZ_DENIED` | 403→404 | لا | 33 | CMD-QUAL-RECORD, CMD-QUAL-REINSTATE, CMD-QUAL-RENEW, CMD-QUAL-REVOKE, CMD-QUAL-SUSPEND, CMD-TASK-ACCEPT, CMD-TASK-ADD-RESULT-ITEM, CMD-TASK-APPROVE, CMD-TASK-AS… |
 | `CLASSIFICATION_CHANGE_NOT_AUTHORIZED` | 422 | لا | 1 | CMD-TASK-RECLASSIFY |
 | `DEPENDENCIES_NOT_MET` | 422 | لا | 1 | CMD-TASK-START |
+| `ELIGIBILITY_UNAVAILABLE` | 503 | نعم | 2 | CMD-TASK-ASSIGN, CMD-TASK-REASSIGN |
 | `IDEMPOTENCY_KEY_REUSED` | 422 | لا | 33 | CMD-QUAL-RECORD, CMD-QUAL-REINSTATE, CMD-QUAL-RENEW, CMD-QUAL-REVOKE, CMD-QUAL-SUSPEND, CMD-TASK-ACCEPT, CMD-TASK-ADD-RESULT-ITEM, CMD-TASK-APPROVE, CMD-TASK-AS… |
 | `NOT_ASSIGNEE` | 422 | لا | 1 | CMD-TASK-ACCEPT |
 | `NOT_SUSPENDED` | 422 | لا | 1 | CMD-TASK-UNSUSPEND |
@@ -34,7 +35,7 @@ approved_at: '2026-09-24'
 | `TASK_INVALID` | 422 | لا | 2 | CMD-TASK-CREATE, CMD-TASK-EDIT |
 | `TASK_INVALID_STATE_TRANSITION` | 409 | لا | 23 | CMD-TASK-ACCEPT, CMD-TASK-ADD-RESULT-ITEM, CMD-TASK-APPROVE, CMD-TASK-ASSIGN, CMD-TASK-BLOCK, CMD-TASK-CANCEL, CMD-TASK-CLOSE, CMD-TASK-COMPLETE, CMD-TASK-DECLI… |
 | `TASK_NOT_READY` | 422 | لا | 1 | CMD-TASK-MARK-READY |
-| `TASK_SUSPENDED` | 422 | لا | 24 | CMD-TASK-ACCEPT, CMD-TASK-ADD-RESULT-ITEM, CMD-TASK-APPROVE, CMD-TASK-ASSIGN, CMD-TASK-BLOCK, CMD-TASK-CANCEL, CMD-TASK-CLOSE, CMD-TASK-COMPLETE, CMD-TASK-CREAT… |
+| `TASK_SUSPENDED` | 422 | لا | 21 | CMD-TASK-ACCEPT, CMD-TASK-ADD-RESULT-ITEM, CMD-TASK-APPROVE, CMD-TASK-ASSIGN, CMD-TASK-BLOCK, CMD-TASK-CLOSE, CMD-TASK-COMPLETE, CMD-TASK-DECLINE, CMD-TASK-EDIT… |
 | `TASK_TYPE_CODE_TAKEN` | 422 | لا | 1 | CMD-TTY-DEFINE |
 | `TASK_TYPE_INVALID` | 422 | لا | 2 | CMD-TTY-ACTIVATE, CMD-TTY-EDIT |
 | `TASK_TYPE_INVALID_STATE_TRANSITION` | 409 | لا | 3 | CMD-TTY-ACTIVATE, CMD-TTY-EDIT, CMD-TTY-RETIRE |
@@ -44,3 +45,9 @@ approved_at: '2026-09-24'
 | `RATE_LIMITED` | 429 | نعم | — | platform-wide |
 | `AUDIT_UNAVAILABLE` | 503 | لا | — | platform-wide |
 | `POLICY_ENGINE_UNAVAILABLE` | 503 (request denied) | نعم | — | platform-wide |
+| `UNAUTHENTICATED` | 401 | لا | — | platform-wide |
+| `MFA_STEP_UP_REQUIRED` | 401 | نعم | — | platform-wide |
+| `APPROVAL_REQUIRED` | 403 | لا | — | platform-wide |
+| `PAYLOAD_TOO_LARGE` | 413 | لا | — | platform-wide |
+| `UNSUPPORTED_MEDIA_TYPE` | 415 | لا | — | platform-wide |
+| `DEPENDENCY_UNAVAILABLE` | 503 | نعم | — | platform-wide |

@@ -366,6 +366,8 @@ flowchart LR
 
 **قواعد `SYS:` (مدفوع بحدث):** COLLECTION-PLAN: all activity tasks terminal؛ CONFLICT: member set no longer conflicting؛ MATCH-RULESET: successor activated
 
+**عمليات خاصة:** داخلية 0، دون اتصال 1 (`14-api-design.md` §7).
+
 #### DU-05 Ingestion
 
 ```mermaid
@@ -423,6 +425,8 @@ flowchart LR
 **قواعد `SYS:` (شرطي بعد أمر):** IMPORT-BATCH: all records applied؛ IMPORT-BATCH: finished with invalid records؛ IMPORT-BATCH: unrecoverable error
 
 **قواعد `SYS:` (مدفوع بعامل):** ATTACHMENT: scan passed؛ ATTACHMENT: scan failed؛ IMPORT-BATCH: processing started
+
+**عمليات خاصة:** داخلية 0، دون اتصال 5 (`14-api-design.md` §7).
 
 #### DU-06 Intelligence
 

@@ -20,7 +20,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الـAggregate يشير إلى غيره بـURN (وبإصدار أو `known_at` عند الحاجة لثبات الدليل)، لا بمرجع كائن ولا بمفتاح أجنبي عبر السياقات | `03-domain/context-map.md` القاعدة 2، FIT-01 |
 | أكثر من 7 كيانات داخلية في Aggregate يتطلب قرارًا | FIT-17 |
 | المعرّفات ULID + URN، ولا إعادة كتابة للمعرّف عند الدمج | ADR-P13، FIT-07 |
-| لكل سمة مستوى أهمية (T1/T2/T3) | ADR-P03، FIT-06 |
+| لكل سمة مستوى أهمية (T1 Evidential، T2 Governed، T3 Operational، T4 Ephemeral) | ADR-P03، FIT-06 |
 
 ## 2. خريطة السياقات المعتمدة
 
@@ -36,13 +36,15 @@ generator: 17-system-study/_build/build_analysis_design.py
 | BC04 | BC05 | أحداث | إسناد المهمة واكتمالها (تحرير الموارد) |
 | خارجي | BC07 | Anti-Corruption Layer | المحوّلات ← أوامر BC02 |
 
-§7.2 أدناه يضيف المراجع المشتقة من البيانات نفسها. هي **جزئية**: تلتقط الأعمدة المسماة باسم Aggregate (مثل `device_id`، `source_urn`)، ولا تلتقط المراجع العامة (`target_urn`، `subject_urn`، `*_refs` المتعددة الأنواع) التي تغطيها الخريطة المعتمدة.
+ومخطط الخريطة يضيف حواف أحداث غير مذكورة في جدولها: BC03 ← BC06 وBC04 ← BC06 (أحداث)، وBC07 ← BC02 (أوامر عبر واجهة BC02).
+
+§3.2 أدناه يضيف المراجع المشتقة من البيانات نفسها ويقارن اتجاهها بهذه الخريطة. هي **جزئية** **[Derived]**: تلتقط الأعمدة وحقول الحمولة التي يدل اسمها على Aggregate (مثل `device_id`، `case_id`، `pool_ref`)، ولا تلتقط المراجع العامة أو المتعددة الأنواع (`target_urn`، `subject_urn`، `source_ref` حين يكون طرفًا في علاقة، `after_action_ref`) ولا المراجع التي لا يطابق اسمها اسم Aggregate.
 
 ## 3. النموذج
 
 <!-- BEGIN GENERATED: build_analysis_design.py -->
 
-### 7.1 المجالات والسياقات
+### 3.1 المجالات والسياقات
 
 | السياق | المجالات (DOM) | عناصرها في `03-domain/domains.md` | الـAggregates |
 |---|---|---|---|
@@ -55,18 +57,31 @@ generator: 17-system-study/_build/build_analysis_design.py
 | BC07 Platform Intelligence — التكامل والذكاء الاصطناعي | DOM-23 AI<br>DOM-24 Integration & Event Bus | AI Request, AI Run, Context Package, AI Result, AI Review, AI Evaluation, AI Tool Registry<br>API, Event Bus, Integration, Adapter, CDC, Synchronization, Webhook | ADAPTER, AI-REQUEST, AI-RESULT, AI-ROUTING, AI-TOOL, EVAL-SUITE, INTEGRATION-CONNECTION, MODEL-VERSION, PRELOAD-PACKAGE, PROJECTION-VERSION, SENSOR-STREAM, SYNC-CONFLICT, SYNC-SESSION |
 | BC08 Governance — الحوكمة والأمن | DOM-25 Security & Governance<br>DOM-26 Observability & Infrastructure | Policy, Security Classification, Privacy, Compliance, Audit, Governance, Sovereignty<br>Logging, Metrics, Tracing, Monitoring, Reliability, DR, Infrastructure, Platform Operations | CLASSIFICATION-SCHEME, DISPOSITION-RUN, ERASURE-REQUEST, LEGAL-HOLD, POLICY-SET, RETENTION-SCHEDULE, SECURITY-EXCEPTION |
 
-### 7.2 المراجع بين السياقات (مشتقة من البيانات)
+**تعارض بين عناصر المجالات وملكية الـAggregates** **[Needs Review]** — عنصر مذكور في مجال سياق ويملكه Aggregate في سياق آخر:
 
-كل مرجع عمود أو حقل حمولة اسمه `<aggregate>_ref|_id|_urn` يطابق اسم Aggregate في سياق آخر **[Derived]**. المرجع URN يُتحقق منه عبر عقد السياق المالك، لا قيد قاعدة بيانات (FIT-01). يُقارَن بخريطة السياقات المعتمدة في §7.3.
+- DOM-07 (BC03) يذكر «Correlation» بينما `AGG-CORRELATION-PROPOSAL` في BC02
+- DOM-07 (BC03) يذكر «Correlation» بينما `AGG-CORRELATION-RULE` في BC02
+- DOM-11 (BC04) يذكر «Distribution» بينما `AGG-DISTRIBUTION` في BC06
+- DOM-19 (BC05) يذكر «Evaluation» بينما `AGG-EVAL-SUITE` في BC07
+- DOM-22 (BC06) يذكر «Legal Hold» بينما `AGG-LEGAL-HOLD` في BC08
 
-| من | إلى | المراجع |
-|---|---|---|
-| BC02 | BC07 | IMPORT-BATCH → ADAPTER (adapter_id) |
-| BC04 | BC01 | SUBSCRIPTION → USER (user_id) |
-| BC04 | BC02 | OUTCOME-TRACKER → SOURCE (source_ref) |
-| BC05 | BC01 | EXERCISE → ROLE (role_ref)؛ QUALIFICATION-RECORD → PERSON (person_id) |
-| BC07 | BC01 | ADAPTER → SERVICE-ACCOUNT (service_account_urn)؛ PRELOAD-PACKAGE → DEVICE (device_id)؛ PRELOAD-PACKAGE → USER (user_id)؛ SYNC-SESSION → DEVICE (device_id)؛ SYNC-SESSION → USER (user_id) |
-| BC07 | BC02 | ADAPTER → SOURCE (source_urn)؛ SENSOR-STREAM → SOURCE (source_urn) |
+### 3.2 المراجع بين السياقات (مشتقة من البيانات)
+
+كل عمود مفتاح أو عمود أو حقل حمولة يشير اسمه إلى Aggregate في سياق آخر **[Derived]** (القاعدة في `ref_target` بالمولِّد). المرجع URN يُتحقق منه عبر عقد السياق المالك، لا قيد قاعدة بيانات (FIT-01). العمود الأخير يقارن اتجاه الاعتماد بخريطة السياقات المعتمدة (§2): السياق الذي يحمل المرجع يعتمد على السياق المشار إليه، فيجب أن يكون الثاني upstream له، أو BC01/BC08 اللذين يخدمان الكل.
+
+| من | إلى | المراجع | في الخريطة المعتمدة |
+|---|---|---|---|
+| BC02 | BC01 | OBSERVATION → DEVICE (device) | نعم |
+| BC02 | BC04 | COLLECTION-PLAN → TASK-TYPE (task_type) | **لا — [Needs Review]** |
+| BC02 | BC07 | IMPORT-BATCH → ADAPTER (adapter, adapter_id) | **لا — [Needs Review]** |
+| BC03 | BC07 | CAP-MESSAGE → INTEGRATION-CONNECTION (connection, connection_id) | **لا — [Needs Review]** |
+| BC04 | BC01 | SUBSCRIPTION → USER (user_id) | نعم |
+| BC05 | BC01 | EXERCISE → ROLE (role_ref)؛ QUALIFICATION-RECORD → PERSON (person, person_id)؛ ROLE-REQUIREMENT → ROLE (role) | نعم |
+| BC05 | BC02 | ASSET → EVIDENCE (evidence)؛ QUALIFICATION-RECORD → EVIDENCE (evidence)؛ SHIPMENT → EVIDENCE (evidence) | **لا — [Needs Review]** |
+| BC05 | BC04 | ALLOCATION → DECISION (decision)؛ ASSET → DECISION (decision)؛ ASSET-ASSIGNMENT → TASK (task) | نعم |
+| BC06 | BC04 | ARCHIVE-PACKAGE → DECISION (decision) | نعم |
+| BC07 | BC01 | ADAPTER → SERVICE-ACCOUNT (service_account, service_account_urn)؛ PRELOAD-PACKAGE → DEVICE (device, device_id)؛ PRELOAD-PACKAGE → USER (user_id)؛ SYNC-SESSION → DEVICE (device, device_id)؛ SYNC-SESSION → USER (user_id) | نعم |
+| BC08 | BC01 | ERASURE-REQUEST → PERSON (person) | نعم |
 
 ```mermaid
 flowchart LR
@@ -78,17 +93,22 @@ flowchart LR
   BC06["BC06 Knowledge"]
   BC07["BC07 Platform Intelligence"]
   BC08["BC08 Governance"]
+  BC02 -->|1| BC01
+  BC02 -->|1| BC04
   BC02 -->|1| BC07
+  BC03 -->|1| BC07
   BC04 -->|1| BC01
-  BC04 -->|1| BC02
-  BC05 -->|2| BC01
+  BC05 -->|3| BC01
+  BC05 -->|3| BC02
+  BC05 -->|3| BC04
+  BC06 -->|1| BC04
   BC07 -->|5| BC01
-  BC07 -->|2| BC02
+  BC08 -->|1| BC01
 ```
 
-### 7.4 مخططات الأصناف (Class diagrams) لكل سياق
+### 3.3 مخططات الأصناف (Class diagrams) لكل سياق
 
-لكل Aggregate صنف جذر `<<AggregateRoot>>` بمفتاحه وأبرز أعمدته من جدوله الرئيسي في النموذج المنطقي (حتى 8)، ومكوناته الداخلية بعلاقة تركيب (`*--`)، ومراجعه إلى Aggregates السياق نفسه (`-->` باسم العمود). المراجع العابرة في §7.2. Aggregate بلا جدول مطابق الاسم تُترك أعمدته **[Missing]**.
+لكل Aggregate صنف جذر `<<AggregateRoot>>` بمفتاحه وأول ثمانية أعمدة من جدوله الرئيسي في النموذج المنطقي، بأنواع مستنتَجة وفق `16-database-schema.md` §4 **[Derived]**؛ ومكوناته الداخلية بعلاقة تركيب (`*--`)؛ ومراجعه إلى Aggregates السياق نفسه (`-->` باسم العمود). المراجع العابرة في §3.2.
 
 #### BC01 — Foundation — الأساس
 
@@ -101,18 +121,18 @@ classDiagram
     +urn holder_urn
     +urn parent_grant_id
     +integer depth
-    +text decision_types
+    +array decision_types
     +urn org_scope_unit_id
     +boolean include_descendants
-    +text limits
+    +json limits
   }
   class AGG_CLEARANCE["CLEARANCE — Clearance"] {
     <<AggregateRoot>>
     +urn clearance_id
     +urn user_id
     +text level_code
-    +text compartments
-    +text caveat_attributes
+    +array compartments
+    +json caveat_attributes
     +timestamptz valid_to
     +enum state
     +urn requested_by
@@ -134,8 +154,8 @@ classDiagram
     +urn proposal_id
     +urn person_id
     +text change_kind
-    +text hr_payload
-    +text proposed_changes
+    +bytes_encrypted hr_payload
+    +json proposed_changes
     +enum state
     +urn decided_by
   }
@@ -144,7 +164,7 @@ classDiagram
   class AGG_ORGANIZATION["ORGANIZATION — Organization (with unit tree)"] {
     <<AggregateRoot>>
     +urn org_id
-    +text name
+    +json name
     +enum state
     +integer version
   }
@@ -153,9 +173,9 @@ classDiagram
   class AGG_PERSON["PERSON — Person"] {
     <<AggregateRoot>>
     +urn person_id
-    +text names
-    +urn hr_id
-    +text contact
+    +json_pii names
+    +text_pii hr_id
+    +json_pii contact
     +enum state
     +urn subject_key_ref
     +integer version
@@ -164,7 +184,7 @@ classDiagram
     <<AggregateRoot>>
     +urn role_id
     +text code
-    +text name
+    +json name
     +text system_role
     +enum state
     +integer version
@@ -220,12 +240,13 @@ classDiagram
   }
   class AGG_USER__Identity["Identity"]
   AGG_USER *-- AGG_USER__Identity
-  AGG_CLEARANCE --> AGG_USER : user_id
-  AGG_DEVICE --> AGG_USER : user_id
+  AGG_CLEARANCE --> AGG_USER : user
+  AGG_DEVICE --> AGG_USER : user
   AGG_HR_SYNC_PROPOSAL --> AGG_PERSON : person_id
-  AGG_ROLE_ASSIGNMENT --> AGG_ROLE : role_id
-  AGG_ROLE_ASSIGNMENT --> AGG_USER : user_id
-  AGG_USER --> AGG_PERSON : person_id
+  AGG_ROLE_ASSIGNMENT --> AGG_ROLE : role
+  AGG_ROLE_ASSIGNMENT --> AGG_USER : user
+  AGG_SERVICE_ACCOUNT --> AGG_USER : owner_user_id
+  AGG_USER --> AGG_PERSON : person
 ```
 
 | Aggregate | المستوى | بيانات شخصية | الجدول الرئيسي | المكونات الداخلية |
@@ -264,7 +285,7 @@ classDiagram
     +urn claim_id
     +urn subject_urn
     +text predicate
-    +text value
+    +json value
     +text value_norm
     +text unit_canonical
     +timestamptz valid_from
@@ -276,8 +297,8 @@ classDiagram
   class AGG_COLLECTION_PLAN["COLLECTION-PLAN — Collection Plan"] {
     <<AggregateRoot>>
     +urn plan_id
-    +text requirements
-    +text title
+    +array requirements
+    +json title
     +security_label label
     +enum state
     +integer version
@@ -288,12 +309,12 @@ classDiagram
     <<AggregateRoot>>
     +urn requirement_id
     +integer version
-    +text question
+    +json question
     +text area
-    +text window_tstzrange
+    +period window
     +integer priority
     +timestamptz due
-    +text eeis
+    +json eeis
   }
   class AGG_COLLECTION_REQUIREMENT__EEI["EEI"]
   AGG_COLLECTION_REQUIREMENT *-- AGG_COLLECTION_REQUIREMENT__EEI
@@ -318,8 +339,8 @@ classDiagram
     <<AggregateRoot>>
     +urn proposal_id
     +enum kind
-    +text inputs
-    +numeric score
+    +json inputs
+    +json score
     +integer rule_version
     +security_label label
     +enum state
@@ -334,8 +355,8 @@ classDiagram
     +urn rule_id
     +integer version
     +enum kind
-    +text parameters
-    +text evaluation
+    +json parameters
+    +json evaluation
     +enum state
   }
   class AGG_CORRELATION_RULE__Parameters["Parameters"]
@@ -358,7 +379,7 @@ classDiagram
     +text right_entity
     +numeric score
     +integer ruleset_version
-    +text feature_comparison
+    +json feature_comparison
     +text proposer
     +text agent
   }
@@ -372,7 +393,7 @@ classDiagram
     +text type
     +urn attachment_id
     +urn observation_ref
-    +text locator
+    +json locator
     +urn source_id
     +timestamptz collected_at
     +text seal_hash
@@ -409,7 +430,7 @@ classDiagram
     +text batch_key
     +text content_sha256
     +integer mapping_version
-    +text counts
+    +json counts
     +enum state
     +text lease_owner
   }
@@ -420,10 +441,10 @@ classDiagram
     +urn ruleset_id
     +text entity_type
     +integer version
-    +text blocking_keys
-    +text features
-    +text thresholds
-    +text evaluation
+    +json blocking_keys
+    +json features
+    +json thresholds
+    +json evaluation
     +enum state
   }
   class AGG_MATCH_RULESET__BlockingKey["BlockingKey"]
@@ -439,9 +460,9 @@ classDiagram
     +urn source_id
     +text observer
     +timestamptz observed_at
-    +text event_time
+    +json event_time
     +timestamptz recorded_from
-    +geometry(4326) geom
+    +geometry geom
   }
   class AGG_OBSERVATION__Measurement["Measurement"]
   AGG_OBSERVATION *-- AGG_OBSERVATION__Measurement
@@ -471,10 +492,10 @@ classDiagram
     <<AggregateRoot>>
     +urn source_id
     +text type
-    +text name
+    +json name
     +text owner_org
     +text protection_level
-    +security_label label
+    +json label
     +enum state
     +integer version
   }
@@ -483,13 +504,15 @@ classDiagram
   class AGG_SOURCE__Profile["Profile"]
   AGG_SOURCE *-- AGG_SOURCE__Profile
   AGG_CLAIM --> AGG_SOURCE : source_refs
-  AGG_EVIDENCE --> AGG_ATTACHMENT : attachment_id
+  AGG_CONFLICT --> AGG_CLAIM : preferred_claim
+  AGG_EVIDENCE --> AGG_ATTACHMENT : attachment
   AGG_EVIDENCE --> AGG_OBSERVATION : observation_ref
-  AGG_EVIDENCE --> AGG_SOURCE : source_id
-  AGG_EVIDENCE_LINK --> AGG_CLAIM : claim_id
-  AGG_EVIDENCE_LINK --> AGG_EVIDENCE : evidence_id
-  AGG_OBSERVATION --> AGG_SOURCE : source_id
-  AGG_RELATIONSHIP --> AGG_SOURCE : source_ref
+  AGG_EVIDENCE_LINK --> AGG_CLAIM : claim
+  AGG_EVIDENCE_LINK --> AGG_EVIDENCE : evidence
+  AGG_IMPORT_BATCH --> AGG_ATTACHMENT : payload_attachment
+  AGG_MATCH_RULESET --> AGG_ATTACHMENT : evaluation_attachment
+  AGG_OBSERVATION --> AGG_EVIDENCE : evidence
+  AGG_RELATIONSHIP --> AGG_CLAIM : existence_claim_id
 ```
 
 | Aggregate | المستوى | بيانات شخصية | الجدول الرئيسي | المكونات الداخلية |
@@ -538,7 +561,7 @@ classDiagram
     +urn situation_id
     +text scope
     +enum kind
-    +text parameters
+    +json parameters
     +enum severity
     +period dedupe_window
   }
@@ -551,10 +574,10 @@ classDiagram
   class AGG_ANALYSIS_CASE["ANALYSIS-CASE — Analysis Case"] {
     <<AggregateRoot>>
     +urn case_id
-    +text title
+    +json title
     +urn owner
-    +text question
-    +text extent
+    +json question
+    +json extent
     +timestamptz window_from
     +timestamptz window_to
     +enum state
@@ -575,10 +598,10 @@ classDiagram
     <<AggregateRoot>>
     +text method_code
     +integer method_version
-    +text parameter_schema
+    +json parameter_schema
     +text image_digest
     +text deterministic
-    +text tolerance
+    +json tolerance
     +enum state
     +urn author
   }
@@ -593,8 +616,8 @@ classDiagram
     +text method_code
     +integer method_version
     +text image_digest
-    +text parameters
-    +text inputs
+    +json parameters
+    +json inputs
     +text scenario
   }
   class AGG_ANALYSIS_RUN__InputPin["InputPin"]
@@ -610,11 +633,11 @@ classDiagram
     +urn assessment_id
     +integer version
     +urn case_id
-    +text title
-    +text key_judgments
-    +text citations
-    +text assumptions
-    +text uncertainty
+    +json title
+    +json key_judgments
+    +json citations
+    +json assumptions
+    +json uncertainty
   }
   class AGG_ASSESSMENT__KeyJudgment["KeyJudgment"]
   AGG_ASSESSMENT *-- AGG_ASSESSMENT__KeyJudgment
@@ -638,9 +661,9 @@ classDiagram
     +urn finding_id
     +integer version
     +urn case_id
-    +text statement
-    +text sources
-    +text uncertainty
+    +json statement
+    +json sources
+    +json uncertainty
     +security_label label
     +urn author
   }
@@ -649,7 +672,7 @@ classDiagram
   class AGG_SITUATION["SITUATION — Situation"] {
     <<AggregateRoot>>
     +urn situation_id
-    +text name
+    +json name
     +urn owner
     +enum state
     +security_label label
@@ -663,8 +686,13 @@ classDiagram
   AGG_SITUATION *-- AGG_SITUATION__MembershipRecord
   class AGG_SITUATION__SituationChange["SituationChange"]
   AGG_SITUATION *-- AGG_SITUATION__SituationChange
-  AGG_ALERT_RULE --> AGG_SITUATION : situation_id
-  AGG_CAP_MESSAGE --> AGG_ALERT : alert_id
+  AGG_ALERT --> AGG_ALERT_RULE : rule_id
+  AGG_ALERT_RULE --> AGG_SITUATION : situation
+  AGG_ANALYSIS_RUN --> AGG_ANALYSIS_CASE : case
+  AGG_ANALYSIS_RUN --> AGG_ANALYSIS_METHOD : method
+  AGG_ASSESSMENT --> AGG_ANALYSIS_CASE : case
+  AGG_CAP_MESSAGE --> AGG_ALERT : alert
+  AGG_FINDING --> AGG_ANALYSIS_CASE : case
 ```
 
 | Aggregate | المستوى | بيانات شخصية | الجدول الرئيسي | المكونات الداخلية |
@@ -687,10 +715,10 @@ classDiagram
   class AGG_COORDINATION_CASE["COORDINATION-CASE — Coordination Case"] {
     <<AggregateRoot>>
     +urn case_id
-    +text title
-    +enum purpose
+    +json title
+    +json purpose
     +text lead_org
-    +text links
+    +json links
     +security_label label
     +enum state
     +integer version
@@ -704,11 +732,11 @@ classDiagram
     +urn decision_id
     +urn request_id
     +text selected_option
-    +text rationale
+    +json rationale
     +text effective_from
     +timestamptz recorded_at
     +text decider
-    +text authority_snapshot
+    +json authority_snapshot
   }
   class AGG_DECISION__AuthoritySnapshot["AuthoritySnapshot"]
   AGG_DECISION *-- AGG_DECISION__AuthoritySnapshot
@@ -717,12 +745,12 @@ classDiagram
   class AGG_DECISION_REQUEST["DECISION-REQUEST — Decision Request"] {
     <<AggregateRoot>>
     +urn request_id
-    +text question
+    +json question
     +text decision_type
     +text scope_unit
     +text deadline
-    +text options
-    +text citations
+    +json options
+    +json citations
     +security_label label
   }
   class AGG_DECISION_REQUEST__Option["Option"]
@@ -733,11 +761,11 @@ classDiagram
     <<AggregateRoot>>
     +urn incident_id
     +urn category_ref
-    +text description
-    +text scope_refs
+    +json description
+    +array scope_refs
     +urn risk_ref
     +enum severity
-    +text affected_scope_refs
+    +array affected_scope_refs
     +text commander
   }
   class AGG_INCIDENT__SeverityHistory["SeverityHistory"]
@@ -760,7 +788,7 @@ classDiagram
     +text metric
     +text unit
     +enum state
-    +text targets
+    +json targets
   }
   class AGG_OUTCOME_TRACKER__Measurement["Measurement"]
   AGG_OUTCOME_TRACKER *-- AGG_OUTCOME_TRACKER__Measurement
@@ -769,10 +797,10 @@ classDiagram
   class AGG_PLAN["PLAN — Plan (identity)"] {
     <<AggregateRoot>>
     +urn plan_id
-    +text title
+    +json title
     +urn owner
     +text org_scope
-    +text implements
+    +array implements
     +period window
     +security_label label
     +enum state
@@ -781,7 +809,7 @@ classDiagram
     <<AggregateRoot>>
     +urn plan_id
     +integer plan_version
-    +text content
+    +json content
     +urn author
     +urn approver
     +text change_class
@@ -806,8 +834,8 @@ classDiagram
     <<AggregateRoot>>
     +urn risk_id
     +urn category_ref
-    +text description
-    +text scope_refs
+    +json description
+    +array scope_refs
     +numeric likelihood
     +numeric impact
     +numeric risk_score
@@ -820,8 +848,8 @@ classDiagram
     +urn subscription_id
     +urn user_id
     +urn target_urn
-    +text channels
-    +text quiet_hours
+    +array channels
+    +json quiet_hours
     +enum state
     +integer version
   }
@@ -830,8 +858,8 @@ classDiagram
     +urn task_id
     +urn task_type_id
     +integer task_type_version
-    +text title
-    +text description
+    +json title
+    +json description
     +urn plan_ref
     +text ad_hoc_reason
     +urn owner
@@ -849,10 +877,10 @@ classDiagram
     +urn task_type_id
     +integer version
     +text code
-    +text name
-    +text qualification_requirements
-    +text criteria_templates
-    +text escalation
+    +json name
+    +json qualification_requirements
+    +json criteria_templates
+    +json escalation
     +text expires_on_due
   }
   class AGG_TASK_TYPE__QualificationRequirement["QualificationRequirement"]
@@ -861,11 +889,16 @@ classDiagram
   AGG_TASK_TYPE *-- AGG_TASK_TYPE__CriterionTemplate
   class AGG_TASK_TYPE__EscalationPolicy["EscalationPolicy"]
   AGG_TASK_TYPE *-- AGG_TASK_TYPE__EscalationPolicy
+  AGG_DECISION --> AGG_DECISION_REQUEST : request
   AGG_INCIDENT --> AGG_RISK : risk_ref
+  AGG_INCIDENT --> AGG_TASK : response_task_refs
+  AGG_OUTCOME_TRACKER --> AGG_PLAN : plan_id
+  AGG_PLAN_VERSION --> AGG_PLAN : plan
   AGG_RISK --> AGG_INCIDENT : incident_ref
+  AGG_RISK --> AGG_TASK : treatment_task_refs
   AGG_TASK --> AGG_INCIDENT : incident_ref
   AGG_TASK --> AGG_PLAN : plan_ref
-  AGG_TASK --> AGG_TASK_TYPE : task_type_id
+  AGG_TASK --> AGG_TASK_TYPE : task_type
 ```
 
 | Aggregate | المستوى | بيانات شخصية | الجدول الرئيسي | المكونات الداخلية |
@@ -907,7 +940,7 @@ classDiagram
     <<AggregateRoot>>
     +urn asset_id
     +text asset_type
-    +text name
+    +json name
     +text owner_org
     +text custody_holder
     +urn linked_entity_urn
@@ -934,7 +967,7 @@ classDiagram
     <<AggregateRoot>>
     +urn reservation_id
     +urn asset_id
-    +text window_tstzrange
+    +period window
     +enum purpose
     +text link
     +enum state
@@ -946,17 +979,17 @@ classDiagram
     +urn scenario_ref
     +text scenario_version_frozen
     +text objectives
-    +text participants
+    +array participants
     +enum purpose
     +urn role_ref
-    +period window
+    +json window
   }
   class AGG_LOGISTICS_REQUEST["LOGISTICS-REQUEST — Logistics Request"] {
     <<AggregateRoot>>
     +urn request_id
     +urn item_pool_ref
     +numeric quantity
-    +text destination
+    +json destination
     +timestamptz needed_by
     +integer priority
     +urn requester
@@ -967,7 +1000,7 @@ classDiagram
     +urn order_id
     +urn asset_id
     +enum kind
-    +text window_tstzrange
+    +period window
     +enum state
     +text outcome
     +text technician
@@ -1001,7 +1034,7 @@ classDiagram
     <<AggregateRoot>>
     +urn role_id
     +integer version
-    +text requirements
+    +json requirements
     +enum state
   }
   class AGG_ROLE_REQUIREMENT__Requirement["Requirement"]
@@ -1009,10 +1042,10 @@ classDiagram
   class AGG_SCENARIO["SCENARIO — Scenario"] {
     <<AggregateRoot>>
     +urn scenario_id
-    +text title
+    +json title
     +urn exercise_type_ref
     +text situation
-    +text target_competencies
+    +array target_competencies
     +security_label label
     +enum state
     +integer version
@@ -1024,7 +1057,7 @@ classDiagram
     +urn shipment_id
     +urn logistics_request_ref
     +urn origin_pool_ref
-    +text destination
+    +json destination
     +text carrier
     +numeric planned_quantity
     +numeric delivered_quantity
@@ -1047,15 +1080,20 @@ classDiagram
   AGG_SIMULATION *-- AGG_SIMULATION__InjectDelivery
   class AGG_SIMULATION__Evaluation["Evaluation"]
   AGG_SIMULATION *-- AGG_SIMULATION__Evaluation
-  AGG_ASSET_ASSIGNMENT --> AGG_ASSET : asset_id
-  AGG_ASSET_RESERVATION --> AGG_ASSET : asset_id
-  AGG_EXERCISE --> AGG_SCENARIO : scenario_ref
+  AGG_ALLOCATION --> AGG_RESOURCE_POOL : pool
+  AGG_ASSET --> AGG_MAINTENANCE_ORDER : maintenance_order
+  AGG_ASSET_ASSIGNMENT --> AGG_ASSET : asset
+  AGG_ASSET_ASSIGNMENT --> AGG_ASSET_RESERVATION : reservation
+  AGG_ASSET_RESERVATION --> AGG_ASSET : asset
+  AGG_EXERCISE --> AGG_SCENARIO : scenario
   AGG_LOGISTICS_REQUEST --> AGG_ALLOCATION : allocation_ref
+  AGG_LOGISTICS_REQUEST --> AGG_RESOURCE_POOL : item_pool
   AGG_LOGISTICS_REQUEST --> AGG_SHIPMENT : shipment_ref
-  AGG_MAINTENANCE_ORDER --> AGG_ASSET : asset_id
-  AGG_SHIPMENT --> AGG_LOGISTICS_REQUEST : logistics_request_ref
-  AGG_SIMULATION --> AGG_EXERCISE : exercise_ref
-  AGG_SIMULATION --> AGG_SCENARIO : scenario_ref
+  AGG_MAINTENANCE_ORDER --> AGG_ASSET : asset
+  AGG_SHIPMENT --> AGG_LOGISTICS_REQUEST : logistics_request
+  AGG_SHIPMENT --> AGG_RESOURCE_POOL : origin_pool
+  AGG_SIMULATION --> AGG_EXERCISE : exercise
+  AGG_SIMULATION --> AGG_SCENARIO : scenario
 ```
 
 | Aggregate | المستوى | بيانات شخصية | الجدول الرئيسي | المكونات الداخلية |
@@ -1084,8 +1122,8 @@ classDiagram
     +urn package_id
     +text record_class
     +text bucket
-    +text bag_manifest
-    +text representations
+    +json bag_manifest
+    +json representations
     +security_label label
     +enum state
     +text tier
@@ -1103,7 +1141,7 @@ classDiagram
     +urn distribution_id
     +urn product_id
     +integer version
-    +text formats
+    +array formats
     +enum state
     +text distributor
   }
@@ -1114,9 +1152,9 @@ classDiagram
     +urn knowledge_id
     +integer version
     +text type
-    +text title
-    +text statements
-    +text relationships
+    +json title
+    +json statements
+    +json relationships
     +text source
     +security_label label
   }
@@ -1132,8 +1170,8 @@ classDiagram
     +integer version
     +urn template_id
     +integer template_version
-    +text parameters
-    +text audience
+    +json parameters
+    +json audience
     +security_label label
     +enum state
   }
@@ -1149,7 +1187,7 @@ classDiagram
     +integer version
     +text code
     +enum kind
-    +text sections
+    +json sections
     +enum state
   }
   class AGG_PRODUCT_TEMPLATE__Section["Section"]
@@ -1159,7 +1197,7 @@ classDiagram
   class AGG_RECONSTRUCTION["RECONSTRUCTION — Historical Reconstruction"] {
     <<AggregateRoot>>
     +urn reconstruction_id
-    +text scope
+    +json scope
     +timestamptz valid_at
     +timestamptz known_at
     +enum purpose
@@ -1169,7 +1207,8 @@ classDiagram
   }
   class AGG_RECONSTRUCTION__ReconstructionElement["ReconstructionElement"]
   AGG_RECONSTRUCTION *-- AGG_RECONSTRUCTION__ReconstructionElement
-  AGG_DISTRIBUTION --> AGG_PRODUCT : product_id
+  AGG_DISTRIBUTION --> AGG_PRODUCT : product
+  AGG_PRODUCT --> AGG_PRODUCT_TEMPLATE : template
 ```
 
 | Aggregate | المستوى | بيانات شخصية | الجدول الرئيسي | المكونات الداخلية |
@@ -1203,7 +1242,7 @@ classDiagram
     +text user
     +text operation
     +enum purpose
-    +text input
+    +bytes_encrypted input
     +enum state
     +integer routing_version
     +integer model_version
@@ -1222,17 +1261,17 @@ classDiagram
     +urn request_id
     +text operation
     +text target
-    +text items
+    +json items
     +enum state
     +urn reviewer
-    +text decisions
+    +json decisions
   }
   class AGG_AI_RESULT__ResultItem["ResultItem"]
   AGG_AI_RESULT *-- AGG_AI_RESULT__ResultItem
   class AGG_AI_ROUTING["AI-ROUTING — AI Routing Configuration"] {
     <<AggregateRoot>>
     +integer routing_version
-    +text routes
+    +json routes
     +enum state
     +urn author
     +urn approver
@@ -1243,7 +1282,7 @@ classDiagram
     <<AggregateRoot>>
     +urn tool_id
     +text name
-    +text input_schema
+    +json input_schema
     +text binding
     +text effect
     +text permission
@@ -1254,7 +1293,7 @@ classDiagram
     <<AggregateRoot>>
     +urn suite_id
     +integer version
-    +text sets
+    +json sets
     +enum state
   }
   class AGG_EVAL_SUITE__EvalItem["EvalItem"]
@@ -1268,7 +1307,7 @@ classDiagram
     +enum protocol
     +enum direction
     +urn credentials_ref
-    +text allow_list
+    +json allow_list
   }
   class AGG_INTEGRATION_CONNECTION__HealthCheck["HealthCheck"]
   AGG_INTEGRATION_CONNECTION *-- AGG_INTEGRATION_CONNECTION__HealthCheck
@@ -1281,7 +1320,7 @@ classDiagram
     +text family
     +text weights_digest
     +text licence
-    +text languages
+    +array languages
     +text context_tokens
     +text hosting
   }
@@ -1294,17 +1333,24 @@ classDiagram
     +urn package_id
     +urn device_id
     +urn user_id
-    +text area
-    +text layers
+    +json area
+    +array layers
     +period window
     +text level
-    +text manifest
+    +json manifest
   }
   class AGG_PRELOAD_PACKAGE__Manifest["Manifest"]
   AGG_PRELOAD_PACKAGE *-- AGG_PRELOAD_PACKAGE__Manifest
   class AGG_PROJECTION_VERSION["PROJECTION-VERSION — Projection Version"] {
     <<AggregateRoot>>
+    +text tenant_group
+    +enum kind
+    +integer version
     +enum state
+    +integer schema_version
+    +integer normalization_version
+    +json checkpoints
+    +json verification
   }
   class AGG_PROJECTION_VERSION__SourceCheckpoint["SourceCheckpoint"]
   AGG_PROJECTION_VERSION *-- AGG_PROJECTION_VERSION__SourceCheckpoint
@@ -1326,8 +1372,8 @@ classDiagram
   class AGG_SYNC_CONFLICT["SYNC-CONFLICT — Sync Conflict"] {
     <<AggregateRoot>>
     +urn conflict_id
-    +text envelope
-    +text state_snapshot
+    +json envelope
+    +json state_snapshot
     +text owner_reason
     +urn reviewer
     +enum state
@@ -1351,6 +1397,9 @@ classDiagram
   AGG_SYNC_SESSION *-- AGG_SYNC_SESSION__CommandEnvelope
   class AGG_SYNC_SESSION__BatchReceipt["BatchReceipt"]
   AGG_SYNC_SESSION *-- AGG_SYNC_SESSION__BatchReceipt
+  AGG_AI_RESULT --> AGG_AI_REQUEST : request_id
+  AGG_MODEL_VERSION --> AGG_EVAL_SUITE : suite
+  AGG_SENSOR_STREAM --> AGG_INTEGRATION_CONNECTION : connection
 ```
 
 | Aggregate | المستوى | بيانات شخصية | الجدول الرئيسي | المكونات الداخلية |
@@ -1364,7 +1413,7 @@ classDiagram
 | AGG-INTEGRATION-CONNECTION | T2 | — | `integration.integration_connections` | HealthCheck, AllowListEntry |
 | AGG-MODEL-VERSION | T2 | — | `ai.model_versions` | EvaluationReport, CanaryMetrics |
 | AGG-PRELOAD-PACKAGE | T2 | — | `field.preload_packages` | Manifest |
-| AGG-PROJECTION-VERSION | T3 | — | `projection_versions` (مخزن الإسقاطات، اسم الـschema **[Missing]**) | SourceCheckpoint, VerificationReport |
+| AGG-PROJECTION-VERSION | T3 | — | `(مخزن الإسقاطات).projection_versions` | SourceCheckpoint, VerificationReport |
 | AGG-SENSOR-STREAM | T2 | — | `integration.sensor_streams` | QualityRules |
 | AGG-SYNC-CONFLICT | T2 | — | `field.sync_conflicts` | OriginalEnvelope, StateSnapshot |
 | AGG-SYNC-SESSION | T2 | — | `field.sync_sessions` | CommandEnvelope, BatchReceipt |
@@ -1378,22 +1427,26 @@ classDiagram
     <<AggregateRoot>>
     +integer scheme_version
     +enum state
-    +text levels
-    +text compartments
-    +text caveats
+    +json levels
+    +json compartments
+    +json caveats
     +text audit_threshold
     +text default_level
     +text effective_from
   }
   class AGG_CLASSIFICATION_SCHEME__Level["Level"]
   AGG_CLASSIFICATION_SCHEME *-- AGG_CLASSIFICATION_SCHEME__Level
+  class AGG_CLASSIFICATION_SCHEME__Compartment["Compartment"]
+  AGG_CLASSIFICATION_SCHEME *-- AGG_CLASSIFICATION_SCHEME__Compartment
+  class AGG_CLASSIFICATION_SCHEME__Caveat["Caveat"]
+  AGG_CLASSIFICATION_SCHEME *-- AGG_CLASSIFICATION_SCHEME__Caveat
   class AGG_DISPOSITION_RUN["DISPOSITION-RUN — Disposition Run"] {
     <<AggregateRoot>>
     +urn run_id
     +integer schedule_version
-    +text candidates
-    +text exceptions
-    +text certificate
+    +json candidates
+    +json exceptions
+    +json certificate
     +enum state
     +urn submitted_by
     +urn approved_by
@@ -1407,8 +1460,8 @@ classDiagram
     +urn request_id
     +text legal_basis
     +text subject_refs
-    +text scope_counts
-    +text confirmations
+    +json scope_counts
+    +json confirmations
     +enum state
     +urn registered_by
     +urn approved_by
@@ -1422,7 +1475,7 @@ classDiagram
     +urn hold_id
     +text name
     +text legal_reference
-    +text scope
+    +json scope
     +enum state
     +urn placed_by
     +urn release_requested_by
@@ -1434,8 +1487,8 @@ classDiagram
     <<AggregateRoot>>
     +integer policy_version
     +enum state
-    +text decision_tables
-    +text tests
+    +json decision_tables
+    +json tests
     +text effective_from
     +urn author
     +urn approver
@@ -1447,12 +1500,12 @@ classDiagram
   class AGG_RETENTION_SCHEDULE["RETENTION-SCHEDULE — Retention Schedule Version"] {
     <<AggregateRoot>>
     +integer schedule_version
-    +text rules
+    +json rules
     +enum state
     +urn drafted_by
     +urn approved_by
     +text effective_from
-    +text retroactive_classes
+    +array retroactive_classes
   }
   class AGG_RETENTION_SCHEDULE__RetentionRule["RetentionRule"]
   AGG_RETENTION_SCHEDULE *-- AGG_RETENTION_SCHEDULE__RetentionRule
@@ -1460,7 +1513,7 @@ classDiagram
     <<AggregateRoot>>
     +urn exception_id
     +text policy_rule
-    +text subject_scope
+    +json subject_scope
     +text justification
     +timestamptz starts_at
     +timestamptz ends_at
@@ -1471,7 +1524,7 @@ classDiagram
 
 | Aggregate | المستوى | بيانات شخصية | الجدول الرئيسي | المكونات الداخلية |
 |---|---|---|---|---|
-| AGG-CLASSIFICATION-SCHEME | T2 | — | `governance.classification_schemes` | Level |
+| AGG-CLASSIFICATION-SCHEME | T2 | — | `governance.classification_schemes` | Level, Compartment, Caveat |
 | AGG-DISPOSITION-RUN | T2 | — | `governance.disposition_runs` | BucketCandidate, DispositionCertificate |
 | AGG-ERASURE-REQUEST | T2 | نعم | `governance.erasure_requests` | SubjectKeyRef, ContextConfirmation |
 | AGG-LEGAL-HOLD | T2 | — | `governance.legal_holds` | HoldScopeItem |

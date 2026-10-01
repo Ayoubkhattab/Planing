@@ -473,9 +473,9 @@ Scenario Outline: CMD-KNO-DRAFT is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| تعديل | تقارير ومنتجات | any user · planner | `POST /api/v1/knowledge/knowledge-objects/{id}/actions/edit` | POL-KNO-EDIT |
+| تعديل | تقارير ومنتجات | any user | `POST /api/v1/knowledge/knowledge-objects/{id}/actions/edit` | POL-KNO-EDIT |
 
-**القصة:** بصفتي **any user · planner**، أريد **تعديل كائن المعرفة**، لكي يتحقق غرض كائن المعرفة: إجراء أو درس أو ممارسة فضلى أو معرفة سياساتية، كعبارات بأدلة وعلاقات
+**القصة:** بصفتي **any user**، أريد **تعديل كائن المعرفة**، لكي يتحقق غرض كائن المعرفة: إجراء أو درس أو ممارسة فضلى أو معرفة سياساتية، كعبارات بأدلة وعلاقات
 
 - **الشروط المسبقة:** الحالة الحالية: DRAFT؛ statements with evidence links; relationships to task types, plan types, entity types, areas
 - **المدخلات:** `statements`!: array, `relationships`: array — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -487,7 +487,7 @@ Scenario Outline: CMD-KNO-DRAFT is rejected
 ```gherkin
 Scenario: CMD-KNO-EDIT succeeds
   Given AGG-KNOWLEDGE-OBJECT in state DRAFT and every guard holds
-  When an authorized actor (any user or planner) sends CMD-KNO-EDIT with a valid payload, a new Idempotency-Key and a matching If-Match
+  When any user sends CMD-KNO-EDIT with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state is unchanged and the version increases by one
   And EVT-KNO-EDITED is written to the outbox with one audit record in the same transaction
 

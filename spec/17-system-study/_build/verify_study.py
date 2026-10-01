@@ -416,7 +416,7 @@ def v8(sys_trans):
     for aid in aggs:
         if f"| {aid} |" not in p3["07-domain-model.md"]:
             gaps.append(("07", aid, "Aggregate غير مذكور"))
-    actor_lists = p3["02-actors-roles.md"].split("### 2.4")[-1]
+    actor_lists = p3["02-actors-roles.md"].split("### 6.4")[-1]
     for oid in list(cmds) + list(qrys):
         if f"`{oid}`" not in actor_lists:
             gaps.append(("02", oid, "عملية بلا فاعل"))

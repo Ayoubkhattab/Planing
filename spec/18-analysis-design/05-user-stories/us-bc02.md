@@ -245,9 +245,9 @@ Scenario Outline: CMD-CLM-ASSERT is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| تعديل | أساسية | Analyst · adapter service account · Analyst or verification re-evaluator system identity | `POST /api/v1/information/claims/{id}/actions/assess` | POL-CLM-ASSESS |
+| تعديل | أساسية | Analyst or verification re-evaluator system identity | `POST /api/v1/information/claims/{id}/actions/assess` | POL-CLM-ASSESS |
 
-**القصة:** بصفتي **Analyst · adapter service account · Analyst or verification re-evaluator system identity**، أريد **تقييم الادعاء**، لكي يتحقق غرض الادعاء: عبارة (موضوع، سمة، قيمة) مؤرخة ثنائياً ومسندة؛ قيمتها لا تتغير
+**القصة:** بصفتي **Analyst or verification re-evaluator system identity**، أريد **تقييم الادعاء**، لكي يتحقق غرض الادعاء: عبارة (موضوع، سمة، قيمة) مؤرخة ثنائياً ومسندة؛ قيمتها لا تتغير
 
 - **الشروط المسبقة:** الحالة الحالية: CURRENT؛ updates information_confidence / verification_status only (T2 versioned assessment); value and times untouched
 - **المدخلات:** `information_confidence`: enum(1,2,3,4,5,6), `verification_status`: enum(UNVERIFIED,PARTIALLY_VERIFIED,VERIFIED,DISPUTED,REFUTED), `rationale`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -259,7 +259,7 @@ Scenario Outline: CMD-CLM-ASSERT is rejected
 ```gherkin
 Scenario: CMD-CLM-ASSESS succeeds
   Given AGG-CLAIM in state CURRENT and every guard holds
-  When an authorized actor (Analyst or adapter service account or Analyst or verification re-evaluator system identity) sends CMD-CLM-ASSESS with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Analyst or verification re-evaluator system identity sends CMD-CLM-ASSESS with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state is unchanged and the version increases by one
   And EVT-CLM-ASSESSED is written to the outbox with one audit record in the same transaction
 
@@ -281,9 +281,9 @@ Scenario Outline: CMD-CLM-ASSESS is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| تعديل | أساسية | Analyst · adapter service account | `POST /api/v1/information/claims/{id}/actions/correct` | POL-CLM-CORRECT |
+| تعديل | أساسية | Analyst | `POST /api/v1/information/claims/{id}/actions/correct` | POL-CLM-CORRECT |
 
-**القصة:** بصفتي **Analyst · adapter service account**، أريد **تصحيح الادعاء**، لكي يتحقق غرض الادعاء: عبارة (موضوع، سمة، قيمة) مؤرخة ثنائياً ومسندة؛ قيمتها لا تتغير
+**القصة:** بصفتي **Analyst**، أريد **تصحيح الادعاء**، لكي يتحقق غرض الادعاء: عبارة (موضوع، سمة، قيمة) مؤرخة ثنائياً ومسندة؛ قيمتها لا تتغير
 
 - **الشروط المسبقة:** الحالة الحالية: CURRENT؛ closes recorded_to = now and asserts the replacement (same subject/predicate) in the same transaction; reason
 - **المدخلات:** `value`!: ClaimValue, `valid`: Interval, `source_refs`!: array, `confidence`!: Confidence, `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -295,7 +295,7 @@ Scenario Outline: CMD-CLM-ASSESS is rejected
 ```gherkin
 Scenario: CMD-CLM-CORRECT succeeds
   Given AGG-CLAIM in state CURRENT and every guard holds
-  When an authorized actor (Analyst or adapter service account) sends CMD-CLM-CORRECT with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Analyst sends CMD-CLM-CORRECT with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes CLOSED
   And EVT-CLM-CORRECTED is written to the outbox with one audit record in the same transaction
 
@@ -353,9 +353,9 @@ Scenario Outline: CMD-CLM-RECLASSIFY is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| حذف / إنهاء | أساسية | Analyst · adapter service account | `POST /api/v1/information/claims/{id}/actions/record-change` | POL-CLM-RECORD-CHANGE |
+| حذف / إنهاء | أساسية | Analyst | `POST /api/v1/information/claims/{id}/actions/record-change` | POL-CLM-RECORD-CHANGE |
 
-**القصة:** بصفتي **Analyst · adapter service account**، أريد **تسجيل تغيير في الادعاء**، لكي يتحقق غرض الادعاء: عبارة (موضوع، سمة، قيمة) مؤرخة ثنائياً ومسندة؛ قيمتها لا تتغير
+**القصة:** بصفتي **Analyst**، أريد **تسجيل تغيير في الادعاء**، لكي يتحقق غرض الادعاء: عبارة (موضوع، سمة، قيمة) مؤرخة ثنائياً ومسندة؛ قيمتها لا تتغير
 
 - **الشروط المسبقة:** الحالة الحالية: CURRENT؛ t_change ∈ (valid_from, valid_to): closes record, re-records old value with valid_to = t_change, asserts new value from t_change
 - **المدخلات:** `t_change`!: date-time, `new_value`!: ClaimValue, `source_refs`!: array, `confidence`!: Confidence — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -367,7 +367,7 @@ Scenario Outline: CMD-CLM-RECLASSIFY is rejected
 ```gherkin
 Scenario: CMD-CLM-RECORD-CHANGE succeeds
   Given AGG-CLAIM in state CURRENT and every guard holds
-  When an authorized actor (Analyst or adapter service account) sends CMD-CLM-RECORD-CHANGE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Analyst sends CMD-CLM-RECORD-CHANGE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes CLOSED
   And EVT-CLM-CHANGED is written to the outbox with one audit record in the same transaction
 
@@ -389,9 +389,9 @@ Scenario Outline: CMD-CLM-RECORD-CHANGE is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| تعديل | أساسية | Analyst · adapter service account | `POST /api/v1/information/claims/{id}/actions/retract` | POL-CLM-RETRACT |
+| تعديل | أساسية | Analyst | `POST /api/v1/information/claims/{id}/actions/retract` | POL-CLM-RETRACT |
 
-**القصة:** بصفتي **Analyst · adapter service account**، أريد **سحب الادعاء**، لكي يتحقق غرض الادعاء: عبارة (موضوع، سمة، قيمة) مؤرخة ثنائياً ومسندة؛ قيمتها لا تتغير
+**القصة:** بصفتي **Analyst**، أريد **سحب الادعاء**، لكي يتحقق غرض الادعاء: عبارة (موضوع، سمة، قيمة) مؤرخة ثنائياً ومسندة؛ قيمتها لا تتغير
 
 - **الشروط المسبقة:** الحالة الحالية: CURRENT؛ reason; no replacement
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -403,7 +403,7 @@ Scenario Outline: CMD-CLM-RECORD-CHANGE is rejected
 ```gherkin
 Scenario: CMD-CLM-RETRACT succeeds
   Given AGG-CLAIM in state CURRENT and every guard holds
-  When an authorized actor (Analyst or adapter service account) sends CMD-CLM-RETRACT with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Analyst sends CMD-CLM-RETRACT with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes CLOSED
   And EVT-CLM-RETRACTED is written to the outbox with one audit record in the same transaction
 
@@ -2697,9 +2697,9 @@ Scenario Outline: CMD-EVD-SEAL is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| تعديل | أساسية | Analyst · custodian role | `POST /api/v1/information/evidence/{id}/actions/transfer-custody` | POL-EVD-TRANSFER-CUSTODY |
+| تعديل | أساسية | custodian role | `POST /api/v1/information/evidence/{id}/actions/transfer-custody` | POL-EVD-TRANSFER-CUSTODY |
 
-**القصة:** بصفتي **Analyst · custodian role**، أريد **نقل عهدة الدليل**، لكي يتحقق غرض الدليل: مادة تدعم أو تنفي ادعاءً، بسلسلة حيازة
+**القصة:** بصفتي **custodian role**، أريد **نقل عهدة الدليل**، لكي يتحقق غرض الدليل: مادة تدعم أو تنفي ادعاءً، بسلسلة حيازة
 
 - **الشروط المسبقة:** الحالة الحالية: REGISTERED, SEALED؛ actor is current holder or custodian role; new holder named
 - **المدخلات:** `new_holder`!: urn, `action`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -2711,7 +2711,7 @@ Scenario Outline: CMD-EVD-SEAL is rejected
 ```gherkin
 Scenario: CMD-EVD-TRANSFER-CUSTODY succeeds
   Given AGG-EVIDENCE in state REGISTERED or SEALED and every guard holds
-  When an authorized actor (Analyst or custodian role) sends CMD-EVD-TRANSFER-CUSTODY with a valid payload, a new Idempotency-Key and a matching If-Match
+  When custodian role sends CMD-EVD-TRANSFER-CUSTODY with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state is unchanged and the version increases by one
   And EVT-EVD-CUSTODY-TRANSFERRED is written to the outbox with one audit record in the same transaction
 

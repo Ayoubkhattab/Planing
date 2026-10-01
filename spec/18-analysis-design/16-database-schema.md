@@ -1361,7 +1361,7 @@ erDiagram
 |---|---|---|---|
 | `question` | json | — | — |
 | `area` | text | — | geom 4326 |
-| `window_tstzrange` | text | — | — |
+| `window` | period | — | — |
 | `priority` | integer | — | — |
 | `due` | timestamptz | — | — |
 | `eeis` | json | — | — |
@@ -1600,7 +1600,7 @@ erDiagram
 | `activity_ref` | urn | — | — |
 | `inputs` | json | — | json with versions/known_at |
 | `outputs` | json | — | — |
-| `transformation_code_version` | text | — | — |
+| `transformation_code_version` | integer | — | — |
 | `agent` | text | — | — |
 | `started_at` | timestamptz | — | — |
 | `ended_at` | timestamptz | — | — |
@@ -1739,7 +1739,7 @@ erDiagram
 
 | العمود | النوع (مستنتَج) | اختياري | ملاحظة |
 |---|---|---|---|
-| `rating_A_F` | text | — | — |
+| `rating` | text | — | — |
 | `valid_to` | timestamptz | — | — |
 | `recorded_to` | timestamptz | — | — |
 | `rationale` | text | — | — |
@@ -2350,7 +2350,7 @@ erDiagram
 | العمود | النوع (مستنتَج) | اختياري | ملاحظة |
 |---|---|---|---|
 | `kind` | enum | — | class_bucket / subject / hold |
-| `scope_ref` | text | — | — |
+| `scope_ref` | urn | — | — |
 | `wrapped_key` | bytes_encrypted | — | — |
 | `created_at` | timestamptz | — | — |
 | `destroyed_at` | timestamptz | نعم | — |
@@ -2366,7 +2366,7 @@ erDiagram
 | `tenant_id` | urn | — | — |
 | `key_id` | urn | — | — |
 | `destroyed_at` | timestamptz | — | — |
-| `run_request_ref` | text | — | — |
+| `run_request_ref` | urn | — | — |
 | `prev_hash` | text | — | — |
 | `hash` | text | — | — |
 
@@ -3319,7 +3319,7 @@ erDiagram
 | العمود | النوع (مستنتَج) | اختياري | ملاحظة |
 |---|---|---|---|
 | `asset_id` | urn | — | — |
-| `window_tstzrange` | text | — | — |
+| `window` | period | — | — |
 | `purpose` | enum | — | — |
 | `link` | text | نعم | — |
 | `state` | enum | — | — |
@@ -3420,7 +3420,7 @@ erDiagram
 |---|---|---|---|
 | `asset_id` | urn | — | — |
 | `kind` | enum | — | — |
-| `window_tstzrange` | text | — | — |
+| `window` | period | — | — |
 | `state` | enum | — | — |
 | `outcome` | text | نعم | — |
 | `technician` | text | — | — |

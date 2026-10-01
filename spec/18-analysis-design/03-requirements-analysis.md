@@ -18,7 +18,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 |---|---|
 | النمط | نمط صياغة EARS في المصدر: ubiquitous (دائم)، event-driven (عند حدث)، unwanted-behaviour (سلوك غير مرغوب)، constraint (قيد)، optional-feature (ميزة اختيارية) |
 | الأولوية | MoSCoW في المصدر: must / should |
-| الـAggregates | من `traces.satisfies` في ملفات الـAggregates — التحقيق في المجال |
+| الـAggregates | من `traces.satisfies` في ملفات الـAggregates — التحقيق في المجال؛ «— (§3.4)» = يتحقق بغير Aggregate |
 | QAS | سيناريو الجودة المرتبط بالمتطلب في المصدر |
 | يتحقق عبر (§3.4) | عناصر التصميم من ملفات التتبع لمتطلبات لا يحققها Aggregate (مكتبات مشتركة، استعلامات، قيود منصة) |
 
@@ -28,7 +28,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 2. **القدرة الأكبر** CAP-08 (الموارد والجاهزية، 45 متطلبًا) وأغلبها R3؛ R1 يتركز في CAP-01..07 وCAP-13..14.
 3. **التحقق.** كل المتطلبات طريقة تحققها `test`؛ الاختبار المقابل في ملفات القبول (`13-verification/acceptance/`) ودوال اللياقة وملفات التتبع.
 4. **متطلبات بلا Aggregate** ليست بالضرورة فجوة: قيود المنصة (CAP-14) والأمن تتحقق بالبنية ودوال اللياقة، والمتطلبات القرائية تتحقق باستعلامات. §3.4 يسرد لكل منها ما يحققه.
-5. **سيناريوهات الجودة** مصدر محركات المعمارية؛ الأولوية `H/H` (أهمية/صعوبة) هي المحركات الرئيسية المستخدمة في `10-architecture-overview.md`.
+5. **سيناريوهات الجودة** مصدر محركات المعمارية. §3.5 يسرد سيناريوهات الأولوية `H/H` (أهمية/صعوبة)؛ أما ترتيب المحركات في `10-architecture-overview.md` فمن شجرة المنفعة في `16-reports/ARCHITECTURE-REVIEW-R1.md`، ويشمل سيناريوهات بأولوية أدنى (مثل QAS-EVO-001).
 
 ## 3. الكتالوج والتحليل
 
@@ -58,7 +58,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 ### 3.2 من النتائج إلى القدرات إلى المتطلبات
 
-حقل `contributing_requirements` في النتائج ما زال TBD (CR-30)، فالربط هنا مشتق عبر حقل `outcomes` في كل قدرة **[Derived]**.
+حقل `contributing_requirements` في النتائج ما زال TBD (CR-30)، فالربط هنا مشتق عبر حقل `outcomes` في كل قدرة **[Derived]**. القدرة الواحدة قد تخدم أكثر من نتيجة، فالأعداد متداخلة ولا يساوي مجموعها 210؛ وقدرات بلا نتيجة: CAP-14 (14 متطلبًا).
 
 | النتيجة | الاسم | أولوية السنة الأولى | القدرات | المتطلبات عبرها |
 |---|---|---|---|---|
@@ -86,10 +86,10 @@ generator: 17-system-study/_build/build_analysis_design.py
 | REQ-FND-007 | The system shall record authority as a grant stating decision type, organizational scope, limits and validity period, held by a role or a person. | ubiquitous | must | R1 | UC-082 | AGG-AUTHORITY-GRANT | — |
 | REQ-FND-008 | When an authority holder delegates authority, the system shall record delegator, delegate, scope, limits and validity period, and shall reject any delegation e… | event-driven | must | R1 | UC-083 | AGG-AUTHORITY-GRANT | — |
 | REQ-FND-009 | The system shall provide an authority check returning whether an actor holds authority for a given decision type, scope and point in time, including through de… | ubiquitous | must | R1 | UC-032, UC-035 | AGG-AUTHORITY-GRANT | — |
-| REQ-FND-010 | The system shall evaluate authorization before retrieving data for every command, query, search, map request, export, event subscription and AI retrieval. | ubiquitous | must | R1 | **—** | **[Missing]** | QAS-SEC-002 |
+| REQ-FND-010 | The system shall evaluate authorization before retrieving data for every command, query, search, map request, export, event subscription and AI retrieval. | ubiquitous | must | R1 | **—** | — (§3.4) | QAS-SEC-002 |
 | REQ-FND-011 | The system shall base authorization decisions on subject, action, resource, purpose, context, classification, compartments and jurisdiction. | ubiquitous | must | R1 | UC-086 | AGG-ROLE-ASSIGNMENT, AGG-POLICY-SET | — |
 | REQ-FND-012 | The system shall return a policy decision of ALLOW, DENY, CONDITIONAL, REDACT, AGGREGATE or REQUIRE_APPROVAL, with any obligations, and shall enforce the oblig… | ubiquitous | must | R1 | UC-086 | AGG-POLICY-SET | — |
-| REQ-FND-013 | If the policy decision point is unavailable or returns an error, then the system shall deny the request. | unwanted-behaviour | must | R1 | **—** | **[Missing]** | QAS-SEC-005 |
+| REQ-FND-013 | If the policy decision point is unavailable or returns an error, then the system shall deny the request. | unwanted-behaviour | must | R1 | **—** | — (§3.4) | QAS-SEC-005 |
 | REQ-FND-014 | The system shall treat View, Edit, Export, Share, Approve, Delete, Retain and Archive as separately grantable permissions. | ubiquitous | must | R1 | UC-086 | AGG-ROLE | — |
 | REQ-INT-004 | When HRIS reports a change of role or organization for a person, the system shall propose the corresponding role-assignment change for administrator approval. | event-driven | must | R2 | UC-084 | AGG-HR-SYNC-PROPOSAL | — |
 
@@ -129,23 +129,23 @@ generator: 17-system-study/_build/build_analysis_design.py
 | REQ-INF-020 | The system shall represent Entity, Event, Relationship, Claim, Evidence, Source and Observation as distinct object types. | ubiquitous | must | R1 | UC-001, UC-002, UC-003 | AGG-ENTITY, AGG-REALWORLD-EVENT | — |
 | REQ-INF-021 | The system shall represent each attribute value of an importance-tier T1 object as a claim linked to its sources, evidence and confidence. | ubiquitous | must | R1 | UC-006 | AGG-CLAIM, AGG-ENTITY, AGG-EVIDENCE-LINK | — |
 | REQ-INF-022 | The system shall record a valid-time interval and a record-time interval for every T1 claim. | ubiquitous | must | R1 | **—** | AGG-CLAIM | — |
-| REQ-INF-023 | When a query specifies a valid time T, a record time K, or both, the system shall return the state valid at T as known at K, using the current time for any tim… | event-driven | must | R1 | UC-096 | **[Missing]** | QAS-TMP-001 |
+| REQ-INF-023 | When a query specifies a valid time T, a record time K, or both, the system shall return the state valid at T as known at K, using the current time for any tim… | event-driven | must | R1 | UC-096 | — (§3.4) | QAS-TMP-001 |
 | REQ-INF-024 | The system shall never overwrite a T1 claim; a correction shall close the record-time interval of the previous claim and create a new claim. | ubiquitous | must | R1 | **—** | AGG-CLAIM, AGG-CONFLICT | — |
 | REQ-INF-025 | When two claims about the same subject and attribute overlap in valid time with incompatible values, the system shall open a conflict case and retain both clai… | event-driven | must | R1 | UC-008 | AGG-CONFLICT | — |
 | REQ-INF-026 | The system shall expose confidence as separate dimensions: source reliability, information confidence, data quality, verification status, freshness, completene… | ubiquitous | must | R1 | **—** | AGG-CLAIM | — |
 | REQ-INF-027 | The system shall represent relationships as objects with type, source, target, validity period, evidence, provenance, confidence and classification. | ubiquitous | must | R1 | UC-003 | AGG-RELATIONSHIP | — |
 | REQ-INF-028 | The system shall require every geometry to carry a CRS and a positional accuracy, and shall reject invalid geometries. | ubiquitous | must | R1 | **—** | AGG-OBSERVATION | QAS-DQ-001 |
-| REQ-INF-029 | The system shall store each geometry in the canonical CRS WGS 84 (EPSG:4326) and shall keep the original CRS and coordinates. | ubiquitous | must | R1 | **—** | **[Missing]** | — |
-| REQ-INF-030 | The system shall keep the position history of located entities over time. | ubiquitous | must | R1 | UC-096 | **[Missing]** | — |
-| REQ-INF-031 | The system shall store names in their original form and in normalized and transliterated forms for Arabic and English. | ubiquitous | must | R1 | **—** | **[Missing]** | QAS-USA-002 |
+| REQ-INF-029 | The system shall store each geometry in the canonical CRS WGS 84 (EPSG:4326) and shall keep the original CRS and coordinates. | ubiquitous | must | R1 | **—** | — (§3.4) | — |
+| REQ-INF-030 | The system shall keep the position history of located entities over time. | ubiquitous | must | R1 | UC-096 | — (§3.4) | — |
+| REQ-INF-031 | The system shall store names in their original form and in normalized and transliterated forms for Arabic and English. | ubiquitous | must | R1 | **—** | — (§3.4) | QAS-USA-002 |
 | REQ-INF-032 | When an entity-resolution candidate is detected, the system shall create a resolution case with candidates, method, features, score and evidence, and shall not… | event-driven | must | R1 | UC-007 | AGG-ER-CASE, AGG-MATCH-RULESET | — |
 | REQ-INF-033 | When entities are matched, the system shall record a same-as link with the decision, reviewer and time, keep all original identifiers valid, and resolve any me… | event-driven | must | R1 | UC-007 | AGG-ER-CASE | — |
 | REQ-INF-034 | When a match is reversed, the system shall close the same-as link so that each original entity again resolves to exactly its own claims. | event-driven | must | R1 | UC-104 | AGG-ER-CASE | — |
 | REQ-INF-035 | The system shall record lineage for every derived object: inputs and their versions, the transformation and its version, the actor and the execution time. | ubiquitous | must | R1 | **—** | AGG-ANALYSIS-RUN, AGG-FINDING | QAS-TRC-001 |
 | REQ-INF-036 | The system shall identify every object by an internal ULID and a global URN of the form urn:<namespace>:<type>:<id>, and shall map external identifiers per sou… | ubiquitous | must | R1 | **—** | AGG-ENTITY, AGG-EXTERNAL-ID | — |
 | REQ-INF-037 | If a T1 object is submitted without a source reference, then the system shall reject it. | unwanted-behaviour | must | R1 | **—** | AGG-CLAIM | — |
-| REQ-SRC-001 | The system shall provide unified search across entities, observations, documents, assessments, plans and tasks, with text, spatial and temporal filters. | ubiquitous | must | R1 | UC-097 | **[Missing]** | QAS-PERF-003 |
-| REQ-SRC-002 | The system shall not reveal the existence of unauthorized objects through search results, counts, facets, suggestions, ordering, errors or response timing. | ubiquitous | must | R1 | UC-097 | **[Missing]** | QAS-SEC-002 |
+| REQ-SRC-001 | The system shall provide unified search across entities, observations, documents, assessments, plans and tasks, with text, spatial and temporal filters. | ubiquitous | must | R1 | UC-097 | — (§3.4) | QAS-PERF-003 |
+| REQ-SRC-002 | The system shall not reveal the existence of unauthorized objects through search results, counts, facets, suggestions, ordering, errors or response timing. | ubiquitous | must | R1 | UC-097 | — (§3.4) | QAS-SEC-002 |
 | REQ-SRC-003 | The system shall match Arabic text regardless of hamza forms, alef maqsura, taa marbuta, diacritics and tatweel, and shall match names across Arabic and Latin… | ubiquitous | must | R1 | UC-097 | AGG-MATCH-RULESET | QAS-USA-002 |
 | REQ-SRC-004 | The system shall be able to rebuild every search and graph projection from the source of truth without data loss. | ubiquitous | must | R1 | UC-078 | AGG-PROJECTION-VERSION | QAS-REL-002 |
 
@@ -178,7 +178,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | REQ-SIT-004 | When an alert rule condition is met, the system shall raise an alert and notify subscribed authorized users. | event-driven | must | R1 | UC-023 | AGG-ALERT-RULE, AGG-ALERT | QAS-PERF-005 |
 | REQ-SIT-005 | The system shall manage alerts through the states RAISED, ACKNOWLEDGED, RESOLVED and DISMISSED, requiring a reason for dismissal, and shall audit every transit… | ubiquitous | must | R1 | UC-023 | AGG-ALERT | — |
 | REQ-SIT-006 | If a user is not authorized for the object that triggered an alert, then the system shall not reveal that object or its existence in the alert shown to that us… | unwanted-behaviour | must | R1 | **—** | AGG-ALERT | QAS-SEC-002 |
-| REQ-SIT-007 | The system shall serve map layers filtered by the requesting user's authorization and shall not share cached map tiles across different authorization scopes. | ubiquitous | must | R1 | UC-098 | **[Missing]** | QAS-SEC-004, QAS-PERF-007 |
+| REQ-SIT-007 | The system shall serve map layers filtered by the requesting user's authorization and shall not share cached map tiles across different authorization scopes. | ubiquitous | must | R1 | UC-098 | — (§3.4) | QAS-SEC-004, QAS-PERF-007 |
 
 #### CAP-06 — إدارة القرار
 
@@ -229,9 +229,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | REQ-LOG-007 | The system shall allow reporting a shipment as damaged or lost in transit, recording the reason and, for damage, the affected quantity. | ubiquitous | must | R3 | UC-152 | AGG-SHIPMENT | — |
 | REQ-LOG-008 | The system shall record consumption on a logistics request's linked allocation only from a confirmed shipment outcome (delivered, damaged, or lost), never spec… | ubiquitous | must | R3 | UC-152 | AGG-LOGISTICS-REQUEST | — |
 | REQ-LOG-009 | The system shall allow cancelling a logistics request before dispatch, releasing its linked allocation, and shall allow cancelling a shipment only before depar… | constraint | must | R3 | UC-152 | AGG-LOGISTICS-REQUEST, AGG-SHIPMENT | — |
-| REQ-LOG-010 | The system shall let an authorized actor list and filter logistics requests by item, destination, state and priority, restricted to the caller's visible scope. | ubiquitous | must | R3 | UC-150 | **[Missing]** | — |
-| REQ-LOG-011 | The system shall let an authorized actor list and filter shipments by logistics request, carrier, state and window, restricted to the caller's visible scope. | ubiquitous | must | R3 | UC-151 | **[Missing]** | — |
-| REQ-LOG-012 | The system shall provide the full, ordered checkpoint history of a shipment to an authorized actor. | ubiquitous | should | R3 | UC-151 | **[Missing]** | — |
+| REQ-LOG-010 | The system shall let an authorized actor list and filter logistics requests by item, destination, state and priority, restricted to the caller's visible scope. | ubiquitous | must | R3 | UC-150 | — (§3.4) | — |
+| REQ-LOG-011 | The system shall let an authorized actor list and filter shipments by logistics request, carrier, state and window, restricted to the caller's visible scope. | ubiquitous | must | R3 | UC-151 | — (§3.4) | — |
+| REQ-LOG-012 | The system shall provide the full, ordered checkpoint history of a shipment to an authorized actor. | ubiquitous | should | R3 | UC-151 | — (§3.4) | — |
 | REQ-LOG-013 | The system shall resolve a logistics item's identity against a per-tenant reference catalog (RD-LOGISTICS-ITEM-TYPES) rather than a fixed list, consistent with… | ubiquitous | must | R3 | UC-150 | AGG-LOGISTICS-REQUEST | — |
 | REQ-LOG-014 | Contention among logistics requests for the same pool shall be resolved exactly as SLC-09 resolves allocation contention (priority then request time within the… | constraint | must | R3 | UC-150 | AGG-LOGISTICS-REQUEST | — |
 | REQ-RDY-001 | The system shall record each person's competencies, qualifications and certifications with their validity periods. | ubiquitous | must | R1 | UC-102 | AGG-QUALIFICATION-RECORD | — |
@@ -261,10 +261,10 @@ generator: 17-system-study/_build/build_analysis_design.py
 | REQ-TRX-009 | A simulation run shall record a per-participant, per-competency evaluation, always by an evaluator distinct from the participant being evaluated. | constraint | must | R3 | UC-162 | AGG-SIMULATION | — |
 | REQ-TRX-010 | A simulation run shall reach COMPLETED only when every participant listed on its linked exercise has at least one recorded evaluation. | constraint | must | R3 | UC-162 | AGG-SIMULATION | — |
 | REQ-TRX-011 | A simulation run shall be pausable and resumable, or abortable with a reason, without losing any previously recorded inject-delivery or evaluation history. | ubiquitous | should | R3 | UC-162 | AGG-SIMULATION | — |
-| REQ-TRX-012 | A person's qualification record shall be able to cite a completed simulation run as evidence, using the existing, unmodified Qualification Record evidence refe… | ubiquitous | should | R3 | UC-163 | **[Missing]** | — |
-| REQ-TRX-013 | A completed simulation run shall be usable as the terminal source of an After Action Review, captured as a lesson-type Knowledge Object in BC06. | event-driven | should | R3 | UC-163 | **[Missing]** | — |
-| REQ-TRX-014 | The system shall let an authorized actor list and filter scenarios, exercises and simulation runs, restricted to the caller's visible scope. | ubiquitous | must | R3 | UC-161 | **[Missing]** | — |
-| REQ-TRX-015 | The system shall provide the full, ordered timeline of inject deliveries and evaluations for a simulation run to an authorized actor. | ubiquitous | should | R3 | UC-162 | **[Missing]** | — |
+| REQ-TRX-012 | A person's qualification record shall be able to cite a completed simulation run as evidence, using the existing, unmodified Qualification Record evidence refe… | ubiquitous | should | R3 | UC-163 | — (§3.4) | — |
+| REQ-TRX-013 | A completed simulation run shall be usable as the terminal source of an After Action Review, captured as a lesson-type Knowledge Object in BC06. | event-driven | should | R3 | UC-163 | — (§3.4) | — |
+| REQ-TRX-014 | The system shall let an authorized actor list and filter scenarios, exercises and simulation runs, restricted to the caller's visible scope. | ubiquitous | must | R3 | UC-161 | — (§3.4) | — |
+| REQ-TRX-015 | The system shall provide the full, ordered timeline of inject deliveries and evaluations for a simulation run to an authorized actor. | ubiquitous | should | R3 | UC-162 | — (§3.4) | — |
 
 #### CAP-09 — المخاطر والطوارئ
 
@@ -285,9 +285,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | REQ-RCM-011 | The system shall never activate a contingency plan automatically as a side effect of a severity escalation; activation shall always be a distinct, separately-a… | constraint | must | R3 | UC-144 | AGG-INCIDENT | — |
 | REQ-RCM-012 | When an incident references a risk as materialized, the system shall not change that risk's state automatically; the risk owner acts on it through a separate c… | constraint | must | R3 | UC-143 | AGG-INCIDENT | — |
 | REQ-RCM-013 | The system shall allow a response task to be created directly under an incident (incident_ref) without requiring a plan. | ubiquitous | must | R3 | UC-143 | AGG-INCIDENT | — |
-| REQ-RCM-014 | The system shall let an authorized actor list and filter the risk register by category, scope and score, restricted to the caller's visible scope. | ubiquitous | must | R3 | UC-140 | **[Missing]** | — |
-| REQ-RCM-015 | The system shall let an authorized actor list and filter incidents by category, severity, status and scope, restricted to the caller's visible scope. | ubiquitous | must | R3 | UC-142 | **[Missing]** | — |
-| REQ-RCM-016 | The system shall compute an incident's recovery status from its linked contingency plan's task completion against the incident's start time, as an estimate, wi… | ubiquitous | should | R3 | UC-144 | **[Missing]** | — |
+| REQ-RCM-014 | The system shall let an authorized actor list and filter the risk register by category, scope and score, restricted to the caller's visible scope. | ubiquitous | must | R3 | UC-140 | — (§3.4) | — |
+| REQ-RCM-015 | The system shall let an authorized actor list and filter incidents by category, severity, status and scope, restricted to the caller's visible scope. | ubiquitous | must | R3 | UC-142 | — (§3.4) | — |
+| REQ-RCM-016 | The system shall compute an incident's recovery status from its linked contingency plan's task completion against the incident's start time, as an estimate, wi… | ubiquitous | should | R3 | UC-144 | — (§3.4) | — |
 
 #### CAP-10 — الاتصال والمنتجات
 
@@ -339,7 +339,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | REQ-AI-011 | The system shall run all models on local infrastructure by default and shall use external models only where a tenant policy allows it and only for unclassified… | ubiquitous | must | R2 | UC-077 | AGG-AI-REQUEST, AGG-AI-ROUTING | — |
 | REQ-AI-012 | If content retrieved into a context package contains instructions, then the system shall treat it as data and shall not let it change tools, permissions or rec… | unwanted-behaviour | must | R2 | UC-071 | AGG-AI-REQUEST, AGG-AI-TOOL | QAS-AI-004 |
 | REQ-AI-013 | The system shall register every tool available to AI runs, with the permission it requires and its autonomy level. | ubiquitous | must | R2 | UC-077 | AGG-AI-TOOL | — |
-| REQ-AI-014 | The system shall maintain a vector projection of authorized content with the same security labels and pre-filtering as search. | ubiquitous | must | R2 | UC-071 | **[Missing]** | QAS-AI-004 |
+| REQ-AI-014 | The system shall maintain a vector projection of authorized content with the same security labels and pre-filtering as search. | ubiquitous | must | R2 | UC-071 | — (§3.4) | QAS-AI-004 |
 
 #### CAP-13 — الحوكمة والأمن والامتثال
 
@@ -347,14 +347,14 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 | المتطلب | النص | النمط | الأولوية | الإصدار | حالات الاستخدام | الـAggregates | QAS |
 |---|---|---|---|---|---|---|---|
-| REQ-FND-015 | The system shall write an audit record for every state-changing command and for every read of data classified at or above the tenant's audit threshold, contain… | ubiquitous | must | R1 | UC-087 | **[Missing]** | QAS-AUD-001 |
-| REQ-FND-016 | The system shall keep audit records append-only and tamper-evident. | ubiquitous | must | R1 | UC-087 | **[Missing]** | QAS-SEC-006 |
+| REQ-FND-015 | The system shall write an audit record for every state-changing command and for every read of data classified at or above the tenant's audit threshold, contain… | ubiquitous | must | R1 | UC-087 | — (§3.4) | QAS-AUD-001 |
+| REQ-FND-016 | The system shall keep audit records append-only and tamper-evident. | ubiquitous | must | R1 | UC-087 | — (§3.4) | QAS-SEC-006 |
 | REQ-FND-017 | When a security exception is requested, the system shall require approval by two distinct authorized persons and shall revoke the exception automatically at it… | event-driven | must | R1 | UC-088 | AGG-SECURITY-EXCEPTION | — |
 | REQ-GOV-001 | The system shall support a per-tenant classification scheme with ordered levels, an unlimited number of compartments and release caveats. | ubiquitous | must | R1 | UC-085 | AGG-CLASSIFICATION-SCHEME | — |
-| REQ-GOV-002 | The system shall require a classification on every object of importance tier T1 or T2. | ubiquitous | must | R1 | **—** | **[Missing]** | — |
+| REQ-GOV-002 | The system shall require a classification on every object of importance tier T1 or T2. | ubiquitous | must | R1 | **—** | — (§3.4) | — |
 | REQ-GOV-003 | The system shall permit read access to an object only if the subject's clearance is at least the object's level and the subject holds every compartment of the… | ubiquitous | must | R1 | UC-089 | AGG-CLEARANCE | QAS-SEC-002 |
 | REQ-GOV-004 | When the classification of an object is changed, the system shall require the authority defined by tenant policy, record the change as a new version, and stop… | event-driven | must | R1 | UC-085, UC-089 | AGG-CLEARANCE, AGG-CLASSIFICATION-SCHEME | QAS-SEC-003 |
-| REQ-GOV-005 | The system shall keep all data of a deployment within its configured jurisdiction and shall not transfer data outside it unless a tenant policy explicitly perm… | ubiquitous | must | R1 | **—** | **[Missing]** | — |
+| REQ-GOV-005 | The system shall keep all data of a deployment within its configured jurisdiction and shall not transfer data outside it unless a tenant policy explicitly perm… | ubiquitous | must | R1 | **—** | — (§3.4) | — |
 | REQ-GOV-008 | When the personal data of a data subject must be erased, the system shall make it unrecoverable in operational stores, projections, backups and archives while… | event-driven | must | R1 | UC-103 | AGG-PERSON, AGG-ATTACHMENT, AGG-ERASURE-REQUEST | QAS-PRV-001 |
 | REQ-GOV-009 | The system shall version, audit and time-stamp every policy and configuration change and apply each change from its effective time. | ubiquitous | must | R1 | UC-086 | AGG-CLASSIFICATION-SCHEME, AGG-POLICY-SET | — |
 
@@ -365,19 +365,19 @@ generator: 17-system-study/_build/build_analysis_design.py
 | المتطلب | النص | النمط | الأولوية | الإصدار | حالات الاستخدام | الـAggregates | QAS |
 |---|---|---|---|---|---|---|---|
 | REQ-FND-018 | The system shall enforce per-tenant quotas and rate limits for requests, storage, events and jobs. | ubiquitous | must | R1 | UC-105 | AGG-TENANT | QAS-SCAL-005 |
-| REQ-PLT-001 | The system shall install, upgrade and operate in an air-gapped environment with no dependency on external network services. | ubiquitous | must | R1 | **—** | **[Missing]** | QAS-OPS-001 |
-| REQ-PLT-002 | The system shall use the same release artifacts for shared, dedicated and sovereign deployments. | ubiquitous | must | R1 | **—** | **[Missing]** | — |
-| REQ-PLT-003 | The system shall emit metrics, logs and traces carrying a correlation id across every component, plus business telemetry for the outcome measures. | ubiquitous | must | R1 | **—** | **[Missing]** | QAS-OBS-001 |
-| REQ-PLT-004 | The system shall assign every capability to one of the service tiers defined in QAS-AVL-001..003 (critical, important, standard) and meet that tier's availabil… | ubiquitous | must | R1 | **—** | **[Missing]** | QAS-AVL-001, QAS-AVL-002, QAS-AVL-003, QAS-REC-001, QAS-REC-002, QAS-REC-003 |
-| REQ-PLT-005 | The system shall run heavy operations (raster processing, bulk import, analysis runs, reconstruction, report generation) as asynchronous jobs with status, retr… | ubiquitous | must | R1 | **—** | **[Missing]** | — |
-| REQ-PLT-006 | The system shall publish domain events through a transactional outbox and shall process received events idempotently through an inbox. | ubiquitous | must | R1 | **—** | **[Missing]** | QAS-REL-001 |
-| REQ-PLT-007 | The system shall version every API and event contract and shall introduce breaking changes only as a new major version that coexists with the previous one. | ubiquitous | must | R1 | **—** | **[Missing]** | QAS-EVO-001 |
-| REQ-PLT-008 | The system shall use cursor-based pagination for every list API. | ubiquitous | must | R1 | **—** | **[Missing]** | — |
-| REQ-PLT-009 | The system shall return errors in the standard error model with code, message, details, correlation id, retryable flag and policy reason where applicable. | ubiquitous | must | R1 | **—** | **[Missing]** | — |
-| REQ-PLT-010 | The system shall provide its user interfaces in Arabic and English with right-to-left and left-to-right layouts, and optional Hijri date display. | ubiquitous | must | R1 | **—** | **[Missing]** | QAS-ACC-001 |
-| REQ-PLT-011 | The system shall provide a responsive web application and a mobile field application. | ubiquitous | must | R1 | **—** | **[Missing]** | — |
-| REQ-PLT-012 | The system shall back up all stores according to their service tier and shall verify restores automatically. | ubiquitous | must | R1 | **—** | **[Missing]** | QAS-REC-001 |
-| REQ-PLT-013 | The system shall compute resource consumption and cost per tenant from telemetry. | ubiquitous | must | R1 | **—** | **[Missing]** | QAS-COST-001 |
+| REQ-PLT-001 | The system shall install, upgrade and operate in an air-gapped environment with no dependency on external network services. | ubiquitous | must | R1 | **—** | — (§3.4) | QAS-OPS-001 |
+| REQ-PLT-002 | The system shall use the same release artifacts for shared, dedicated and sovereign deployments. | ubiquitous | must | R1 | **—** | — (§3.4) | — |
+| REQ-PLT-003 | The system shall emit metrics, logs and traces carrying a correlation id across every component, plus business telemetry for the outcome measures. | ubiquitous | must | R1 | **—** | — (§3.4) | QAS-OBS-001 |
+| REQ-PLT-004 | The system shall assign every capability to one of the service tiers defined in QAS-AVL-001..003 (critical, important, standard) and meet that tier's availabil… | ubiquitous | must | R1 | **—** | — (§3.4) | QAS-AVL-001, QAS-AVL-002, QAS-AVL-003, QAS-REC-001, QAS-REC-002, QAS-REC-003 |
+| REQ-PLT-005 | The system shall run heavy operations (raster processing, bulk import, analysis runs, reconstruction, report generation) as asynchronous jobs with status, retr… | ubiquitous | must | R1 | **—** | — (§3.4) | — |
+| REQ-PLT-006 | The system shall publish domain events through a transactional outbox and shall process received events idempotently through an inbox. | ubiquitous | must | R1 | **—** | — (§3.4) | QAS-REL-001 |
+| REQ-PLT-007 | The system shall version every API and event contract and shall introduce breaking changes only as a new major version that coexists with the previous one. | ubiquitous | must | R1 | **—** | — (§3.4) | QAS-EVO-001 |
+| REQ-PLT-008 | The system shall use cursor-based pagination for every list API. | ubiquitous | must | R1 | **—** | — (§3.4) | — |
+| REQ-PLT-009 | The system shall return errors in the standard error model with code, message, details, correlation id, retryable flag and policy reason where applicable. | ubiquitous | must | R1 | **—** | — (§3.4) | — |
+| REQ-PLT-010 | The system shall provide its user interfaces in Arabic and English with right-to-left and left-to-right layouts, and optional Hijri date display. | ubiquitous | must | R1 | **—** | — (§3.4) | QAS-ACC-001 |
+| REQ-PLT-011 | The system shall provide a responsive web application and a mobile field application. | ubiquitous | must | R1 | **—** | — (§3.4) | — |
+| REQ-PLT-012 | The system shall back up all stores according to their service tier and shall verify restores automatically. | ubiquitous | must | R1 | **—** | — (§3.4) | QAS-REC-001 |
+| REQ-PLT-013 | The system shall compute resource consumption and cost per tenant from telemetry. | ubiquitous | must | R1 | **—** | — (§3.4) | QAS-COST-001 |
 
 ### 3.4 فجوات التغطية
 
@@ -399,7 +399,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | REQ-LOG-010 | ubiquitous | R3 | The system shall let an authorized actor list and filter logistics requests by item, destination, state and p… | QRY-LGR-GET, QRY-LGR-LIST |
 | REQ-LOG-011 | ubiquitous | R3 | The system shall let an authorized actor list and filter shipments by logistics request, carrier, state and w… | QRY-SHP-GET, QRY-SHP-LIST |
 | REQ-LOG-012 | ubiquitous | R3 | The system shall provide the full, ordered checkpoint history of a shipment to an authorized actor. | QRY-SHP-TRACKING |
-| REQ-PLT-001 | ubiquitous | R1 | The system shall install, upgrade and operate in an air-gapped environment with no dependency on external net… | FIT-12, FIT-12 (no external network at runtime/build) |
+| REQ-PLT-001 | ubiquitous | R1 | The system shall install, upgrade and operate in an air-gapped environment with no dependency on external net… | FIT-12 (no external network at runtime/build) |
 | REQ-PLT-002 | ubiquitous | R1 | The system shall use the same release artifacts for shared, dedicated and sovereign deployments. | RELEASE-CONFIG-MIGRATION §1 (one Zarf bundle; profiles as values; acceptance on 3 profiles) |
 | REQ-PLT-003 | ubiquitous | R1 | The system shall emit metrics, logs and traces carrying a correlation id across every component, plus busines… | observability-slc* (8 slices) + correlation id in every contract (X-Correlation-Id) |
 | REQ-PLT-004 | ubiquitous | R1 | The system shall assign every capability to one of the service tiers defined in QAS-AVL-001..003 (critical, i… | DR-CONTINUITY §1–2 (tier per DU; DR drills) |
@@ -418,10 +418,27 @@ generator: 17-system-study/_build/build_analysis_design.py
 | REQ-SIT-007 | ubiquitous | R1 | The system shall serve map layers filtered by the requesting user's authorization and shall not share cached… | QRY-BASE-TILE, QRY-SIT-TILE, SPEC-SITUATION |
 | REQ-SRC-001 | ubiquitous | R1 | The system shall provide unified search across entities, observations, documents, assessments, plans and task… | QRY-SRCH-QUERY, SPEC-DISCOVERY |
 | REQ-SRC-002 | ubiquitous | R1 | The system shall not reveal the existence of unauthorized objects through search results, counts, facets, sug… | SPEC-DISCOVERY |
-| REQ-TRX-012 | ubiquitous | R3 | A person's qualification record shall be able to cite a completed simulation run as evidence, using the exist… | AGG-QUALIFICATION-RECORD (SLC-03, SPEC-TRAINING-EXERCISE, unmodified) |
+| REQ-TRX-012 | ubiquitous | R3 | A person's qualification record shall be able to cite a completed simulation run as evidence, using the exist… | AGG-QUALIFICATION-RECORD (SLC-03, unmodified), SPEC-TRAINING-EXERCISE |
 | REQ-TRX-013 | event-driven | R3 | A completed simulation run shall be usable as the terminal source of an After Action Review, captured as a le… | AGG-KNOWLEDGE-OBJECT (SLC-12, CR-63), SPEC-TRAINING-EXERCISE |
 | REQ-TRX-014 | ubiquitous | R3 | The system shall let an authorized actor list and filter scenarios, exercises and simulation runs, restricted… | QRY-EXR-GET, QRY-EXR-LIST, QRY-SCN-GET, QRY-SCN-LIST, QRY-SIM-GET, QRY-SIM-LIST |
 | REQ-TRX-015 | ubiquitous | R3 | The system shall provide the full, ordered timeline of inject deliveries and evaluations for a simulation run… | QRY-SIM-TIMELINE |
+
+**تعارض بين تتبع المتطلب في الـAggregates (`traces.satisfies`) وفي ملفات التتبع (12)** **[Needs Review]** — مسجل في `00-index.md` §6:
+
+| المتطلب | الـAggregates (satisfies) | الـAggregates (trace-*.md) |
+|---|---|---|
+| REQ-GOV-004 | AGG-CLASSIFICATION-SCHEME, AGG-CLEARANCE | AGG-CLEARANCE |
+| REQ-LOG-002 | AGG-LOGISTICS-REQUEST | AGG-ALLOCATION, AGG-LOGISTICS-REQUEST, AGG-RESOURCE-POOL |
+| REQ-LOG-004 | AGG-SHIPMENT | AGG-LOGISTICS-REQUEST, AGG-SHIPMENT |
+| REQ-LOG-006 | AGG-SHIPMENT | AGG-LOGISTICS-REQUEST, AGG-SHIPMENT |
+| REQ-LOG-008 | AGG-LOGISTICS-REQUEST | AGG-ALLOCATION, AGG-LOGISTICS-REQUEST, AGG-SHIPMENT |
+| REQ-LOG-014 | AGG-LOGISTICS-REQUEST | AGG-ALLOCATION |
+| REQ-RCM-012 | AGG-INCIDENT | AGG-INCIDENT, AGG-RISK |
+| REQ-RCM-013 | AGG-INCIDENT | AGG-INCIDENT, AGG-TASK |
+| REQ-TRX-002 | AGG-SCENARIO | AGG-EXERCISE, AGG-SCENARIO |
+| REQ-TRX-005 | AGG-EXERCISE | AGG-EXERCISE, AGG-SIMULATION |
+| REQ-TRX-012 | — | AGG-QUALIFICATION-RECORD |
+| REQ-TRX-013 | — | AGG-KNOWLEDGE-OBJECT |
 
 **متطلبات بلا حالة استخدام (29):** مسرودة بعلامة **—** في §3.3؛ أغلبها في CAP-14 (تشغيل المنصة) وCAP-03.
 

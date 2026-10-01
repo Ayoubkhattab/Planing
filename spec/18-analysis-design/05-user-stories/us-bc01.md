@@ -2396,9 +2396,9 @@ Scenario Outline: CMD-USR-CLOSE is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | أساسية | Administrator with scope ⊇ user's units · SCIM service account | `POST /api/v1/foundation/users/{id}/actions/disable` | POL-USR-DISABLE |
+| سير عمل | أساسية | SCIM service account | `POST /api/v1/foundation/users/{id}/actions/disable` | POL-USR-DISABLE |
 
-**القصة:** بصفتي **Administrator with scope ⊇ user's units · SCIM service account**، أريد **تعطيل حساب المستخدم**، لكي يتحقق غرض حساب المستخدم: حساب دخول مرتبط بهويات خارجية
+**القصة:** بصفتي **SCIM service account**، أريد **تعطيل حساب المستخدم**، لكي يتحقق غرض حساب المستخدم: حساب دخول مرتبط بهويات خارجية
 
 - **الشروط المسبقة:** الحالة الحالية: PENDING, ACTIVE, LOCKED؛ SCIM deactivate or administrator
 - **المدخلات:** `reason`: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -2410,7 +2410,7 @@ Scenario Outline: CMD-USR-CLOSE is rejected
 ```gherkin
 Scenario: CMD-USR-DISABLE succeeds
   Given AGG-USER in state PENDING or ACTIVE or LOCKED and every guard holds
-  When an authorized actor (Administrator with scope ⊇ user's units or SCIM service account) sends CMD-USR-DISABLE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When SCIM service account sends CMD-USR-DISABLE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes DISABLED
   And EVT-USR-DISABLED is written to the outbox with one audit record in the same transaction
 
@@ -2431,9 +2431,9 @@ Scenario Outline: CMD-USR-DISABLE is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | أساسية | Administrator with scope ⊇ user's units · SCIM service account | `POST /api/v1/foundation/users/{id}/actions/enable` | POL-USR-ENABLE |
+| سير عمل | أساسية | SCIM service account | `POST /api/v1/foundation/users/{id}/actions/enable` | POL-USR-ENABLE |
 
-**القصة:** بصفتي **Administrator with scope ⊇ user's units · SCIM service account**، أريد **تمكين حساب المستخدم**، لكي يتحقق غرض حساب المستخدم: حساب دخول مرتبط بهويات خارجية
+**القصة:** بصفتي **SCIM service account**، أريد **تمكين حساب المستخدم**، لكي يتحقق غرض حساب المستخدم: حساب دخول مرتبط بهويات خارجية
 
 - **الشروط المسبقة:** الحالة الحالية: DISABLED؛ ≥ 1 identity; tenant ACTIVE
 - **المدخلات:** لا حمولة — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -2445,7 +2445,7 @@ Scenario Outline: CMD-USR-DISABLE is rejected
 ```gherkin
 Scenario: CMD-USR-ENABLE succeeds
   Given AGG-USER in state DISABLED and every guard holds
-  When an authorized actor (Administrator with scope ⊇ user's units or SCIM service account) sends CMD-USR-ENABLE with a valid payload, a new Idempotency-Key and a matching If-Match
+  When SCIM service account sends CMD-USR-ENABLE with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes ACTIVE
   And EVT-USR-ENABLED is written to the outbox with one audit record in the same transaction
 
@@ -2539,9 +2539,9 @@ Scenario Outline: CMD-USR-LINK-PERSON is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | أساسية | Administrator with scope ⊇ user's units · Security Officer | `POST /api/v1/foundation/users/{id}/actions/lock` | POL-USR-LOCK |
+| سير عمل | أساسية | Security Officer | `POST /api/v1/foundation/users/{id}/actions/lock` | POL-USR-LOCK |
 
-**القصة:** بصفتي **Administrator with scope ⊇ user's units · Security Officer**، أريد **قفل حساب المستخدم**، لكي يتحقق غرض حساب المستخدم: حساب دخول مرتبط بهويات خارجية
+**القصة:** بصفتي **Security Officer**، أريد **قفل حساب المستخدم**، لكي يتحقق غرض حساب المستخدم: حساب دخول مرتبط بهويات خارجية
 
 - **الشروط المسبقة:** الحالة الحالية: ACTIVE؛ security officer or system anomaly rule; reason
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -2553,7 +2553,7 @@ Scenario Outline: CMD-USR-LINK-PERSON is rejected
 ```gherkin
 Scenario: CMD-USR-LOCK succeeds
   Given AGG-USER in state ACTIVE and every guard holds
-  When an authorized actor (Administrator with scope ⊇ user's units or Security Officer) sends CMD-USR-LOCK with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Security Officer sends CMD-USR-LOCK with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes LOCKED
   And EVT-USR-LOCKED is written to the outbox with one audit record in the same transaction
 
@@ -2681,9 +2681,9 @@ Scenario Outline: CMD-USR-UNLINK-IDENTITY is rejected
 
 | النوع | الفئة | الفاعل | الواجهة | السياسة |
 |---|---|---|---|---|
-| سير عمل | أساسية | Administrator with scope ⊇ user's units · Security Officer | `POST /api/v1/foundation/users/{id}/actions/unlock` | POL-USR-UNLOCK |
+| سير عمل | أساسية | Security Officer | `POST /api/v1/foundation/users/{id}/actions/unlock` | POL-USR-UNLOCK |
 
-**القصة:** بصفتي **Administrator with scope ⊇ user's units · Security Officer**، أريد **فتح قفل حساب المستخدم**، لكي يتحقق غرض حساب المستخدم: حساب دخول مرتبط بهويات خارجية
+**القصة:** بصفتي **Security Officer**، أريد **فتح قفل حساب المستخدم**، لكي يتحقق غرض حساب المستخدم: حساب دخول مرتبط بهويات خارجية
 
 - **الشروط المسبقة:** الحالة الحالية: LOCKED؛ security officer
 - **المدخلات:** `reason`!: string — `!` = إلزامي؛ مع `Idempotency-Key` و`X-Purpose` و`If-Match`
@@ -2695,7 +2695,7 @@ Scenario Outline: CMD-USR-UNLINK-IDENTITY is rejected
 ```gherkin
 Scenario: CMD-USR-UNLOCK succeeds
   Given AGG-USER in state LOCKED and every guard holds
-  When an authorized actor (Administrator with scope ⊇ user's units or Security Officer) sends CMD-USR-UNLOCK with a valid payload, a new Idempotency-Key and a matching If-Match
+  When Security Officer sends CMD-USR-UNLOCK with a valid payload, a new Idempotency-Key and a matching If-Match
   Then the state becomes ACTIVE
   And EVT-USR-UNLOCKED is written to the outbox with one audit record in the same transaction
 

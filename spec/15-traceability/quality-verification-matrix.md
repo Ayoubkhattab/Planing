@@ -75,14 +75,14 @@ _95 items_
 | QAS-CNF-001 | performance | conflict opened p95 ≤ 30 s | latency test | CI + pilot | WL-08 |
 | QAS-PERF-015 | performance | ≤ 20 % overhead vs unclustered; p95 ≤ 300 ms | load test (PERF-TEST-STRATEGY §3) | pre-G7 + pilot | WL-08 |
 | QAS-PERF-016 | performance | p95 ≤ 500 ms | load test (PERF-TEST-STRATEGY §3) | pre-G7 + pilot | WL-01 |
-| QAS-OPS-002 | timeliness | escalation event ≤ 60 s after due | air-gapped install/upgrade/rollback rehearsal | pre-G8 | WL-01 |
+| QAS-OPS-002 | timeliness | escalation event ≤ 60 s after due | task timer escalation acceptance (TST-SLC03-INVARIANTS) + scheduler latency measurement | CI + pre-G8 | WL-01 |
 | QAS-PERF-017 | performance | p95 ≤ 500 ms including BC05 call | load test (PERF-TEST-STRATEGY §3) | pre-G7 + pilot | WL-01 |
 | QAS-SEC-011 | security | 0 disclosures of hidden objects, hidden facts, hidden nodes/edges | security acceptance + inference suite + penetration test | CI + pre-G8 | WL-02 |
 | QAS-PERF-018 | performance | p95 ≤ 1 s | load test (PERF-TEST-STRATEGY §3) | pre-G7 + pilot | WL-02 |
 | QAS-REL-004 | recoverability | ≤ 24 h to READY with no loss of query service (old version stays ACTIVE) | fault-injection / chaos test (FMEA scenarios) | CI nightly + pre-G7 | WL-02 |
 | QAS-PERF-019 | performance | p95 ≤ 1 s | load test (PERF-TEST-STRATEGY §3) | pre-G7 + pilot | WL-06 |
 | QAS-SEC-012 | security | receives no alert, notification, push or count change | security acceptance + inference suite + penetration test | CI + pre-G8 | WL-06 |
-| QAS-OPS-003 | operability | in-app inbox current; polling fallback ≤ 60 s | air-gapped install/upgrade/rollback rehearsal | pre-G8 | WL-06 |
+| QAS-OPS-003 | operability | in-app inbox current; polling fallback ≤ 60 s | notification delivery with push gateway down (TST-SLC06-INVARIANTS) | CI + pre-G8 | WL-06 |
 | QAS-PERF-020 | fairness | no tenant exceeds its concurrent-job quota; other tenants' start latency ≤ 30 s | load test (PERF-TEST-STRATEGY §3) | pre-G7 + pilot | WL-11 |
 | QAS-SEC-013 | security | run reads only data visible to U; results labelled ≥ max input label | security acceptance + inference suite + penetration test | CI + pre-G8 | WL-11 |
 | QAS-PERF-021 | performance | task synchronization completes ≤ 60 s; idempotent on retry | load test (PERF-TEST-STRATEGY §3) | pre-G7 + pilot | WL-01 |
@@ -471,8 +471,8 @@ scenarios:
 - qas: QAS-OPS-002
   quality: timeliness
   measure: escalation event ≤ 60 s after due
-  verification: air-gapped install/upgrade/rollback rehearsal
-  when: pre-G8
+  verification: task timer escalation acceptance (TST-SLC03-INVARIANTS) + scheduler latency measurement
+  when: CI + pre-G8
   workload: WL-01
 - qas: QAS-PERF-017
   quality: performance
@@ -513,8 +513,8 @@ scenarios:
 - qas: QAS-OPS-003
   quality: operability
   measure: in-app inbox current; polling fallback ≤ 60 s
-  verification: air-gapped install/upgrade/rollback rehearsal
-  when: pre-G8
+  verification: notification delivery with push gateway down (TST-SLC06-INVARIANTS)
+  when: CI + pre-G8
   workload: WL-06
 - qas: QAS-PERF-020
   quality: fairness

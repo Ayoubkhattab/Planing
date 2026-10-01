@@ -71,7 +71,7 @@ def md_records(text, prefix):
         m = re.match(rf"### ({prefix}-[A-Za-z0-9-]+)(?: — (.*))?", block)
         if m:
             rec = {"title": (m.group(2) or "").strip()}
-            for k, v in re.findall(r"^- \*\*([a-z_]+):\*\* (.*)$", block, re.M):
+            for k, v in re.findall(r"^- \*\*([a-z0-9_]+):\*\* (.*)$", block, re.M):
                 rec[k] = v.strip()
             recs[m.group(1)] = rec
     return recs
@@ -644,11 +644,13 @@ def build_user_stories(aggs, cmds, qrys, pol_c, pol_q, reqs, ucs, http_of, ops):
                 L += block
                 stats[bc][typ] += 1
                 story_ids[cid] = sid
+                STORY_AGG[sid] = aid
             n = 0
             for t in a["trans"]:
                 if t["cmd"].startswith("SYS:"):
                     n += 1
                     sid, block = sys_story(a, t, aggs, n)
+                    STORY_AGG[sid] = aid
                     L += block
                     stats[bc]["نظام (SYS)"] += 1
             for qid in sorted(q for q in qrys if qrys[q]["_bc"] == bc and home(q) == aid):
@@ -656,6 +658,7 @@ def build_user_stories(aggs, cmds, qrys, pol_c, pol_q, reqs, ucs, http_of, ops):
                 L += block
                 stats[bc]["جلب"] += 1
                 story_ids[qid] = sid
+                STORY_AGG[sid] = aid
         orphan_q = sorted(q for q in qrys if qrys[q]["_bc"] == bc and q not in story_ids)
         if orphan_q:
             L += ["### استعلامات عابرة للـAggregates", ""]
@@ -2198,6 +2201,223 @@ def build_components(aggs, cmds, qrys, ops):
 
 
 # ------------------------------------------------------------------ writer
+STORY_AGG = {}  # story id → aggregate (filled by build_user_stories)
+
+
+# ------------------------------------------------------------------ 25 traceability
+def load_tests():
+    """Acceptance specs (TST-*) and invariant property files (PROP-*): id, slice, aggregate, verified ids."""
+    tests = []
+    for f in sorted((SPEC / "13-verification" / "acceptance").rglob("*.md")):
+        fm = front_matter(f.read_text(encoding="utf-8"))
+        tests.append({"id": fm["id"], "slice": fm.get("slice", ""), "agg": fm.get("generated_from"),
+                      "verifies": list((fm.get("traces") or {}).get("verifies") or []), "path": f.relative_to(SPEC).as_posix()})
+    for f in sorted((SPEC / "13-verification").glob("invariant-properties-*.md")):
+        fm = front_matter(f.read_text(encoding="utf-8"))
+        tests.append({"id": fm["id"], "slice": fm.get("slice", ""), "agg": None, "verifies": [], "path": f.relative_to(SPEC).as_posix()})
+    return tests
+
+
+def load_trace_verification():
+    """Verification named by the ratified trace files (15-traceability): tests column of trace-slc*, verification of trace-platform."""
+    ver = defaultdict(list)
+    for f in sorted((SPEC / "15-traceability").glob("trace-slc*.md")):
+        for header, rows in tables(f.read_text(encoding="utf-8")):
+            if header[:1] == ["requirement"] and "tests" in header:
+                i = header.index("tests")
+                for r in rows:
+                    ver[r[0]].append(r[i])
+    text = (SPEC / "15-traceability" / "trace-platform.md").read_text(encoding="utf-8")
+    for m in re.finditer(r"- \*\*requirement:\*\* (REQ-[A-Z0-9-]+)\n(?:- .*\n)*?- \*\*verification:\*\* (.*)", text):
+        ver[m.group(1)].append(m.group(2).strip())
+    return ver
+
+
+def build_traceability(aggs, cmds, qrys, reqs, ucs, ops, story_ids):
+    tabs = load_ldm()[0]
+    bc_schemas = defaultdict(set)
+    for s_, bc in SCHEMA_BC.items():
+        bc_schemas[bc].add(s_)
+    tests = load_tests()
+    t_agg, t_req, t_slice = defaultdict(list), defaultdict(list), defaultdict(list)
+    for t in tests:
+        if t["agg"]:
+            t_agg[t["agg"]].append(t["id"])
+        else:
+            t_slice[t["slice"]].append(t["id"])
+        for v in t["verifies"]:
+            if v.startswith("REQ-"):
+                t_req[v].append(t["id"])
+    stories = defaultdict(list)
+    for sid, aid in STORY_AGG.items():
+        stories[aid].append(sid)
+    q_agg = {q: STORY_AGG.get(sid) for q, sid in story_ids.items() if q.startswith("QRY-")}
+    a_ops = defaultdict(list)
+    for oid in ops:
+        aid = cmds[oid]["Aggregate"] if oid in cmds else q_agg.get(oid)
+        if aid:
+            a_ops[aid].append(oid)
+    a_tab = {}
+    for aid, a in aggs.items():
+        t = main_table(aid, tabs, bc_schemas[a["bc"]])
+        a_tab[aid] = f"{t['schema']}.{t['name']}" if t else None
+    req_aggs = defaultdict(list)
+    for aid, a in aggs.items():
+        for r in a["reqs"]:
+            req_aggs[r].append(aid)
+    req_ucs = {rid: re.findall(r"UC-\d+", r.get("use_cases", "")) for rid, r in reqs.items()}
+
+    def chain(rid):
+        ag = sorted(req_aggs.get(rid, []))
+        direct = sorted(set(t_req.get(rid, [])))
+        via = sorted({x for a in ag for x in t_agg.get(a, [])} - set(direct))
+        return {"uc": req_ucs.get(rid, []), "agg": ag, "st": sum(len(stories[a]) for a in ag), "op": sum(len(a_ops[a]) for a in ag),
+                "tab": sorted({a_tab[a] for a in ag if a_tab.get(a)}), "du": sorted({du_of(a, aggs) for a in ag}), "direct": direct, "via": via}
+    ch = {rid: chain(rid) for rid in reqs}
+    rels = ["R1", "R2", "R3"]
+    rel = lambda rid: reqs[rid].get("release", "—")  # noqa: E731
+    links = [("المتطلبات", lambda c: True), ("← حالة استخدام", lambda c: c["uc"]), ("← Aggregate (تصميم)", lambda c: c["agg"]),
+             ("← قصة مستخدم", lambda c: c["st"]), ("← عملية API", lambda c: c["op"]), ("← جدول", lambda c: c["tab"]),
+             ("← وحدة نشر", lambda c: c["du"]), ("← اختبار قبول (مباشر أو عبر الـAggregate)", lambda c: c["direct"] or c["via"]),
+             ("← اختبار قبول يسمّي المتطلب مباشرة", lambda c: c["direct"])]
+    L = [BEGIN, "", "### 4.1 التغطية", "", "| الحلقة | " + " | ".join(rels) + " | المجموع |", "|---|" + "---|" * (len(rels) + 1)]
+    for name, f in links:
+        cnt = [sum(1 for r in reqs if rel(r) == x and f(ch[r])) for x in rels]
+        L.append(f"| {name} | " + " | ".join(str(n) for n in cnt) + f" | {sum(1 for r in reqs if f(ch[r]))} |")
+    no_design = sorted(r for r in reqs if not ch[r]["agg"])
+    no_test = sorted(r for r in reqs if not (ch[r]["direct"] or ch[r]["via"]))
+    tver = load_trace_verification()
+    other = {r: [v for v in tver.get(r, []) if not re.fullmatch(r"(TST-[A-Z0-9-]+(, )?)+", v)] for r in no_test}
+    unverified = [r for r in no_test if not other[r]]
+    L += ["", f"**بلا Aggregate ({len(no_design)}):** " + (", ".join(no_design) or "لا شيء") +
+          " — متطلبات منصة أو جودة تتحقق في `platform/` أو بـFitness functions والقياس (`24-testing-strategy.md` §4).", "",
+          f"**بلا مواصفة قبول ({len(no_test)})** — وطريقة تحققها في ملفات التتبع المعتمدة (`15-traceability/`):", "",
+          "| المتطلب | التحقق في المصدر |", "|---|---|"] + [f"| {r} | {esc('؛ '.join(dict.fromkeys(other[r]))) or '**[Missing]**'} |" for r in no_test] + ["",
+          f"**بلا أي تحقق مسمّى ({len(unverified)}):** " + (", ".join(unverified) or "لا شيء") + ".", "",
+          f"الاختبارات: {sum(1 for t in tests if t['id'].startswith('TST-'))} مواصفة قبول في `13-verification/acceptance/` "
+          f"و{sum(1 for t in tests if t['id'].startswith('PROP-'))} ملف خصائص ثوابت (`invariant-properties-*.md`).", "",
+          "### 4.2 لكل متطلب", "",
+          "القصص والعمليات بالعدد (تفاصيلها في `05-user-stories/` و`14-api-design.md`)؛ الاختبارات: المباشرة ثم «/» ثم ما يأتي عبر الـAggregate.", ""]
+    by_cap = defaultdict(list)
+    for rid in sorted(reqs):
+        by_cap[(reqs[rid].get("capability") or "—")[:6]].append(rid)
+    for cap in sorted(by_cap):
+        L += [f"#### {cap}", "", "| المتطلب | الإصدار | حالات الاستخدام | الـAggregates | قصص | عمليات | الجداول | الوحدات | الاختبارات |",
+              "|---|---|---|---|---|---|---|---|---|"]
+        for rid in by_cap[cap]:
+            c = ch[rid]
+            tst = ", ".join(c["direct"]) + (" / " + ", ".join(c["via"]) if c["via"] else "")
+            L.append(f"| {rid} | {rel(rid)} | {', '.join(c['uc']) or '—'} | {', '.join(x[4:] for x in c['agg']) or '—'} | {c['st'] or '—'} | "
+                     f"{c['op'] or '—'} | {', '.join(f'`{x}`' for x in c['tab']) or '—'} | {', '.join(c['du']) or '—'} | {tst or '—'} |")
+        L.append("")
+    L += ["### 4.3 لكل Aggregate", "", "| الـAggregate | الشريحة | المتطلبات | القصص | العمليات | الجدول | الوحدة | اختبار القبول | خصائص الثوابت |",
+          "|---|---|---|---|---|---|---|---|---|"]
+    for aid in sorted(aggs):
+        a = aggs[aid]
+        sl = a["slice"]
+        L.append(f"| `{aid}` | {sl} | {len(a['reqs'])} | {len(stories[aid])} | {len(a_ops[aid])} | {('`' + a_tab[aid] + '`') if a_tab[aid] else '—'} | "
+                 f"{du_of(aid, aggs)} | {', '.join(sorted(t_agg.get(aid, []))) or '—'} | {', '.join(sorted(t_slice.get(sl, []))) or '—'} |")
+    orphan_ops = sorted(o for o in ops if not (o in cmds or q_agg.get(o)))
+    L += ["", f"**عمليات بلا Aggregate ({len(orphan_ops)}):** " + (", ".join(f"`{o}`" for o in orphan_ops) or "لا شيء") +
+          " — استعلامات عابرة (`05-user-stories/`، «استعلامات عابرة للـAggregates»).", "", END]
+    write_generated(OUT / "25-traceability-matrix.md", None, "\n".join(L))
+    return len(reqs), len(no_test)
+
+
+# ------------------------------------------------------------------ 26 roadmap backlog
+REL_ORDER = {"R1": 1, "R2": 2, "R3": 3}
+
+
+def slice_key(sl):
+    m = re.match(r"SLC-(\d+)(a?)", sl)
+    return (int(m.group(1)), m.group(2)) if m else (99, "")
+
+
+def build_roadmap(aggs, cmds, qrys, ops, story_ids):
+    slices = md_records((SPEC / "14-slices" / "slices.md").read_text(encoding="utf-8"), "SLC")
+    norm = lambda sfx: "SLC-" + sfx[3:].upper().replace("A", "a")  # noqa: E731  slc12a → SLC-12a
+    key_of = {sid: k for k, sid in story_ids.items()}
+    tests = load_tests()
+    rows = defaultdict(lambda: defaultdict(lambda: {"cmd": 0, "qry": 0, "sys": 0, "ids": []}))
+    for sid, aid in STORY_AGG.items():
+        k = key_of.get(sid)
+        if k and k.startswith("CMD-"):
+            sl, kind = norm(cmds[k]["_sfx"]), "cmd"
+        elif k and k.startswith("QRY-"):
+            sl, kind = norm(qrys[k]["_sfx"]), "qry"
+        else:
+            sl, kind = aggs[aid]["slice"], "sys"
+        r = rows[sl][aid]
+        r[kind] += 1
+        r["ids"].append(sid)
+    for q, sid in story_ids.items():  # cross-aggregate queries have no aggregate
+        if q.startswith("QRY-") and sid not in STORY_AGG:
+            r = rows[norm(qrys[q]["_sfx"])]["(عابر)"]
+            r["qry"] += 1
+            r["ids"].append(sid)
+    deps = {sl: re.findall(r"SLC-\d+a?", rec.get("depends_on", "")) for sl, rec in slices.items()}
+    rel_of = lambda sl: (re.match(r"R\d", slices[sl].get("release", "")) or [None])[0]  # noqa: E731  "R1 (observation capture …)" → R1
+    epics = [sl for sl in slices if rows.get(sl)]
+    plan = (SPEC / "14-slices" / "slices.md").read_text(encoding="utf-8").split("<details>")[0]
+    stated = {}  # explicit release order in the slice plan (r2_order, r3_order)
+    for m in re.finditer(r"\*\*r\d_order:\*\* ([^(\n]*)", plan):
+        for i, sl in enumerate(re.findall(r"SLC-\d+a?", m.group(1))):
+            stated[sl] = i
+    order, done = [], set()
+    while len(order) < len(epics):
+        ready = [sl for sl in epics if sl not in done and all(d in done or d not in epics for d in deps.get(sl, []))]
+        if not ready:  # dependency cycle: fall back to release order
+            ready = [sl for sl in epics if sl not in done]
+        nxt = min(ready, key=lambda sl: (REL_ORDER.get(rel_of(sl), 9), stated.get(sl, 99), slice_key(sl)))
+        order.append(nxt)
+        done.add(nxt)
+    L = [BEGIN, "", "### 4.1 الشرائح واعتمادياتها", "", "```mermaid", "flowchart LR"]
+    for rel in ("R1", "R2", "R3"):
+        members = [sl for sl in order if rel_of(sl) == rel]
+        if members:
+            L.append(f'  subgraph {rel}["{rel}"]')
+            for sl in members:
+                L.append(f'    {sl.replace("-", "_")}["{sl}<br/>{slices[sl].get("content", "")[:42].replace(chr(34), "")}"]')
+            L.append("  end")
+    for sl in order:
+        for d in deps.get(sl, []):
+            if d in epics:
+                L.append(f"  {d.replace('-', '_')} --> {sl.replace('-', '_')}")
+    L += ["```", "", "### 4.2 الـEpics بترتيب التنفيذ", "",
+          "الترتيب: الإصدار أولًا، ثم الاعتماديات (`depends_on`)، ثم الترتيب المعلن في الخطة (`r2_order`، `r3_order` في `14-slices/slices.md`)، ثم رقم الشريحة.", "",
+          "| # | Epic | الإصدار | يعتمد على | المحتوى | الـAggregates | قصص أمر / جلب / نظام | العمليات | الوحدات | الاختبارات | G6 |",
+          "|---|---|---|---|---|---|---|---|---|---|---|"]
+    for i, sl in enumerate(order, 1):
+        rec, r = slices[sl], rows[sl]
+        own = sorted(a for a in r if a in aggs and aggs[a]["slice"] == sl)
+        n = lambda k: sum(x[k] for x in r.values())  # noqa: E731
+        nops = sum(1 for o in ops if (o in cmds and norm(cmds[o]["_sfx"]) == sl) or (o in qrys and norm(qrys[o]["_sfx"]) == sl))
+        dus = sorted({du_of(a, aggs) for a in r if a in aggs})
+        tst = sorted(t["id"] for t in tests if t["slice"] == sl)
+        L.append(f"| {i} | **{sl}** | {rec.get('release', '—')} | {', '.join(deps.get(sl, [])) or '—'} | {esc(short(rec.get('content', ''), 70))} | {len(own)} | "
+                 f"{n('cmd')} / {n('qry')} / {n('sys')} | {nops} | {', '.join(dus)} | {len(tst)} | {esc(rec.get('g6_slc', '—'))} |")
+    rest = [sl for sl in slices if sl not in epics]
+    L += ["", "شرائح بلا قصص: " + "، ".join(f"{sl} ({esc(slices[sl].get('content', ''))}، {slices[sl].get('status', '—')})" for sl in rest) + ".", "",
+          "### 4.3 الـBacklog لكل Epic", "",
+          "كل صف ميزة (Feature) = Aggregate داخل الـEpic؛ القصص في `05-user-stories/` بمعرّفاتها. صف Aggregate من شريحة أخرى يعني أن الـEpic يضيف أوامر أو استعلامات إليه.", ""]
+    for sl in order:
+        L += [f"#### {sl} — {esc(slices[sl].get('content', ''))}", "",
+              "| الميزة (Aggregate) | شريحته | أمر | جلب | نظام | القصص | الوحدة | اختبار القبول |", "|---|---|---|---|---|---|---|---|"]
+        t_agg = {t["agg"]: t["id"] for t in tests if t["agg"]}
+        for aid in sorted(rows[sl], key=lambda a: (a not in aggs or aggs[a]["slice"] != sl, a)):
+            x = rows[sl][aid]
+            ids = sorted(x["ids"])
+            rng = ids[0] if len(ids) == 1 else f"{ids[0]} … {ids[-1]}"
+            if aid in aggs:
+                L.append(f"| `{aid}` | {aggs[aid]['slice']} | {x['cmd']} | {x['qry']} | {x['sys']} | {rng} | {du_of(aid, aggs)} | {t_agg.get(aid, '—')} |")
+            else:
+                L.append(f"| استعلامات عابرة | — | 0 | {x['qry']} | 0 | {rng} | — | — |")
+        L.append("")
+    L.append(END)
+    write_generated(OUT / "26-implementation-roadmap.md", None, "\n".join(L))
+    return order
+
+
 def write_generated(path, header, block):
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
@@ -2233,6 +2453,8 @@ def main():
     build_security(aggs, cmds, qrys, pol_c, pol_q, evts)
     build_errors(aggs, cmds)
     build_components(aggs, cmds, qrys, ops)
+    build_traceability(aggs, cmds, qrys, reqs, ucs, ops, story_ids)
+    build_roadmap(aggs, cmds, qrys, ops, story_ids)
     total = sum(sum(v.values()) for v in stats.values())
     print(f"stories={total} (commands={sum(1 for k in story_ids if k.startswith('CMD-'))}, "
           f"queries={sum(1 for k in story_ids if k.startswith('QRY-'))}, sys={sum(v.get('نظام (SYS)', 0) for v in stats.values())}) "

@@ -319,7 +319,7 @@ flowchart TB
 | الحلقة | نوع الاختبار | المصدر |
 |---|---|---|
 | Domain | وحدة: كل خلية في مصفوفة الحالات وكل ثابت | ملفات الـAggregates، `invariant-properties-slcNN.md` |
-| Application | سيناريوهات القبول (Gherkin) بمحوّلات في الذاكرة | `13-verification/acceptance/` (89 ملفًا) |
+| Application | سيناريوهات القبول (Gherkin) بمحوّلات في الذاكرة | `13-verification/acceptance/` (108 ملفات: 89 لآلات الحالة و19 للثوابت) |
 | Adapters | تكامل مع التقنية الفعلية؛ عقود OpenAPI/AsyncAPI | `05-contracts/` |
 | الوحدة كاملة | Fitness functions، أداء، عدم استدلال | `fitness-functions.md`، `performance-test-strategy.md` |
 

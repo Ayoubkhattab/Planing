@@ -432,6 +432,10 @@ def v8(sys_trans):
         for code in re.findall(r"^\| `([A-Z0-9_]+)` \|", f.read_text(encoding="utf-8"), re.M):
             if f"| `{code}` |" not in err:
                 gaps.append(("18", code, "رمز خطأ غير مذكور"))
+    comp = (AD / "12-components.md").read_text(encoding="utf-8") if (AD / "12-components.md").exists() else ""
+    for aid in aggs:
+        if f"| `{aid}` |" not in comp:
+            gaps.append(("12", aid, "Aggregate بلا وحدة نشر"))
     actor_lists = p3["02-actors-roles.md"].split("### 6.4")[-1]
     for oid in list(cmds) + list(qrys):
         if f"`{oid}`" not in actor_lists:

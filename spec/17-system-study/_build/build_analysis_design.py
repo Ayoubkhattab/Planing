@@ -1946,6 +1946,178 @@ def build_errors(aggs, cmds):
     return codes, never
 
 
+# ------------------------------------------------------------------ 12 components
+DU_NAMES = {"DU-01": "Gateway/BFF", "DU-02": "Foundation", "DU-03": "Governance", "DU-04": "Information", "DU-05": "Ingestion",
+            "DU-06": "Intelligence", "DU-07": "Evaluators", "DU-08": "Operations", "DU-09": "Discovery", "DU-10": "Field sync",
+            "DU-11": "Adapters", "DU-12": "Tiles", "DU-13": "Analysis jobs", "DU-14": "Readiness (R2)", "DU-15": "Knowledge (R2)",
+            "DU-16": "AI Serving (R2)"}
+BC_DU = {"BC01": "DU-02", "BC02": "DU-04", "BC03": "DU-06", "BC04": "DU-08", "BC05": "DU-14", "BC06": "DU-15", "BC07": "DU-09", "BC08": "DU-03"}
+AGG_DU = {  # aggregates of a context that spans several units (12-solution/deployment-units.md responsibilities) — [Derived]
+    "AGG-OBSERVATION": "DU-05", "AGG-IMPORT-BATCH": "DU-05", "AGG-ATTACHMENT": "DU-05",
+    "AGG-SYNC-SESSION": "DU-10", "AGG-SYNC-CONFLICT": "DU-10", "AGG-PRELOAD-PACKAGE": "DU-10",
+    "AGG-ADAPTER": "DU-11", "AGG-INTEGRATION-CONNECTION": "DU-11", "AGG-SENSOR-STREAM": "DU-11",
+    "AGG-AI-REQUEST": "DU-16", "AGG-AI-RESULT": "DU-16", "AGG-AI-ROUTING": "DU-16", "AGG-AI-TOOL": "DU-16",
+    "AGG-MODEL-VERSION": "DU-16", "AGG-EVAL-SUITE": "DU-16",
+}
+PATH_DU = {"discovery": "DU-09", "field": "DU-10", "integration": "DU-11", "ai": "DU-16"}
+EVALUATED_IN_DU07 = {"AGG-ALERT", "AGG-SITUATION"}  # streaming membership and alert evaluators (deployment-units.md DU-07)
+EXTRA_IN = {"DU-02": ["SCIM — تزويد المستخدمين من مزوّد الهوية"], "DU-05": ["Bulk import + scanner"],
+            "DU-10": ["Sync gateway — CommandEnvelope من الأجهزة"], "DU-11": ["Connectors — الأنظمة الخارجية (ACL)"]}
+EXTRA_OUT = {  # 18-analysis-design/13-project-structure.md §4, 03-domain/context-map.md
+    "DU-02": ["Valkey — نسخ security_version", "Keycloak — اتحاد الهوية"],
+    "DU-03": ["OpenBao / HSM — مخزن المفاتيح وسجل الإتلاف", "S3 Object Lock — مثبتات التدقيق"],
+    "DU-04": ["BC01 OHS — SecurityContext / AuthorityCheck"],
+    "DU-06": ["BC02 OHS — استعلامات as-of"],
+    "DU-07": ["Notifications — BC04"],
+    "DU-08": ["BC05 OHS — EligibilityCheck", "BC01 OHS — AuthorityCheck"],
+    "DU-09": ["OpenSearch — وثائق البحث", "مخزن إسقاطات BC07 (اسم الـschema [Missing])"],
+    "DU-10": ["أوامر السياقات المالكة عبر عقودها"],
+    "DU-11": ["BC02 commands عبر العقد"],
+    "DU-16": ["vLLM — النماذج", "OpenSearch k-NN — المتجهات"],
+}
+
+
+def du_of(aid, aggs):
+    return AGG_DU.get(aid) or BC_DU[aggs[aid]["bc"]]
+
+
+def build_components(aggs, cmds, qrys, ops):
+    tabs = load_ldm()[0]
+    bc_schemas = defaultdict(set)
+    for s_, bc in SCHEMA_BC.items():
+        bc_schemas[bc].add(s_)
+    by_path = defaultdict(set)
+    for k, c in cmds.items():
+        by_path["/".join(ops.get(k, {}).get("path", "").split("/")[:5])].add(c["Aggregate"])
+    home_q = {}
+    for qid, q in qrys.items():
+        seg = ops.get(qid, {}).get("path", "").split("/")
+        owners = sorted(by_path.get("/".join(seg[:5]), set()))
+        home_q[qid] = PATH_DU.get(seg[3] if len(seg) > 3 else "") or (du_of(owners[0], aggs) if owners else BC_DU.get(q["_bc"], "—"))
+    du = defaultdict(lambda: {"aggs": [], "cmds": 0, "qrys": [], "sys": defaultdict(list), "schemas": set(), "personal": False,
+                              "internal": 0, "offline": 0, "storage": False})
+    for aid, a in aggs.items():
+        d = du[du_of(aid, aggs)]
+        d["aggs"].append(aid)
+        d["cmds"] += sum(1 for c in cmds.values() if c["Aggregate"] == aid)
+        d["internal"] += sum(1 for k, c in cmds.items() if c["Aggregate"] == aid and ops.get(k, {}).get("internal"))
+        d["offline"] += sum(1 for k, c in cmds.items() if c["Aggregate"] == aid and ops.get(k, {}).get("offline"))
+        t = main_table(aid, tabs, bc_schemas[a["bc"]])
+        if t:
+            d["schemas"].add(t["schema"])
+        d["personal"] |= a["personal"]
+        d["storage"] |= aid in ("AGG-ATTACHMENT", "AGG-ARCHIVE-PACKAGE", "AGG-PRELOAD-PACKAGE", "AGG-EVIDENCE", "AGG-PRODUCT")
+        for t_ in a["trans"]:
+            if t_["cmd"].startswith("SYS:"):
+                kind = sys_kind(t_["cmd"][4:], t_["guard"])
+                target = "DU-07" if aid in EVALUATED_IN_DU07 and kind in ("مدفوع بحدث", "شرطي بعد أمر") else du_of(aid, aggs)
+                du[target]["sys"][kind].append(f"{aid[4:]}: {t_['cmd'][4:]}")
+    for qid, d_ in home_q.items():
+        du[d_]["qrys"].append(qid)
+    L = [BEGIN, "", "### 7.1 الملخص", "",
+         "| الوحدة | الـAggregates | أوامر | استعلامات | قواعد `SYS:` (زمني / شرطي / حدث / عامل) | الـschemas | الإصدار |", "|---|---|---|---|---|---|---|"]
+    for k in sorted(DU_NAMES):
+        d = du.get(k)
+        if not d:
+            L.append(f"| {k} {DU_NAMES[k]} | — | — | — | — | — | {'R2' if k in ('DU-14', 'DU-15', 'DU-16') else 'R1'} |")
+            continue
+        sysc = " / ".join(str(len(d["sys"].get(x, []))) for x in ("زمني", "شرطي بعد أمر", "مدفوع بحدث", "مدفوع بعامل"))
+        L.append(f"| {k} {DU_NAMES[k]} | {len(d['aggs'])} | {d['cmds']} | {len(d['qrys'])} | {sysc} | {', '.join(f'`{x}`' for x in sorted(d['schemas'])) or '—'} | "
+                 f"{'R2' if k in ('DU-14', 'DU-15', 'DU-16') else 'R1'} |")
+    L += ["", "### 7.2 المكوّنات لكل وحدة", ""]
+    for k in sorted(DU_NAMES):
+        d = du.get(k)
+        if not d or (not d["aggs"] and not d["qrys"] and not d["sys"]):
+            continue
+        L += [f"#### {k} {DU_NAMES[k]}", ""]
+        if k == "DU-14":
+            L += ["في R1 يعمل جزء BC05 الخاص بالتأهيل والأهلية (AGG-QUALIFICATION-RECORD، `QRY-ELIG-CHECK`، SLC-03) داخل DU-08، وينتقل مع بقية BC05 إلى هذه الوحدة في R2 (`11-hexagonal-reference.md` §7).", ""]
+        L += ["```mermaid", "flowchart LR"]
+        L.append('  subgraph IN["Inbound adapters"]')
+        for i_, x in enumerate(EXTRA_IN.get(k, [])):
+            L.append(f'    XIN{i_}["{x}"]')
+        if d["cmds"] or d["qrys"]:
+            L.append(f'    HTTP["HTTP API — {d["cmds"]} أمرًا، {len(d["qrys"])} استعلامًا"]')
+        if d["sys"].get("مدفوع بحدث") or d["sys"].get("شرطي بعد أمر"):
+            L.append(f'    KAFKA["Kafka consumer + inbox — {len(d["sys"].get("مدفوع بحدث", []))} قاعدة حدث"]')
+        if d["sys"].get("زمني"):
+            L.append(f'    SCHED["Scheduler — {len(d["sys"]["زمني"])} قاعدة زمنية"]')
+        if d["sys"].get("مدفوع بعامل"):
+            L.append(f'    WORK["Worker reports — {len(d["sys"]["مدفوع بعامل"])} قاعدة"]')
+        L.append("  end")
+        L.append('  subgraph APP["Application"]')
+        L.append('    PIPE["Command pipeline (ADR-P17)"]')
+        if d["cmds"]:
+            L.append(f'    CH["Command handlers ({d["cmds"]})"]')
+        if d["qrys"]:
+            L.append(f'    QH["Query handlers ({len(d["qrys"])})"]')
+        if d["sys"]:
+            L.append(f'    PH["Process handlers ({sum(len(v) for v in d["sys"].values())})"]')
+        L.append("  end")
+        if d["aggs"]:
+            L.append('  subgraph DOM["Domain"]')
+            for aid in sorted(d["aggs"]):
+                L.append(f'    {aid.replace("-", "_")}["{aid[4:]}"]')
+            L.append("  end")
+        L.append('  subgraph OUT["Outbound adapters"]')
+        for sch in sorted(d["schemas"]):
+            L.append(f'    DB_{sch}[("PostgreSQL {sch}")]')
+        L.append('    OPA["OPA embedded PDP"]')
+        if d["qrys"]:
+            L.append('    RECHECK["Result re-check: security_version + LabelCheck"]')
+        if d["personal"]:
+            L.append('    KMS["OpenBao / HSM — subject keys"]')
+        if d["storage"]:
+            L.append('    S3[("Object storage")]')
+        L.append('    BUS["Kafka outbox relay (CDC)"]')
+        for i_, x in enumerate(EXTRA_OUT.get(k, [])):
+            L.append(f'    XOUT{i_}["{x}"]')
+        L.append("  end")
+        for i_ in range(len(EXTRA_IN.get(k, []))):
+            L.append(f"  XIN{i_} --> PIPE")
+        for i_ in range(len(EXTRA_OUT.get(k, []))):
+            L.append(f"  PIPE --> XOUT{i_}")
+        if d["cmds"] or d["qrys"]:
+            L.append("  HTTP --> PIPE")
+        for n in ("KAFKA", "SCHED", "WORK"):
+            if any(f'    {n}[' in x for x in L[-60:]):
+                L.append(f"  {n} --> PH")
+        if d["cmds"]:
+            L.append("  PIPE --> CH")
+        if d["qrys"]:
+            L.append("  PIPE --> QH")
+        if d["sys"]:
+            L.append("  PH --> PIPE")
+        if d["aggs"] and d["cmds"]:
+            L.append("  CH --> DOM")
+        for sch in sorted(d["schemas"]):
+            L.append(f"  DOM --> DB_{sch}" if d["aggs"] else f"  PIPE --> DB_{sch}")
+        L.append("  PIPE --> OPA")
+        if d["qrys"]:
+            L.append("  QH --> RECHECK")
+        if d["personal"]:
+            L.append("  DOM --> KMS")
+        if d["storage"]:
+            L.append("  DOM --> S3")
+        L.append("  PIPE --> BUS")
+        L += ["```", ""]
+        L += ["| الـAggregate | الأوامر | الاستعلامات |", "|---|---|---|"]
+        for aid in sorted(d["aggs"]):
+            L.append(f"| `{aid}` | {sum(1 for c in cmds.values() if c['Aggregate'] == aid)} | "
+                     f"{sum(1 for q in d['qrys'] if qrys[q]['_bc'] == aggs[aid]['bc'] and q.split('-')[1] == next((c.split('-')[1] for c in cmds if cmds[c]['Aggregate'] == aid), ''))} |")
+        extra = [q for q in d["qrys"] if not any(q.split("-")[1] == c.split("-")[1] for c in cmds if du_of(cmds[c]["Aggregate"], aggs) == k)]
+        if extra:
+            L.append(f"\n**استعلامات بلا Aggregate في الوحدة:** " + ", ".join(f"`{q}`" for q in sorted(extra)))
+        for kind, items in sorted(d["sys"].items()):
+            L.append(f"\n**قواعد `SYS:` ({kind}):** " + "؛ ".join(esc(x) for x in items))
+        if d["internal"] or d["offline"]:
+            L.append(f"\n**عمليات خاصة:** داخلية {d['internal']}، دون اتصال {d['offline']} (`14-api-design.md` §7).")
+        L.append("")
+    L.append(END)
+    write_generated(OUT / "12-components.md", None, "\n".join(L))
+    return du
+
+
 # ------------------------------------------------------------------ writer
 def write_generated(path, header, block):
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -1981,6 +2153,7 @@ def main():
     build_domain_model(aggs, cmds)
     build_security(aggs, cmds, qrys, pol_c, pol_q, evts)
     build_errors(aggs, cmds)
+    build_components(aggs, cmds, qrys, ops)
     total = sum(sum(v.values()) for v in stats.values())
     print(f"stories={total} (commands={sum(1 for k in story_ids if k.startswith('CMD-'))}, "
           f"queries={sum(1 for k in story_ids if k.startswith('QRY-'))}, sys={sum(v.get('نظام (SYS)', 0) for v in stats.values())}) "

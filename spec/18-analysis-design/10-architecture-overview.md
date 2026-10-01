@@ -87,7 +87,7 @@ flowchart LR
     IDP["Tenant IdP<br/>OIDC / SAML / SCIM"]
     GIS["GIS services"]
     WX["Weather feeds"]
-    SEN["Sensors"]
+    SEN["Sensors — R2"]
     ERP["ERP / HRIS / DMS (R2)"]
     MDM["MDM / push relay"]
     HSM["Site HSM"]
@@ -101,7 +101,7 @@ flowchart LR
   IDP -->|"federation, provisioning"| P
   GIS -->|"adapters (ACL)"| P
   WX -->|"adapters (ACL)"| P
-  SEN -->|"adapters (ACL)"| P
+  SEN -.->|"R2, adapters (ACL)"| P
   ERP -.->|"R2 adapters"| P
   P -->|"push relay"| MDM
   P -->|"PKCS#11"| HSM

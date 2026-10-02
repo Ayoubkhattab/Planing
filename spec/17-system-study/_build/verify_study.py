@@ -11,6 +11,7 @@ Checks:
   V6 every front-matter and embedded YAML block in spec/ parses
   V7 every command names exactly one policy, and that policy is defined in 08-security/policies-*.md (SL-02)
   V8 18-analysis-design: generated sections are current, every spec element is covered exactly once, links resolve
+  V9 story and feature files: mapping, structure, Arabic Gherkin, no technical codes in story text, glossary messages, sources
 """
 import re
 import shutil
@@ -461,6 +462,109 @@ def v8(sys_trans):
             "ops": len(ops), "evts": len(evts), "aggs": len(aggs), "invs": sum(len(a["invs"]) for a in aggs.values())}
 
 
+def v9():
+    """Story and feature files (05-user-stories/00-standard.md §14): mapping, structure, Gherkin, codes, messages, sources."""
+    sys.path.insert(0, str(Path(__file__).parent))
+    import build_analysis_design as bad
+    us = AD / "05-user-stories"
+    feats, fmap = bad.load_features()
+    reqs, ucs = bad.load_requirements()
+    cat, _ = bad.load_ref_catalog(reqs, ucs)
+    gloss = {}
+    for line in (us / "00-glossary.md").read_text(encoding="utf-8").splitlines():
+        m = re.match(r"\| `([A-Z0-9_]+)` \|", line)
+        if m:
+            gloss[m.group(1)] = line.strip().strip("|").split("|")[-1].strip()
+    catalog = set(re.findall(r"^\| `([A-Z0-9_]+)` \| \d{3}", (AD / "18-error-handling.md").read_text(encoding="utf-8"), re.M))
+    issues = [("00-glossary.md", c, "رمز خطأ بلا رسالة") for c in sorted(catalog - set(gloss))]
+    try:
+        from gherkin.parser import Parser
+    except ImportError:
+        Parser = None
+        issues.append(("—", "gherkin", "حزمة gherkin-official غير مثبتة: فحص Gherkin لم يُشغَّل"))
+    members = defaultdict(set)
+    for sid, row in fmap.items():
+        members[row["feature_id"]].add(sid)
+        if sid not in bad.STORY_INFO and not sid.startswith("US-BC"):
+            for ref in re.findall(r"\b(?:REQ|UC|QAS|SCR|TD|FIT|ADR)-[A-Z0-9-]*\d", row["source"]):
+                if ref not in cat:
+                    issues.append(("feature_map.csv", sid, f"مصدر غير موجود: {ref}"))
+    seen, files, written, total = defaultdict(list), 0, 0, 0
+    kinds = set(bad.KIND_ORDER)
+    for f in sorted(us.glob("CAP-*/FEAT-*.md")):
+        files += 1
+        rel = f.relative_to(us).as_posix()
+        text = f.read_text(encoding="utf-8")
+        fid = f.stem
+        if fid not in feats:
+            issues.append((rel, fid, "ملف لميزة غير موجودة في features.csv"))
+            continue
+        if text.count("\n") > 1200:
+            issues.append((rel, fid, f"{text.count(chr(10))} سطرًا (الحد 1,200)"))
+        if Parser:
+            for g in re.findall(r"```gherkin\n(.*?)```", text, re.S):
+                try:
+                    if Parser().parse(g)["feature"]["language"] != "ar":
+                        issues.append((rel, fid, "كتلة Gherkin ليست بالعربية"))
+                except Exception as e:  # noqa: BLE001
+                    issues.append((rel, fid, "Gherkin لا يُقرأ: " + str(e).splitlines()[-1][:120]))
+        parts = re.split(r"(?m)^(?=### 5\.\d+ )", text.split("\n## 6. ")[0])
+        ids = []
+        for part in parts[1:]:
+            m = re.match(r"### 5\.\d+ (US-[A-Za-z0-9-]+) — ", part)
+            if not m:
+                issues.append((rel, part[:40], "عنوان قصة بغير الصيغة «### 5.n US-… — العنوان»"))
+                continue
+            sid = m.group(1)
+            ids.append(sid)
+            seen[sid].append(rel)
+            total += 1
+            if bad.TODO in part:
+                continue
+            written += 1
+            meta = re.search(r"\n\| النوع \| الإصدار \| الأولوية \| دون اتصال \| الحالة \|\n\|[-|]+\|\n\|([^\n]*)\|", part)
+            cells = [c.strip() for c in meta.group(1).split("|")] if meta else []
+            if len(cells) != 5:
+                issues.append((rel, sid, "جدول البيانات ناقص"))
+            elif cells[0].split(" (")[0] not in kinds or cells[4] not in ("مسودة", "قيد المراجعة", "معتمدة", "مستبدلة", "ملغاة"):
+                issues.append((rel, sid, f"قيمة غير معتمدة في جدول البيانات: {cells[0]} / {cells[4]}"))
+            if "> **كـ**" not in part:
+                issues.append((rel, sid, "لا «كـ… أريد… حتى…»"))
+            kind = cells[0].split(" (")[0] if cells else ""
+            if "**باختصار:**" not in part and kind not in ("منصة", "تشغيل"):
+                issues.append((rel, sid, "لا «باختصار»"))
+            if kind in ("أمر", "نظام", "تكامل") and "#### القواعد" not in part:
+                issues.append((rel, sid, "لا قسم «القواعد»"))
+            if "#### معايير القبول" not in part or "```gherkin" not in part:
+                issues.append((rel, sid, "لا معايير قبول بـGherkin"))
+            if f"<!-- BEGIN GENERATED: refs {sid} -->" not in part:
+                issues.append((rel, sid, "لا جدول مراجع مولَّد"))
+            narrative = re.sub(r"<details>.*?</details>", "", part, flags=re.S)
+            narrative = re.sub(r"(?m)^\s*\|.*\|\s*$", "", narrative)
+            for code in sorted(set(re.findall(r"\b(?:CMD|QRY|EVT|POL|AGG)-[A-Z0-9-]+|SYS:", narrative))):
+                issues.append((rel, sid, f"رمز تقني في نص القصة: {code}"))
+            for g in re.findall(r"```gherkin\n(.*?)```", part, re.S):
+                rows = [[c.strip() for c in ln.strip().strip("|").split("|")] for ln in g.splitlines() if ln.strip().startswith("|")]
+                if not rows or "الرمز" not in rows[0] or "الرسالة" not in rows[0]:
+                    continue
+                ci, mi = rows[0].index("الرمز"), rows[0].index("الرسالة")
+                for r in rows[1:]:
+                    code, msg = r[ci], r[mi].strip('"')
+                    if code not in gloss:
+                        issues.append((rel, sid, f"رمز خطأ ليس في المسرد: {code}"))
+                    elif msg != gloss[code] and not (code == "VALIDATION_FAILED" and re.search(r" (مطلوب|مطلوبة|غير صحيح|غير صحيحة)$", msg)):
+                        issues.append((rel, sid, f"رسالة {code} تخالف المسرد: «{msg}»"))
+        if set(ids) != members[fid]:
+            for s in sorted(members[fid] - set(ids)):
+                issues.append((rel, s, "قصة مربوطة بالميزة وليست في ملفها"))
+            for s in sorted(set(ids) - members[fid]):
+                issues.append((rel, s, "قصة في الملف وليست مربوطة بالميزة"))
+    for sid, where in seen.items():
+        if len(where) > 1:
+            issues.append((", ".join(where), sid, "قصة في أكثر من موضع"))
+    return {"issues": issues, "files": files, "features": len(feats), "stories": len(fmap), "in_files": total, "written": written}
+
+
 # ---------------------------------------------------------------- report
 def main():
     aggs = load_aggregates()
@@ -478,6 +582,7 @@ def main():
     y_n, y_bad = v6()
     p_n, p_missing, p_multi, p_shared = v7(cmds)
     ad = v8(sum(len(a["sys"]) for a in aggs.values()))
+    st = v9()
     rt_known = {p for p in (rt or {}).get("diffs", []) + (rt or {}).get("new", []) if re.search(r"slc19|SLC-19|AGG-(EXERCISE|SCENARIO|SIMULATION)\.md", p)}
     rt_real = sorted(set((rt or {}).get("diffs", []) + (rt or {}).get("new", [])) - rt_known)
 
@@ -510,7 +615,9 @@ def main():
          f"{len(p_multi)} أمرًا بغير سياسة واحدة؛ {len(p_shared)} سياسة يتشاركها أكثر من أمر |",
          f"| V8 دراسة التحليل والتصميم (`18-analysis-design/`) | {ad['files']} ملفًا، {ad['stories']} قصة | "
          f"{len(ad['stale'])} ملفًا مولَّدًا غير محدَّث؛ {len(ad['gaps'])} عنصرًا غير مغطى؛ {len(ad['dup'])} قصة مكررة؛ "
-         f"{len(ad['broken'])} رابطًا مكسورًا |", ""]
+         f"{len(ad['broken'])} رابطًا مكسورًا |",
+         f"| V9 ملفات الميزات والقصص (`05-user-stories/`) | {st['features']} ميزة، {st['stories']} قصة؛ {st['files']} ملف ميزة "
+         f"فيه {st['in_files']} قصة، منها {st['written']} مكتوبة | {len(st['issues'])} مخالفة للمعيار |", ""]
 
     L += ["## 2. V1 — ملفات القبول مقابل مصفوفات الحالات", "",
           "لكل Aggregate: كل خلية `→ حالة` في مصفوفة الحالات × الأوامر يجب أن تظهر كانتقال مسموح (أو إنشاء من ∅) "
@@ -586,11 +693,20 @@ def main():
           f"- عناصر غير مغطاة: {'; '.join(f'{a} {b} ({c})' for a, b, c in ad['gaps']) or 'لا شيء'}",
           f"- قصص مكررة: {', '.join(ad['dup']) or 'لا شيء'}",
           f"- روابط مكسورة: {'; '.join(f'`{a}` → {b}' for a, b in ad['broken']) or 'لا شيء'}"]
+    L += ["", "## 10. V9 — ملفات الميزات والقصص", "",
+          "يطبّق قواعد `05-user-stories/00-standard.md` §14 آليًا: كل قصة في `feature_map.csv` في ملف ميزتها مرة واحدة، "
+          "وحجم الملف، وكل كتلة Gherkin تُقرأ بالعربية، وأجزاء القصة المكتوبة حسب نوعها، ولا رمز تقني في نصها، "
+          "ورسالة كل رمز خطأ في السيناريوهات مطابقة للمسرد، وكل مصدر لقصة جديدة موجود. "
+          "القصة التي ما زال فيها «[للكتابة]» تُعد هيكلًا ولا تُفحص أجزاؤها.", "",
+          f"- ملفات الميزات: {st['files']} من {st['features']}؛ القصص فيها {st['in_files']}، المكتوبة {st['written']}.", ""]
+    L += (["| الملف | العنصر | المخالفة |", "|---|---|---|"] + [f"| `{a}` | {b} | {c} |" for a, b, c in st["issues"]]
+          if st["issues"] else ["لا مخالفات."])
     OUT.write_text("\n".join(L) + "\n", encoding="utf-8")
     print(f"V1 issues={len(v1_issues)} sys_gap={sum(len(x[2]) for x in sys_gap)} V2={len(v2_issues)} "
           f"orphans={len(v2_orphans)} dup={len(v2_dup)} V3 missing={len(v3_missing)} orphans={len(v3_orphans)} "
           f"V4a={len(v4_catalog)} V4b={len(v4_guard)} V5={'skipped' if rt is None else len(rt_real)} V6={len(y_bad)} V7={len(p_missing)}/{len(p_multi)}/{len(p_shared)} "
-          f"V8 stale={len(ad['stale'])} gaps={len(ad['gaps'])} dup={len(ad['dup'])} broken={len(ad['broken'])}")
+          f"V8 stale={len(ad['stale'])} gaps={len(ad['gaps'])} dup={len(ad['dup'])} broken={len(ad['broken'])} "
+          f"V9 issues={len(st['issues'])} written={st['written']}/{st['in_files']}")
 
 
 if __name__ == "__main__":

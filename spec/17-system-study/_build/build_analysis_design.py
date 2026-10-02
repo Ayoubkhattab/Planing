@@ -5,6 +5,7 @@ Run from anywhere: python3 spec/17-system-study/_build/build_analysis_design.py
 Outputs (only the block between GENERATED markers is rewritten; text above it is authored):
   05-user-stories/us-bcNN.md  one story per command, query and SYS: transition
   05-user-stories/00-index.md feature map from _build/features.csv and feature_map.csv
+  05-user-stories/CAP-xx-*/FEAT-*.md  feature files: skeletons and named generated blocks (FEATURE_FILE_CAPS)
   08-state-models.md          one state diagram per aggregate
   09-business-rules.md        invariants, guards, segregation of duties, reference data, BRL per BC
   14-api-design.md            catalog of every OpenAPI operation
@@ -643,6 +644,7 @@ def build_user_stories(aggs, cmds, qrys, pol_c, pol_q, reqs, ucs, http_of, ops):
                   f"`{a['path']}` · {a['slice']} · الحالات: {', '.join(a['open'])} → {', '.join(a['final']) or '—'}", ""]
             for cid in sorted(c for c in cmds if cmds[c]["Aggregate"] == aid):
                 sid, typ, cat, block = command_story(cid, cmds[cid], a, aggs, pol_c.get(cid, {}), reqs, ucs_of, http_of, ops, counters)
+                STORY_INFO[sid] = {"kind": "أمر", "src": cid, "agg": aid, "title": block[0].split(" — ", 1)[1]}
                 L += block
                 stats[bc][typ] += 1
                 story_ids[cid] = sid
@@ -653,10 +655,13 @@ def build_user_stories(aggs, cmds, qrys, pol_c, pol_q, reqs, ucs, http_of, ops):
                     n += 1
                     sid, block = sys_story(a, t, aggs, n)
                     STORY_AGG[sid] = aid
+                    STORY_INFO[sid] = {"kind": "نظام", "src": f"{aid}|{t['cmd']}|{t['from']}→{t['to']}", "agg": aid,
+                                       "title": block[0].split(" — ", 1)[1], "trans": t}
                     L += block
                     stats[bc]["نظام (SYS)"] += 1
             for qid in sorted(q for q in qrys if qrys[q]["_bc"] == bc and home(q) == aid):
                 sid, block = query_story(qid, qrys[qid], a, aggs, pol_q.get(qid, {}), pol_q, reqs, ops)
+                STORY_INFO[sid] = {"kind": "جلب", "src": qid, "agg": aid, "title": block[0].split(" — ", 1)[1]}
                 L += block
                 stats[bc]["جلب"] += 1
                 story_ids[qid] = sid
@@ -666,6 +671,7 @@ def build_user_stories(aggs, cmds, qrys, pol_c, pol_q, reqs, ucs, http_of, ops):
             L += ["### استعلامات عابرة للـAggregates", ""]
             for qid in orphan_q:
                 sid, block = query_story(qid, qrys[qid], None, aggs, pol_q.get(qid, {}), pol_q, reqs, ops)
+                STORY_INFO[sid] = {"kind": "جلب", "src": qid, "agg": None, "title": block[0].split(" — ", 1)[1]}
                 L += block
                 stats[bc]["جلب"] += 1
                 story_ids[qid] = sid
@@ -698,23 +704,28 @@ def build_user_stories(aggs, cmds, qrys, pol_c, pol_q, reqs, ucs, http_of, ops):
     return stats, story_ids
 
 
-# ------------------------------------------------------------------ 05 feature index
+# ------------------------------------------------------------------ 05 features (00-index.md and CAP-xx/FEAT-*.md)
 CAP_DIRS = {"CAP-01": "CAP-01-org-access", "CAP-02": "CAP-02-collection", "CAP-03": "CAP-03-information",
             "CAP-04": "CAP-04-analysis", "CAP-05": "CAP-05-situation", "CAP-06": "CAP-06-decision",
             "CAP-07": "CAP-07-planning-execution", "CAP-08": "CAP-08-resources", "CAP-09": "CAP-09-risk-emergency",
             "CAP-10": "CAP-10-communication", "CAP-11": "CAP-11-knowledge", "CAP-12": "CAP-12-ai",
             "CAP-13": "CAP-13-governance-security", "CAP-14": "CAP-14-platform-ops"}
-STORY_KIND = {"إنشاء": "أمر", "تعديل": "أمر", "سير عمل": "أمر", "حذف / إنهاء": "أمر", "جلب": "جلب", "نظام": "نظام"}
-NEW_COLS = ["new_ui", "new_plt", "new_int", "new_ops"]
+# Capabilities whose feature files exist (skeletons are created for these; 00-standard.md §2). Extended batch by batch.
+FEATURE_FILE_CAPS = {"CAP-07"}
+KIND_ORDER = ["أمر", "جلب", "نظام", "واجهة", "منصة", "تكامل", "تشغيل"]
+NEW_KIND_PREFIX = {"واجهة": "US-UI-SCR", "منصة": "US-PLT-", "تكامل": "US-INT-", "تشغيل": "US-OPS-"}
+MAP_COLS = ["story_id", "feature_id", "kind", "source", "title_ar"]
+STATUS_AR = {"DRAFT": "مسودة", "IN_REVIEW": "قيد المراجعة", "APPROVED": "معتمدة", "PILOT": "تجربة"}
+TODO = "**[للكتابة]**"
 
 
 def load_features():
-    """features.csv (one row per feature) and feature_map.csv (story → feature), both in _build/."""
+    """features.csv (one row per feature) and feature_map.csv (one row per story), both in _build/."""
     here = Path(__file__).parent
     with open(here / "features.csv", encoding="utf-8", newline="") as fh:
         rows = list(csv.DictReader(fh))
     with open(here / "feature_map.csv", encoding="utf-8", newline="") as fh:
-        pairs = [(r["story_id"], r["feature_id"]) for r in csv.DictReader(fh)]
+        maps = list(csv.DictReader(fh))
     feats, fmap, errors = {}, {}, []
     for r in rows:
         fid = r["feature_id"]
@@ -723,55 +734,396 @@ def load_features():
         if r["subcap"][:6] != r["capability"]:
             errors.append(f"{fid}: subcap {r['subcap']} outside capability {r['capability']}")
         feats[fid] = r
-    for sid, fid in pairs:
+    for r in maps:
+        sid, fid = r["story_id"], r["feature_id"]
         if sid in fmap:
             errors.append(f"story {sid} mapped twice")
         if fid not in feats:
             errors.append(f"story {sid} mapped to unknown feature {fid}")
-        fmap[sid] = fid
+        fmap[sid] = {k: (r.get(k) or "").strip() for k in MAP_COLS}
     if errors:
         raise SystemExit("features.csv / feature_map.csv: " + "; ".join(errors[:10]))
     return feats, fmap
 
 
-def load_story_titles():
-    """Story id → (Arabic title, story kind), read from the generated 05-user-stories/us-bcNN.md files."""
+def sync_feature_map(fmap):
+    """Pin every generated story to its source (00-standard.md §3.3) and check the hand-added ones."""
+    errors = []
+    for sid, info in STORY_INFO.items():
+        row = fmap.get(sid)
+        if row is None:
+            errors.append(f"{sid} ({info['src']}) has no row in feature_map.csv")
+            continue
+        if row["source"] and row["source"] != info["src"]:
+            errors.append(f"{sid} is pinned to {row['source']} but now generates from {info['src']}")
+        row["source"], row["kind"] = info["src"], info["kind"]
+    for sid, row in fmap.items():
+        if sid in STORY_INFO:
+            continue
+        if not row["title_ar"] or not row["source"] or row["kind"] not in KIND_ORDER:
+            errors.append(f"{sid}: a story with no generated source needs kind, source and title_ar")
+        pre = NEW_KIND_PREFIX.get(row["kind"])
+        if pre and not sid.startswith(pre):
+            errors.append(f"{sid}: kind {row['kind']} needs prefix {pre}")
+        if not pre and not re.match(r"US-(DOM-|BC\d\d-)", sid):
+            errors.append(f"{sid}: kind {row['kind']} needs prefix US-DOM- or a generated id")
+    if errors:
+        raise SystemExit("feature_map.csv: " + "; ".join(errors[:10]))
+    here = Path(__file__).parent
+    order = {fid: i for i, fid in enumerate(dict.fromkeys(r["feature_id"] for r in fmap.values()))}
+    with open(here / "feature_map.csv", "w", encoding="utf-8", newline="") as fh:
+        w = csv.DictWriter(fh, MAP_COLS, lineterminator="\n")
+        w.writeheader()
+        for row in sorted(fmap.values(), key=lambda r: (order[r["feature_id"]], KIND_ORDER.index(r["kind"]), r["story_id"])):
+            w.writerow(row)
+
+
+def load_ref_catalog(reqs, ucs):
+    """Short meaning for every ID a story may cite: REQ, UC, QAS, SCR, TD, FIT, ADR, TST."""
+    cat = {r: short(v.get("statement", ""), 110) for r, v in reqs.items()}
+    cat.update({u: v.get("title", "") for u, v in ucs.items()})
+    qas = md_records((SPEC / "02-requirements" / "quality-scenarios.md").read_text(encoding="utf-8"), "QAS")
+    cat.update({q: short(f"{v.get('stimulus', '')} → {v.get('response_measure', '')}", 110) for q, v in qas.items()})
+    tds = md_records((SPEC / "12-solution" / "technology-decisions.md").read_text(encoding="utf-8"), "TD")
+    cat.update({d: short(v.get("decision", ""), 110) for d, v in tds.items()})
+    for line in (SPEC / "13-verification" / "fitness-functions.md").read_text(encoding="utf-8").splitlines():
+        m = re.match(r"\| (FIT-\d+) \| ([^|]+) \|", line)
+        if m:
+            cat[m.group(1)] = m.group(2).strip()
+    for line in (OUT / "21-ui-design.md").read_text(encoding="utf-8").splitlines():
+        m = re.match(r"\| (SCR-\d+) \| ([^|]+) \|", line)
+        if m:
+            cat.setdefault(m.group(1), "شاشة " + m.group(2).strip())
+    for f in sorted((SPEC / "00-governance" / "decisions").glob("ADR-*.md")):
+        cat[f.stem] = front_matter(f.read_text(encoding="utf-8")).get("title", "")
+    return cat, qas
+
+
+def li(name):
+    """Arabic preposition لـ joined to a name: للمهمة، لمنح السلطة."""
+    return "لل" + name[2:] if name.startswith("ال") else "ل" + name
+
+
+def story_refs(sid, row, aggs, cmds, qrys, evts, pol_c, pol_q, ops, reqs, req_uc, tests, cat, tabs, bc_schemas, scope):
+    """Rows (item, id, meaning) of a story's reference table, and the requirements it traces to.
+
+    scope = (sub-capability, use cases) of the feature: a story taken from the spec inherits its aggregate's requirements,
+    so they are narrowed to the feature's sub-capability (and its use cases) when that leaves any."""
+    info, R, req_ids = STORY_INFO.get(sid), [], []
+    aid = info["agg"] if info else None
+    a = aggs.get(aid) if aid else None
+    if info and info["kind"] in ("أمر", "جلب"):
+        op_id = info["src"]
+        op = ops.get(op_id, {})
+        if op:
+            R.append(("الواجهة البرمجية", f"`{op['method']} {op['path']}`", "دون اتصال: نعم" if op.get("offline") else "—"))
+        if info["kind"] == "أمر":
+            c = cmds[op_id]
+            pol = pol_c.get(op_id, {})
+            R.append(("الأمر", f"`{op_id}`", action_phrase(op_id, aid, aggs)))
+            if pol:
+                R.append(("السياسة", f"`{pol.get('id', '—')}`",
+                          short(f"{pol.get('subject', '')}؛ {pol.get('context_conditions', '')}", 110)))
+            for e in re.findall(r"EVT-[A-Z0-9-]+", c.get("الأحداث", "")):
+                R.append(("الحدث", f"`{e}`", short("يصل إلى: " + evts.get(e, {}).get("المستهلكون", "—"), 110)))
+            req_ids = list(a["reqs"]) if a else []
+        else:
+            q = qrys[op_id]
+            pol = pol_q.get(op_id, {})
+            R.append(("الاستعلام", f"`{op_id}`", short(q.get("يعيد", ""), 110)))
+            if pol:
+                R.append(("السياسة", f"`{pol.get('id', '—')}`", short(pol.get("allowed_scope", "") or pol.get("subject", ""), 110)))
+            req_ids = re.findall(r"REQ-[A-Z]+-\d+", q.get("المتطلب", "")) or (list(a["reqs"]) if a else [])
+    elif info:
+        t = info["trans"]
+        R += [("المحفِّز", f"`{t['cmd']}`", short(t.get("guard", ""), 110)),
+              ("الانتقال", f"{show_from(t['from'])} ← {t['to']}", "—")]
+        if t.get("event") and t["event"] != "—":
+            R.append(("الحدث", f"`{t['event']}`", short("يصل إلى: " + evts.get(t["event"], {}).get("المستهلكون", "—"), 110)))
+        req_ids = list(a["reqs"]) if a else []
+    if a:
+        R.append(("الكيان", f"`{aid}`", agg_ar(aid, aggs)))
+        tb = main_table(aid, tabs, bc_schemas[a["bc"]])
+        if tb:
+            R.append(("الجدول", f"`{tb['schema']}.{tb['name']}`", "الجدول الرئيسي " + li(agg_ar(aid, aggs))))
+        R.append(("وحدة النشر", du_of(aid, aggs), "—"))
+    if not info:
+        for ref in [x.strip() for x in row["source"].split(";") if x.strip()]:
+            kind = ref.split("-")[0] if re.match(r"[A-Z]+-", ref) else "المصدر"
+            label = {"REQ": "المتطلب", "UC": "حالة الاستخدام", "QAS": "الجودة", "SCR": "الشاشة", "TD": "القرار التقني",
+                     "FIT": "فحص البنية", "ADR": "القرار المعماري", "TST": "الاختبار"}.get(kind, "المصدر")
+            if kind == "REQ":
+                req_ids.append(ref)
+                continue
+            R.append((label, ref if label != "المصدر" else f"`{ref}`", cat.get(ref, "—")))
+    if info:
+        req_ids = [r for r in req_ids if reqs.get(r, {}).get("capability") == scope[0]] or req_ids
+    if len(req_ids) == 1:
+        R.append(("المتطلب", req_ids[0], cat.get(req_ids[0], "—")))
+    elif req_ids:
+        R.append(("المتطلبات", "، ".join(req_ids), "معانيها في القسم 6. التتبع"))
+    uc_ids = sorted({u for r in req_ids for u in req_uc.get(r, ())})
+    uc_ids = [u for u in uc_ids if u in scope[1]] or uc_ids
+    if uc_ids:
+        R.append(("حالات الاستخدام" if len(uc_ids) > 1 else "حالة الاستخدام", "، ".join(uc_ids),
+                  "؛ ".join(cat.get(u, "—") for u in uc_ids)))
+    if a:
+        tst = [x["id"] for x in tests if x["agg"] == aid]
+        inv = f"TST-{a['slice'].replace('-', '')}-INVARIANTS"
+        if any(x["id"] == inv for x in tests):
+            tst.append(inv)
+        if tst:
+            R.append(("الاختبار", "، ".join(tst), f"دورة حالات {agg_ar(aid, aggs)}، وثوابت الشريحة {a['slice']}"))
+    return R, req_ids
+
+
+def write_block(text, name, content):
+    """Replace the named generated block; returns None when the block is absent."""
+    b, e = f"<!-- BEGIN GENERATED: {name} -->", f"<!-- END GENERATED: {name} -->"
+    if b not in text:
+        return None
+    return text[: text.index(b)] + b + "\n" + content.strip("\n") + "\n" + e + text[text.index(e) + len(e):]
+
+
+def block(name, content):
+    return f"<!-- BEGIN GENERATED: {name} -->\n{content.strip(chr(10))}\n<!-- END GENERATED: {name} -->"
+
+
+def feature_path(f):
+    return OUT / "05-user-stories" / CAP_DIRS[f["capability"]] / f"{f['feature_id']}.md"
+
+
+def parse_feature_file(text):
+    """Authored story headings and statuses: story id → (title, status)."""
     out = {}
-    for p in sorted((OUT / "05-user-stories").glob("us-bc*.md")):
-        for m in re.finditer(r"^#### (US-[A-Za-z0-9-]+) — (.+)\n\n\|[^\n]*\n\|[^\n]*\n\| ([^|]+?) \|", p.read_text(encoding="utf-8"), re.M):
-            out[m.group(1)] = (m.group(2).strip(), STORY_KIND.get(m.group(3).strip(), m.group(3).strip()))
+    for m in re.finditer(r"^### [\d.]+ (US-[A-Za-z0-9-]+) — (.+)\n\n\|[^\n]*\n\|[^\n]*\n\|([^\n]*)\|", text, re.M):
+        cells = [c.strip() for c in m.group(3).split("|")]
+        out[m.group(1)] = (m.group(2).strip(), cells[-1] if cells else "")
     return out
 
 
-def build_feature_index():
+SHARED_RULES = """## 2. القواعد المشتركة
+
+تنطبق على كل قصص الميزة، فلا تتكرر داخل القصص. وكل قصة تذكر ما يخصها فقط.
+
+### 2.1 السياق المشترك
+
+كل قصة تبدأ من ثلاثة شروط: مستأجر نشط، وحزمة السياسات الأساسية مفعّلة، ومستخدم مسجّل الدخول ومخوَّل. وتشير إليها القصص بخطوة واحدة: «بفرض السياق المشترك للميزة».
+
+### 2.2 الصلاحية وعدم الإفصاح
+
+- من لا يحق له رؤية العنصر يتلقى ردًا بشكل «غير متاح» تمامًا، فلا يعرف أنه موجود.
+- من يرى العنصر ولا يحق له الإجراء يتلقى «لا تملك صلاحية هذا الإجراء».
+
+### 2.3 أوامر تغيير الحالة
+
+- **منع التكرار:** يُرسل كل أمر بمفتاح فريد، فإعادة الطلب نفسه لا تُنفَّذ مرتين.
+- **حماية التعديل المتزامن:** يُرسل كل أمر بإصدار البيانات الذي يراه المستخدم. فإن عدّلها غيره في الأثناء، يُرفض الأمر.
+- **السجل:** إن نجح الأمر، يُكتب حدثه وسجل التدقيق في المعاملة نفسها.
+
+### 2.4 الرفض المشترك
+
+```gherkin
+# language: ar
+خاصية: الرفض المشترك لأوامر الميزة
+
+  سيناريو مخطط: رفض مشترك لكل أمر في الميزة
+    بفرض السياق المشترك للميزة
+    و <الحالة>
+    عندما يُرسل المستخدم أي أمر من أوامر الميزة
+    اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
+    و لا يتغير شيء
+
+    امثلة:
+      | الحالة                                  | الرمز                  | الرسالة                                                 |
+      | العنصر خارج صلاحياته                    | NOT_FOUND              | غير متاح                                                |
+      | العنصر مرئي له ولا يحق له الإجراء       | AUTHZ_DENIED           | لا تملك صلاحية هذا الإجراء                              |
+      | غيره عدّل العنصر بعد أن فتحه            | VERSION_CONFLICT       | تغيّرت البيانات منذ فتحتها. راجع التغييرات ثم أعد المحاولة |
+      | أعاد مفتاح منع التكرار بمحتوى مختلف     | IDEMPOTENCY_KEY_REUSED | طلب مكرر بمحتوى مختلف                                   |
+      | البيانات ناقصة أو غير صحيحة             | VALIDATION_FAILED      | بعض البيانات ناقصة أو غير صحيحة. راجع الحقول المعلَّمة      |
+
+  سيناريو: إعادة الطلب نفسه لا تُنفَّذ مرتين
+    بفرض السياق المشترك للميزة
+    و أمر نجح بمفتاح منع تكرار
+    عندما يُعاد الطلب نفسه بالمفتاح نفسه
+    اذاً تُعاد النتيجة الأولى ولا يُكتب حدث ثانٍ
+```
+"""
+
+DOD = """### 3.2 تعريف الاكتمال
+
+القصة مكتملة حين تتحقق الشروط الخمسة:
+
+1. سيناريوهاتها والقواعد المشتركة تمر في الاختبار الآلي.
+2. فحوص البنية المعمارية تمر.
+3. نصوص الواجهة والرسائل موجودة بالعربية والإنجليزية.
+4. مراجعة الكود مكتملة.
+5. ما تضيفه القصة نفسها في قسم «القواعد» تحقق.
+"""
+
+
+def story_skeleton(n, sid, title, kind, release, prio, offline, refs_md):
+    return "\n".join([
+        f"### 5.{n} {sid} — {title}", "",
+        "| النوع | الإصدار | الأولوية | دون اتصال | الحالة |", "|---|---|---|---|---|",
+        f"| {kind} | {release} | {prio} | {offline} | مسودة |", "",
+        f"> **كـ** {TODO}، **أريد** {TODO}، **حتى** {TODO}.", "",
+        f"**باختصار:** {TODO}", "",
+        "#### القواعد", "", TODO, "",
+        "#### معايير القبول", "", TODO, "",
+        "<details><summary>المراجع التقنية والتتبع</summary>", "",
+        block(f"refs {sid}", refs_md), "", "</details>", ""])
+
+
+def ref_table(R):
+    return "\n".join(["| البند | المعرّف | المعنى |", "|---|---|---|"] +
+                     [f"| {a} | {b} | {esc(c) or '—'} |" for a, b, c in R])
+
+
+def build_features(aggs, cmds, qrys, evts, pol_c, pol_q, ops, reqs, ucs):
     feats, fmap = load_features()
-    titles = load_story_titles()
+    sync_feature_map(fmap)
     caps = load_capabilities()
     subs = {s[0]: (s[1].strip(), s[2].strip()) for c in caps.values() for s in c["subs"]}
     unknown_subs = sorted({f["subcap"] for f in feats.values()} - set(subs))
     if unknown_subs:
         raise SystemExit(f"features.csv: unknown sub-capabilities {unknown_subs}")
-    missing = sorted(set(titles) - set(fmap)) + sorted(set(fmap) - set(titles))
-    if missing:
-        raise SystemExit(f"feature_map.csv out of sync with the stories: {missing[:10]}")
+    cat, qas = load_ref_catalog(reqs, ucs)
+    req_uc = defaultdict(set)
+    for rid, r in reqs.items():
+        for u in re.findall(r"UC-\d+", r.get("use_cases", "")):
+            req_uc[rid].add(u)
+    tests = load_tests()
+    tabs = load_ldm()[0]
+    bc_schemas = defaultdict(set)
+    for s_, bc in SCHEMA_BC.items():
+        bc_schemas[bc].add(s_)
     members = defaultdict(list)
-    for sid, fid in fmap.items():
-        members[fid].append(sid)
-    new = lambda f: sum(int(f[k] or 0) for k in NEW_COLS)  # noqa: E731
+    for sid, row in fmap.items():
+        members[row["feature_id"]].append(sid)
+    for fid in members:
+        members[fid].sort(key=lambda s: (KIND_ORDER.index(fmap[s]["kind"]), s))
+    authored = {}
+    for fid, f in feats.items():
+        path = feature_path(f)
+        if f["capability"] not in FEATURE_FILE_CAPS and not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8") if path.exists() else None
+        rel = f["release"].split()[0]
+        refs, trace = {}, defaultdict(set)
+        for sid in members[fid]:
+            R, rids = story_refs(sid, fmap[sid], aggs, cmds, qrys, evts, pol_c, pol_q, ops, reqs, req_uc, tests, cat, tabs, bc_schemas,
+                                 (f["subcap"], {x.strip() for x in f["ucs"].split(";")}))
+            refs[sid] = R
+            for r in rids:
+                trace[r].add(sid)
+        def skeleton(n, sid):
+            row, info = fmap[sid], STORY_INFO.get(sid)
+            op = ops.get(info["src"], {}) if info else {}
+            offline = "لا ينطبق" if row["kind"] in ("نظام", "منصة", "تكامل", "تشغيل") else ("نعم" if op.get("offline") else "لا")
+            rids = [r for r in trace if sid in trace[r]]
+            prio = "Must" if any(reqs.get(r, {}).get("priority", "").lower() == "must" for r in rids) else "Should"
+            title = row["title_ar"] or (info["title"] if info else sid)
+            return story_skeleton(n, sid, title, row["kind"], rel, prio, offline, ref_table(refs[sid]))
+
+        if text is None:
+            stories = [skeleton(n, sid) for n, sid in enumerate(members[fid], 1)]
+            text = "\n".join([
+                "---", f"id: {fid}", "type: feature", f"title: \"{f['title_ar']}\"", "status: DRAFT", "version: \"0.1\"",
+                f"capability: {f['subcap']}", "sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv]",
+                "generator: 17-system-study/_build/build_analysis_design.py", "---", "",
+                f"# {f['title_ar']}", "", block("doc", ""), "",
+                "## 1. نظرة عامة", "", "### 1.1 القيمة", "", f["value_ar"], "", "### 1.2 النطاق", "", TODO, "",
+                "### 1.3 خريطة الميزة", "", TODO, "", SHARED_RULES,
+                "## 3. الجودة وتعريف الاكتمال", "", "### 3.1 متطلبات الجودة", "", block("quality", ""), "", DOD,
+                "## 4. فهرس القصص", "", block("story-index", ""), "",
+                "## 5. القصص", "", *stories,
+                "## 6. التتبع", "", block("trace", ""), "",
+                "## 7. سجل التغييرات", "", "| الإصدار | التاريخ | التغيير |", "|---|---|---|",
+                "| 0.1 | — | هيكل مولَّد من خريطة الميزات |", ""])
+        present = parse_feature_file(text)
+        missing = [s for s in members[fid] if f"<!-- BEGIN GENERATED: refs {s} -->" not in text]
+        if missing:
+            n = len(re.findall(r"^### 5\.\d+ ", text, re.M))
+            add = []
+            for sid in missing:
+                n += 1
+                add.append(skeleton(n, sid))
+            text = text.replace("\n## 6. التتبع", "\n" + "\n".join(add) + "\n## 6. التتبع", 1)
+            present = parse_feature_file(text)
+        extra = sorted(set(re.findall(r"<!-- BEGIN GENERATED: refs (US-[A-Za-z0-9-]+) -->", text)) - set(members[fid]))
+        if extra:
+            raise SystemExit(f"{path.name}: stories not mapped to {fid} in feature_map.csv: {extra}")
+        fm = front_matter(text)
+        new_n = sum(1 for s in members[fid] if s not in STORY_INFO)
+        doc = ["| البند | القيمة |", "|---|---|", f"| المعرّف | {fid} |", f"| الإصدار | {fm.get('version', '—')} |",
+               f"| الحالة | {STATUS_AR.get(str(fm.get('status')), fm.get('status', '—'))} |",
+               f"| القدرة | {f['capability']} {caps[f['capability']]['name']} |",
+               f"| القدرة الفرعية | {f['subcap']} {subs[f['subcap']][0]} ({subs[f['subcap']][1]}) |",
+               f"| الأدوار | {esc(f['actors_ar'])} |",
+               f"| الشاشات | {'، '.join(x.strip() + ' ' + cat.get(x.strip(), '').replace('شاشة ', '') for x in f['screens'].split(';') if x.strip() and x.strip() != '-') or '—'} |",
+               f"| حالات الاستخدام | {'، '.join(x.strip() for x in f['ucs'].split(';') if x.strip() and x.strip() != '-') or '—'} |",
+               f"| القصص | {len(members[fid])}: {len(members[fid]) - new_n} من المواصفة، و{new_n} جديدة |"]
+        qids = sorted({q for r in trace for q in re.findall(r"QAS-[A-Z]+-\d+", reqs.get(r, {}).get("quality", ""))} |
+                      {q for s in members[fid] for q in re.findall(r"QAS-[A-Z]+-\d+", fmap[s]["source"])})
+        quality = (["| المرجع | الموقف | المطلوب |", "|---|---|---|"] +
+                   [f"| {q} | {esc(qas[q].get('stimulus', '—'))} | {esc(qas[q].get('response_measure', '—'))} |" for q in qids if q in qas]
+                   if qids else ["لا متطلبات جودة مرتبطة بمتطلبات هذه الميزة مباشرة. تنطبق متطلبات المنصة العامة (`FEAT-PLT-*`)."])
+        index = ["| المعرّف | القصة | النوع | الحالة |", "|---|---|---|---|"]
+        for sid in members[fid]:
+            title, st = present.get(sid, (fmap[sid]["title_ar"] or STORY_INFO.get(sid, {}).get("title", sid), "مسودة"))
+            index.append(f"| `{sid}` | {esc(title)} | {fmap[sid]['kind']} | {st} |")
+            authored[sid] = (title, st)
+        tr = ["| المتطلب | المعنى | القصص | الاختبار |", "|---|---|---|---|"]
+        spec_members = {s for s in members[fid] if s in STORY_INFO}
+        for r in sorted(trace):
+            tst = sorted({x["id"] for x in tests if r in x["verifies"]})
+            cmd_sys = {s for s in spec_members if fmap[s]["kind"] in ("أمر", "نظام")}
+            if len(spec_members) > 2 and trace[r] == spec_members:
+                who = f"كل قصص الميزة المأخوذة من المواصفة ({len(spec_members)})"
+            elif len(cmd_sys) > 2 and trace[r] == cmd_sys:
+                who = f"كل قصص الأوامر والنظام في الميزة ({len(cmd_sys)})"
+            else:
+                who = "، ".join(f"`{s}`" for s in sorted(trace[r]))
+            tr.append(f"| {r} | {esc(cat.get(r, '—'))} | {who} | {'، '.join(tst) or '—'} |")
+        for name, content in [("doc", "\n".join(doc)), ("quality", "\n".join(quality)), ("story-index", "\n".join(index)),
+                              ("trace", "\n".join(tr))] + [(f"refs {s}", ref_table(refs[s])) for s in members[fid]]:
+            new = write_block(text, name, content)
+            if new is None:
+                raise SystemExit(f"{path.name}: generated block '{name}' is missing")
+            text = new
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text.rstrip("\n") + "\n", encoding="utf-8")
+    build_feature_index(feats, fmap, members, caps, subs, authored)
+    oq = OUT / "05-user-stories" / "00-open-questions.md"
+    dom = sorted(s for s in fmap if s.startswith("US-DOM-"))
+    rows = (["| القصة | الميزة | الوصف | المصدر |", "|---|---|---|---|"] +
+            [f"| `{s}` | `{fmap[s]['feature_id']}` | {esc(fmap[s]['title_ar'])} | {esc(fmap[s]['source'].replace(';', '، '))} |" for s in dom]
+            if dom else ["لا قصص `US-DOM-` حاليًا."])
+    text = write_block(oq.read_text(encoding="utf-8"), "dom-gaps", "\n".join(rows))
+    if text is None:
+        raise SystemExit("00-open-questions.md: generated block 'dom-gaps' is missing")
+    oq.write_text(text, encoding="utf-8")
+    return len(feats), len(fmap)
+
+
+def build_feature_index(feats, fmap, members, caps, subs, authored):
+    title_of = lambda s: authored.get(s, (fmap[s]["title_ar"] or STORY_INFO.get(s, {}).get("title", s),))[0]  # noqa: E731
+    is_new = lambda s: s not in STORY_INFO  # noqa: E731
     by_cap = defaultdict(list)
     for fid, f in feats.items():
         by_cap[f["capability"]].append(fid)
     L = [BEGIN, "", "## 1. الأرقام", "",
-         "| القدرة | الميزات | القصص الحالية | قصص جديدة متوقعة | المجلد |", "|---|---|---|---|---|"]
+         "| القدرة | الميزات | القصص من المواصفة | القصص الجديدة | المجلد |", "|---|---|---|---|---|"]
     for cap in sorted(by_cap):
         fs = by_cap[cap]
-        L.append(f"| {cap} {caps[cap]['name']} | {len(fs)} | {sum(len(members[x]) for x in fs)} | "
-                 f"{sum(new(feats[x]) for x in fs)} | `{CAP_DIRS[cap]}` |")
-    L += [f"| **المجموع** | **{len(feats)}** | **{len(fmap)}** | **{sum(new(f) for f in feats.values())}** | — |", "",
-          "القصص الجديدة المتوقعة تقدير أولي لكل ميزة حسب الطبقة: "
-          + "، ".join(f"{lab} {sum(int(f[k] or 0) for f in feats.values())}" for k, lab in
-                      zip(NEW_COLS, ["واجهة", "منصة", "تكامل", "تشغيل وأمن"]))
-          + ". ولا تشمل قصص التقسيم. يُراجع التقدير في المرحلة 3.", "",
+        L.append(f"| {cap} {caps[cap]['name']} | {len(fs)} | {sum(1 for x in fs for s in members[x] if not is_new(s))} | "
+                 f"{sum(1 for x in fs for s in members[x] if is_new(s))} | `{CAP_DIRS[cap]}` |")
+    kinds = defaultdict(int)
+    for s in fmap:
+        kinds[fmap[s]["kind"]] += 1
+    L += [f"| **المجموع** | **{len(feats)}** | **{sum(1 for s in fmap if not is_new(s))}** | **{sum(1 for s in fmap if is_new(s))}** | — |", "",
+          "القصص حسب النوع: " + "، ".join(f"{k} {kinds[k]}" for k in KIND_ORDER if kinds[k]) + ".", "",
           "## 2. الميزات حسب القدرة", ""]
     for n, cap in enumerate(sorted(by_cap), 1):
         L += [f"### 2.{n} {cap} — {caps[cap]['name']}", "",
@@ -780,27 +1132,28 @@ def build_feature_index():
         for fid in fs:
             f = feats[fid]
             name, rel = subs[f["subcap"]]
-            L.append(f"| **{esc(f['title_ar'])}** `{fid}` | {f['subcap']} {name} ({rel}) | {esc(f['value_ar'])} | "
-                     f"{esc(f['actors_ar'])} | {len(members[fid])} + {new(f)} |")
-        L += ["", "القصص: الحالية + الجديدة المتوقعة.", "",
+            link = f"[{esc(f['title_ar'])}]({CAP_DIRS[cap]}/{fid}.md)" if feature_path(f).exists() else esc(f["title_ar"])
+            new_n = sum(1 for s in members[fid] if is_new(s))
+            L.append(f"| **{link}** `{fid}` | {f['subcap']} {name} ({rel}) | {esc(f['value_ar'])} | "
+                     f"{esc(f['actors_ar'])} | {len(members[fid]) - new_n} + {new_n} |")
+        L += ["", "القصص: من المواصفة + الجديدة. والعنوان المربوط ميزة لها ملف.", "",
               f"<details><summary>قصص ميزات {cap} ({sum(len(members[x]) for x in fs)})</summary>", ""]
         for fid in fs:
-            L.append(f"- **{esc(feats[fid]['title_ar'])}** `{fid}`" + ("" if members[fid] else " — بلا قصص حالية"))
-            for sid in sorted(members[fid]):
-                L.append(f"  - `{sid}` — {titles[sid][0]} ({titles[sid][1]})")
+            L.append(f"- **{esc(feats[fid]['title_ar'])}** `{fid}`" + ("" if members[fid] else " — بلا قصص"))
+            for sid in members[fid]:
+                L.append(f"  - `{sid}` — {esc(title_of(sid))} ({fmap[sid]['kind']}{'، جديدة' if is_new(sid) else ''})")
         L += ["", "</details>", ""]
-    empty = [fid for fid in feats if not members[fid]]
-    L += ["## 3. ميزات بلا قصص حالية", "",
-          f"{len(empty)} ميزة تغطي متطلبات لا تقابلها اليوم أي قصة، وتُملأ بالقصص الجديدة في المرحلة 3:", "",
-          "| الميزة | القدرة الفرعية | القيمة |", "|---|---|---|"]
-    L += [f"| **{esc(feats[x]['title_ar'])}** `{x}` | {feats[x]['subcap']} {subs[feats[x]['subcap']][0]} | {esc(feats[x]['value_ar'])} |"
+    empty = [fid for fid in feats if not any(not is_new(s) for s in members[fid])]
+    L += ["## 3. ميزات بلا قصص من المواصفة", "",
+          f"{len(empty)} ميزة تغطي متطلبات لا يقابلها أمر أو استعلام أو انتقال في المواصفة، وكل قصصها جديدة:", "",
+          "| الميزة | القدرة الفرعية | القصص الجديدة |", "|---|---|---|"]
+    L += [f"| **{esc(feats[x]['title_ar'])}** `{x}` | {feats[x]['subcap']} {subs[feats[x]['subcap']][0]} | {len(members[x])} |"
           for x in sorted(empty, key=lambda x: (feats[x]["subcap"], x))]
     L += ["", END]
     write_generated(OUT / "05-user-stories" / "00-index.md",
                     "---\nid: AD-05-INDEX\ntype: feature-index\ntitle: \"فهرس الميزات والقصص — خريطة الميزات\"\nstatus: DRAFT\n"
                     "generator: 17-system-study/_build/build_analysis_design.py\n---\n\n# فهرس الميزات والقصص\n",
                     "\n".join(L))
-    return len(feats), len(fmap)
 
 
 # ------------------------------------------------------------------ 08 state models
@@ -2309,6 +2662,7 @@ def build_components(aggs, cmds, qrys, ops):
 
 # ------------------------------------------------------------------ writer
 STORY_AGG = {}  # story id → aggregate (filled by build_user_stories)
+STORY_INFO = {}  # story id → kind, pinned source, aggregate, generated title (filled by build_user_stories)
 
 
 # ------------------------------------------------------------------ 25 traceability
@@ -2590,7 +2944,7 @@ def main():
     reqs, ucs = load_requirements()
     ops, chan, http_of = load_openapi(), load_asyncapi(), load_error_http()
     stats, story_ids = build_user_stories(aggs, cmds, qrys, pol_c, pol_q, reqs, ucs, http_of, ops)
-    nf, nm = build_feature_index()
+    nf, nm = build_features(aggs, cmds, qrys, evts, pol_c, pol_q, ops, reqs, ucs)
     build_state_models(aggs)
     inv = build_business_rules(aggs, cmds, pol_c, reqs)
     build_api(ops, cmds, qrys, pol_c, pol_q, aggs)

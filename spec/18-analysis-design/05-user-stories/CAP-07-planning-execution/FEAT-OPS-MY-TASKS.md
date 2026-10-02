@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-OPS-MY-TASKS |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-07 التخطيط والتنفيذ |
 | القدرة الفرعية | CAP-07.03 إدارة المهام (R1) |
@@ -190,15 +190,15 @@ stateDiagram-v2
 |---|---|---|---|
 | `US-BC04-TASK-ACCEPT` | قبول المهمة | أمر | مسودة |
 | `US-BC04-TASK-ADD-RESULT-ITEM` | إضافة بند نتيجة إلى المهمة | أمر | مسودة |
-| `US-BC04-TASK-BLOCK` | تعليق المهمة كمحجوب | أمر | مسودة |
+| `US-BC04-TASK-BLOCK` | حجب المهمة بسبب عائق | أمر | مسودة |
 | `US-BC04-TASK-DECLINE` | رفض قبول المهمة | أمر | مسودة |
-| `US-BC04-TASK-RESUME` | استئناف المهمة | أمر | مسودة |
+| `US-BC04-TASK-RESUME` | استئناف المهمة بعد الحجب | أمر | مسودة |
 | `US-BC04-TASK-START` | بدء المهمة | أمر | مسودة |
-| `US-BC04-TASK-SUBMIT` | تقديم المهمة | أمر | مسودة |
-| `US-BC04-Q-TASK-GET` | جلب: Task with criteria status, result, eligibility snapshot, dependencies | جلب | مسودة |
-| `US-BC04-Q-TASK-HISTORY` | جلب: State history; state as of t (RECONSTRUCTED) | جلب | مسودة |
-| `US-BC04-Q-TASK-LIST` | جلب: Tasks by assignee (me), plan, state, due_before, unit | جلب | مسودة |
-| `US-BC04-S-TASK-05` | تلقائي: due passed (escalation policy) (المهمة) | نظام | مسودة |
+| `US-BC04-TASK-SUBMIT` | تقديم المهمة للمراجعة | أمر | مسودة |
+| `US-BC04-Q-TASK-GET` | تفاصيل المهمة | جلب | مسودة |
+| `US-BC04-Q-TASK-HISTORY` | سجل حالات المهمة | جلب | مسودة |
+| `US-BC04-Q-TASK-LIST` | قائمة مهامي | جلب | مسودة |
+| `US-BC04-S-TASK-05` | تصعيد المهمة عند فوات موعدها | نظام | مسودة |
 | `US-UI-SCR01-ACTIONS` | الأزرار المتاحة حسب حالة المهمة | واجهة | مسودة |
 | `US-UI-SCR01-ERRORS` | الاستجابة لرفض الخادم في مهامي | واجهة | مسودة |
 | `US-UI-SCR01-LIST` | قائمة مهامي مجمّعة حسب الحالة | واجهة | مسودة |

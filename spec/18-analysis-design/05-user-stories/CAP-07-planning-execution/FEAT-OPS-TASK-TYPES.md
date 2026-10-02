@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-OPS-TASK-TYPES |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-07 التخطيط والتنفيذ |
 | القدرة الفرعية | CAP-07.04 سير العمل (R1) |
@@ -159,7 +159,7 @@ stateDiagram-v2
 | `US-BC04-TTY-EDIT` | تعديل نوع المهمة | أمر | مسودة |
 | `US-BC04-TTY-RETIRE` | إحالة نوع المهمة إلى التقاعد | أمر | مسودة |
 | `US-DOM-OPS-APPROVAL-STEPS-SET` | ضبط خطوات اعتماد الخطط للمستأجر | أمر | مسودة |
-| `US-BC04-Q-TTY-GET` | جلب: Task type version | جلب | مسودة |
+| `US-BC04-Q-TTY-GET` | عرض نوع المهمة وإصداره | جلب | مسودة |
 | `US-DOM-OPS-APPROVAL-STEPS-GET` | عرض خطوات الاعتماد السارية وإصداراتها | جلب | مسودة |
 | `US-DOM-OPS-TTY-LIST` | قائمة أنواع المهام النشطة | جلب | مسودة |
 | `US-UI-SCR66-APPROVAL-STEPS` | شاشة خطوات اعتماد الخطط | واجهة | مسودة |

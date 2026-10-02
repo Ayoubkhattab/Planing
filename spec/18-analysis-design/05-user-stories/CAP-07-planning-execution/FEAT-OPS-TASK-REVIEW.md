@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-OPS-TASK-REVIEW |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-07 التخطيط والتنفيذ |
 | القدرة الفرعية | CAP-07.03 إدارة المهام (R1) |
@@ -178,13 +178,13 @@ stateDiagram-v2
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC04-TASK-APPROVE` | اعتماد المهمة | أمر | مسودة |
-| `US-BC04-TASK-COMPLETE` | إكمال المهمة | أمر | مسودة |
-| `US-BC04-TASK-REJECT` | رفض المهمة | أمر | مسودة |
-| `US-BC04-TASK-RETURN` | إعادة المهمة للمراجعة | أمر | مسودة |
+| `US-BC04-TASK-APPROVE` | اعتماد نتيجة المهمة | أمر | مسودة |
+| `US-BC04-TASK-COMPLETE` | إكمال المهمة بإثبات معاييرها | أمر | مسودة |
+| `US-BC04-TASK-REJECT` | رفض نتيجة المهمة | أمر | مسودة |
+| `US-BC04-TASK-RETURN` | إعادة المهمة إلى المسند إليه لاستكمالها | أمر | مسودة |
 | `US-BC04-TASK-START-REVIEW` | بدء مراجعة المهمة | أمر | مسودة |
-| `US-DOM-OPS-TASK-MULTI-REVIEW` | خطوة مراجعة ثانية للمهمة حسب نوعها | أمر | مسودة |
-| `US-BC04-S-TASK-01` | تلقائي: all completion criteria satisfied (المهمة) | نظام | مسودة |
+| `US-DOM-OPS-TASK-MULTI-REVIEW` | خطوة مراجعة ثانية حسب نوع المهمة | أمر | مسودة |
+| `US-BC04-S-TASK-01` | إكمال المهمة تلقائيًا عند استيفاء معاييرها | نظام | مسودة |
 | `US-UI-SCR02-REVIEW-PANEL` | مراجعة المعايير والإقرارات قبل الإكمال | واجهة | مسودة |
 | `US-UI-SCR06-TASK-REVIEWS` | مهام مقدَّمة تنتظر مراجعتي | واجهة | مسودة |
 <!-- END GENERATED: story-index -->

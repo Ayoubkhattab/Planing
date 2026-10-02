@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-OPS-EXEC-TRACKING |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-07 التخطيط والتنفيذ |
 | القدرة الفرعية | CAP-07.05 قياس النتائج (R1) |
@@ -138,7 +138,7 @@ flowchart LR
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC04-Q-PLN-PROGRESS` | جلب: Tasks by activity and state, milestones, outcome progress vs targets | جلب | مسودة |
+| `US-BC04-Q-PLN-PROGRESS` | تقدم الخطة: المهام والمعالم والنتائج | جلب | مسودة |
 | `US-UI-SCR35-DRILLDOWN` | الانتقال من النشاط إلى مهامه | واجهة | مسودة |
 | `US-UI-SCR35-EXEC-SUMMARY` | ملخص مجمّع للقيادي التنفيذي | واجهة | مسودة |
 | `US-UI-SCR35-PROGRESS-BOARD` | لوحة تقدم الخطة بالمهام والمعالم والنتائج | واجهة | مسودة |

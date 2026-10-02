@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-OPS-TASK-CONTROL |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-07 التخطيط والتنفيذ |
 | القدرة الفرعية | CAP-07.03 إدارة المهام (R1) |
@@ -167,12 +167,12 @@ stateDiagram-v2
 |---|---|---|---|
 | `US-BC04-TASK-CANCEL` | إلغاء المهمة | أمر | مسودة |
 | `US-BC04-TASK-CLOSE` | إغلاق المهمة | أمر | مسودة |
-| `US-BC04-TASK-ESCALATE` | تصعيد المهمة | أمر | مسودة |
+| `US-BC04-TASK-ESCALATE` | تصعيد المهمة يدويًا | أمر | مسودة |
 | `US-BC04-TASK-SUSPEND` | تعليق المهمة | أمر | مسودة |
 | `US-BC04-TASK-UNSUSPEND` | رفع تعليق المهمة | أمر | مسودة |
-| `US-BC04-S-TASK-02` | تلقائي: follow-up window (7 d) elapsed without open follow-ups (المهمة) | نظام | مسودة |
-| `US-BC04-S-TASK-03` | تلقائي: due passed and task type expires_on_due (المهمة) | نظام | مسودة |
-| `US-BC04-S-TASK-04` | تلقائي: plan version baselined without this task (المهمة) | نظام | مسودة |
+| `US-BC04-S-TASK-02` | إغلاق المهمة المكتملة آليًا بعد 7 أيام | نظام | مسودة |
+| `US-BC04-S-TASK-03` | انتهاء المهمة عند موعدها حين يقرر نوعها ذلك | نظام | مسودة |
+| `US-BC04-S-TASK-04` | استبدال المهمة عند اعتماد إصدار خطة لا يتضمنها | نظام | مسودة |
 | `US-DOM-OPS-TASK-DEP-ESCALATE` | تصعيد المهام التابعة عند إلغاء سابقتها | نظام | مسودة |
 | `US-UI-SCR02-CONTROL-ACTIONS` | أفعال التدخل في المهمة حسب الدور والحالة | واجهة | مسودة |
 | `US-UI-SCR02-ESCALATION-NOTICE` | إظهار تصعيد المهمة ومستواه وسببه | واجهة | مسودة |

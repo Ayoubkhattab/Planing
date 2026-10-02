@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-OPS-PLAN-VERSIONS |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-07 التخطيط والتنفيذ |
 | القدرة الفرعية | CAP-07.02 إصدارات الخطة وخط الأساس (R1) |
@@ -162,10 +162,10 @@ stateDiagram-v2
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC04-PLV-AMEND-MINOR` | تعديل طفيف على إصدار الخطة | أمر | مسودة |
-| `US-BC04-Q-PLV-DIFF` | جلب: Diff vs baseline with major/minor classification and task synchronization preview | جلب | مسودة |
-| `US-BC04-Q-PLV-LIST` | جلب: Versions with states and times | جلب | مسودة |
-| `US-UI-SCR34-VERSION-DIFF` | الفرق عن خط الأساس بتصنيف التغيير | واجهة | مسودة |
+| `US-BC04-PLV-AMEND-MINOR` | تعديل طفيف على خط الأساس | أمر | مسودة |
+| `US-BC04-Q-PLV-DIFF` | الفرق عن خط الأساس بتصنيف التغيير ومعاينة أثره على المهام | جلب | مسودة |
+| `US-BC04-Q-PLV-LIST` | نسخ الخطة بحالاتها وأوقاتها | جلب | مسودة |
+| `US-UI-SCR34-VERSION-DIFF` | شاشة الفرق عن خط الأساس بتصنيف التغيير | واجهة | مسودة |
 | `US-UI-SCR34-VERSION-HISTORY` | سجل نسخ الخطة وحالاتها | واجهة | مسودة |
 | `US-PLT-OPS-PLAN-DIFF-READ` | حساب الفرق ومعاينة المزامنة لخطة كبيرة | منصة | مسودة |
 <!-- END GENERATED: story-index -->

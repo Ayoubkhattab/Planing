@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-OPS-OUTCOMES |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-07 التخطيط والتنفيذ |
 | القدرة الفرعية | CAP-07.05 قياس النتائج (R1) |
@@ -150,12 +150,12 @@ stateDiagram-v2
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC04-OUT-CORRECT` | تصحيح متتبّع النتائج | أمر | مسودة |
-| `US-BC04-OUT-RECORD` | تسجيل متتبّع النتائج | أمر | مسودة |
-| `US-BC04-Q-OUT-SERIES` | جلب: Measurement series as known_at | جلب | مسودة |
-| `US-BC04-S-OUTCOME-TRACKER-01` | تلقائي: outcome baselined (متتبّع النتائج) | نظام | مسودة |
-| `US-BC04-S-OUTCOME-TRACKER-02` | تلقائي: target changed by new baseline (متتبّع النتائج) | نظام | مسودة |
-| `US-BC04-S-OUTCOME-TRACKER-03` | تلقائي: plan closed or cancelled (متتبّع النتائج) | نظام | مسودة |
+| `US-BC04-OUT-CORRECT` | تصحيح قياس نتيجة | أمر | مسودة |
+| `US-BC04-OUT-RECORD` | تسجيل قياس نتيجة | أمر | مسودة |
+| `US-BC04-Q-OUT-SERIES` | سلسلة قياسات النتيجة مقابل المستهدف | جلب | مسودة |
+| `US-BC04-S-OUTCOME-TRACKER-01` | إنشاء متتبّع النتيجة عند اعتماد الخطة | نظام | مسودة |
+| `US-BC04-S-OUTCOME-TRACKER-02` | إضافة المستهدف الجديد عند خط أساسي جديد | نظام | مسودة |
+| `US-BC04-S-OUTCOME-TRACKER-03` | إغلاق المتتبّع عند إغلاق الخطة أو إلغائها | نظام | مسودة |
 | `US-DOM-OPS-OUTCOME-FROM-TASK` | تسجيل قياس من نتيجة مهمة | نظام | مسودة |
 | `US-UI-SCR35-OUTCOME-CHART` | منحنى القياسات مقابل المستهدف | واجهة | مسودة |
 | `US-PLT-OPS-OUTCOME-UNITS` | تحويل وحدات القياس محليًا | منصة | مسودة |

@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-OPS-PLAN-LIFECYCLE |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-07 التخطيط والتنفيذ |
 | القدرة الفرعية | CAP-07.01 الأهداف والتخطيط (R1) |
@@ -168,7 +168,7 @@ stateDiagram-v2
 | `US-BC04-PLN-RECLASSIFY` | إعادة تصنيف الخطة | أمر | مسودة |
 | `US-BC04-PLN-RESUME` | استئناف الخطة | أمر | مسودة |
 | `US-BC04-PLN-SUSPEND` | تعليق الخطة | أمر | مسودة |
-| `US-BC04-S-PLAN-02` | تلقائي: implemented decision annulled or superseded (الخطة) | نظام | مسودة |
+| `US-BC04-S-PLAN-02` | وسم الخطة للمراجعة عند إبطال قرارها أو استبداله | نظام | مسودة |
 | `US-UI-SCR34-LIFECYCLE-ACTIONS` | أفعال حالة الخطة وأثرها على المهام | واجهة | مسودة |
 | `US-UI-SCR34-REVIEW-FLAG` | تنبيه الخطة عند إبطال قرارها | واجهة | مسودة |
 <!-- END GENERATED: story-index -->

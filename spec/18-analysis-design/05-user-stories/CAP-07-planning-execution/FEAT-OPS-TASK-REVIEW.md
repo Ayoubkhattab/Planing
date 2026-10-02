@@ -22,7 +22,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الأدوار | المراجع؛ صاحب دور الإقرار؛ النظام |
 | الشاشات | SCR-02 تفاصيل المهمة وسجلها، SCR-06 قوائم المراجعة |
 | حالات الاستخدام | UC-044، UC-045 |
-| القصص | 6: 6 من المواصفة، و0 جديدة |
+| القصص | 9: 6 من المواصفة، و3 جديدة |
 <!-- END GENERATED: doc -->
 
 ## 1. نظرة عامة
@@ -116,7 +116,10 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `US-BC04-TASK-REJECT` | رفض المهمة | أمر | مسودة |
 | `US-BC04-TASK-RETURN` | إعادة المهمة للمراجعة | أمر | مسودة |
 | `US-BC04-TASK-START-REVIEW` | بدء مراجعة المهمة | أمر | مسودة |
+| `US-DOM-OPS-TASK-MULTI-REVIEW` | خطوة مراجعة ثانية للمهمة حسب نوعها | أمر | مسودة |
 | `US-BC04-S-TASK-01` | تلقائي: all completion criteria satisfied (المهمة) | نظام | مسودة |
+| `US-UI-SCR02-REVIEW-PANEL` | مراجعة المعايير والإقرارات قبل الإكمال | واجهة | مسودة |
+| `US-UI-SCR06-TASK-REVIEWS` | مهام مقدَّمة تنتظر مراجعتي | واجهة | مسودة |
 <!-- END GENERATED: story-index -->
 
 ## 5. القصص
@@ -151,17 +154,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الكيان | `AGG-TASK` | المهمة |
 | الجدول | `operations.tasks` | الجدول الرئيسي للمهمة |
 | وحدة النشر | DU-08 | — |
-| المتطلب | REQ-OPS-006 | The system shall manage task state according to state machine SM-TASK and reject any transition not defined i… |
-| المتطلب | REQ-OPS-007 | When a task is assigned, the system shall verify the assignee's eligibility wherever the task type declares r… |
-| المتطلب | REQ-OPS-008 | If a task's completion criteria are not all met, then the system shall reject its completion. |
-| المتطلب | REQ-OPS-009 | If the approver of a task result is also its assignee, then the system shall reject the approval unless tenan… |
-| المتطلب | REQ-OPS-010 | The system shall link every task to a plan, or record it as an ad-hoc task with an accountable owner and reas… |
-| المتطلب | REQ-OPS-011 | The system shall require an idempotency key and the expected version on every state-changing command, and sha… |
-| المتطلب | REQ-OPS-012 | When a task is escalated, the system shall notify the next authority level and keep the task state unchanged. |
-| حالة الاستخدام | UC-044 | Review Task |
-| حالة الاستخدام | UC-045 | Complete Task |
-| الاختبار | TST-TASK-SM | اختبار دورة حالات المهمة |
-| الاختبار | TST-SLC03-INVARIANTS | ثوابت الشريحة SLC-03 |
+| المتطلبات | REQ-OPS-006، REQ-OPS-007، REQ-OPS-008، REQ-OPS-009، REQ-OPS-010، REQ-OPS-011، REQ-OPS-012 | معانيها في القسم 6. التتبع |
+| حالات الاستخدام | UC-044، UC-045 | Review Task؛ Complete Task |
+| الاختبار | TST-TASK-SM، TST-SLC03-INVARIANTS | دورة حالات المهمة، وثوابت الشريحة SLC-03 |
 <!-- END GENERATED: refs US-BC04-TASK-APPROVE -->
 
 </details>
@@ -196,17 +191,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الكيان | `AGG-TASK` | المهمة |
 | الجدول | `operations.tasks` | الجدول الرئيسي للمهمة |
 | وحدة النشر | DU-08 | — |
-| المتطلب | REQ-OPS-006 | The system shall manage task state according to state machine SM-TASK and reject any transition not defined i… |
-| المتطلب | REQ-OPS-007 | When a task is assigned, the system shall verify the assignee's eligibility wherever the task type declares r… |
-| المتطلب | REQ-OPS-008 | If a task's completion criteria are not all met, then the system shall reject its completion. |
-| المتطلب | REQ-OPS-009 | If the approver of a task result is also its assignee, then the system shall reject the approval unless tenan… |
-| المتطلب | REQ-OPS-010 | The system shall link every task to a plan, or record it as an ad-hoc task with an accountable owner and reas… |
-| المتطلب | REQ-OPS-011 | The system shall require an idempotency key and the expected version on every state-changing command, and sha… |
-| المتطلب | REQ-OPS-012 | When a task is escalated, the system shall notify the next authority level and keep the task state unchanged. |
-| حالة الاستخدام | UC-044 | Review Task |
-| حالة الاستخدام | UC-045 | Complete Task |
-| الاختبار | TST-TASK-SM | اختبار دورة حالات المهمة |
-| الاختبار | TST-SLC03-INVARIANTS | ثوابت الشريحة SLC-03 |
+| المتطلبات | REQ-OPS-006، REQ-OPS-007، REQ-OPS-008، REQ-OPS-009، REQ-OPS-010، REQ-OPS-011، REQ-OPS-012 | معانيها في القسم 6. التتبع |
+| حالات الاستخدام | UC-044، UC-045 | Review Task؛ Complete Task |
+| الاختبار | TST-TASK-SM، TST-SLC03-INVARIANTS | دورة حالات المهمة، وثوابت الشريحة SLC-03 |
 <!-- END GENERATED: refs US-BC04-TASK-COMPLETE -->
 
 </details>
@@ -241,17 +228,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الكيان | `AGG-TASK` | المهمة |
 | الجدول | `operations.tasks` | الجدول الرئيسي للمهمة |
 | وحدة النشر | DU-08 | — |
-| المتطلب | REQ-OPS-006 | The system shall manage task state according to state machine SM-TASK and reject any transition not defined i… |
-| المتطلب | REQ-OPS-007 | When a task is assigned, the system shall verify the assignee's eligibility wherever the task type declares r… |
-| المتطلب | REQ-OPS-008 | If a task's completion criteria are not all met, then the system shall reject its completion. |
-| المتطلب | REQ-OPS-009 | If the approver of a task result is also its assignee, then the system shall reject the approval unless tenan… |
-| المتطلب | REQ-OPS-010 | The system shall link every task to a plan, or record it as an ad-hoc task with an accountable owner and reas… |
-| المتطلب | REQ-OPS-011 | The system shall require an idempotency key and the expected version on every state-changing command, and sha… |
-| المتطلب | REQ-OPS-012 | When a task is escalated, the system shall notify the next authority level and keep the task state unchanged. |
-| حالة الاستخدام | UC-044 | Review Task |
-| حالة الاستخدام | UC-045 | Complete Task |
-| الاختبار | TST-TASK-SM | اختبار دورة حالات المهمة |
-| الاختبار | TST-SLC03-INVARIANTS | ثوابت الشريحة SLC-03 |
+| المتطلبات | REQ-OPS-006، REQ-OPS-007، REQ-OPS-008، REQ-OPS-009، REQ-OPS-010، REQ-OPS-011، REQ-OPS-012 | معانيها في القسم 6. التتبع |
+| حالات الاستخدام | UC-044، UC-045 | Review Task؛ Complete Task |
+| الاختبار | TST-TASK-SM، TST-SLC03-INVARIANTS | دورة حالات المهمة، وثوابت الشريحة SLC-03 |
 <!-- END GENERATED: refs US-BC04-TASK-REJECT -->
 
 </details>
@@ -286,17 +265,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الكيان | `AGG-TASK` | المهمة |
 | الجدول | `operations.tasks` | الجدول الرئيسي للمهمة |
 | وحدة النشر | DU-08 | — |
-| المتطلب | REQ-OPS-006 | The system shall manage task state according to state machine SM-TASK and reject any transition not defined i… |
-| المتطلب | REQ-OPS-007 | When a task is assigned, the system shall verify the assignee's eligibility wherever the task type declares r… |
-| المتطلب | REQ-OPS-008 | If a task's completion criteria are not all met, then the system shall reject its completion. |
-| المتطلب | REQ-OPS-009 | If the approver of a task result is also its assignee, then the system shall reject the approval unless tenan… |
-| المتطلب | REQ-OPS-010 | The system shall link every task to a plan, or record it as an ad-hoc task with an accountable owner and reas… |
-| المتطلب | REQ-OPS-011 | The system shall require an idempotency key and the expected version on every state-changing command, and sha… |
-| المتطلب | REQ-OPS-012 | When a task is escalated, the system shall notify the next authority level and keep the task state unchanged. |
-| حالة الاستخدام | UC-044 | Review Task |
-| حالة الاستخدام | UC-045 | Complete Task |
-| الاختبار | TST-TASK-SM | اختبار دورة حالات المهمة |
-| الاختبار | TST-SLC03-INVARIANTS | ثوابت الشريحة SLC-03 |
+| المتطلبات | REQ-OPS-006، REQ-OPS-007، REQ-OPS-008، REQ-OPS-009، REQ-OPS-010، REQ-OPS-011، REQ-OPS-012 | معانيها في القسم 6. التتبع |
+| حالات الاستخدام | UC-044، UC-045 | Review Task؛ Complete Task |
+| الاختبار | TST-TASK-SM، TST-SLC03-INVARIANTS | دورة حالات المهمة، وثوابت الشريحة SLC-03 |
 <!-- END GENERATED: refs US-BC04-TASK-RETURN -->
 
 </details>
@@ -331,22 +302,46 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الكيان | `AGG-TASK` | المهمة |
 | الجدول | `operations.tasks` | الجدول الرئيسي للمهمة |
 | وحدة النشر | DU-08 | — |
-| المتطلب | REQ-OPS-006 | The system shall manage task state according to state machine SM-TASK and reject any transition not defined i… |
-| المتطلب | REQ-OPS-007 | When a task is assigned, the system shall verify the assignee's eligibility wherever the task type declares r… |
-| المتطلب | REQ-OPS-008 | If a task's completion criteria are not all met, then the system shall reject its completion. |
-| المتطلب | REQ-OPS-009 | If the approver of a task result is also its assignee, then the system shall reject the approval unless tenan… |
-| المتطلب | REQ-OPS-010 | The system shall link every task to a plan, or record it as an ad-hoc task with an accountable owner and reas… |
-| المتطلب | REQ-OPS-011 | The system shall require an idempotency key and the expected version on every state-changing command, and sha… |
-| المتطلب | REQ-OPS-012 | When a task is escalated, the system shall notify the next authority level and keep the task state unchanged. |
-| حالة الاستخدام | UC-044 | Review Task |
-| حالة الاستخدام | UC-045 | Complete Task |
-| الاختبار | TST-TASK-SM | اختبار دورة حالات المهمة |
-| الاختبار | TST-SLC03-INVARIANTS | ثوابت الشريحة SLC-03 |
+| المتطلبات | REQ-OPS-006، REQ-OPS-007، REQ-OPS-008، REQ-OPS-009، REQ-OPS-010، REQ-OPS-011، REQ-OPS-012 | معانيها في القسم 6. التتبع |
+| حالات الاستخدام | UC-044، UC-045 | Review Task؛ Complete Task |
+| الاختبار | TST-TASK-SM، TST-SLC03-INVARIANTS | دورة حالات المهمة، وثوابت الشريحة SLC-03 |
 <!-- END GENERATED: refs US-BC04-TASK-START-REVIEW -->
 
 </details>
 
-### 5.6 US-BC04-S-TASK-01 — تلقائي: all completion criteria satisfied (المهمة)
+### 5.6 US-DOM-OPS-TASK-MULTI-REVIEW — خطوة مراجعة ثانية للمهمة حسب نوعها
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| أمر | R1 | Should | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-DOM-OPS-TASK-MULTI-REVIEW -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| حالة الاستخدام | UC-044 | Review Task |
+| المصدر | `US-BC04-TTY-EDIT` | — |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-014 | The system shall allow each tenant to configure review and approval steps for plans and tasks within the limi… |
+| حالة الاستخدام | UC-044 | Review Task |
+<!-- END GENERATED: refs US-DOM-OPS-TASK-MULTI-REVIEW -->
+
+</details>
+
+### 5.7 US-BC04-S-TASK-01 — تلقائي: all completion criteria satisfied (المهمة)
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
@@ -375,18 +370,75 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الكيان | `AGG-TASK` | المهمة |
 | الجدول | `operations.tasks` | الجدول الرئيسي للمهمة |
 | وحدة النشر | DU-08 | — |
-| المتطلب | REQ-OPS-006 | The system shall manage task state according to state machine SM-TASK and reject any transition not defined i… |
-| المتطلب | REQ-OPS-007 | When a task is assigned, the system shall verify the assignee's eligibility wherever the task type declares r… |
-| المتطلب | REQ-OPS-008 | If a task's completion criteria are not all met, then the system shall reject its completion. |
-| المتطلب | REQ-OPS-009 | If the approver of a task result is also its assignee, then the system shall reject the approval unless tenan… |
-| المتطلب | REQ-OPS-010 | The system shall link every task to a plan, or record it as an ad-hoc task with an accountable owner and reas… |
-| المتطلب | REQ-OPS-011 | The system shall require an idempotency key and the expected version on every state-changing command, and sha… |
-| المتطلب | REQ-OPS-012 | When a task is escalated, the system shall notify the next authority level and keep the task state unchanged. |
-| حالة الاستخدام | UC-044 | Review Task |
-| حالة الاستخدام | UC-045 | Complete Task |
-| الاختبار | TST-TASK-SM | اختبار دورة حالات المهمة |
-| الاختبار | TST-SLC03-INVARIANTS | ثوابت الشريحة SLC-03 |
+| المتطلبات | REQ-OPS-006، REQ-OPS-007، REQ-OPS-008، REQ-OPS-009، REQ-OPS-010، REQ-OPS-011، REQ-OPS-012 | معانيها في القسم 6. التتبع |
+| حالات الاستخدام | UC-044، UC-045 | Review Task؛ Complete Task |
+| الاختبار | TST-TASK-SM، TST-SLC03-INVARIANTS | دورة حالات المهمة، وثوابت الشريحة SLC-03 |
 <!-- END GENERATED: refs US-BC04-S-TASK-01 -->
+
+</details>
+
+### 5.8 US-UI-SCR02-REVIEW-PANEL — مراجعة المعايير والإقرارات قبل الإكمال
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR02-REVIEW-PANEL -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-02 | شاشة تفاصيل المهمة وسجلها |
+| المصدر | `task-lifecycle-rules.md §2` | — |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-008 | If a task's completion criteria are not all met, then the system shall reject its completion. |
+| حالة الاستخدام | UC-045 | Complete Task |
+<!-- END GENERATED: refs US-UI-SCR02-REVIEW-PANEL -->
+
+</details>
+
+### 5.9 US-UI-SCR06-TASK-REVIEWS — مهام مقدَّمة تنتظر مراجعتي
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR06-TASK-REVIEWS -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-06 | شاشة قوائم المراجعة |
+| الشاشة | SCR-02 | شاشة تفاصيل المهمة وسجلها |
+| حالة الاستخدام | UC-044 | Review Task |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-009 | If the approver of a task result is also its assignee, then the system shall reject the approval unless tenan… |
+| حالة الاستخدام | UC-044 | Review Task |
+<!-- END GENERATED: refs US-UI-SCR06-TASK-REVIEWS -->
 
 </details>
 
@@ -397,11 +449,12 @@ generator: 17-system-study/_build/build_analysis_design.py
 |---|---|---|---|
 | REQ-OPS-006 | The system shall manage task state according to state machine SM-TASK and reject any transition not defined i… | كل قصص الميزة المأخوذة من المواصفة (6) | TST-SLC03-INVARIANTS، TST-TASK-SM |
 | REQ-OPS-007 | When a task is assigned, the system shall verify the assignee's eligibility wherever the task type declares r… | كل قصص الميزة المأخوذة من المواصفة (6) | TST-SLC03-INVARIANTS، TST-TASK-SM، TST-TASK-TYPE-SM |
-| REQ-OPS-008 | If a task's completion criteria are not all met, then the system shall reject its completion. | كل قصص الميزة المأخوذة من المواصفة (6) | TST-SLC03-INVARIANTS، TST-TASK-SM |
-| REQ-OPS-009 | If the approver of a task result is also its assignee, then the system shall reject the approval unless tenan… | كل قصص الميزة المأخوذة من المواصفة (6) | TST-ROLE-ASSIGNMENT-SM، TST-SLC03-INVARIANTS، TST-TASK-SM |
+| REQ-OPS-008 | If a task's completion criteria are not all met, then the system shall reject its completion. | `US-BC04-S-TASK-01`، `US-BC04-TASK-APPROVE`، `US-BC04-TASK-COMPLETE`، `US-BC04-TASK-REJECT`، `US-BC04-TASK-RETURN`، `US-BC04-TASK-START-REVIEW`، `US-UI-SCR02-REVIEW-PANEL` | TST-SLC03-INVARIANTS، TST-TASK-SM |
+| REQ-OPS-009 | If the approver of a task result is also its assignee, then the system shall reject the approval unless tenan… | `US-BC04-S-TASK-01`، `US-BC04-TASK-APPROVE`، `US-BC04-TASK-COMPLETE`، `US-BC04-TASK-REJECT`، `US-BC04-TASK-RETURN`، `US-BC04-TASK-START-REVIEW`، `US-UI-SCR06-TASK-REVIEWS` | TST-ROLE-ASSIGNMENT-SM، TST-SLC03-INVARIANTS، TST-TASK-SM |
 | REQ-OPS-010 | The system shall link every task to a plan, or record it as an ad-hoc task with an accountable owner and reas… | كل قصص الميزة المأخوذة من المواصفة (6) | TST-SLC03-INVARIANTS، TST-TASK-SM |
 | REQ-OPS-011 | The system shall require an idempotency key and the expected version on every state-changing command, and sha… | كل قصص الميزة المأخوذة من المواصفة (6) | TST-SLC03-INVARIANTS، TST-TASK-SM |
 | REQ-OPS-012 | When a task is escalated, the system shall notify the next authority level and keep the task state unchanged. | كل قصص الميزة المأخوذة من المواصفة (6) | TST-SLC03-INVARIANTS، TST-TASK-SM |
+| REQ-OPS-014 | The system shall allow each tenant to configure review and approval steps for plans and tasks within the limi… | `US-DOM-OPS-TASK-MULTI-REVIEW` | TST-PLAN-VERSION-SM، TST-SLC03-INVARIANTS، TST-SLC08-INVARIANTS، TST-TASK-TYPE-SM |
 <!-- END GENERATED: trace -->
 
 ## 7. سجل التغييرات

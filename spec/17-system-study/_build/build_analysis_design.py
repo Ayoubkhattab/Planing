@@ -858,18 +858,22 @@ def story_refs(sid, row, aggs, cmds, qrys, evts, pol_c, pol_q, ops, reqs, req_uc
             R.append((label, ref if label != "المصدر" else f"`{ref}`", cat.get(ref, "—")))
     if info:
         req_ids = [r for r in req_ids if reqs.get(r, {}).get("capability") == scope[0]] or req_ids
-    for r in req_ids:
-        R.append(("المتطلب", r, cat.get(r, "—")))
+    if len(req_ids) == 1:
+        R.append(("المتطلب", req_ids[0], cat.get(req_ids[0], "—")))
+    elif req_ids:
+        R.append(("المتطلبات", "، ".join(req_ids), "معانيها في القسم 6. التتبع"))
     uc_ids = sorted({u for r in req_ids for u in req_uc.get(r, ())})
-    for u in [u for u in uc_ids if u in scope[1]] or uc_ids:
-        R.append(("حالة الاستخدام", u, cat.get(u, "—")))
+    uc_ids = [u for u in uc_ids if u in scope[1]] or uc_ids
+    if uc_ids:
+        R.append(("حالات الاستخدام" if len(uc_ids) > 1 else "حالة الاستخدام", "، ".join(uc_ids),
+                  "؛ ".join(cat.get(u, "—") for u in uc_ids)))
     if a:
-        for tst in tests:
-            if tst["agg"] == aid:
-                R.append(("الاختبار", tst["id"], "اختبار دورة حالات " + agg_ar(aid, aggs)))
+        tst = [x["id"] for x in tests if x["agg"] == aid]
         inv = f"TST-{a['slice'].replace('-', '')}-INVARIANTS"
         if any(x["id"] == inv for x in tests):
-            R.append(("الاختبار", inv, "ثوابت الشريحة " + a["slice"]))
+            tst.append(inv)
+        if tst:
+            R.append(("الاختبار", "، ".join(tst), f"دورة حالات {agg_ar(aid, aggs)}، وثوابت الشريحة {a['slice']}"))
     return R, req_ids
 
 
@@ -1013,16 +1017,17 @@ def build_features(aggs, cmds, qrys, evts, pol_c, pol_q, ops, reqs, ucs):
             refs[sid] = R
             for r in rids:
                 trace[r].add(sid)
+        def skeleton(n, sid):
+            row, info = fmap[sid], STORY_INFO.get(sid)
+            op = ops.get(info["src"], {}) if info else {}
+            offline = "لا ينطبق" if row["kind"] in ("نظام", "منصة", "تكامل", "تشغيل") else ("نعم" if op.get("offline") else "لا")
+            rids = [r for r in trace if sid in trace[r]]
+            prio = "Must" if any(reqs.get(r, {}).get("priority", "").lower() == "must" for r in rids) else "Should"
+            title = row["title_ar"] or (info["title"] if info else sid)
+            return story_skeleton(n, sid, title, row["kind"], rel, prio, offline, ref_table(refs[sid]))
+
         if text is None:
-            stories = []
-            for n, sid in enumerate(members[fid], 1):
-                row, info = fmap[sid], STORY_INFO.get(sid)
-                op = ops.get(info["src"], {}) if info else {}
-                offline = "لا ينطبق" if row["kind"] in ("نظام", "منصة", "تكامل", "تشغيل") else ("نعم" if op.get("offline") else "لا")
-                rids = [r for r in trace if sid in trace[r]]
-                prio = "Must" if any(reqs.get(r, {}).get("priority", "").lower() == "must" for r in rids) else "Should"
-                title = row["title_ar"] or (info["title"] if info else sid)
-                stories.append(story_skeleton(n, sid, title, row["kind"], rel, prio, offline, ref_table(refs[sid])))
+            stories = [skeleton(n, sid) for n, sid in enumerate(members[fid], 1)]
             text = "\n".join([
                 "---", f"id: {fid}", "type: feature", f"title: \"{f['title_ar']}\"", "status: DRAFT", "version: \"0.1\"",
                 f"capability: {f['subcap']}", "sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv]",
@@ -1043,9 +1048,7 @@ def build_features(aggs, cmds, qrys, evts, pol_c, pol_q, ops, reqs, ucs):
             add = []
             for sid in missing:
                 n += 1
-                row, info = fmap[sid], STORY_INFO.get(sid)
-                add.append(story_skeleton(n, sid, row["title_ar"] or (info["title"] if info else sid), row["kind"], rel,
-                                          "Should", "—", ref_table(refs[sid])))
+                add.append(skeleton(n, sid))
             text = text.replace("\n## 6. التتبع", "\n" + "\n".join(add) + "\n## 6. التتبع", 1)
             present = parse_feature_file(text)
         extra = sorted(set(re.findall(r"<!-- BEGIN GENERATED: refs (US-[A-Za-z0-9-]+) -->", text)) - set(members[fid]))

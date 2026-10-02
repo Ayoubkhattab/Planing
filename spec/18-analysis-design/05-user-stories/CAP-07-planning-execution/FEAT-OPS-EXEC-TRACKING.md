@@ -22,7 +22,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الأدوار | المدير؛ المخطِّط؛ القيادي التنفيذي |
 | الشاشات | SCR-35 متابعة التنفيذ |
 | حالات الاستخدام | — |
-| القصص | 1: 1 من المواصفة، و0 جديدة |
+| القصص | 5: 1 من المواصفة، و4 جديدة |
 <!-- END GENERATED: doc -->
 
 ## 1. نظرة عامة
@@ -91,7 +91,10 @@ generator: 17-system-study/_build/build_analysis_design.py
 ### 3.1 متطلبات الجودة
 
 <!-- BEGIN GENERATED: quality -->
-لا متطلبات جودة مرتبطة بمتطلبات هذه الميزة مباشرة. تنطبق متطلبات المنصة العامة (`FEAT-PLT-*`).
+| المرجع | الموقف | المطلوب |
+|---|---|---|
+| QAS-PERF-002 | reads a single object or a list page | single object p95 ≤ 300 ms; list page p95 ≤ 1 s |
+| QAS-PERF-021 | plan version baselined with 500 task-generating activities | task synchronization completes ≤ 60 s; idempotent on retry |
 <!-- END GENERATED: quality -->
 
 ### 3.2 تعريف الاكتمال
@@ -110,6 +113,10 @@ generator: 17-system-study/_build/build_analysis_design.py
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
 | `US-BC04-Q-PLN-PROGRESS` | جلب: Tasks by activity and state, milestones, outcome progress vs targets | جلب | مسودة |
+| `US-UI-SCR35-DRILLDOWN` | الانتقال من النشاط إلى مهامه | واجهة | مسودة |
+| `US-UI-SCR35-EXEC-SUMMARY` | ملخص مجمّع للقيادي التنفيذي | واجهة | مسودة |
+| `US-UI-SCR35-PROGRESS-BOARD` | لوحة تقدم الخطة بالمهام والمعالم والنتائج | واجهة | مسودة |
+| `US-PLT-OPS-PROGRESS-READ` | قراءة تقدم خطة كبيرة خلال ثانية | منصة | مسودة |
 <!-- END GENERATED: story-index -->
 
 ## 5. القصص
@@ -145,9 +152,132 @@ generator: 17-system-study/_build/build_analysis_design.py
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-013 | The system shall record measurements of plan outcomes over time against their targets. |
 | حالة الاستخدام | UC-101 | Measure Plan Outcome |
-| الاختبار | TST-PLAN-SM | اختبار دورة حالات الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-PLAN-SM، TST-SLC08-INVARIANTS | دورة حالات الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-Q-PLN-PROGRESS -->
+
+</details>
+
+### 5.2 US-UI-SCR35-DRILLDOWN — الانتقال من النشاط إلى مهامه
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Should | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR35-DRILLDOWN -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-35 | شاشة متابعة التنفيذ |
+| الشاشة | SCR-02 | شاشة تفاصيل المهمة وسجلها |
+| المصدر | `21-ui-design.md §3` | — |
+| المصدر | `[Derived]` | — |
+<!-- END GENERATED: refs US-UI-SCR35-DRILLDOWN -->
+
+</details>
+
+### 5.3 US-UI-SCR35-EXEC-SUMMARY — ملخص مجمّع للقيادي التنفيذي
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Should | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR35-EXEC-SUMMARY -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-35 | شاشة متابعة التنفيذ |
+| المصدر | `21-ui-design.md §5` | — |
+| المصدر | `POL-AGG-STATS` | — |
+<!-- END GENERATED: refs US-UI-SCR35-EXEC-SUMMARY -->
+
+</details>
+
+### 5.4 US-UI-SCR35-PROGRESS-BOARD — لوحة تقدم الخطة بالمهام والمعالم والنتائج
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR35-PROGRESS-BOARD -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-35 | شاشة متابعة التنفيذ |
+| المصدر | `QRY-PLN-PROGRESS` | — |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-013 | The system shall record measurements of plan outcomes over time against their targets. |
+| حالة الاستخدام | UC-101 | Measure Plan Outcome |
+<!-- END GENERATED: refs US-UI-SCR35-PROGRESS-BOARD -->
+
+</details>
+
+### 5.5 US-PLT-OPS-PROGRESS-READ — قراءة تقدم خطة كبيرة خلال ثانية
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| منصة | R1 | Should | لا ينطبق | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-PLT-OPS-PROGRESS-READ -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الجودة | QAS-PERF-002 | reads a single object or a list page → single object p95 ≤ 300 ms; list page p95 ≤ 1 s |
+| الجودة | QAS-PERF-021 | plan version baselined with 500 task-generating activities → task synchronization completes ≤ 60 s; idempoten… |
+| المصدر | `QRY-PLN-PROGRESS` | — |
+| المصدر | `[Derived]` | — |
+<!-- END GENERATED: refs US-PLT-OPS-PROGRESS-READ -->
 
 </details>
 
@@ -156,7 +286,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 <!-- BEGIN GENERATED: trace -->
 | المتطلب | المعنى | القصص | الاختبار |
 |---|---|---|---|
-| REQ-OPS-013 | The system shall record measurements of plan outcomes over time against their targets. | `US-BC04-Q-PLN-PROGRESS` | TST-OUTCOME-TRACKER-SM، TST-SLC08-INVARIANTS |
+| REQ-OPS-013 | The system shall record measurements of plan outcomes over time against their targets. | `US-BC04-Q-PLN-PROGRESS`، `US-UI-SCR35-PROGRESS-BOARD` | TST-OUTCOME-TRACKER-SM، TST-SLC08-INVARIANTS |
 <!-- END GENERATED: trace -->
 
 ## 7. سجل التغييرات

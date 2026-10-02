@@ -22,7 +22,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الأدوار | المخطِّط؛ مالك الخطة |
 | الشاشات | SCR-34 الخطة ونسخها |
 | حالات الاستخدام | UC-033 |
-| القصص | 6: 6 من المواصفة، و0 جديدة |
+| القصص | 11: 6 من المواصفة، و5 جديدة |
 <!-- END GENERATED: doc -->
 
 ## 1. نظرة عامة
@@ -115,6 +115,11 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `US-BC04-PLV-EDIT` | تعديل إصدار الخطة | أمر | مسودة |
 | `US-BC04-PLV-SUBMIT` | تقديم إصدار الخطة | أمر | مسودة |
 | `US-BC04-Q-PLN-GET` | جلب: Plan with current baseline, draft (if any), implemented decisions | جلب | مسودة |
+| `US-DOM-OPS-PLAN-LIST` | قائمة الخطط المرئية حسب الحالة والنوع | جلب | مسودة |
+| `US-UI-SCR34-CREATE-FORM` | إنشاء خطة مرتبطة بقرار أو هدف | واجهة | مسودة |
+| `US-UI-SCR34-EDITOR` | تحرير محتوى الخطة وفحص اكتماله قبل التقديم | واجهة | مسودة |
+| `US-UI-SCR34-PLAN-LIST` | تصفح الخطط وتصفيتها حسب الحالة والنوع | واجهة | مسودة |
+| `US-UI-SCR34-TIMELINE` | الجدول الزمني للمراحل والأنشطة والمعالم | واجهة | مسودة |
 <!-- END GENERATED: story-index -->
 
 ## 5. القصص
@@ -149,11 +154,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الكيان | `AGG-PLAN` | الخطة |
 | الجدول | `operations.plans` | الجدول الرئيسي للخطة |
 | وحدة النشر | DU-08 | — |
-| المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
-| المتطلب | REQ-OPS-002 | The system shall link every approved plan to the decisions or objectives it implements. |
+| المتطلبات | REQ-OPS-001، REQ-OPS-002 | معانيها في القسم 6. التتبع |
 | حالة الاستخدام | UC-033 | Create Plan |
-| الاختبار | TST-PLAN-SM | اختبار دورة حالات الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-PLAN-SM، TST-SLC08-INVARIANTS | دورة حالات الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-PLN-CREATE -->
 
 </details>
@@ -190,8 +193,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
 | حالة الاستخدام | UC-033 | Create Plan |
-| الاختبار | TST-PLAN-VERSION-SM | اختبار دورة حالات إصدار الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-PLAN-VERSION-SM، TST-SLC08-INVARIANTS | دورة حالات إصدار الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-PLV-DISCARD -->
 
 </details>
@@ -228,8 +230,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
 | حالة الاستخدام | UC-033 | Create Plan |
-| الاختبار | TST-PLAN-VERSION-SM | اختبار دورة حالات إصدار الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-PLAN-VERSION-SM، TST-SLC08-INVARIANTS | دورة حالات إصدار الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-PLV-DRAFT -->
 
 </details>
@@ -266,8 +267,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
 | حالة الاستخدام | UC-033 | Create Plan |
-| الاختبار | TST-PLAN-VERSION-SM | اختبار دورة حالات إصدار الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-PLAN-VERSION-SM، TST-SLC08-INVARIANTS | دورة حالات إصدار الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-PLV-EDIT -->
 
 </details>
@@ -304,8 +304,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
 | حالة الاستخدام | UC-033 | Create Plan |
-| الاختبار | TST-PLAN-VERSION-SM | اختبار دورة حالات إصدار الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-PLAN-VERSION-SM، TST-SLC08-INVARIANTS | دورة حالات إصدار الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-PLV-SUBMIT -->
 
 </details>
@@ -341,9 +340,166 @@ generator: 17-system-study/_build/build_analysis_design.py
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
 | حالة الاستخدام | UC-033 | Create Plan |
-| الاختبار | TST-PLAN-SM | اختبار دورة حالات الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-PLAN-SM، TST-SLC08-INVARIANTS | دورة حالات الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-Q-PLN-GET -->
+
+</details>
+
+### 5.7 US-DOM-OPS-PLAN-LIST — قائمة الخطط المرئية حسب الحالة والنوع
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| جلب | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-DOM-OPS-PLAN-LIST -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| حالة الاستخدام | UC-033 | Create Plan |
+| الشاشة | SCR-34 | شاشة الخطة ونسخها |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
+| حالة الاستخدام | UC-033 | Create Plan |
+<!-- END GENERATED: refs US-DOM-OPS-PLAN-LIST -->
+
+</details>
+
+### 5.8 US-UI-SCR34-CREATE-FORM — إنشاء خطة مرتبطة بقرار أو هدف
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR34-CREATE-FORM -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-34 | شاشة الخطة ونسخها |
+| حالة الاستخدام | UC-033 | Create Plan |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-002 | The system shall link every approved plan to the decisions or objectives it implements. |
+| حالة الاستخدام | UC-033 | Create Plan |
+<!-- END GENERATED: refs US-UI-SCR34-CREATE-FORM -->
+
+</details>
+
+### 5.9 US-UI-SCR34-EDITOR — تحرير محتوى الخطة وفحص اكتماله قبل التقديم
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR34-EDITOR -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-34 | شاشة الخطة ونسخها |
+| حالة الاستخدام | UC-033 | Create Plan |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
+| حالة الاستخدام | UC-033 | Create Plan |
+<!-- END GENERATED: refs US-UI-SCR34-EDITOR -->
+
+</details>
+
+### 5.10 US-UI-SCR34-PLAN-LIST — تصفح الخطط وتصفيتها حسب الحالة والنوع
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Should | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR34-PLAN-LIST -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-34 | شاشة الخطة ونسخها |
+| المصدر | `21-ui-design.md §6.1` | — |
+| المصدر | `[Derived]` | — |
+<!-- END GENERATED: refs US-UI-SCR34-PLAN-LIST -->
+
+</details>
+
+### 5.11 US-UI-SCR34-TIMELINE — الجدول الزمني للمراحل والأنشطة والمعالم
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR34-TIMELINE -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-34 | شاشة الخطة ونسخها |
+| المصدر | `21-ui-design.md §10` | — |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
+| حالة الاستخدام | UC-033 | Create Plan |
+<!-- END GENERATED: refs US-UI-SCR34-TIMELINE -->
 
 </details>
 
@@ -352,8 +508,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 <!-- BEGIN GENERATED: trace -->
 | المتطلب | المعنى | القصص | الاختبار |
 |---|---|---|---|
-| REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… | كل قصص الميزة المأخوذة من المواصفة (6) | TST-PLAN-SM، TST-PLAN-VERSION-SM، TST-SLC08-INVARIANTS |
-| REQ-OPS-002 | The system shall link every approved plan to the decisions or objectives it implements. | `US-BC04-PLN-CREATE` | TST-PLAN-SM، TST-SLC08-INVARIANTS |
+| REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… | `US-BC04-PLN-CREATE`، `US-BC04-PLV-DISCARD`، `US-BC04-PLV-DRAFT`، `US-BC04-PLV-EDIT`، `US-BC04-PLV-SUBMIT`، `US-BC04-Q-PLN-GET`، `US-DOM-OPS-PLAN-LIST`، `US-UI-SCR34-EDITOR`، `US-UI-SCR34-TIMELINE` | TST-PLAN-SM، TST-PLAN-VERSION-SM، TST-SLC08-INVARIANTS |
+| REQ-OPS-002 | The system shall link every approved plan to the decisions or objectives it implements. | `US-BC04-PLN-CREATE`، `US-UI-SCR34-CREATE-FORM` | TST-PLAN-SM، TST-SLC08-INVARIANTS |
 <!-- END GENERATED: trace -->
 
 ## 7. سجل التغييرات

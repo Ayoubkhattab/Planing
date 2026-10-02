@@ -22,7 +22,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الأدوار | المخطِّط؛ مالك الخطة؛ النظام |
 | الشاشات | SCR-35 متابعة التنفيذ |
 | حالات الاستخدام | UC-101 |
-| القصص | 6: 6 من المواصفة، و0 جديدة |
+| القصص | 9: 6 من المواصفة، و3 جديدة |
 <!-- END GENERATED: doc -->
 
 ## 1. نظرة عامة
@@ -115,6 +115,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `US-BC04-S-OUTCOME-TRACKER-01` | تلقائي: outcome baselined (متتبّع النتائج) | نظام | مسودة |
 | `US-BC04-S-OUTCOME-TRACKER-02` | تلقائي: target changed by new baseline (متتبّع النتائج) | نظام | مسودة |
 | `US-BC04-S-OUTCOME-TRACKER-03` | تلقائي: plan closed or cancelled (متتبّع النتائج) | نظام | مسودة |
+| `US-DOM-OPS-OUTCOME-FROM-TASK` | تسجيل قياس من نتيجة مهمة | نظام | مسودة |
+| `US-UI-SCR35-OUTCOME-CHART` | منحنى القياسات مقابل المستهدف | واجهة | مسودة |
+| `US-PLT-OPS-OUTCOME-UNITS` | تحويل وحدات القياس محليًا | منصة | مسودة |
 <!-- END GENERATED: story-index -->
 
 ## 5. القصص
@@ -151,8 +154,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-013 | The system shall record measurements of plan outcomes over time against their targets. |
 | حالة الاستخدام | UC-101 | Measure Plan Outcome |
-| الاختبار | TST-OUTCOME-TRACKER-SM | اختبار دورة حالات متتبّع النتائج |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-OUTCOME-TRACKER-SM، TST-SLC08-INVARIANTS | دورة حالات متتبّع النتائج، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-OUT-CORRECT -->
 
 </details>
@@ -189,8 +191,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-013 | The system shall record measurements of plan outcomes over time against their targets. |
 | حالة الاستخدام | UC-101 | Measure Plan Outcome |
-| الاختبار | TST-OUTCOME-TRACKER-SM | اختبار دورة حالات متتبّع النتائج |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-OUTCOME-TRACKER-SM، TST-SLC08-INVARIANTS | دورة حالات متتبّع النتائج، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-OUT-RECORD -->
 
 </details>
@@ -226,8 +227,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-013 | The system shall record measurements of plan outcomes over time against their targets. |
 | حالة الاستخدام | UC-101 | Measure Plan Outcome |
-| الاختبار | TST-PLAN-SM | اختبار دورة حالات الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-PLAN-SM، TST-SLC08-INVARIANTS | دورة حالات الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-Q-OUT-SERIES -->
 
 </details>
@@ -263,8 +263,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-013 | The system shall record measurements of plan outcomes over time against their targets. |
 | حالة الاستخدام | UC-101 | Measure Plan Outcome |
-| الاختبار | TST-OUTCOME-TRACKER-SM | اختبار دورة حالات متتبّع النتائج |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-OUTCOME-TRACKER-SM، TST-SLC08-INVARIANTS | دورة حالات متتبّع النتائج، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-S-OUTCOME-TRACKER-01 -->
 
 </details>
@@ -300,8 +299,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-013 | The system shall record measurements of plan outcomes over time against their targets. |
 | حالة الاستخدام | UC-101 | Measure Plan Outcome |
-| الاختبار | TST-OUTCOME-TRACKER-SM | اختبار دورة حالات متتبّع النتائج |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-OUTCOME-TRACKER-SM، TST-SLC08-INVARIANTS | دورة حالات متتبّع النتائج، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-S-OUTCOME-TRACKER-02 -->
 
 </details>
@@ -337,9 +335,103 @@ generator: 17-system-study/_build/build_analysis_design.py
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-013 | The system shall record measurements of plan outcomes over time against their targets. |
 | حالة الاستخدام | UC-101 | Measure Plan Outcome |
-| الاختبار | TST-OUTCOME-TRACKER-SM | اختبار دورة حالات متتبّع النتائج |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-OUTCOME-TRACKER-SM، TST-SLC08-INVARIANTS | دورة حالات متتبّع النتائج، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-S-OUTCOME-TRACKER-03 -->
+
+</details>
+
+### 5.7 US-DOM-OPS-OUTCOME-FROM-TASK — تسجيل قياس من نتيجة مهمة
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| نظام | R1 | Must | لا ينطبق | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-DOM-OPS-OUTCOME-FROM-TASK -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| المصدر | `decision-plan-spec.md §4` | — |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-013 | The system shall record measurements of plan outcomes over time against their targets. |
+| حالة الاستخدام | UC-101 | Measure Plan Outcome |
+<!-- END GENERATED: refs US-DOM-OPS-OUTCOME-FROM-TASK -->
+
+</details>
+
+### 5.8 US-UI-SCR35-OUTCOME-CHART — منحنى القياسات مقابل المستهدف
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR35-OUTCOME-CHART -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-35 | شاشة متابعة التنفيذ |
+| المصدر | `decision-plan-spec.md §4` | — |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-013 | The system shall record measurements of plan outcomes over time against their targets. |
+| حالة الاستخدام | UC-101 | Measure Plan Outcome |
+<!-- END GENERATED: refs US-UI-SCR35-OUTCOME-CHART -->
+
+</details>
+
+### 5.9 US-PLT-OPS-OUTCOME-UNITS — تحويل وحدات القياس محليًا
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| منصة | R1 | Must | لا ينطبق | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-PLT-OPS-OUTCOME-UNITS -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| المصدر | `US-BC04-OUT-RECORD` | — |
+| فحص البنية | FIT-12 | No external network dependency at runtime or build (air-gapped) |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-013 | The system shall record measurements of plan outcomes over time against their targets. |
+| حالة الاستخدام | UC-101 | Measure Plan Outcome |
+<!-- END GENERATED: refs US-PLT-OPS-OUTCOME-UNITS -->
 
 </details>
 
@@ -348,7 +440,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 <!-- BEGIN GENERATED: trace -->
 | المتطلب | المعنى | القصص | الاختبار |
 |---|---|---|---|
-| REQ-OPS-013 | The system shall record measurements of plan outcomes over time against their targets. | كل قصص الميزة المأخوذة من المواصفة (6) | TST-OUTCOME-TRACKER-SM، TST-SLC08-INVARIANTS |
+| REQ-OPS-013 | The system shall record measurements of plan outcomes over time against their targets. | `US-BC04-OUT-CORRECT`، `US-BC04-OUT-RECORD`، `US-BC04-Q-OUT-SERIES`، `US-BC04-S-OUTCOME-TRACKER-01`، `US-BC04-S-OUTCOME-TRACKER-02`، `US-BC04-S-OUTCOME-TRACKER-03`، `US-DOM-OPS-OUTCOME-FROM-TASK`، `US-PLT-OPS-OUTCOME-UNITS`، `US-UI-SCR35-OUTCOME-CHART` | TST-OUTCOME-TRACKER-SM، TST-SLC08-INVARIANTS |
 <!-- END GENERATED: trace -->
 
 ## 7. سجل التغييرات

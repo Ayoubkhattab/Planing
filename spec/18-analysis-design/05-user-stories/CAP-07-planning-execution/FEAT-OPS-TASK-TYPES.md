@@ -22,7 +22,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الأدوار | مسؤول الإدارة؛ قائد المخططين؛ أي مستخدم مخوَّل |
 | الشاشات | SCR-66 أنواع المهام |
 | حالات الاستخدام | UC-034، UC-041، UC-044، UC-102 |
-| القصص | 5: 5 من المواصفة، و0 جديدة |
+| القصص | 10: 5 من المواصفة، و5 جديدة |
 <!-- END GENERATED: doc -->
 
 ## 1. نظرة عامة
@@ -113,7 +113,12 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `US-BC04-TTY-DEFINE` | تعريف نوع المهمة | أمر | مسودة |
 | `US-BC04-TTY-EDIT` | تعديل نوع المهمة | أمر | مسودة |
 | `US-BC04-TTY-RETIRE` | إحالة نوع المهمة إلى التقاعد | أمر | مسودة |
+| `US-DOM-OPS-APPROVAL-STEPS-SET` | ضبط خطوات اعتماد الخطط للمستأجر | أمر | مسودة |
 | `US-BC04-Q-TTY-GET` | جلب: Task type version | جلب | مسودة |
+| `US-DOM-OPS-APPROVAL-STEPS-GET` | عرض خطوات الاعتماد السارية وإصداراتها | جلب | مسودة |
+| `US-DOM-OPS-TTY-LIST` | قائمة أنواع المهام النشطة | جلب | مسودة |
+| `US-UI-SCR66-APPROVAL-STEPS` | شاشة خطوات اعتماد الخطط | واجهة | مسودة |
+| `US-UI-SCR66-EDITOR` | تحرير نوع المهمة ومعاييره وتصعيده | واجهة | مسودة |
 <!-- END GENERATED: story-index -->
 
 ## 5. القصص
@@ -122,7 +127,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
-| أمر | R1 | Must | لا | مسودة |
+| أمر | R1 | Should | لا | مسودة |
 
 > **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
 
@@ -149,10 +154,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الجدول | `operations.task_types` | الجدول الرئيسي لنوع المهمة |
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-014 | The system shall allow each tenant to configure review and approval steps for plans and tasks within the limi… |
-| حالة الاستخدام | UC-034 | Review Plan |
-| حالة الاستخدام | UC-044 | Review Task |
-| الاختبار | TST-TASK-TYPE-SM | اختبار دورة حالات نوع المهمة |
-| الاختبار | TST-SLC03-INVARIANTS | ثوابت الشريحة SLC-03 |
+| حالات الاستخدام | UC-034، UC-044 | Review Plan؛ Review Task |
+| الاختبار | TST-TASK-TYPE-SM، TST-SLC03-INVARIANTS | دورة حالات نوع المهمة، وثوابت الشريحة SLC-03 |
 <!-- END GENERATED: refs US-BC04-TTY-ACTIVATE -->
 
 </details>
@@ -161,7 +164,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
-| أمر | R1 | Must | لا | مسودة |
+| أمر | R1 | Should | لا | مسودة |
 
 > **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
 
@@ -188,10 +191,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الجدول | `operations.task_types` | الجدول الرئيسي لنوع المهمة |
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-014 | The system shall allow each tenant to configure review and approval steps for plans and tasks within the limi… |
-| حالة الاستخدام | UC-034 | Review Plan |
-| حالة الاستخدام | UC-044 | Review Task |
-| الاختبار | TST-TASK-TYPE-SM | اختبار دورة حالات نوع المهمة |
-| الاختبار | TST-SLC03-INVARIANTS | ثوابت الشريحة SLC-03 |
+| حالات الاستخدام | UC-034، UC-044 | Review Plan؛ Review Task |
+| الاختبار | TST-TASK-TYPE-SM، TST-SLC03-INVARIANTS | دورة حالات نوع المهمة، وثوابت الشريحة SLC-03 |
 <!-- END GENERATED: refs US-BC04-TTY-DEFINE -->
 
 </details>
@@ -200,7 +201,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
-| أمر | R1 | Must | لا | مسودة |
+| أمر | R1 | Should | لا | مسودة |
 
 > **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
 
@@ -227,10 +228,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الجدول | `operations.task_types` | الجدول الرئيسي لنوع المهمة |
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-014 | The system shall allow each tenant to configure review and approval steps for plans and tasks within the limi… |
-| حالة الاستخدام | UC-034 | Review Plan |
-| حالة الاستخدام | UC-044 | Review Task |
-| الاختبار | TST-TASK-TYPE-SM | اختبار دورة حالات نوع المهمة |
-| الاختبار | TST-SLC03-INVARIANTS | ثوابت الشريحة SLC-03 |
+| حالات الاستخدام | UC-034، UC-044 | Review Plan؛ Review Task |
+| الاختبار | TST-TASK-TYPE-SM، TST-SLC03-INVARIANTS | دورة حالات نوع المهمة، وثوابت الشريحة SLC-03 |
 <!-- END GENERATED: refs US-BC04-TTY-EDIT -->
 
 </details>
@@ -239,7 +238,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
-| أمر | R1 | Must | لا | مسودة |
+| أمر | R1 | Should | لا | مسودة |
 
 > **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
 
@@ -266,15 +265,45 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الجدول | `operations.task_types` | الجدول الرئيسي لنوع المهمة |
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-014 | The system shall allow each tenant to configure review and approval steps for plans and tasks within the limi… |
-| حالة الاستخدام | UC-034 | Review Plan |
-| حالة الاستخدام | UC-044 | Review Task |
-| الاختبار | TST-TASK-TYPE-SM | اختبار دورة حالات نوع المهمة |
-| الاختبار | TST-SLC03-INVARIANTS | ثوابت الشريحة SLC-03 |
+| حالات الاستخدام | UC-034، UC-044 | Review Plan؛ Review Task |
+| الاختبار | TST-TASK-TYPE-SM، TST-SLC03-INVARIANTS | دورة حالات نوع المهمة، وثوابت الشريحة SLC-03 |
 <!-- END GENERATED: refs US-BC04-TTY-RETIRE -->
 
 </details>
 
-### 5.5 US-BC04-Q-TTY-GET — جلب: Task type version
+### 5.5 US-DOM-OPS-APPROVAL-STEPS-SET — ضبط خطوات اعتماد الخطط للمستأجر
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| أمر | R1 | Should | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-DOM-OPS-APPROVAL-STEPS-SET -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| المصدر | `00-open-questions.md §3` | — |
+| حالة الاستخدام | UC-034 | Review Plan |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-014 | The system shall allow each tenant to configure review and approval steps for plans and tasks within the limi… |
+| حالات الاستخدام | UC-034، UC-044 | Review Plan؛ Review Task |
+<!-- END GENERATED: refs US-DOM-OPS-APPROVAL-STEPS-SET -->
+
+</details>
+
+### 5.6 US-BC04-Q-TTY-GET — جلب: Task type version
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
@@ -304,11 +333,136 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الجدول | `operations.task_types` | الجدول الرئيسي لنوع المهمة |
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-014 | The system shall allow each tenant to configure review and approval steps for plans and tasks within the limi… |
-| حالة الاستخدام | UC-034 | Review Plan |
-| حالة الاستخدام | UC-044 | Review Task |
-| الاختبار | TST-TASK-TYPE-SM | اختبار دورة حالات نوع المهمة |
-| الاختبار | TST-SLC03-INVARIANTS | ثوابت الشريحة SLC-03 |
+| حالات الاستخدام | UC-034، UC-044 | Review Plan؛ Review Task |
+| الاختبار | TST-TASK-TYPE-SM، TST-SLC03-INVARIANTS | دورة حالات نوع المهمة، وثوابت الشريحة SLC-03 |
 <!-- END GENERATED: refs US-BC04-Q-TTY-GET -->
+
+</details>
+
+### 5.7 US-DOM-OPS-APPROVAL-STEPS-GET — عرض خطوات الاعتماد السارية وإصداراتها
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| جلب | R1 | Should | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-DOM-OPS-APPROVAL-STEPS-GET -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| المصدر | `00-open-questions.md §3` | — |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-014 | The system shall allow each tenant to configure review and approval steps for plans and tasks within the limi… |
+| حالات الاستخدام | UC-034، UC-044 | Review Plan؛ Review Task |
+<!-- END GENERATED: refs US-DOM-OPS-APPROVAL-STEPS-GET -->
+
+</details>
+
+### 5.8 US-DOM-OPS-TTY-LIST — قائمة أنواع المهام النشطة
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| جلب | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-DOM-OPS-TTY-LIST -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-66 | شاشة أنواع المهام |
+| حالة الاستخدام | UC-040 | Create Task |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-007 | When a task is assigned, the system shall verify the assignee's eligibility wherever the task type declares r… |
+| حالات الاستخدام | UC-041، UC-102 | Assign Task؛ Check Eligibility |
+<!-- END GENERATED: refs US-DOM-OPS-TTY-LIST -->
+
+</details>
+
+### 5.9 US-UI-SCR66-APPROVAL-STEPS — شاشة خطوات اعتماد الخطط
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Should | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR66-APPROVAL-STEPS -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-66 | شاشة أنواع المهام |
+| المصدر | `00-open-questions.md §3` | — |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-014 | The system shall allow each tenant to configure review and approval steps for plans and tasks within the limi… |
+| حالات الاستخدام | UC-034، UC-044 | Review Plan؛ Review Task |
+<!-- END GENERATED: refs US-UI-SCR66-APPROVAL-STEPS -->
+
+</details>
+
+### 5.10 US-UI-SCR66-EDITOR — تحرير نوع المهمة ومعاييره وتصعيده
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR66-EDITOR -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-66 | شاشة أنواع المهام |
+| المصدر | `task-lifecycle-rules.md §2` | — |
+| المصدر | `[Derived]` | — |
+| المتطلبات | REQ-OPS-007، REQ-OPS-014 | معانيها في القسم 6. التتبع |
+| حالات الاستخدام | UC-034، UC-041، UC-044، UC-102 | Review Plan؛ Assign Task؛ Review Task؛ Check Eligibility |
+<!-- END GENERATED: refs US-UI-SCR66-EDITOR -->
 
 </details>
 
@@ -317,7 +471,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 <!-- BEGIN GENERATED: trace -->
 | المتطلب | المعنى | القصص | الاختبار |
 |---|---|---|---|
-| REQ-OPS-014 | The system shall allow each tenant to configure review and approval steps for plans and tasks within the limi… | كل قصص الميزة المأخوذة من المواصفة (5) | TST-PLAN-VERSION-SM، TST-SLC03-INVARIANTS، TST-SLC08-INVARIANTS، TST-TASK-TYPE-SM |
+| REQ-OPS-007 | When a task is assigned, the system shall verify the assignee's eligibility wherever the task type declares r… | `US-DOM-OPS-TTY-LIST`، `US-UI-SCR66-EDITOR` | TST-SLC03-INVARIANTS، TST-TASK-SM، TST-TASK-TYPE-SM |
+| REQ-OPS-014 | The system shall allow each tenant to configure review and approval steps for plans and tasks within the limi… | `US-BC04-Q-TTY-GET`، `US-BC04-TTY-ACTIVATE`، `US-BC04-TTY-DEFINE`، `US-BC04-TTY-EDIT`، `US-BC04-TTY-RETIRE`، `US-DOM-OPS-APPROVAL-STEPS-GET`، `US-DOM-OPS-APPROVAL-STEPS-SET`، `US-UI-SCR66-APPROVAL-STEPS`، `US-UI-SCR66-EDITOR` | TST-PLAN-VERSION-SM، TST-SLC03-INVARIANTS، TST-SLC08-INVARIANTS، TST-TASK-TYPE-SM |
 <!-- END GENERATED: trace -->
 
 ## 7. سجل التغييرات

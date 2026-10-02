@@ -22,7 +22,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الأدوار | المخطِّط؛ المدير |
 | الشاشات | SCR-34 الخطة ونسخها |
 | حالات الاستخدام | UC-034، UC-036 |
-| القصص | 3: 3 من المواصفة، و0 جديدة |
+| القصص | 6: 3 من المواصفة، و3 جديدة |
 <!-- END GENERATED: doc -->
 
 ## 1. نظرة عامة
@@ -91,7 +91,10 @@ generator: 17-system-study/_build/build_analysis_design.py
 ### 3.1 متطلبات الجودة
 
 <!-- BEGIN GENERATED: quality -->
-لا متطلبات جودة مرتبطة بمتطلبات هذه الميزة مباشرة. تنطبق متطلبات المنصة العامة (`FEAT-PLT-*`).
+| المرجع | الموقف | المطلوب |
+|---|---|---|
+| QAS-PERF-002 | reads a single object or a list page | single object p95 ≤ 300 ms; list page p95 ≤ 1 s |
+| QAS-PERF-021 | plan version baselined with 500 task-generating activities | task synchronization completes ≤ 60 s; idempotent on retry |
 <!-- END GENERATED: quality -->
 
 ### 3.2 تعريف الاكتمال
@@ -112,6 +115,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `US-BC04-PLV-AMEND-MINOR` | تعديل طفيف على إصدار الخطة | أمر | مسودة |
 | `US-BC04-Q-PLV-DIFF` | جلب: Diff vs baseline with major/minor classification and task synchronization preview | جلب | مسودة |
 | `US-BC04-Q-PLV-LIST` | جلب: Versions with states and times | جلب | مسودة |
+| `US-UI-SCR34-VERSION-DIFF` | الفرق عن خط الأساس بتصنيف التغيير | واجهة | مسودة |
+| `US-UI-SCR34-VERSION-HISTORY` | سجل نسخ الخطة وحالاتها | واجهة | مسودة |
+| `US-PLT-OPS-PLAN-DIFF-READ` | حساب الفرق ومعاينة المزامنة لخطة كبيرة | منصة | مسودة |
 <!-- END GENERATED: story-index -->
 
 ## 5. القصص
@@ -146,13 +152,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الكيان | `AGG-PLAN-VERSION` | إصدار الخطة |
 | الجدول | `operations.plan_versions` | الجدول الرئيسي لإصدار الخطة |
 | وحدة النشر | DU-08 | — |
-| المتطلب | REQ-OPS-003 | When a plan is approved, the system shall create an immutable baseline of that plan version. |
-| المتطلب | REQ-OPS-004 | When a major change is made to a baselined plan, the system shall create a new plan version that requires app… |
-| المتطلب | REQ-OPS-005 | If the approver of a plan is also its author, then the system shall reject the approval unless tenant policy… |
-| حالة الاستخدام | UC-034 | Review Plan |
-| حالة الاستخدام | UC-036 | Baseline Plan |
-| الاختبار | TST-PLAN-VERSION-SM | اختبار دورة حالات إصدار الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| المتطلبات | REQ-OPS-003، REQ-OPS-004، REQ-OPS-005 | معانيها في القسم 6. التتبع |
+| حالات الاستخدام | UC-034، UC-036 | Review Plan؛ Baseline Plan |
+| الاختبار | TST-PLAN-VERSION-SM، TST-SLC08-INVARIANTS | دورة حالات إصدار الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-PLV-AMEND-MINOR -->
 
 </details>
@@ -187,10 +189,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الجدول | `operations.plans` | الجدول الرئيسي للخطة |
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-004 | When a major change is made to a baselined plan, the system shall create a new plan version that requires app… |
-| حالة الاستخدام | UC-034 | Review Plan |
-| حالة الاستخدام | UC-036 | Baseline Plan |
-| الاختبار | TST-PLAN-SM | اختبار دورة حالات الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| حالات الاستخدام | UC-034، UC-036 | Review Plan؛ Baseline Plan |
+| الاختبار | TST-PLAN-SM، TST-SLC08-INVARIANTS | دورة حالات الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-Q-PLV-DIFF -->
 
 </details>
@@ -226,9 +226,102 @@ generator: 17-system-study/_build/build_analysis_design.py
 | وحدة النشر | DU-08 | — |
 | المتطلب | REQ-OPS-003 | When a plan is approved, the system shall create an immutable baseline of that plan version. |
 | حالة الاستخدام | UC-036 | Baseline Plan |
-| الاختبار | TST-PLAN-SM | اختبار دورة حالات الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-PLAN-SM، TST-SLC08-INVARIANTS | دورة حالات الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-Q-PLV-LIST -->
+
+</details>
+
+### 5.4 US-UI-SCR34-VERSION-DIFF — الفرق عن خط الأساس بتصنيف التغيير
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR34-VERSION-DIFF -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-34 | شاشة الخطة ونسخها |
+| المصدر | `decision-plan-spec.md §2` | — |
+| المتطلب | REQ-OPS-004 | When a major change is made to a baselined plan, the system shall create a new plan version that requires app… |
+| حالات الاستخدام | UC-034، UC-036 | Review Plan؛ Baseline Plan |
+<!-- END GENERATED: refs US-UI-SCR34-VERSION-DIFF -->
+
+</details>
+
+### 5.5 US-UI-SCR34-VERSION-HISTORY — سجل نسخ الخطة وحالاتها
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR34-VERSION-HISTORY -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-34 | شاشة الخطة ونسخها |
+| المصدر | `QRY-PLV-LIST` | — |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-OPS-003 | When a plan is approved, the system shall create an immutable baseline of that plan version. |
+| حالة الاستخدام | UC-036 | Baseline Plan |
+<!-- END GENERATED: refs US-UI-SCR34-VERSION-HISTORY -->
+
+</details>
+
+### 5.6 US-PLT-OPS-PLAN-DIFF-READ — حساب الفرق ومعاينة المزامنة لخطة كبيرة
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| منصة | R1 | Should | لا ينطبق | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-PLT-OPS-PLAN-DIFF-READ -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الجودة | QAS-PERF-002 | reads a single object or a list page → single object p95 ≤ 300 ms; list page p95 ≤ 1 s |
+| الجودة | QAS-PERF-021 | plan version baselined with 500 task-generating activities → task synchronization completes ≤ 60 s; idempoten… |
+| المصدر | `QRY-PLV-DIFF` | — |
+| المصدر | `[Derived]` | — |
+<!-- END GENERATED: refs US-PLT-OPS-PLAN-DIFF-READ -->
 
 </details>
 
@@ -237,8 +330,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 <!-- BEGIN GENERATED: trace -->
 | المتطلب | المعنى | القصص | الاختبار |
 |---|---|---|---|
-| REQ-OPS-003 | When a plan is approved, the system shall create an immutable baseline of that plan version. | `US-BC04-PLV-AMEND-MINOR`، `US-BC04-Q-PLV-LIST` | TST-PLAN-SM، TST-PLAN-VERSION-SM، TST-SLC08-INVARIANTS |
-| REQ-OPS-004 | When a major change is made to a baselined plan, the system shall create a new plan version that requires app… | `US-BC04-PLV-AMEND-MINOR`، `US-BC04-Q-PLV-DIFF` | TST-PLAN-VERSION-SM، TST-SLC08-INVARIANTS |
+| REQ-OPS-003 | When a plan is approved, the system shall create an immutable baseline of that plan version. | `US-BC04-PLV-AMEND-MINOR`، `US-BC04-Q-PLV-LIST`، `US-UI-SCR34-VERSION-HISTORY` | TST-PLAN-SM، TST-PLAN-VERSION-SM، TST-SLC08-INVARIANTS |
+| REQ-OPS-004 | When a major change is made to a baselined plan, the system shall create a new plan version that requires app… | `US-BC04-PLV-AMEND-MINOR`، `US-BC04-Q-PLV-DIFF`، `US-UI-SCR34-VERSION-DIFF` | TST-PLAN-VERSION-SM، TST-SLC08-INVARIANTS |
 | REQ-OPS-005 | If the approver of a plan is also its author, then the system shall reject the approval unless tenant policy… | `US-BC04-PLV-AMEND-MINOR` | TST-PLAN-VERSION-SM، TST-ROLE-ASSIGNMENT-SM، TST-SLC08-INVARIANTS |
 <!-- END GENERATED: trace -->
 

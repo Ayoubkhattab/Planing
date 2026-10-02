@@ -22,7 +22,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الأدوار | المخطِّط؛ مالك الخطة؛ صاحب السلطة أو المعتمِد الثاني؛ مسؤول الأمن؛ النظام |
 | الشاشات | SCR-34 الخطة ونسخها |
 | حالات الاستخدام | UC-033 |
-| القصص | 7: 7 من المواصفة، و0 جديدة |
+| القصص | 9: 7 من المواصفة، و2 جديدة |
 <!-- END GENERATED: doc -->
 
 ## 1. نظرة عامة
@@ -116,6 +116,8 @@ generator: 17-system-study/_build/build_analysis_design.py
 | `US-BC04-PLN-RESUME` | استئناف الخطة | أمر | مسودة |
 | `US-BC04-PLN-SUSPEND` | تعليق الخطة | أمر | مسودة |
 | `US-BC04-S-PLAN-02` | تلقائي: implemented decision annulled or superseded (الخطة) | نظام | مسودة |
+| `US-UI-SCR34-LIFECYCLE-ACTIONS` | أفعال حالة الخطة وأثرها على المهام | واجهة | مسودة |
+| `US-UI-SCR34-REVIEW-FLAG` | تنبيه الخطة عند إبطال قرارها | واجهة | مسودة |
 <!-- END GENERATED: story-index -->
 
 ## 5. القصص
@@ -150,11 +152,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الكيان | `AGG-PLAN` | الخطة |
 | الجدول | `operations.plans` | الجدول الرئيسي للخطة |
 | وحدة النشر | DU-08 | — |
-| المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
-| المتطلب | REQ-OPS-002 | The system shall link every approved plan to the decisions or objectives it implements. |
+| المتطلبات | REQ-OPS-001، REQ-OPS-002 | معانيها في القسم 6. التتبع |
 | حالة الاستخدام | UC-033 | Create Plan |
-| الاختبار | TST-PLAN-SM | اختبار دورة حالات الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-PLAN-SM، TST-SLC08-INVARIANTS | دورة حالات الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-PLN-CANCEL -->
 
 </details>
@@ -189,11 +189,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الكيان | `AGG-PLAN` | الخطة |
 | الجدول | `operations.plans` | الجدول الرئيسي للخطة |
 | وحدة النشر | DU-08 | — |
-| المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
-| المتطلب | REQ-OPS-002 | The system shall link every approved plan to the decisions or objectives it implements. |
+| المتطلبات | REQ-OPS-001، REQ-OPS-002 | معانيها في القسم 6. التتبع |
 | حالة الاستخدام | UC-033 | Create Plan |
-| الاختبار | TST-PLAN-SM | اختبار دورة حالات الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-PLAN-SM، TST-SLC08-INVARIANTS | دورة حالات الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-PLN-CLOSE -->
 
 </details>
@@ -228,11 +226,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الكيان | `AGG-PLAN` | الخطة |
 | الجدول | `operations.plans` | الجدول الرئيسي للخطة |
 | وحدة النشر | DU-08 | — |
-| المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
-| المتطلب | REQ-OPS-002 | The system shall link every approved plan to the decisions or objectives it implements. |
+| المتطلبات | REQ-OPS-001، REQ-OPS-002 | معانيها في القسم 6. التتبع |
 | حالة الاستخدام | UC-033 | Create Plan |
-| الاختبار | TST-PLAN-SM | اختبار دورة حالات الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-PLAN-SM، TST-SLC08-INVARIANTS | دورة حالات الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-PLN-COMPLETE -->
 
 </details>
@@ -267,11 +263,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الكيان | `AGG-PLAN` | الخطة |
 | الجدول | `operations.plans` | الجدول الرئيسي للخطة |
 | وحدة النشر | DU-08 | — |
-| المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
-| المتطلب | REQ-OPS-002 | The system shall link every approved plan to the decisions or objectives it implements. |
+| المتطلبات | REQ-OPS-001، REQ-OPS-002 | معانيها في القسم 6. التتبع |
 | حالة الاستخدام | UC-033 | Create Plan |
-| الاختبار | TST-PLAN-SM | اختبار دورة حالات الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-PLAN-SM، TST-SLC08-INVARIANTS | دورة حالات الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-PLN-RECLASSIFY -->
 
 </details>
@@ -306,11 +300,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الكيان | `AGG-PLAN` | الخطة |
 | الجدول | `operations.plans` | الجدول الرئيسي للخطة |
 | وحدة النشر | DU-08 | — |
-| المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
-| المتطلب | REQ-OPS-002 | The system shall link every approved plan to the decisions or objectives it implements. |
+| المتطلبات | REQ-OPS-001، REQ-OPS-002 | معانيها في القسم 6. التتبع |
 | حالة الاستخدام | UC-033 | Create Plan |
-| الاختبار | TST-PLAN-SM | اختبار دورة حالات الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-PLAN-SM، TST-SLC08-INVARIANTS | دورة حالات الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-PLN-RESUME -->
 
 </details>
@@ -345,11 +337,9 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الكيان | `AGG-PLAN` | الخطة |
 | الجدول | `operations.plans` | الجدول الرئيسي للخطة |
 | وحدة النشر | DU-08 | — |
-| المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
-| المتطلب | REQ-OPS-002 | The system shall link every approved plan to the decisions or objectives it implements. |
+| المتطلبات | REQ-OPS-001، REQ-OPS-002 | معانيها في القسم 6. التتبع |
 | حالة الاستخدام | UC-033 | Create Plan |
-| الاختبار | TST-PLAN-SM | اختبار دورة حالات الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
+| الاختبار | TST-PLAN-SM، TST-SLC08-INVARIANTS | دورة حالات الخطة، وثوابت الشريحة SLC-08 |
 <!-- END GENERATED: refs US-BC04-PLN-SUSPEND -->
 
 </details>
@@ -383,12 +373,73 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الكيان | `AGG-PLAN` | الخطة |
 | الجدول | `operations.plans` | الجدول الرئيسي للخطة |
 | وحدة النشر | DU-08 | — |
-| المتطلب | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… |
+| المتطلبات | REQ-OPS-001، REQ-OPS-002 | معانيها في القسم 6. التتبع |
+| حالة الاستخدام | UC-033 | Create Plan |
+| الاختبار | TST-PLAN-SM، TST-SLC08-INVARIANTS | دورة حالات الخطة، وثوابت الشريحة SLC-08 |
+<!-- END GENERATED: refs US-BC04-S-PLAN-02 -->
+
+</details>
+
+### 5.8 US-UI-SCR34-LIFECYCLE-ACTIONS — أفعال حالة الخطة وأثرها على المهام
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Should | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR34-LIFECYCLE-ACTIONS -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-34 | شاشة الخطة ونسخها |
+| المصدر | `21-ui-design.md §6.3` | — |
+| المصدر | `decision-plan-spec.md §3` | — |
+| المصدر | `[Derived]` | — |
+<!-- END GENERATED: refs US-UI-SCR34-LIFECYCLE-ACTIONS -->
+
+</details>
+
+### 5.9 US-UI-SCR34-REVIEW-FLAG — تنبيه الخطة عند إبطال قرارها
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR34-REVIEW-FLAG -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الشاشة | SCR-34 | شاشة الخطة ونسخها |
+| المصدر | `US-BC04-S-PLAN-02` | — |
+| المصدر | `[Derived]` | — |
 | المتطلب | REQ-OPS-002 | The system shall link every approved plan to the decisions or objectives it implements. |
 | حالة الاستخدام | UC-033 | Create Plan |
-| الاختبار | TST-PLAN-SM | اختبار دورة حالات الخطة |
-| الاختبار | TST-SLC08-INVARIANTS | ثوابت الشريحة SLC-08 |
-<!-- END GENERATED: refs US-BC04-S-PLAN-02 -->
+<!-- END GENERATED: refs US-UI-SCR34-REVIEW-FLAG -->
 
 </details>
 
@@ -398,7 +449,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | المتطلب | المعنى | القصص | الاختبار |
 |---|---|---|---|
 | REQ-OPS-001 | The system shall record for each plan its objectives, outcomes, constraints, assumptions, phases, activities,… | كل قصص الميزة المأخوذة من المواصفة (7) | TST-PLAN-SM، TST-PLAN-VERSION-SM، TST-SLC08-INVARIANTS |
-| REQ-OPS-002 | The system shall link every approved plan to the decisions or objectives it implements. | كل قصص الميزة المأخوذة من المواصفة (7) | TST-PLAN-SM، TST-SLC08-INVARIANTS |
+| REQ-OPS-002 | The system shall link every approved plan to the decisions or objectives it implements. | `US-BC04-PLN-CANCEL`، `US-BC04-PLN-CLOSE`، `US-BC04-PLN-COMPLETE`، `US-BC04-PLN-RECLASSIFY`، `US-BC04-PLN-RESUME`، `US-BC04-PLN-SUSPEND`، `US-BC04-S-PLAN-02`، `US-UI-SCR34-REVIEW-FLAG` | TST-PLAN-SM، TST-SLC08-INVARIANTS |
 <!-- END GENERATED: trace -->
 
 ## 7. سجل التغييرات

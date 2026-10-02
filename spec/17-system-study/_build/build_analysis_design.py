@@ -4,12 +4,14 @@
 Run from anywhere: python3 spec/17-system-study/_build/build_analysis_design.py
 Outputs (only the block between GENERATED markers is rewritten; text above it is authored):
   05-user-stories/us-bcNN.md  one story per command, query and SYS: transition
+  05-user-stories/00-index.md feature map from _build/features.csv and feature_map.csv
   08-state-models.md          one state diagram per aggregate
   09-business-rules.md        invariants, guards, segregation of duties, reference data, BRL per BC
   14-api-design.md            catalog of every OpenAPI operation
   15-event-design.md          catalog of every event per channel
   16-database-schema.md       tables per schema and ERDs from the logical data model
 """
+import csv
 import re
 import sys
 from collections import defaultdict
@@ -694,6 +696,89 @@ def build_user_stories(aggs, cmds, qrys, pol_c, pol_q, reqs, ucs, http_of, ops):
                         "القالب والتصنيف وتعريف ضوابط النوع والفئة في [00-guide.md](00-guide.md).\n",
                         "\n".join(head + L + [END]))
     return stats, story_ids
+
+
+# ------------------------------------------------------------------ 05 feature index
+CAP_DIRS = {"CAP-01": "CAP-01-org-access", "CAP-02": "CAP-02-collection", "CAP-03": "CAP-03-information",
+            "CAP-04": "CAP-04-analysis", "CAP-05": "CAP-05-situation", "CAP-06": "CAP-06-decision",
+            "CAP-07": "CAP-07-planning-execution", "CAP-08": "CAP-08-resources", "CAP-09": "CAP-09-risk-emergency",
+            "CAP-10": "CAP-10-communication", "CAP-11": "CAP-11-knowledge", "CAP-12": "CAP-12-ai",
+            "CAP-13": "CAP-13-governance-security", "CAP-14": "CAP-14-platform-ops"}
+STORY_KIND = {"إنشاء": "أمر", "تعديل": "أمر", "سير عمل": "أمر", "حذف / إنهاء": "أمر", "جلب": "جلب", "نظام": "نظام"}
+NEW_COLS = ["new_ui", "new_plt", "new_int", "new_ops"]
+
+
+def load_features():
+    """features.csv (one row per feature) and feature_map.csv (story → feature), both in _build/."""
+    here = Path(__file__).parent
+    with open(here / "features.csv", encoding="utf-8", newline="") as fh:
+        feats = {r["feature_id"]: r for r in csv.DictReader(fh)}
+    with open(here / "feature_map.csv", encoding="utf-8", newline="") as fh:
+        fmap = {r["story_id"]: r["feature_id"] for r in csv.DictReader(fh)}
+    return feats, fmap
+
+
+def load_story_titles():
+    """Story id → (Arabic title, story kind), read from the generated 05-user-stories/us-bcNN.md files."""
+    out = {}
+    for p in sorted((OUT / "05-user-stories").glob("us-bc*.md")):
+        for m in re.finditer(r"^#### (US-[A-Za-z0-9-]+) — (.+)\n\n\|[^\n]*\n\|[^\n]*\n\| ([^|]+?) \|", p.read_text(encoding="utf-8"), re.M):
+            out[m.group(1)] = (m.group(2).strip(), STORY_KIND.get(m.group(3).strip(), m.group(3).strip()))
+    return out
+
+
+def build_feature_index():
+    feats, fmap = load_features()
+    titles = load_story_titles()
+    caps = load_capabilities()
+    subs = {s[0]: (s[1].strip(), s[2].strip()) for c in caps.values() for s in c["subs"]}
+    missing = sorted(set(titles) - set(fmap)) + sorted(set(fmap) - set(titles))
+    if missing:
+        raise SystemExit(f"feature_map.csv out of sync with the stories: {missing[:10]}")
+    members = defaultdict(list)
+    for sid, fid in fmap.items():
+        members[fid].append(sid)
+    new = lambda f: sum(int(f[k] or 0) for k in NEW_COLS)  # noqa: E731
+    by_cap = defaultdict(list)
+    for fid, f in feats.items():
+        by_cap[f["capability"]].append(fid)
+    L = [BEGIN, "", "## 1. الأرقام", "",
+         "| القدرة | الميزات | القصص الحالية | قصص جديدة متوقعة | المجلد |", "|---|---|---|---|---|"]
+    for cap in sorted(by_cap):
+        fs = by_cap[cap]
+        L.append(f"| {cap} {caps[cap]['name']} | {len(fs)} | {sum(len(members[x]) for x in fs)} | "
+                 f"{sum(new(feats[x]) for x in fs)} | `{CAP_DIRS[cap]}` |")
+    L += [f"| **المجموع** | **{len(feats)}** | **{len(fmap)}** | **{sum(new(f) for f in feats.values())}** | |", "",
+          "القصص الجديدة المتوقعة تقدير أولي لكل ميزة حسب الطبقة: "
+          + "، ".join(f"{lab} {sum(int(f[k] or 0) for f in feats.values())}" for k, lab in
+                      zip(NEW_COLS, ["واجهة", "منصة", "تكامل", "تشغيل وأمن"]))
+          + ". ولا يشمل قصص التقسيم. يُراجع التقدير في المرحلة 3.", "",
+          "## 2. الميزات حسب القدرة", ""]
+    for n, cap in enumerate(sorted(by_cap), 1):
+        L += [f"### 2.{n} {cap} — {caps[cap]['name']}", "",
+              "| الميزة | القدرة الفرعية | القيمة | الأدوار | القصص |", "|---|---|---|---|---|"]
+        fs = sorted(by_cap[cap], key=lambda x: (feats[x]["subcap"], x))
+        for fid in fs:
+            f = feats[fid]
+            name, rel = subs[f["subcap"]]
+            L.append(f"| **{f['title_ar']}** `{fid}` | {f['subcap']} {name} ({rel}) | {esc(f['value_ar'])} | "
+                     f"{f['actors_ar']} | {len(members[fid])} + {new(f)} |")
+        L += ["", "القصص: الحالية + الجديدة المتوقعة.", "",
+              f"<details><summary>قصص ميزات {cap} ({sum(len(members[x]) for x in fs)})</summary>", ""]
+        for fid in fs:
+            L.append(f"- **{feats[fid]['title_ar']}** `{fid}`" + ("" if members[fid] else " — بلا قصص حالية"))
+            for sid in sorted(members[fid]):
+                L.append(f"  - `{sid}` — {titles[sid][0]} ({titles[sid][1]})")
+        L += ["", "</details>", ""]
+    empty = [fid for fid in feats if not members[fid]]
+    L += ["## 3. ميزات بلا قصص حالية", "",
+          f"{len(empty)} ميزة تغطي متطلبات لا تقابلها اليوم أي قصة، وتُملأ بالقصص الجديدة في المرحلة 3:", "",
+          "| الميزة | القدرة الفرعية | القيمة |", "|---|---|---|"]
+    L += [f"| **{feats[x]['title_ar']}** `{x}` | {feats[x]['subcap']} {subs[feats[x]['subcap']][0]} | {esc(feats[x]['value_ar'])} |"
+          for x in sorted(empty, key=lambda x: (feats[x]["subcap"], x))]
+    L += ["", END]
+    write_generated(OUT / "05-user-stories" / "00-index.md", None, "\n".join(L))
+    return len(feats), len(fmap)
 
 
 # ------------------------------------------------------------------ 08 state models
@@ -2483,6 +2568,7 @@ def main():
     reqs, ucs = load_requirements()
     ops, chan, http_of = load_openapi(), load_asyncapi(), load_error_http()
     stats, story_ids = build_user_stories(aggs, cmds, qrys, pol_c, pol_q, reqs, ucs, http_of, ops)
+    nf, nm = build_feature_index()
     build_state_models(aggs)
     inv = build_business_rules(aggs, cmds, pol_c, reqs)
     build_api(ops, cmds, qrys, pol_c, pol_q, aggs)
@@ -2500,7 +2586,7 @@ def main():
     total = sum(sum(v.values()) for v in stats.values())
     print(f"stories={total} (commands={sum(1 for k in story_ids if k.startswith('CMD-'))}, "
           f"queries={sum(1 for k in story_ids if k.startswith('QRY-'))}, sys={sum(v.get('نظام (SYS)', 0) for v in stats.values())}) "
-          f"aggregates={len(aggs)} invariants={inv} operations={len(ops)} events={ne} tables={nt}")
+          f"features={nf} mapped={nm} aggregates={len(aggs)} invariants={inv} operations={len(ops)} events={ne} tables={nt}")
 
 
 if __name__ == "__main__":

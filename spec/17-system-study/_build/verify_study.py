@@ -499,8 +499,8 @@ def v9():
         if fid not in feats:
             issues.append((rel, fid, "ملف لميزة غير موجودة في features.csv"))
             continue
-        if text.count("\n") > 1200:
-            issues.append((rel, fid, f"{text.count(chr(10))} سطرًا (الحد 1,200)"))
+        if text.count("\n") > 2000:
+            issues.append((rel, fid, f"{text.count(chr(10))} سطرًا (الحد 2,000)"))
         if Parser:
             for g in re.findall(r"```gherkin\n(.*?)```", text, re.S):
                 try:

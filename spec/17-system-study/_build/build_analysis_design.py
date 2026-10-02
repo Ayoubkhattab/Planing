@@ -1092,6 +1092,15 @@ def build_features(aggs, cmds, qrys, evts, pol_c, pol_q, ops, reqs, ucs):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text.rstrip("\n") + "\n", encoding="utf-8")
     build_feature_index(feats, fmap, members, caps, subs, authored)
+    oq = OUT / "05-user-stories" / "00-open-questions.md"
+    dom = sorted(s for s in fmap if s.startswith("US-DOM-"))
+    rows = (["| القصة | الميزة | الوصف | المصدر |", "|---|---|---|---|"] +
+            [f"| `{s}` | `{fmap[s]['feature_id']}` | {esc(fmap[s]['title_ar'])} | {esc(fmap[s]['source'].replace(';', '، '))} |" for s in dom]
+            if dom else ["لا قصص `US-DOM-` حاليًا."])
+    text = write_block(oq.read_text(encoding="utf-8"), "dom-gaps", "\n".join(rows))
+    if text is None:
+        raise SystemExit("00-open-questions.md: generated block 'dom-gaps' is missing")
+    oq.write_text(text, encoding="utf-8")
     return len(feats), len(fmap)
 
 

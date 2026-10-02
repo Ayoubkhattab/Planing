@@ -712,9 +712,25 @@ def load_features():
     """features.csv (one row per feature) and feature_map.csv (story → feature), both in _build/."""
     here = Path(__file__).parent
     with open(here / "features.csv", encoding="utf-8", newline="") as fh:
-        feats = {r["feature_id"]: r for r in csv.DictReader(fh)}
+        rows = list(csv.DictReader(fh))
     with open(here / "feature_map.csv", encoding="utf-8", newline="") as fh:
-        fmap = {r["story_id"]: r["feature_id"] for r in csv.DictReader(fh)}
+        pairs = [(r["story_id"], r["feature_id"]) for r in csv.DictReader(fh)]
+    feats, fmap, errors = {}, {}, []
+    for r in rows:
+        fid = r["feature_id"]
+        if fid in feats:
+            errors.append(f"duplicate feature {fid}")
+        if r["subcap"][:6] != r["capability"]:
+            errors.append(f"{fid}: subcap {r['subcap']} outside capability {r['capability']}")
+        feats[fid] = r
+    for sid, fid in pairs:
+        if sid in fmap:
+            errors.append(f"story {sid} mapped twice")
+        if fid not in feats:
+            errors.append(f"story {sid} mapped to unknown feature {fid}")
+        fmap[sid] = fid
+    if errors:
+        raise SystemExit("features.csv / feature_map.csv: " + "; ".join(errors[:10]))
     return feats, fmap
 
 
@@ -732,6 +748,9 @@ def build_feature_index():
     titles = load_story_titles()
     caps = load_capabilities()
     subs = {s[0]: (s[1].strip(), s[2].strip()) for c in caps.values() for s in c["subs"]}
+    unknown_subs = sorted({f["subcap"] for f in feats.values()} - set(subs))
+    if unknown_subs:
+        raise SystemExit(f"features.csv: unknown sub-capabilities {unknown_subs}")
     missing = sorted(set(titles) - set(fmap)) + sorted(set(fmap) - set(titles))
     if missing:
         raise SystemExit(f"feature_map.csv out of sync with the stories: {missing[:10]}")
@@ -748,11 +767,11 @@ def build_feature_index():
         fs = by_cap[cap]
         L.append(f"| {cap} {caps[cap]['name']} | {len(fs)} | {sum(len(members[x]) for x in fs)} | "
                  f"{sum(new(feats[x]) for x in fs)} | `{CAP_DIRS[cap]}` |")
-    L += [f"| **المجموع** | **{len(feats)}** | **{len(fmap)}** | **{sum(new(f) for f in feats.values())}** | |", "",
+    L += [f"| **المجموع** | **{len(feats)}** | **{len(fmap)}** | **{sum(new(f) for f in feats.values())}** | — |", "",
           "القصص الجديدة المتوقعة تقدير أولي لكل ميزة حسب الطبقة: "
           + "، ".join(f"{lab} {sum(int(f[k] or 0) for f in feats.values())}" for k, lab in
                       zip(NEW_COLS, ["واجهة", "منصة", "تكامل", "تشغيل وأمن"]))
-          + ". ولا يشمل قصص التقسيم. يُراجع التقدير في المرحلة 3.", "",
+          + ". ولا تشمل قصص التقسيم. يُراجع التقدير في المرحلة 3.", "",
           "## 2. الميزات حسب القدرة", ""]
     for n, cap in enumerate(sorted(by_cap), 1):
         L += [f"### 2.{n} {cap} — {caps[cap]['name']}", "",
@@ -761,12 +780,12 @@ def build_feature_index():
         for fid in fs:
             f = feats[fid]
             name, rel = subs[f["subcap"]]
-            L.append(f"| **{f['title_ar']}** `{fid}` | {f['subcap']} {name} ({rel}) | {esc(f['value_ar'])} | "
-                     f"{f['actors_ar']} | {len(members[fid])} + {new(f)} |")
+            L.append(f"| **{esc(f['title_ar'])}** `{fid}` | {f['subcap']} {name} ({rel}) | {esc(f['value_ar'])} | "
+                     f"{esc(f['actors_ar'])} | {len(members[fid])} + {new(f)} |")
         L += ["", "القصص: الحالية + الجديدة المتوقعة.", "",
               f"<details><summary>قصص ميزات {cap} ({sum(len(members[x]) for x in fs)})</summary>", ""]
         for fid in fs:
-            L.append(f"- **{feats[fid]['title_ar']}** `{fid}`" + ("" if members[fid] else " — بلا قصص حالية"))
+            L.append(f"- **{esc(feats[fid]['title_ar'])}** `{fid}`" + ("" if members[fid] else " — بلا قصص حالية"))
             for sid in sorted(members[fid]):
                 L.append(f"  - `{sid}` — {titles[sid][0]} ({titles[sid][1]})")
         L += ["", "</details>", ""]
@@ -774,10 +793,13 @@ def build_feature_index():
     L += ["## 3. ميزات بلا قصص حالية", "",
           f"{len(empty)} ميزة تغطي متطلبات لا تقابلها اليوم أي قصة، وتُملأ بالقصص الجديدة في المرحلة 3:", "",
           "| الميزة | القدرة الفرعية | القيمة |", "|---|---|---|"]
-    L += [f"| **{feats[x]['title_ar']}** `{x}` | {feats[x]['subcap']} {subs[feats[x]['subcap']][0]} | {esc(feats[x]['value_ar'])} |"
+    L += [f"| **{esc(feats[x]['title_ar'])}** `{x}` | {feats[x]['subcap']} {subs[feats[x]['subcap']][0]} | {esc(feats[x]['value_ar'])} |"
           for x in sorted(empty, key=lambda x: (feats[x]["subcap"], x))]
     L += ["", END]
-    write_generated(OUT / "05-user-stories" / "00-index.md", None, "\n".join(L))
+    write_generated(OUT / "05-user-stories" / "00-index.md",
+                    "---\nid: AD-05-INDEX\ntype: feature-index\ntitle: \"فهرس الميزات والقصص — خريطة الميزات\"\nstatus: DRAFT\n"
+                    "generator: 17-system-study/_build/build_analysis_design.py\n---\n\n# فهرس الميزات والقصص\n",
+                    "\n".join(L))
     return len(feats), len(fmap)
 
 

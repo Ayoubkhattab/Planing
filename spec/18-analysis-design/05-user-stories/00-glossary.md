@@ -60,7 +60,7 @@ sources: [00-governance/glossary.md, 01-business/stakeholders.md, 18-analysis-de
 | المخطِّط | Planner | يعدّ الخطط وينشئ المهام ويسندها |
 | المحلل | Analyst | يسجّل المعلومات ويحللها ويعدّ التقييمات |
 | المشغِّل | Operator | يتابع الموقف والتنبيهات |
-| المستخدم الميداني | Field User | ينفّذ المهام ويجمع المعلومات في الميدان |
+| المستخدم الميداني | Field User | يسجّل الملاحظات في الميدان ويزامن جهازه. وتنفيذ المهام يكون بصفته «المسند إليه» |
 | مدير الموارد | Resource Manager | يدير الأصول والمجمعات والتخصيص |
 | مستخدم الإمداد | Logistics User | يدير طلبات الإمداد والشحنات |
 | مدير المخاطر | Risk Manager | يسجّل المخاطر ويتابع معالجتها |
@@ -87,17 +87,53 @@ sources: [00-governance/glossary.md, 01-business/stakeholders.md, 18-analysis-de
 
 | الدور | من هو |
 |---|---|
-| المسندة إليه والمراجع | من أُسندت إليه المهمة، ومن يراجع نتيجتها |
-| المالك والطالب والمشارك | من يملك العنصر أو طلبه أو يشارك فيه |
+| المسند إليه والمراجع | من أُسندت إليه المهمة، ومن يراجع نتيجتها |
+| المالك والطالب والمشارك | من يملك العنصر، أو طلبه، أو يشارك فيه، أو يحمل عهدته، أو الشخص نفسه حين يخصه العنصر |
 | المستلم والمشترك | من وصله الإشعار أو التنبيه، أو اشترك في متابعة عنصر |
 | أدوار الحادثة | المبلِّغ، ومقيّم الحادثة، وقائدها |
 | أدوار الخطر | محدِّد الخطر، والمقيّم، وموافق المعالجة، ومالك النطاق |
 | الشخص الثاني | محلل أو مسؤول ثانٍ، لفصل المهام |
-| أي مستخدم مخوَّل | أي مستخدم ضمن نطاقه ومصرَّح له بتصنيف العنصر |
+| أي مستخدم مخوَّل | أي مستخدم يقع العنصر ضمن نطاقه، أو مصرَّح له بتصنيف العنصر |
 
 ### 3.4 النظام
 
 «كـ النظام» في قصص النوع «نظام»، وتشمل: المجدول، وخدمات المحوّلات والاستيراد، وهويات الخدمات الداخلية.
+
+### 3.5 أدوار خاصة بميزات
+
+أدوار تظهر في ميزات بعينها، وكل منها يندرج تحت دور من الجداول السابقة:
+
+| الدور | يندرج تحت | الميزات |
+|---|---|---|
+| قائد المحللين | المحلل | قواعد المطابقة والربط والتنبيه، حسم التعارض، طرق التحليل، مراجعة التقييم، قوالب المنتجات |
+| قائد المخططين | المخطِّط | أنواع المهام |
+| مالك الخطة | المالك والطالب والمشارك | إعداد الخطة وحالتها ونتائجها |
+| مالك المهمة | المالك والطالب والمشارك | متابعة المهام والتدخل |
+| مالك المنتج | المالك والطالب والمشارك | توزيع المنتجات |
+| مالك النطاق | أدوار الخطر | سجل المخاطر |
+| مالك الاستمرارية | المالك والطالب والمشارك | خطة الطوارئ والتعافي |
+| مقدم الطلب | المالك والطالب والمشارك | طلب متطلبات الجمع |
+| مدير الجمع | المدير | اعتماد متطلبات الجمع واستيفاؤها |
+| مخطط الجمع | المخطِّط | خطة الجمع |
+| أمين العهدة | المالك والطالب والمشارك | الأدلة |
+| المفوَّض إليه | صاحب السلطة أو المعتمِد الثاني | تفويض السلطة |
+| مدير الجهة القائدة | المدير | حالات التنسيق |
+| الجهة المشاركة | المالك والطالب والمشارك | المشاركة في التنسيق |
+| صاحب دور الإقرار | المسند إليه والمراجع | مراجعة نتيجة المهمة |
+| مستلم التنبيه | المستلم والمشترك | تنبيهاتي |
+| الفني | مدير الموارد | صيانة الأصول |
+| ضابط الإمداد | مستخدم الإمداد | طلبات الإمداد |
+| مسؤول الإرسال | مستخدم الإمداد | إرسال الشحنات وتتبعها واستلامها |
+| الناقل | المالك والطالب والمشارك | الشحنات |
+| الجهة المستلمة | المالك والطالب والمشارك | استلام الشحنات |
+| الجهة المحيلة | المالك والطالب والمشارك | حفظ الأرشيف |
+| الفرد نفسه | المالك والطالب والمشارك | سجلات التأهيل |
+| مدير التمرين | مدير التدريب | سيناريوهات التدريب وتخطيط التمارين |
+| مراقب التمرين | مدير التدريب | تنفيذ التمرين |
+| مقيّم التمرين | مدير التدريب | تقييم المشاركين |
+| محدِّد الخطر، مقيّم الخطر، موافق المعالجة | أدوار الخطر | سجل المخاطر ومعالجتها |
+| المُبلِّغ، مقيّم الحادثة، قائد الحادثة | أدوار الحادثة | الإبلاغ عن الحادثة وقيادة الاستجابة |
+| ضابط المناوبة | المشغِّل | التنبيهات العامة الصادرة |
 
 ## 4. رسائل المستخدم
 
@@ -107,6 +143,7 @@ sources: [00-governance/glossary.md, 01-business/stakeholders.md, 18-analysis-de
 - بلا رموز ولا مصطلحات تقنية.
 - لا تكشف ما لا يحق للمستخدم معرفته: الرفض بسبب الصلاحية على مورد غير مرئي يظهر «غير متاح».
 - السيناريو ينقل الرسالة حرفيًا. وتغيير الرسالة يكون هنا فقط.
+- الاستثناء الوحيد `VALIDATION_FAILED`: حين يخص الرفض حقلًا بعينه، تذكر القصة رسالة الحقل بصيغة «<الحقل> مطلوب» أو «<الحقل> غير صحيح». والرسالة العامة هنا للرفض الذي لا يخص حقلًا واحدًا.
 - الرسالة الإنجليزية تُضاف عند بناء ملفات الترجمة، بالمفتاح نفسه (رمز الخطأ).
 
 
@@ -122,13 +159,13 @@ sources: [00-governance/glossary.md, 01-business/stakeholders.md, 18-analysis-de
 
 | الرمز | HTTP | الرسالة |
 |---|---|---|
-| `APPROVAL_REQUIRED` | 403 | هذا الإجراء يحتاج موافقة. أُرسل الطلب إلى صاحب الصلاحية |
+| `APPROVAL_REQUIRED` | 403 | هذا الإجراء يحتاج موافقة صاحب صلاحية، ولم يُنفَّذ |
 | `AUTHZ_DENIED` | 403→404 | لا تملك صلاحية هذا الإجراء |
 | `MFA_STEP_UP_REQUIRED` | 401 | هذا الإجراء يحتاج تأكيد هويتك مرة أخرى |
 | `NOT_FOUND` | 404 | غير متاح |
 | `PERMISSION_DENIED` | 403→404 | لا تملك صلاحية منح هذه السلطة في هذا النطاق |
 | `SEGREGATION_OF_DUTIES` | 422 | لا يجوز أن يعتمد الشخص نفسه ما قدّمه أو طلبه |
-| `UNAUTHENTICATED` | 401 | انتهت جلستك. سجّل الدخول مرة أخرى |
+| `UNAUTHENTICATED` | 401 | يلزم تسجيل الدخول. سجّل الدخول ثم أعد المحاولة |
 
 ### 4.4 التعديل المتزامن ومنع التكرار
 
@@ -139,99 +176,99 @@ sources: [00-governance/glossary.md, 01-business/stakeholders.md, 18-analysis-de
 
 ### 4.5 انتقال حالة غير مسموح
 
-رمز لكل كيان (89 رمزًا) بنص واحد: **«حالة <الكيان> الحالية لا تسمح بهذا الإجراء»**. وكلها HTTP 409.
+رمز لكل كيان (89 رمزًا) بنص واحد: **«الوضع الحالي ل<الكيان> لا يسمح بهذا الإجراء»**. وكلها HTTP 409.
 
 | الرمز | الكيان | الرسالة |
 |---|---|---|
-| `ADAPTER_INVALID_STATE_TRANSITION` | المحوّل | حالة المحوّل الحالية لا تسمح بهذا الإجراء |
-| `AI_REQUEST_INVALID_STATE_TRANSITION` | طلب الذكاء الاصطناعي | حالة طلب الذكاء الاصطناعي الحالية لا تسمح بهذا الإجراء |
-| `AI_RESULT_INVALID_STATE_TRANSITION` | نتيجة الذكاء الاصطناعي | حالة نتيجة الذكاء الاصطناعي الحالية لا تسمح بهذا الإجراء |
-| `AI_ROUTING_INVALID_STATE_TRANSITION` | توجيه الذكاء الاصطناعي | حالة توجيه الذكاء الاصطناعي الحالية لا تسمح بهذا الإجراء |
-| `AI_TOOL_INVALID_STATE_TRANSITION` | أداة الذكاء الاصطناعي | حالة أداة الذكاء الاصطناعي الحالية لا تسمح بهذا الإجراء |
-| `ALERT_INVALID_STATE_TRANSITION` | التنبيه | حالة التنبيه الحالية لا تسمح بهذا الإجراء |
-| `ALERT_RULE_INVALID_STATE_TRANSITION` | قاعدة التنبيه | حالة قاعدة التنبيه الحالية لا تسمح بهذا الإجراء |
-| `ALLOCATION_INVALID_STATE_TRANSITION` | تخصيص الموارد | حالة تخصيص الموارد الحالية لا تسمح بهذا الإجراء |
-| `ANALYSIS_CASE_INVALID_STATE_TRANSITION` | حالة التحليل | حالة حالة التحليل الحالية لا تسمح بهذا الإجراء |
-| `ANALYSIS_METHOD_INVALID_STATE_TRANSITION` | طريقة التحليل | حالة طريقة التحليل الحالية لا تسمح بهذا الإجراء |
-| `ANALYSIS_RUN_INVALID_STATE_TRANSITION` | تشغيل التحليل | حالة تشغيل التحليل الحالية لا تسمح بهذا الإجراء |
-| `ARCHIVE_PACKAGE_INVALID_STATE_TRANSITION` | الحزمة الأرشيفية | حالة الحزمة الأرشيفية الحالية لا تسمح بهذا الإجراء |
-| `ASSESSMENT_INVALID_STATE_TRANSITION` | التقييم | حالة التقييم الحالية لا تسمح بهذا الإجراء |
-| `ASSET_ASSIGNMENT_INVALID_STATE_TRANSITION` | إسناد الأصل | حالة إسناد الأصل الحالية لا تسمح بهذا الإجراء |
-| `ASSET_INVALID_STATE_TRANSITION` | الأصل | حالة الأصل الحالية لا تسمح بهذا الإجراء |
-| `ASSET_RESERVATION_INVALID_STATE_TRANSITION` | حجز الأصل | حالة حجز الأصل الحالية لا تسمح بهذا الإجراء |
-| `ATTACHMENT_INVALID_STATE_TRANSITION` | المرفق | حالة المرفق الحالية لا تسمح بهذا الإجراء |
-| `AUTHORITY_GRANT_INVALID_STATE_TRANSITION` | منح السلطة | حالة منح السلطة الحالية لا تسمح بهذا الإجراء |
-| `CAP_MESSAGE_INVALID_STATE_TRANSITION` | رسالة CAP الصادرة | حالة رسالة CAP الصادرة الحالية لا تسمح بهذا الإجراء |
-| `CLAIM_INVALID_STATE_TRANSITION` | الادعاء | حالة الادعاء الحالية لا تسمح بهذا الإجراء |
-| `CLASSIFICATION_SCHEME_INVALID_STATE_TRANSITION` | مخطط التصنيف | حالة مخطط التصنيف الحالية لا تسمح بهذا الإجراء |
-| `CLEARANCE_INVALID_STATE_TRANSITION` | التصريح الأمني | حالة التصريح الأمني الحالية لا تسمح بهذا الإجراء |
-| `COLLECTION_PLAN_INVALID_STATE_TRANSITION` | خطة الجمع | حالة خطة الجمع الحالية لا تسمح بهذا الإجراء |
-| `COLLECTION_REQUIREMENT_INVALID_STATE_TRANSITION` | متطلب الجمع | حالة متطلب الجمع الحالية لا تسمح بهذا الإجراء |
-| `CONFLICT_INVALID_STATE_TRANSITION` | التعارض | حالة التعارض الحالية لا تسمح بهذا الإجراء |
-| `COORDINATION_CASE_INVALID_STATE_TRANSITION` | حالة التنسيق | حالة حالة التنسيق الحالية لا تسمح بهذا الإجراء |
-| `CORRELATION_PROPOSAL_INVALID_STATE_TRANSITION` | مقترح الربط | حالة مقترح الربط الحالية لا تسمح بهذا الإجراء |
-| `CORRELATION_RULE_INVALID_STATE_TRANSITION` | قاعدة الربط | حالة قاعدة الربط الحالية لا تسمح بهذا الإجراء |
-| `DECISION_INVALID_STATE_TRANSITION` | القرار | حالة القرار الحالية لا تسمح بهذا الإجراء |
-| `DECISION_REQUEST_INVALID_STATE_TRANSITION` | طلب القرار | حالة طلب القرار الحالية لا تسمح بهذا الإجراء |
-| `DEVICE_INVALID_STATE_TRANSITION` | الجهاز الميداني | حالة الجهاز الميداني الحالية لا تسمح بهذا الإجراء |
-| `DISPOSITION_RUN_INVALID_STATE_TRANSITION` | تشغيل الإتلاف | حالة تشغيل الإتلاف الحالية لا تسمح بهذا الإجراء |
-| `DISTRIBUTION_INVALID_STATE_TRANSITION` | التوزيع | حالة التوزيع الحالية لا تسمح بهذا الإجراء |
-| `ENTITY_INVALID_STATE_TRANSITION` | الكيان | حالة الكيان الحالية لا تسمح بهذا الإجراء |
-| `ERASURE_REQUEST_INVALID_STATE_TRANSITION` | طلب المحو | حالة طلب المحو الحالية لا تسمح بهذا الإجراء |
-| `ER_CASE_INVALID_STATE_TRANSITION` | حالة مطابقة الكيانات | حالة حالة مطابقة الكيانات الحالية لا تسمح بهذا الإجراء |
-| `EVAL_SUITE_INVALID_STATE_TRANSITION` | حزمة التقييم | حالة حزمة التقييم الحالية لا تسمح بهذا الإجراء |
-| `EVIDENCE_INVALID_STATE_TRANSITION` | الدليل | حالة الدليل الحالية لا تسمح بهذا الإجراء |
-| `EVIDENCE_LINK_INVALID_STATE_TRANSITION` | رابط الدليل | حالة رابط الدليل الحالية لا تسمح بهذا الإجراء |
-| `EXERCISE_INVALID_STATE_TRANSITION` | التمرين | حالة التمرين الحالية لا تسمح بهذا الإجراء |
-| `EXTERNAL_ID_INVALID_STATE_TRANSITION` | ربط المعرّف الخارجي | حالة ربط المعرّف الخارجي الحالية لا تسمح بهذا الإجراء |
-| `FINDING_INVALID_STATE_TRANSITION` | النتيجة التحليلية | حالة النتيجة التحليلية الحالية لا تسمح بهذا الإجراء |
-| `HR_SYNC_PROPOSAL_INVALID_STATE_TRANSITION` | مقترح مزامنة الموارد البشرية | حالة مقترح مزامنة الموارد البشرية الحالية لا تسمح بهذا الإجراء |
-| `IMPORT_BATCH_INVALID_STATE_TRANSITION` | دفعة الاستيراد | حالة دفعة الاستيراد الحالية لا تسمح بهذا الإجراء |
-| `INCIDENT_INVALID_STATE_TRANSITION` | الحادثة | حالة الحادثة الحالية لا تسمح بهذا الإجراء |
-| `INTEGRATION_CONNECTION_INVALID_STATE_TRANSITION` | اتصال التكامل | حالة اتصال التكامل الحالية لا تسمح بهذا الإجراء |
-| `KNOWLEDGE_OBJECT_INVALID_STATE_TRANSITION` | كائن المعرفة | حالة كائن المعرفة الحالية لا تسمح بهذا الإجراء |
-| `LEGAL_HOLD_INVALID_STATE_TRANSITION` | التجميد القانوني | حالة التجميد القانوني الحالية لا تسمح بهذا الإجراء |
-| `LOGISTICS_REQUEST_INVALID_STATE_TRANSITION` | طلب الإمداد | حالة طلب الإمداد الحالية لا تسمح بهذا الإجراء |
-| `MAINTENANCE_ORDER_INVALID_STATE_TRANSITION` | أمر الصيانة | حالة أمر الصيانة الحالية لا تسمح بهذا الإجراء |
-| `MATCH_RULESET_INVALID_STATE_TRANSITION` | مجموعة قواعد المطابقة | حالة مجموعة قواعد المطابقة الحالية لا تسمح بهذا الإجراء |
-| `MODEL_VERSION_INVALID_STATE_TRANSITION` | إصدار النموذج | حالة إصدار النموذج الحالية لا تسمح بهذا الإجراء |
-| `NOTIFICATION_INVALID_STATE_TRANSITION` | الإشعار | حالة الإشعار الحالية لا تسمح بهذا الإجراء |
-| `OBSERVATION_INVALID_STATE_TRANSITION` | الملاحظة | حالة الملاحظة الحالية لا تسمح بهذا الإجراء |
-| `ORGANIZATION_INVALID_STATE_TRANSITION` | المؤسسة | حالة المؤسسة الحالية لا تسمح بهذا الإجراء |
-| `OUTCOME_TRACKER_INVALID_STATE_TRANSITION` | متتبّع النتائج | حالة متتبّع النتائج الحالية لا تسمح بهذا الإجراء |
-| `PERSON_INVALID_STATE_TRANSITION` | الشخص | حالة الشخص الحالية لا تسمح بهذا الإجراء |
-| `PLAN_INVALID_STATE_TRANSITION` | الخطة | حالة الخطة الحالية لا تسمح بهذا الإجراء |
-| `PLAN_VERSION_INVALID_STATE_TRANSITION` | إصدار الخطة | حالة إصدار الخطة الحالية لا تسمح بهذا الإجراء |
-| `POLICY_SET_INVALID_STATE_TRANSITION` | مجموعة السياسات | حالة مجموعة السياسات الحالية لا تسمح بهذا الإجراء |
-| `PRELOAD_PACKAGE_INVALID_STATE_TRANSITION` | حزمة التحميل المسبق | حالة حزمة التحميل المسبق الحالية لا تسمح بهذا الإجراء |
-| `PRODUCT_INVALID_STATE_TRANSITION` | المنتج | حالة المنتج الحالية لا تسمح بهذا الإجراء |
-| `PRODUCT_TEMPLATE_INVALID_STATE_TRANSITION` | قالب المنتج | حالة قالب المنتج الحالية لا تسمح بهذا الإجراء |
-| `PROJECTION_VERSION_INVALID_STATE_TRANSITION` | إصدار الإسقاط | حالة إصدار الإسقاط الحالية لا تسمح بهذا الإجراء |
-| `QUALIFICATION_RECORD_INVALID_STATE_TRANSITION` | سجل التأهيل | حالة سجل التأهيل الحالية لا تسمح بهذا الإجراء |
-| `REALWORLD_EVENT_INVALID_STATE_TRANSITION` | الحدث الواقعي | حالة الحدث الواقعي الحالية لا تسمح بهذا الإجراء |
-| `RECONSTRUCTION_INVALID_STATE_TRANSITION` | إعادة البناء التاريخي | حالة إعادة البناء التاريخي الحالية لا تسمح بهذا الإجراء |
-| `RELATIONSHIP_INVALID_STATE_TRANSITION` | العلاقة | حالة العلاقة الحالية لا تسمح بهذا الإجراء |
-| `RESOURCE_POOL_INVALID_STATE_TRANSITION` | مجمع الموارد | حالة مجمع الموارد الحالية لا تسمح بهذا الإجراء |
-| `RETENTION_SCHEDULE_INVALID_STATE_TRANSITION` | جدول الاحتفاظ | حالة جدول الاحتفاظ الحالية لا تسمح بهذا الإجراء |
-| `RISK_INVALID_STATE_TRANSITION` | الخطر | حالة الخطر الحالية لا تسمح بهذا الإجراء |
-| `ROLE_ASSIGNMENT_INVALID_STATE_TRANSITION` | إسناد الدور | حالة إسناد الدور الحالية لا تسمح بهذا الإجراء |
-| `ROLE_INVALID_STATE_TRANSITION` | الدور | حالة الدور الحالية لا تسمح بهذا الإجراء |
-| `ROLE_REQUIREMENT_INVALID_STATE_TRANSITION` | متطلبات الدور | حالة متطلبات الدور الحالية لا تسمح بهذا الإجراء |
-| `SCENARIO_INVALID_STATE_TRANSITION` | سيناريو التدريب | حالة سيناريو التدريب الحالية لا تسمح بهذا الإجراء |
-| `SECURITY_EXCEPTION_INVALID_STATE_TRANSITION` | الاستثناء الأمني | حالة الاستثناء الأمني الحالية لا تسمح بهذا الإجراء |
-| `SENSOR_STREAM_INVALID_STATE_TRANSITION` | تدفق الحسّاس | حالة تدفق الحسّاس الحالية لا تسمح بهذا الإجراء |
-| `SERVICE_ACCOUNT_INVALID_STATE_TRANSITION` | حساب الخدمة | حالة حساب الخدمة الحالية لا تسمح بهذا الإجراء |
-| `SHIPMENT_INVALID_STATE_TRANSITION` | الشحنة | حالة الشحنة الحالية لا تسمح بهذا الإجراء |
-| `SIMULATION_INVALID_STATE_TRANSITION` | تشغيل المحاكاة | حالة تشغيل المحاكاة الحالية لا تسمح بهذا الإجراء |
-| `SITUATION_INVALID_STATE_TRANSITION` | الموقف | حالة الموقف الحالية لا تسمح بهذا الإجراء |
-| `SOURCE_INVALID_STATE_TRANSITION` | المصدر | حالة المصدر الحالية لا تسمح بهذا الإجراء |
-| `SUBSCRIPTION_INVALID_STATE_TRANSITION` | الاشتراك | حالة الاشتراك الحالية لا تسمح بهذا الإجراء |
-| `SYNC_CONFLICT_INVALID_STATE_TRANSITION` | تعارض المزامنة | حالة تعارض المزامنة الحالية لا تسمح بهذا الإجراء |
-| `SYNC_SESSION_INVALID_STATE_TRANSITION` | جلسة المزامنة | حالة جلسة المزامنة الحالية لا تسمح بهذا الإجراء |
-| `TASK_INVALID_STATE_TRANSITION` | المهمة | حالة المهمة الحالية لا تسمح بهذا الإجراء |
-| `TASK_TYPE_INVALID_STATE_TRANSITION` | نوع المهمة | حالة نوع المهمة الحالية لا تسمح بهذا الإجراء |
-| `TENANT_INVALID_STATE_TRANSITION` | المستأجر | حالة المستأجر الحالية لا تسمح بهذا الإجراء |
-| `USER_INVALID_STATE_TRANSITION` | حساب المستخدم | حالة حساب المستخدم الحالية لا تسمح بهذا الإجراء |
+| `ADAPTER_INVALID_STATE_TRANSITION` | المحوّل | الوضع الحالي للمحوّل لا يسمح بهذا الإجراء |
+| `AI_REQUEST_INVALID_STATE_TRANSITION` | طلب الذكاء الاصطناعي | الوضع الحالي لطلب الذكاء الاصطناعي لا يسمح بهذا الإجراء |
+| `AI_RESULT_INVALID_STATE_TRANSITION` | نتيجة الذكاء الاصطناعي | الوضع الحالي لنتيجة الذكاء الاصطناعي لا يسمح بهذا الإجراء |
+| `AI_ROUTING_INVALID_STATE_TRANSITION` | توجيه الذكاء الاصطناعي | الوضع الحالي لتوجيه الذكاء الاصطناعي لا يسمح بهذا الإجراء |
+| `AI_TOOL_INVALID_STATE_TRANSITION` | أداة الذكاء الاصطناعي | الوضع الحالي لأداة الذكاء الاصطناعي لا يسمح بهذا الإجراء |
+| `ALERT_INVALID_STATE_TRANSITION` | التنبيه | الوضع الحالي للتنبيه لا يسمح بهذا الإجراء |
+| `ALERT_RULE_INVALID_STATE_TRANSITION` | قاعدة التنبيه | الوضع الحالي لقاعدة التنبيه لا يسمح بهذا الإجراء |
+| `ALLOCATION_INVALID_STATE_TRANSITION` | تخصيص الموارد | الوضع الحالي لتخصيص الموارد لا يسمح بهذا الإجراء |
+| `ANALYSIS_CASE_INVALID_STATE_TRANSITION` | حالة التحليل | الوضع الحالي لحالة التحليل لا يسمح بهذا الإجراء |
+| `ANALYSIS_METHOD_INVALID_STATE_TRANSITION` | طريقة التحليل | الوضع الحالي لطريقة التحليل لا يسمح بهذا الإجراء |
+| `ANALYSIS_RUN_INVALID_STATE_TRANSITION` | تشغيل التحليل | الوضع الحالي لتشغيل التحليل لا يسمح بهذا الإجراء |
+| `ARCHIVE_PACKAGE_INVALID_STATE_TRANSITION` | الحزمة الأرشيفية | الوضع الحالي للحزمة الأرشيفية لا يسمح بهذا الإجراء |
+| `ASSESSMENT_INVALID_STATE_TRANSITION` | التقييم | الوضع الحالي للتقييم لا يسمح بهذا الإجراء |
+| `ASSET_ASSIGNMENT_INVALID_STATE_TRANSITION` | إسناد الأصل | الوضع الحالي لإسناد الأصل لا يسمح بهذا الإجراء |
+| `ASSET_INVALID_STATE_TRANSITION` | الأصل | الوضع الحالي للأصل لا يسمح بهذا الإجراء |
+| `ASSET_RESERVATION_INVALID_STATE_TRANSITION` | حجز الأصل | الوضع الحالي لحجز الأصل لا يسمح بهذا الإجراء |
+| `ATTACHMENT_INVALID_STATE_TRANSITION` | المرفق | الوضع الحالي للمرفق لا يسمح بهذا الإجراء |
+| `AUTHORITY_GRANT_INVALID_STATE_TRANSITION` | منح السلطة | الوضع الحالي لمنح السلطة لا يسمح بهذا الإجراء |
+| `CAP_MESSAGE_INVALID_STATE_TRANSITION` | رسالة CAP الصادرة | الوضع الحالي لرسالة CAP الصادرة لا يسمح بهذا الإجراء |
+| `CLAIM_INVALID_STATE_TRANSITION` | الادعاء | الوضع الحالي للادعاء لا يسمح بهذا الإجراء |
+| `CLASSIFICATION_SCHEME_INVALID_STATE_TRANSITION` | مخطط التصنيف | الوضع الحالي لمخطط التصنيف لا يسمح بهذا الإجراء |
+| `CLEARANCE_INVALID_STATE_TRANSITION` | التصريح الأمني | الوضع الحالي للتصريح الأمني لا يسمح بهذا الإجراء |
+| `COLLECTION_PLAN_INVALID_STATE_TRANSITION` | خطة الجمع | الوضع الحالي لخطة الجمع لا يسمح بهذا الإجراء |
+| `COLLECTION_REQUIREMENT_INVALID_STATE_TRANSITION` | متطلب الجمع | الوضع الحالي لمتطلب الجمع لا يسمح بهذا الإجراء |
+| `CONFLICT_INVALID_STATE_TRANSITION` | التعارض | الوضع الحالي للتعارض لا يسمح بهذا الإجراء |
+| `COORDINATION_CASE_INVALID_STATE_TRANSITION` | حالة التنسيق | الوضع الحالي لحالة التنسيق لا يسمح بهذا الإجراء |
+| `CORRELATION_PROPOSAL_INVALID_STATE_TRANSITION` | مقترح الربط | الوضع الحالي لمقترح الربط لا يسمح بهذا الإجراء |
+| `CORRELATION_RULE_INVALID_STATE_TRANSITION` | قاعدة الربط | الوضع الحالي لقاعدة الربط لا يسمح بهذا الإجراء |
+| `DECISION_INVALID_STATE_TRANSITION` | القرار | الوضع الحالي للقرار لا يسمح بهذا الإجراء |
+| `DECISION_REQUEST_INVALID_STATE_TRANSITION` | طلب القرار | الوضع الحالي لطلب القرار لا يسمح بهذا الإجراء |
+| `DEVICE_INVALID_STATE_TRANSITION` | الجهاز الميداني | الوضع الحالي للجهاز الميداني لا يسمح بهذا الإجراء |
+| `DISPOSITION_RUN_INVALID_STATE_TRANSITION` | تشغيل الإتلاف | الوضع الحالي لتشغيل الإتلاف لا يسمح بهذا الإجراء |
+| `DISTRIBUTION_INVALID_STATE_TRANSITION` | التوزيع | الوضع الحالي للتوزيع لا يسمح بهذا الإجراء |
+| `ENTITY_INVALID_STATE_TRANSITION` | الكيان | الوضع الحالي للكيان لا يسمح بهذا الإجراء |
+| `ERASURE_REQUEST_INVALID_STATE_TRANSITION` | طلب المحو | الوضع الحالي لطلب المحو لا يسمح بهذا الإجراء |
+| `ER_CASE_INVALID_STATE_TRANSITION` | حالة مطابقة الكيانات | الوضع الحالي لحالة مطابقة الكيانات لا يسمح بهذا الإجراء |
+| `EVAL_SUITE_INVALID_STATE_TRANSITION` | حزمة التقييم | الوضع الحالي لحزمة التقييم لا يسمح بهذا الإجراء |
+| `EVIDENCE_INVALID_STATE_TRANSITION` | الدليل | الوضع الحالي للدليل لا يسمح بهذا الإجراء |
+| `EVIDENCE_LINK_INVALID_STATE_TRANSITION` | رابط الدليل | الوضع الحالي لرابط الدليل لا يسمح بهذا الإجراء |
+| `EXERCISE_INVALID_STATE_TRANSITION` | التمرين | الوضع الحالي للتمرين لا يسمح بهذا الإجراء |
+| `EXTERNAL_ID_INVALID_STATE_TRANSITION` | ربط المعرّف الخارجي | الوضع الحالي لربط المعرّف الخارجي لا يسمح بهذا الإجراء |
+| `FINDING_INVALID_STATE_TRANSITION` | النتيجة التحليلية | الوضع الحالي للنتيجة التحليلية لا يسمح بهذا الإجراء |
+| `HR_SYNC_PROPOSAL_INVALID_STATE_TRANSITION` | مقترح مزامنة الموارد البشرية | الوضع الحالي لمقترح مزامنة الموارد البشرية لا يسمح بهذا الإجراء |
+| `IMPORT_BATCH_INVALID_STATE_TRANSITION` | دفعة الاستيراد | الوضع الحالي لدفعة الاستيراد لا يسمح بهذا الإجراء |
+| `INCIDENT_INVALID_STATE_TRANSITION` | الحادثة | الوضع الحالي للحادثة لا يسمح بهذا الإجراء |
+| `INTEGRATION_CONNECTION_INVALID_STATE_TRANSITION` | اتصال التكامل | الوضع الحالي لاتصال التكامل لا يسمح بهذا الإجراء |
+| `KNOWLEDGE_OBJECT_INVALID_STATE_TRANSITION` | كائن المعرفة | الوضع الحالي لكائن المعرفة لا يسمح بهذا الإجراء |
+| `LEGAL_HOLD_INVALID_STATE_TRANSITION` | التجميد القانوني | الوضع الحالي للتجميد القانوني لا يسمح بهذا الإجراء |
+| `LOGISTICS_REQUEST_INVALID_STATE_TRANSITION` | طلب الإمداد | الوضع الحالي لطلب الإمداد لا يسمح بهذا الإجراء |
+| `MAINTENANCE_ORDER_INVALID_STATE_TRANSITION` | أمر الصيانة | الوضع الحالي لأمر الصيانة لا يسمح بهذا الإجراء |
+| `MATCH_RULESET_INVALID_STATE_TRANSITION` | مجموعة قواعد المطابقة | الوضع الحالي لمجموعة قواعد المطابقة لا يسمح بهذا الإجراء |
+| `MODEL_VERSION_INVALID_STATE_TRANSITION` | إصدار النموذج | الوضع الحالي لإصدار النموذج لا يسمح بهذا الإجراء |
+| `NOTIFICATION_INVALID_STATE_TRANSITION` | الإشعار | الوضع الحالي للإشعار لا يسمح بهذا الإجراء |
+| `OBSERVATION_INVALID_STATE_TRANSITION` | الملاحظة | الوضع الحالي للملاحظة لا يسمح بهذا الإجراء |
+| `ORGANIZATION_INVALID_STATE_TRANSITION` | المؤسسة | الوضع الحالي للمؤسسة لا يسمح بهذا الإجراء |
+| `OUTCOME_TRACKER_INVALID_STATE_TRANSITION` | متتبّع النتائج | الوضع الحالي لمتتبّع النتائج لا يسمح بهذا الإجراء |
+| `PERSON_INVALID_STATE_TRANSITION` | الشخص | الوضع الحالي للشخص لا يسمح بهذا الإجراء |
+| `PLAN_INVALID_STATE_TRANSITION` | الخطة | الوضع الحالي للخطة لا يسمح بهذا الإجراء |
+| `PLAN_VERSION_INVALID_STATE_TRANSITION` | إصدار الخطة | الوضع الحالي لإصدار الخطة لا يسمح بهذا الإجراء |
+| `POLICY_SET_INVALID_STATE_TRANSITION` | مجموعة السياسات | الوضع الحالي لمجموعة السياسات لا يسمح بهذا الإجراء |
+| `PRELOAD_PACKAGE_INVALID_STATE_TRANSITION` | حزمة التحميل المسبق | الوضع الحالي لحزمة التحميل المسبق لا يسمح بهذا الإجراء |
+| `PRODUCT_INVALID_STATE_TRANSITION` | المنتج | الوضع الحالي للمنتج لا يسمح بهذا الإجراء |
+| `PRODUCT_TEMPLATE_INVALID_STATE_TRANSITION` | قالب المنتج | الوضع الحالي لقالب المنتج لا يسمح بهذا الإجراء |
+| `PROJECTION_VERSION_INVALID_STATE_TRANSITION` | إصدار الإسقاط | الوضع الحالي لإصدار الإسقاط لا يسمح بهذا الإجراء |
+| `QUALIFICATION_RECORD_INVALID_STATE_TRANSITION` | سجل التأهيل | الوضع الحالي لسجل التأهيل لا يسمح بهذا الإجراء |
+| `REALWORLD_EVENT_INVALID_STATE_TRANSITION` | الحدث الواقعي | الوضع الحالي للحدث الواقعي لا يسمح بهذا الإجراء |
+| `RECONSTRUCTION_INVALID_STATE_TRANSITION` | إعادة البناء التاريخي | الوضع الحالي لإعادة البناء التاريخي لا يسمح بهذا الإجراء |
+| `RELATIONSHIP_INVALID_STATE_TRANSITION` | العلاقة | الوضع الحالي للعلاقة لا يسمح بهذا الإجراء |
+| `RESOURCE_POOL_INVALID_STATE_TRANSITION` | مجمع الموارد | الوضع الحالي لمجمع الموارد لا يسمح بهذا الإجراء |
+| `RETENTION_SCHEDULE_INVALID_STATE_TRANSITION` | جدول الاحتفاظ | الوضع الحالي لجدول الاحتفاظ لا يسمح بهذا الإجراء |
+| `RISK_INVALID_STATE_TRANSITION` | الخطر | الوضع الحالي للخطر لا يسمح بهذا الإجراء |
+| `ROLE_ASSIGNMENT_INVALID_STATE_TRANSITION` | إسناد الدور | الوضع الحالي لإسناد الدور لا يسمح بهذا الإجراء |
+| `ROLE_INVALID_STATE_TRANSITION` | الدور | الوضع الحالي للدور لا يسمح بهذا الإجراء |
+| `ROLE_REQUIREMENT_INVALID_STATE_TRANSITION` | متطلبات الدور | الوضع الحالي لمتطلبات الدور لا يسمح بهذا الإجراء |
+| `SCENARIO_INVALID_STATE_TRANSITION` | سيناريو التدريب | الوضع الحالي لسيناريو التدريب لا يسمح بهذا الإجراء |
+| `SECURITY_EXCEPTION_INVALID_STATE_TRANSITION` | الاستثناء الأمني | الوضع الحالي للاستثناء الأمني لا يسمح بهذا الإجراء |
+| `SENSOR_STREAM_INVALID_STATE_TRANSITION` | تدفق الحسّاس | الوضع الحالي لتدفق الحسّاس لا يسمح بهذا الإجراء |
+| `SERVICE_ACCOUNT_INVALID_STATE_TRANSITION` | حساب الخدمة | الوضع الحالي لحساب الخدمة لا يسمح بهذا الإجراء |
+| `SHIPMENT_INVALID_STATE_TRANSITION` | الشحنة | الوضع الحالي للشحنة لا يسمح بهذا الإجراء |
+| `SIMULATION_INVALID_STATE_TRANSITION` | تشغيل المحاكاة | الوضع الحالي لتشغيل المحاكاة لا يسمح بهذا الإجراء |
+| `SITUATION_INVALID_STATE_TRANSITION` | الموقف | الوضع الحالي للموقف لا يسمح بهذا الإجراء |
+| `SOURCE_INVALID_STATE_TRANSITION` | المصدر | الوضع الحالي للمصدر لا يسمح بهذا الإجراء |
+| `SUBSCRIPTION_INVALID_STATE_TRANSITION` | الاشتراك | الوضع الحالي للاشتراك لا يسمح بهذا الإجراء |
+| `SYNC_CONFLICT_INVALID_STATE_TRANSITION` | تعارض المزامنة | الوضع الحالي لتعارض المزامنة لا يسمح بهذا الإجراء |
+| `SYNC_SESSION_INVALID_STATE_TRANSITION` | جلسة المزامنة | الوضع الحالي لجلسة المزامنة لا يسمح بهذا الإجراء |
+| `TASK_INVALID_STATE_TRANSITION` | المهمة | الوضع الحالي للمهمة لا يسمح بهذا الإجراء |
+| `TASK_TYPE_INVALID_STATE_TRANSITION` | نوع المهمة | الوضع الحالي لنوع المهمة لا يسمح بهذا الإجراء |
+| `TENANT_INVALID_STATE_TRANSITION` | المستأجر | الوضع الحالي للمستأجر لا يسمح بهذا الإجراء |
+| `USER_INVALID_STATE_TRANSITION` | حساب المستخدم | الوضع الحالي لحساب المستخدم لا يسمح بهذا الإجراء |
 
 ### 4.6 قواعد العمل وشروط الانتقال
 
@@ -245,7 +282,7 @@ sources: [00-governance/glossary.md, 01-business/stakeholders.md, 18-analysis-de
 | `ALLOCATION_INVALID` | 422 | بيانات طلب التخصيص غير صحيحة |
 | `ALLOCATION_NOT_COMMITTED` | 422 | التخصيص المرتبط بالطلب لم يعد ملتزمًا به |
 | `ASSESSMENT_INCOMPLETE` | 422 | التقييم غير مكتمل: يلزم نتيجة مقبولة وأدلة وافتراضات ودرجة ثقة ومنهجية وحدود |
-| `ASSESSMENT_INVALID` | 422 | لا يمكن تعديل هذا التقييم إلا في درجة الثقة وحالة التحقق |
+| `ASSESSMENT_INVALID` | 422 | التعديل المطلوب غير مسموح أو غير صحيح في هذا التقييم |
 | `ASSET_INVALID` | 422 | بيانات الأصل غير صحيحة |
 | `ASSET_NOT_AVAILABLE` | 422 | الأصل غير متاح في هذا الوقت، أو لا تتوفر فيه الشهادات المطلوبة |
 | `ASSET_NOT_SERVICEABLE` | 422 | لا يمكن إعادة الأصل للخدمة قبل إكمال الصيانة وصلاحية شهاداته |
@@ -254,13 +291,13 @@ sources: [00-governance/glossary.md, 01-business/stakeholders.md, 18-analysis-de
 | `ATTACHMENT_REJECTED` | 422 | لا يمكن قبول الملف: تحقق من حجمه ونوعه |
 | `ATTESTATION_FAILED` | 422 | تعذّر التحقق من سلامة الجهاز |
 | `AUTHORITY_EXCEEDS_DELEGATOR` | 422 | لا يمكن تفويض سلطة أوسع مما يملكه المفوِّض |
-| `AUTHORITY_REQUIRED` | 422 | لا تملك السلطة اللازمة لاتخاذ هذا القرار |
+| `AUTHORITY_REQUIRED` | 422 | لا تملك السلطة اللازمة لهذا الإجراء |
 | `BATCH_KEY_REUSED` | 422 | استُخدم معرّف هذه الدفعة من قبل بمحتوى مختلف |
 | `CANARY_BELOW_THRESHOLD` | 422 | نتائج التجربة المحدودة للنموذج دون الحد المطلوب |
 | `CAPACITY_BELOW_COMMITMENTS` | 422 | لا يمكن خفض السعة دون ما التُزم به. احسم الالتزامات أولًا |
 | `CAPACITY_UNAVAILABLE` | 422 | السعة المطلوبة لم تعد متاحة |
 | `CASE_HAS_PUBLISHED_ASSESSMENT` | 422 | لا يمكن إلغاء الحالة لأن تقييمًا منشورًا يستند إليها |
-| `CASE_INVALID` | 422 | بيانات حالة التحليل ناقصة: العنوان والمالك والتصنيف |
+| `CASE_INVALID` | 422 | بيانات حالة التحليل أو عناصرها غير مكتملة أو غير صحيحة |
 | `CASE_NOT_DEFINED` | 422 | حدِّد سؤال التحليل ونطاقه أولًا |
 | `CELL_UNAVAILABLE` | 422 | الخلية المستهدفة غير موجودة أو لا تتسع |
 | `CERTIFICATION_INVALID` | 422 | بيانات الشهادة غير مكتملة |
@@ -291,7 +328,7 @@ sources: [00-governance/glossary.md, 01-business/stakeholders.md, 18-analysis-de
 | `DEVICE_LIMIT_REACHED` | 422 | بلغت الحد الأقصى للأجهزة النشطة |
 | `DEVICE_NOT_ACTIVE` | 422 | الجهاز غير نشط. تواصل مع المسؤول |
 | `DEVICE_NOT_WIPED` | 422 | لم يُؤكَّد مسح الجهاز بعد |
-| `DRAFT_EXISTS` | 422 | توجد مسودة قائمة لهذا التقييم |
+| `DRAFT_EXISTS` | 422 | توجد مسودة قائمة لم تُحسم بعد |
 | `DRY_RUN_REQUIRED` | 422 | جرِّب القاعدة على بيانات آخر 24 ساعة قبل تفعيلها |
 | `ENTITY_INVALID` | 422 | بيانات الكيان غير صحيحة |
 | `ENTITY_TYPE_INCOMPATIBLE` | 422 | النوع الجديد غير متوافق مع نوع الكيان |
@@ -320,7 +357,7 @@ sources: [00-governance/glossary.md, 01-business/stakeholders.md, 18-analysis-de
 | `KNOWLEDGE_INCOMPLETE` | 422 | أضف عبارة واحدة على الأقل، ودليلًا للدروس المستفادة |
 | `KNOWLEDGE_INVALID` | 422 | بيانات المعرفة غير صحيحة |
 | `LAST_ACTIVE_PROJECTION` | 422 | لا يمكن إيقاف آخر نسخة نشطة |
-| `LAST_IDENTITY` | 422 | لا يمكن إزالة آخر هوية لحساب نشط |
+| `LAST_IDENTITY` | 422 | يجب أن يبقى للحساب النشط هوية واحدة على الأقل |
 | `LEGAL_HOLD_ACTIVE` | 422 | يوجد تجميد قانوني يمنع هذا الإجراء |
 | `LINK_DUPLICATE` | 422 | هذا الربط موجود من قبل |
 | `LINK_REQUIRED` | 422 | اربط الحجز بمهمة أو نشاط |
@@ -353,7 +390,7 @@ sources: [00-governance/glossary.md, 01-business/stakeholders.md, 18-analysis-de
 | `ORG_UNIT_IN_USE` | 422 | الوحدة مستخدمة: لها وحدات فرعية أو إسنادات نشطة |
 | `ORG_UNIT_NAME_TAKEN` | 422 | اسم الوحدة مستخدم في المستوى نفسه |
 | `OUTCOME_REQUIRED` | 422 | سجّل نتيجة الصيانة والعمل المنفّذ |
-| `OWNER_REJECTED` | 422 | لا تملك صلاحية إدارة الوحدات المتأثرة |
+| `OWNER_REJECTED` | 422 | رُفض تطبيق التغيير لأن العنصر المستهدف لا يستوفي شروطه |
 | `OWNER_REQUIRED` | 422 | حدِّد مالكًا نشطًا والغرض |
 | `PARTICIPANTS_REQUIRED` | 422 | يلزم مشاركان على الأقل |
 | `PARTICIPANT_HAS_RESPONSIBILITIES` | 422 | لا يمكن إزالة مشارك عليه مسؤوليات مفتوحة |
@@ -381,7 +418,7 @@ sources: [00-governance/glossary.md, 01-business/stakeholders.md, 18-analysis-de
 | `QUALITY_RULES_INVALID` | 422 | قواعد جودة البيانات غير صحيحة |
 | `QUOTA_EXCEEDED` | 422 | بلغت الحد المسموح لجهتك |
 | `QUOTA_EXCEEDS_CAPACITY` | 422 | الحصص المطلوبة تتجاوز سعة الخلية |
-| `RATING_INVALID` | 422 | التقييم يجب أن يكون من A إلى F مع تاريخ بداية |
+| `RATING_INVALID` | 422 | درجة الموثوقية يجب أن تكون من A إلى F مع تاريخ بداية |
 | `RATIONALE_REQUIRED` | 422 | اذكر سبب الإغلاق، ومرجع الحادثة إن تحقق الخطر |
 | `REASON_REQUIRED` | 422 | اذكر السبب |
 | `RECONSTRUCTION_INVALID` | 422 | بيانات إعادة البناء غير مكتملة |
@@ -401,7 +438,7 @@ sources: [00-governance/glossary.md, 01-business/stakeholders.md, 18-analysis-de
 | `RISK_INVALID` | 422 | بيانات الخطر غير مكتملة |
 | `ROLE_CODE_TAKEN` | 422 | رمز الدور مستخدم |
 | `ROLE_EMPTY` | 422 | أضف صلاحية واحدة على الأقل |
-| `ROLE_IN_USE` | 422 | الدور مستخدم أو دور نظامي |
+| `ROLE_IN_USE` | 422 | لا يمكن إيقاف الدور: إما دور نظامي، أو مسند حاليًا لمستخدمين |
 | `ROLE_REQUIREMENT_INVALID` | 422 | بيانات متطلبات الدور غير صحيحة |
 | `ROUTING_INVALID` | 422 | إعداد التوجيه غير صحيح |
 | `RULESET_BELOW_TARGET` | 422 | نتائج تقييم قواعد المطابقة دون الهدف |
@@ -413,7 +450,7 @@ sources: [00-governance/glossary.md, 01-business/stakeholders.md, 18-analysis-de
 | `SCENARIO_INVALID` | 422 | بيانات السيناريو غير مكتملة |
 | `SCHEDULE_INCOMPLETE` | 422 | يجب أن يكون لكل فئة سجلات قاعدة واحدة |
 | `SCHEDULE_INVALID` | 422 | قاعدة الاحتفاظ غير صحيحة |
-| `SCHEME_INVALID` | 422 | لا يمكن تغيير رمز مستخدم أو حذف مستوى؛ يمكن إيقافه فقط |
+| `SCHEME_INVALID` | 422 | مخطط التصنيف غير صحيح: الرموز المستخدمة لا تتغير، والمستويات مرتبة، ولا يُحذف مستوى بل يُوقف |
 | `SECTION_NOT_EDITABLE` | 422 | هذا القسم يُحدَّث بإعادة التوليد فقط |
 | `SECURITY_REVIEW_REQUIRED` | 422 | الأداة تحتاج مراجعة أمنية معتمدة |
 | `SEQUENCE_GAP` | 422 | الدفعة غير متسلسلة مع ما سبقها. أعد المزامنة |
@@ -475,4 +512,4 @@ sources: [00-governance/glossary.md, 01-business/stakeholders.md, 18-analysis-de
 
 | الإصدار | التاريخ | التغيير |
 |---|---|---|
-| 0.1 | 2026-10-02 | المسودة الأولى: 313 رسالة لكل رموز الكتالوج، وسبعة أسباب رفض غير متزامن |
+| 0.1 | 2026-10-02 | المسودة الأولى: 313 رسالة لكل رموز الكتالوج، وسبعة أسباب رفض غير متزامن، و33 دورًا خاصًا بميزات |

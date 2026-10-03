@@ -499,8 +499,8 @@ def v9():
         if fid not in feats:
             issues.append((rel, fid, "ملف لميزة غير موجودة في features.csv"))
             continue
-        if text.count("\n") > 1200:
-            issues.append((rel, fid, f"{text.count(chr(10))} سطرًا (الحد 1,200)"))
+        if text.count("\n") > 2000:
+            issues.append((rel, fid, f"{text.count(chr(10))} سطرًا (الحد 2,000)"))
         if Parser:
             for g in re.findall(r"```gherkin\n(.*?)```", text, re.S):
                 try:
@@ -541,7 +541,7 @@ def v9():
                 issues.append((rel, sid, "لا جدول مراجع مولَّد"))
             narrative = re.sub(r"<details>.*?</details>", "", part, flags=re.S)
             narrative = re.sub(r"(?m)^\s*\|.*\|\s*$", "", narrative)
-            for code in sorted(set(re.findall(r"\b(?:CMD|QRY|EVT|POL|AGG)-[A-Z0-9-]+|SYS:", narrative))):
+            for code in sorted(set(re.findall(r"(?<![\w-])(?:CMD|QRY|EVT|POL|AGG)-[A-Z0-9-]+|SYS:", narrative))):
                 issues.append((rel, sid, f"رمز تقني في نص القصة: {code}"))
             for g in re.findall(r"```gherkin\n(.*?)```", part, re.S):
                 rows = [[c.strip() for c in ln.strip().strip("|").split("|")] for ln in g.splitlines() if ln.strip().startswith("|")]

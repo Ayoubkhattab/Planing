@@ -711,7 +711,7 @@ CAP_DIRS = {"CAP-01": "CAP-01-org-access", "CAP-02": "CAP-02-collection", "CAP-0
             "CAP-10": "CAP-10-communication", "CAP-11": "CAP-11-knowledge", "CAP-12": "CAP-12-ai",
             "CAP-13": "CAP-13-governance-security", "CAP-14": "CAP-14-platform-ops"}
 # Capabilities whose feature files exist (skeletons are created for these; 00-standard.md §2). Extended batch by batch.
-FEATURE_FILE_CAPS = {"CAP-07"}
+FEATURE_FILE_CAPS = {"CAP-01", "CAP-02", "CAP-03", "CAP-04", "CAP-07"}
 KIND_ORDER = ["أمر", "جلب", "نظام", "واجهة", "منصة", "تكامل", "تشغيل"]
 NEW_KIND_PREFIX = {"واجهة": "US-UI-SCR", "منصة": "US-PLT-", "تكامل": "US-INT-", "تشغيل": "US-OPS-"}
 MAP_COLS = ["story_id", "feature_id", "kind", "source", "title_ar"]

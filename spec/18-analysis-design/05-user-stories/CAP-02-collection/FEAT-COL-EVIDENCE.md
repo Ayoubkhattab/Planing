@@ -3,9 +3,9 @@ id: FEAT-COL-EVIDENCE
 type: feature
 title: "حفظ الأدلة وسلسلة العهدة"
 status: DRAFT
-version: "0.1"
+version: "0.2"
 capability: CAP-02.03
-sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv]
+sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc02.md, 03-domain/contexts/BC02/aggregates/AGG-EVIDENCE.md, 03-domain/contexts/BC02/commands-slc02.md, 03-domain/contexts/BC02/queries-slc02.md, 03-domain/contexts/BC02/events-slc02.md, 08-security/policies-slc02.md, 08-security/threat-model-slc02.md, 09-reliability/fmea-slc02.md, 05-contracts/errors-slc02.md, 06-data/logical-model/slc-02.md, 04-information/reference-data.md, 02-requirements/requirements.md, 13-verification/acceptance/SLC-02/invariants-slc02.md, 03-domain/contexts/BC07/field-sync-protocol.md, 18-analysis-design/04-use-cases.md, 18-analysis-design/18-error-handling.md, 18-analysis-design/21-ui-design.md]
 generator: 17-system-study/_build/build_analysis_design.py
 ---
 
@@ -519,3 +519,4 @@ generator: 17-system-study/_build/build_analysis_design.py
 | الإصدار | التاريخ | التغيير |
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
+| 0.2 | 2026-10-03 | كتابة القصص كاملة بمعيار القصص |

@@ -541,7 +541,7 @@ def v9():
                 issues.append((rel, sid, "لا جدول مراجع مولَّد"))
             narrative = re.sub(r"<details>.*?</details>", "", part, flags=re.S)
             narrative = re.sub(r"(?m)^\s*\|.*\|\s*$", "", narrative)
-            for code in sorted(set(re.findall(r"\b(?:CMD|QRY|EVT|POL|AGG)-[A-Z0-9-]+|SYS:", narrative))):
+            for code in sorted(set(re.findall(r"(?<![\w-])(?:CMD|QRY|EVT|POL|AGG)-[A-Z0-9-]+|SYS:", narrative))):
                 issues.append((rel, sid, f"رمز تقني في نص القصة: {code}"))
             for g in re.findall(r"```gherkin\n(.*?)```", part, re.S):
                 rows = [[c.strip() for c in ln.strip().strip("|").split("|")] for ln in g.splitlines() if ln.strip().startswith("|")]

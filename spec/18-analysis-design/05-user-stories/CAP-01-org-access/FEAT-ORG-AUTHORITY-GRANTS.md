@@ -3,7 +3,7 @@ id: FEAT-ORG-AUTHORITY-GRANTS
 type: feature
 title: "منح صلاحيات القرار"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-01.03
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc01.md, 03-domain/contexts/BC01/aggregates/AGG-AUTHORITY-GRANT.md, 08-security/policies-slc01.md, 05-contracts/asyncapi-slc01.md, 02-requirements/requirements.md, 02-requirements/use-cases.md, 02-requirements/quality-scenarios.md, 09-reliability/degradation-slc01.md, 00-governance/glossary.md, 18-analysis-design/02-actors-roles.md, 18-analysis-design/17-security-design.md, 18-analysis-design/21-ui-design.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -193,8 +193,6 @@ stateDiagram-v2
 - **متى يُسمح:** المنح «بانتظار الاعتماد».
 - **من يُسمح له:** القيادي التنفيذي في النطاق التنظيمي للمنح، على ألا يكون طالب المنح، وبعد تأكيد هويته بمصادقة معززة.
 - **الأثر:** يصير المنح «نشطًا»، ويكون فعالًا من بداية مدته (§2.5). ويصل حدث «مُنحت السلطة» إلى خدمة إصدار الأمن وذاكرة القرارات في نقاط الفرض.
-
-> **ملاحظة:** المصدر يجمع شرط «القيادي التنفيذي في النطاق» مع شرط «غير الطالب» تحت رمز فصل المهام، ورسالته لا تناسب غياب صفة القيادي التنفيذي **[Needs Review]**.
 
 #### معايير القبول
 
@@ -802,3 +800,4 @@ stateDiagram-v2
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-03 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-11 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

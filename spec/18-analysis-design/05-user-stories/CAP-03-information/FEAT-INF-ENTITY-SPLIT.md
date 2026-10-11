@@ -3,7 +3,7 @@ id: FEAT-INF-ENTITY-SPLIT
 type: feature
 title: "فصل الكيانات المدموجة خطأً"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-03.05
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 03-domain/contexts/BC02/aggregates/AGG-ER-CASE.md, 03-domain/contexts/BC02/claims-temporal-kernel.md, 02-requirements/requirements.md, 09-reliability/fmea-slc04.md, 09-reliability/observability-slc04.md, 08-security/threat-model-slc04.md, 07-quality/workloads-slc04.md, 18-analysis-design/21-ui-design.md, 18-analysis-design/05-user-stories/us-bc02.md, 18-analysis-design/05-user-stories/00-glossary.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -222,7 +222,7 @@ flowchart TD
 
 - **متى يُسمح:** الحالة الحالية «فصل مطلوب».
 - **من يُسمح له:** المحلل، بشرط ألا يكون هو من طلب الفصل (§2.5).
-- **البيانات:** المبرر (إلزامي)، وتحديد صريح لتسجيل «ليسا تطابقًا» (اختياري).
+- **البيانات:** المبرر (إلزامي)، وتحديد صريح لتسجيل «ليسا تطابقًا» (إلزامي: قيمة منطقية تُرسَل دائمًا، صحيحة أو خاطئة).
 - **الأثر:** حدث «فُصلت حالة المطابقة» يُغلق رابط التطابق، فيعود كل كيان إلى ادعاءاته فقط، مع بقاء الرابط قابلًا للاستعلام كما كان معروفًا قبل الفصل (REQ-INF-034).
 
 #### معايير القبول
@@ -519,3 +519,4 @@ flowchart TD
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-03 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-11 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

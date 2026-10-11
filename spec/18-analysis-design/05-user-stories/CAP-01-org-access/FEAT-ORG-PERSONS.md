@@ -3,7 +3,7 @@ id: FEAT-ORG-PERSONS
 type: feature
 title: "سجل الأشخاص"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-01.02
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc01.md, 03-domain/contexts/BC01/aggregates/AGG-PERSON.md, 03-domain/contexts/BC01/events-slc01.md, 08-security/policies-slc01.md, 06-data/logical-model/slc-01.md, 02-requirements/requirements.md, 02-requirements/use-cases.md, 18-analysis-design/21-ui-design.md, 18-analysis-design/20-integration-design.md, 03-domain/contexts/BC07/enterprise-integration-spec.md, 18-analysis-design/05-user-stories/00-open-questions.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -198,6 +198,8 @@ stateDiagram-v2
 
 > **ملاحظة:** المصادر لا تذكر أثر إيقاف الشخص على حساب المستخدم المرتبط به، وتعطيل الحساب أمر مستقل في ميزة «حسابات المستخدمين» **[Needs Review]**.
 
+> **ملاحظة:** المصدر (`us-bc01.md`) يربط هذا الأمر أيضًا بـ REQ-GOV-008 (محو البيانات الشخصية لاحقًا)، إلى جانب REQ-FND-006؛ جدول المراجع والتتبع المولَّد أعلاه لا يذكر إلا REQ-FND-006 لأنه مولَّد من `feature_map.csv` الذي يحتاج تحديثًا مستقلًا.
+
 #### معايير القبول
 
 ```gherkin
@@ -260,6 +262,8 @@ stateDiagram-v2
 - **البيانات:** لا بيانات.
 - **الأثر:** يصبح الشخص «نشطًا» ببياناته السابقة، ويُسجَّل حدث «أُعيد تفعيل الشخص».
 
+> **ملاحظة:** المصدر (`us-bc01.md`) يربط هذا الأمر أيضًا بـ REQ-GOV-008، إلى جانب REQ-FND-006؛ جدول المراجع والتتبع المولَّد أعلاه لا يذكر إلا REQ-FND-006 لأنه مولَّد من `feature_map.csv` الذي يحتاج تحديثًا مستقلًا.
+
 #### معايير القبول
 
 ```gherkin
@@ -320,6 +324,8 @@ stateDiagram-v2
 - **من يُسمح له:** مسؤول الإدارة ضمن نطاقه (§2.5).
 - **البيانات:** الأسماء إلزامية، بالعربية والإنجليزية كما يحدد نموذج اللغة. والرقم الوظيفي ووسائل الاتصال اختيارية.
 - **الأثر:** يُنشأ الشخص بحالة «نشط»، ويُسجَّل حدث «سُجِّل الشخص». ولا يُنشأ له حساب مستخدم: الحساب سجل منفصل يُربط به لاحقًا (REQ-FND-006).
+
+> **ملاحظة:** المصدر (`us-bc01.md`) يربط هذا الأمر أيضًا بـ REQ-GOV-008، إلى جانب REQ-FND-006؛ جدول المراجع والتتبع المولَّد أعلاه لا يذكر إلا REQ-FND-006 لأنه مولَّد من `feature_map.csv` الذي يحتاج تحديثًا مستقلًا.
 
 #### معايير القبول
 
@@ -382,6 +388,8 @@ stateDiagram-v2
 - **من يُسمح له:** مسؤول الإدارة ضمن نطاقه (§2.5).
 - **البيانات:** الأسماء ووسائل الاتصال، وكلاهما اختياري. والرقم الوظيفي لا يُعدَّل بهذا الأمر.
 - **الأثر:** تبقى الحالة «نشط» ويرتفع إصدار السجل، ويُحفظ الإصدار السابق في السجل التاريخي. ويُسجَّل حدث «حُدِّثت بيانات الشخص».
+
+> **ملاحظة:** المصدر (`us-bc01.md`) يربط هذا الأمر أيضًا بـ REQ-GOV-008، إلى جانب REQ-FND-006؛ جدول المراجع والتتبع المولَّد أعلاه لا يذكر إلا REQ-FND-006 لأنه مولَّد من `feature_map.csv` الذي يحتاج تحديثًا مستقلًا.
 
 #### معايير القبول
 
@@ -591,6 +599,8 @@ stateDiagram-v2
 |---|---|---|---|
 | REQ-FND-006 | The system shall maintain Person, Identity, User and Service Account as separate records with explicit links. | `US-BC01-PER-DEACTIVATE`، `US-BC01-PER-REACTIVATE`، `US-BC01-PER-REGISTER`، `US-BC01-PER-UPDATE-DETAILS`، `US-DOM-PER-LIST`، `US-UI-SCR62-PERSON-LINKS` | TST-PERSON-SM، TST-SERVICE-ACCOUNT-SM، TST-USER-SM |
 <!-- END GENERATED: trace -->
+
+> **ملاحظة [Needs Review]:** حسب `us-bc01.md`، تُربط `US-BC01-PER-DEACTIVATE`، `US-BC01-PER-REACTIVATE`، `US-BC01-PER-REGISTER` و`US-BC01-PER-UPDATE-DETAILS` أيضًا بـ REQ-GOV-008 (محو البيانات الشخصية)، إلى جانب REQ-FND-006 الظاهر أعلاه. الجدول أعلاه مولَّد من `feature_map.csv` ولا يتضمن هذا الربط؛ يلزم تحديث المصدر ليعكس REQ-GOV-008.
 
 ## 7. سجل التغييرات
 

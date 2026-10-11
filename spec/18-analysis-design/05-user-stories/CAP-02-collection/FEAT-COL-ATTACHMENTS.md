@@ -182,6 +182,8 @@ stateDiagram-v2
 | `US-OPS-ATT-SCANNER-SIGNATURES` | تحديث تواقيع الماسح في بيئة معزولة | تشغيل | مسودة |
 <!-- END GENERATED: story-index -->
 
+> **ملاحظة:** عناوين `US-BC02-Q-ATT-DOWNLOAD` و`US-BC02-S-ATTACHMENT-01/02/03` في الفهرس أعلاه ما زالت بالإنجليزية في `feature_map.csv` المصدر؛ عناوين القصص في القسم 5 أدناه مُعرَّبة. يلزم تحديث المصدر ثم إعادة توليد الفهرس **[Needs Review]**.
+
 ## 5. القصص
 
 ### 5.1 US-BC02-ATT-COMPLETE-UPLOAD — إكمال رفع المرفق
@@ -391,7 +393,7 @@ stateDiagram-v2
 
 </details>
 
-### 5.4 US-BC02-Q-ATT-DOWNLOAD — جلب: Short-lived signed download target (≤ 5 min); audited
+### 5.4 US-BC02-Q-ATT-DOWNLOAD — جلب: رابط تنزيل موقّع قصير الأمد (≤ 5 دقائق) ومُدقَّق
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
@@ -454,7 +456,7 @@ stateDiagram-v2
 
 </details>
 
-### 5.5 US-BC02-S-ATTACHMENT-01 — تلقائي: scan passed (المرفق)
+### 5.5 US-BC02-S-ATTACHMENT-01 — تلقائي: نجاح فحص المرفق
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
@@ -506,7 +508,7 @@ stateDiagram-v2
 
 </details>
 
-### 5.6 US-BC02-S-ATTACHMENT-02 — تلقائي: scan failed (المرفق)
+### 5.6 US-BC02-S-ATTACHMENT-02 — تلقائي: فشل فحص المرفق
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
@@ -558,7 +560,7 @@ stateDiagram-v2
 
 </details>
 
-### 5.7 US-BC02-S-ATTACHMENT-03 — تلقائي: upload window 24 h elapsed (المرفق)
+### 5.7 US-BC02-S-ATTACHMENT-03 — تلقائي: انتهاء نافذة الرفع (24 ساعة) للمرفق
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|

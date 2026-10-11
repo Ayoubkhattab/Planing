@@ -3,7 +3,7 @@ id: FEAT-ANL-CORRELATION-RULES
 type: feature
 title: "قواعد الربط الآلي"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-04.04
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc02.md, 03-domain/contexts/BC02/aggregates/AGG-CORRELATION-RULE.md, 03-domain/contexts/BC02/correlation-fusion-spec.md, 18-analysis-design/17-security-design.md, 18-analysis-design/05-user-stories/00-open-questions.md, 18-analysis-design/05-user-stories/00-glossary.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ANL-CORRELATION-RULES |
-| الإصدار | 0.2 |
+| الإصدار | 0.3 |
 | الحالة | مسودة |
 | القدرة | CAP-04 التحليل والتقييم |
 | القدرة الفرعية | CAP-04.04 الدمج والربط (R2) |
@@ -192,6 +192,7 @@ stateDiagram-v2
     و <الحالة>
     عندما يحاول المعتمِد تفعيل القاعدة
     اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
+    و لا يتغير شيء
 
     امثلة:
       | الحالة                                          | الرمز                                      | الرسالة                                               |
@@ -254,6 +255,7 @@ stateDiagram-v2
     و <الحالة>
     عندما يحاول تعريف القاعدة
     اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
+    و لا يتغير شيء
 
     امثلة:
       | الحالة                          | الرمز        | الرسالة                     |
@@ -315,11 +317,12 @@ stateDiagram-v2
     و <الحالة>
     عندما يحاول تعديل القاعدة
     اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
+    و لا يتغير شيء
 
     امثلة:
       | الحالة                          | الرمز                                      | الرسالة                                              |
       | القاعدة في حالة "متقاعدة"      | CORRELATION_RULE_INVALID_STATE_TRANSITION | الوضع الحالي لقاعدة الربط لا يسمح بهذا الإجراء         |
-      | أحد المعاملات غائب أو غير صحيح | RULE_INVALID                               | نوع قاعدة الربط غير صحيح                              |
+      | أحد المعاملات غائب أو غير صحيح | VALIDATION_FAILED                          | المعاملات غير صحيحة                                   |
 ```
 
 <details><summary>المراجع التقنية والتتبع</summary>
@@ -376,6 +379,7 @@ stateDiagram-v2
     و <الحالة>
     عندما يحاول إحالة القاعدة إلى التقاعد
     اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
+    و لا يتغير شيء
 
     امثلة:
       | الحالة                                | الرمز                                      | الرسالة                                               |
@@ -590,3 +594,4 @@ stateDiagram-v2
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-03 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-11 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

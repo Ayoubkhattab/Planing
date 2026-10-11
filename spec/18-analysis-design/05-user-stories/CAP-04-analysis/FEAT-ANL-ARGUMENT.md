@@ -3,7 +3,7 @@ id: FEAT-ANL-ARGUMENT
 type: feature
 title: "الفرضيات والافتراضات والأدلة"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-04.01
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc03.md, 03-domain/contexts/BC03/aggregates/AGG-ANALYSIS-CASE.md, 18-analysis-design/05-user-stories/00-glossary.md, 18-analysis-design/21-ui-design.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ANL-ARGUMENT |
-| الإصدار | 0.2 |
+| الإصدار | 0.3 |
 | الحالة | مسودة |
 | القدرة | CAP-04 التحليل والتقييم |
 | القدرة الفرعية | CAP-04.01 حالات التحليل (R1) |
@@ -133,7 +133,7 @@ flowchart TD
 | `US-BC03-ACS-ADD-HYPOTHESIS` | إضافة فرضية إلى حالة التحليل | أمر | مسودة |
 | `US-BC03-ACS-DESELECT-EVIDENCE` | استبعاد دليل من حالة التحليل | أمر | مسودة |
 | `US-BC03-ACS-RETIRE-ASSUMPTION` | سحب افتراض من حالة التحليل | أمر | مسودة |
-| `US-BC03-ACS-SELECT-EVIDENCE` | اختيار دليل لـحالة التحليل | أمر | مسودة |
+| `US-BC03-ACS-SELECT-EVIDENCE` | اختيار دليل لحالة التحليل | أمر | مسودة |
 | `US-BC03-ACS-UPDATE-HYPOTHESIS` | تحديث فرضية في حالة التحليل | أمر | مسودة |
 | `US-UI-SCR22-SELECT-EVIDENCE` | اختيار دليل للحالة من شاشة الدليل | واجهة | مسودة |
 | `US-UI-SCR30-HYPOTHESES` | عرض الفرضيات والافتراضات وحالتها في الحالة | واجهة | مسودة |
@@ -393,7 +393,7 @@ flowchart TD
 
 </details>
 
-### 5.5 US-BC03-ACS-SELECT-EVIDENCE — اختيار دليل لـحالة التحليل
+### 5.5 US-BC03-ACS-SELECT-EVIDENCE — اختيار دليل لحالة التحليل
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
@@ -632,3 +632,4 @@ flowchart TD
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-03 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-11 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

@@ -3,7 +3,7 @@ id: FEAT-ANL-METHODS
 type: feature
 title: "إدارة طرق التحليل"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-04.02
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc03.md, 03-domain/contexts/BC03/aggregates/AGG-ANALYSIS-METHOD.md, 03-domain/contexts/BC03/analysis-reproducibility-spec.md, 18-analysis-design/17-security-design.md, 18-analysis-design/21-ui-design.md, 12-solution/technology-decisions.md, 08-security/threat-model-slc07.md, 18-analysis-design/05-user-stories/00-glossary.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ANL-METHODS |
-| الإصدار | 0.2 |
+| الإصدار | 0.3 |
 | الحالة | مسودة |
 | القدرة | CAP-04 التحليل والتقييم |
 | القدرة الفرعية | CAP-04.02 التنفيذ وإعادة الإنتاج (R1) |
@@ -147,7 +147,7 @@ stateDiagram-v2
 | `US-BC03-AMT-DEPRECATE` | إهمال طريقة التحليل (إيقاف الاستخدام الجديد) | أمر | مسودة |
 | `US-BC03-AMT-REGISTER` | تسجيل طريقة التحليل | أمر | مسودة |
 | `US-BC03-AMT-RETIRE` | إحالة طريقة التحليل إلى التقاعد | أمر | مسودة |
-| `US-BC03-Q-AMT-LIST` | جلب: Methods and versions | جلب | مسودة |
+| `US-BC03-Q-AMT-LIST` | جلب طرق التحليل وإصداراتها | جلب | مسودة |
 | `US-UI-SCR30-METHODS` | كتالوج طرق التحليل وإصداراتها وحالتها | واجهة | مسودة |
 | `US-OPS-ANL-METHOD-IMAGES` | صور طرق التحليل موقعة ومثبتة البصمة | تشغيل | مسودة |
 <!-- END GENERATED: story-index -->
@@ -188,7 +188,7 @@ stateDiagram-v2
     بفرض السياق المشترك للميزة
     و <الحالة>
     عندما يحاول تفعيل الطريقة
-    اذاً يُرفض برمز <الرمز> ويرى <الرسالة>
+    اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
     و لا يتغير شيء
 
     امثلة:
@@ -250,7 +250,7 @@ stateDiagram-v2
     بفرض السياق المشترك للميزة
     و <الحالة>
     عندما يحاول إهمال الطريقة
-    اذاً يُرفض برمز <الرمز> ويرى <الرسالة>
+    اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
     و لا يتغير شيء
 
     امثلة:
@@ -310,7 +310,7 @@ stateDiagram-v2
     بفرض السياق المشترك للميزة
     و <الحالة>
     عندما يحاول تسجيل الطريقة
-    اذاً يُرفض برمز <الرمز> ويرى <الرسالة>
+    اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
     و لا يتغير شيء
 
     امثلة:
@@ -370,7 +370,7 @@ stateDiagram-v2
     بفرض السياق المشترك للميزة
     و <الحالة>
     عندما يحاول إحالة الطريقة إلى التقاعد
-    اذاً يُرفض برمز <الرمز> ويرى <الرسالة>
+    اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
     و لا يتغير شيء
 
     امثلة:
@@ -399,7 +399,7 @@ stateDiagram-v2
 
 </details>
 
-### 5.5 US-BC03-Q-AMT-LIST — جلب: Methods and versions
+### 5.5 US-BC03-Q-AMT-LIST — جلب طرق التحليل وإصداراتها
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
@@ -554,3 +554,4 @@ stateDiagram-v2
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-03 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-11 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

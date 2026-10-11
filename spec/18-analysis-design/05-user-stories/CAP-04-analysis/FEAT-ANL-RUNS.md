@@ -3,7 +3,7 @@ id: FEAT-ANL-RUNS
 type: feature
 title: "تشغيل التحليل وإعادة إنتاجه"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-04.02
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 03-domain/contexts/BC03/aggregates/AGG-ANALYSIS-RUN.md, 03-domain/contexts/BC03/analysis-reproducibility-spec.md, 03-domain/contexts/BC03/events-slc07.md, 08-security/policies-slc07.md, 08-security/threat-model-slc07.md, 02-requirements/requirements.md, 18-analysis-design/21-ui-design.md, 18-analysis-design/22-deployment-design.md, 18-analysis-design/23-crosscutting.md, 12-solution/technology-decisions.md, 18-analysis-design/05-user-stories/us-bc03.md, 18-analysis-design/05-user-stories/00-glossary.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ANL-RUNS |
-| الإصدار | 0.2 |
+| الإصدار | 0.3 |
 | الحالة | مسودة |
 | القدرة | CAP-04 التحليل والتقييم |
 | القدرة الفرعية | CAP-04.02 التنفيذ وإعادة الإنتاج (R1) |
@@ -252,7 +252,7 @@ stateDiagram-v2
 
 #### القواعد
 
-- **متى يُسمح:** التشغيل المصدر «مكتمل بنجاح»، وطريقة التحليل المستخدمة لا تزال «نشطة» أو «متوقفة قديمة».
+- **متى يُسمح:** التشغيل المصدر «مكتمل بنجاح»، وطريقة التحليل المستخدمة لا تزال «نشطة» أو «مُهملة».
 - **من يُسمح له:** محلل يملك تصريحًا أمنيًا يكفي لتصنيف التشغيل المصدر.
 - **البيانات:** معرّف التشغيل المصدر (إلزامي).
 - **الأثر:** حدث «أُدرج التشغيل في الانتظار» يصل إلى مجدول المهام وعمال الحوسبة، وكاتب التتبع، وإشعار مالك حالة التحليل. يتحقق التشغيل الجديد نفسه من قواعد §2.3، ويحمل عند اكتماله تقرير إعادة الإنتاج (القصة 5.10).
@@ -394,12 +394,16 @@ stateDiagram-v2
     اذاً يُنشأ تشغيل جديد في حالة "قيد الانتظار" بنفس المدخلات والمعاملات والطريقة والبذرة العشوائية
     و يُسجَّل حدث "أُدرج التشغيل في الانتظار"
 
-  سيناريو: رفض إعادة المحاولة لتشغيل لم يفشل
+  سيناريو مخطط: رفض خاص بإعادة المحاولة
     بفرض السياق المشترك للميزة
-    و تشغيل تحليل في حالة "قيد الانتظار" أو "قيد التشغيل" أو "مكتمل بنجاح" أو "ملغى"
+    و <الحالة>
     عندما يطلب المحلل إعادة محاولته
-    اذاً يُرفض برمز ANALYSIS_RUN_INVALID_STATE_TRANSITION ويرى "الوضع الحالي لتشغيل التحليل لا يسمح بهذا الإجراء"
+    اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
     و لا يتغير شيء
+
+    امثلة:
+      | الحالة                                                                        | الرمز                                  | الرسالة                                            |
+      | تشغيل تحليل في حالة "قيد الانتظار" أو "قيد التشغيل" أو "مكتمل بنجاح" أو "ملغى" | ANALYSIS_RUN_INVALID_STATE_TRANSITION | الوضع الحالي لتشغيل التحليل لا يسمح بهذا الإجراء |
 ```
 
 <details><summary>المراجع التقنية والتتبع</summary>
@@ -930,3 +934,4 @@ stateDiagram-v2
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-03 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-11 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

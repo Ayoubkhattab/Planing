@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-ATTACHMENTS |
-| الإصدار | 0.2 |
+| الإصدار | 0.3 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.03 تسجيل الملاحظات (بما فيها دون اتصال) (R1) |
@@ -167,10 +167,10 @@ stateDiagram-v2
 | `US-BC02-ATT-COMPLETE-UPLOAD` | إكمال رفع المرفق | أمر | مسودة |
 | `US-BC02-ATT-ERASE` | محو المرفق | أمر | مسودة |
 | `US-BC02-ATT-INITIATE-UPLOAD` | بدء رفع المرفق | أمر | مسودة |
-| `US-BC02-Q-ATT-DOWNLOAD` | جلب: Short-lived signed download target (≤ 5 min); audited | جلب | مسودة |
-| `US-BC02-S-ATTACHMENT-01` | تلقائي: scan passed (المرفق) | نظام | مسودة |
-| `US-BC02-S-ATTACHMENT-02` | تلقائي: scan failed (المرفق) | نظام | مسودة |
-| `US-BC02-S-ATTACHMENT-03` | تلقائي: upload window 24 h elapsed (المرفق) | نظام | مسودة |
+| `US-BC02-Q-ATT-DOWNLOAD` | جلب: رابط تنزيل موقّع قصير الأمد (≤ 5 دقائق) ومُدقَّق | جلب | مسودة |
+| `US-BC02-S-ATTACHMENT-01` | تلقائي: نجاح فحص المرفق | نظام | مسودة |
+| `US-BC02-S-ATTACHMENT-02` | تلقائي: فشل فحص المرفق | نظام | مسودة |
+| `US-BC02-S-ATTACHMENT-03` | تلقائي: انتهاء نافذة الرفع (24 ساعة) للمرفق | نظام | مسودة |
 | `US-UI-SCR22-SAFE-VIEWER` | معاينة المرفق في عارض معزول | واجهة | مسودة |
 | `US-UI-SCR23-UPLOAD-STATE` | متابعة رفع المرفق وفحصه حتى إتاحته | واجهة | مسودة |
 | `US-PLT-ATT-CONTENT-SCANNER` | فحص المرفقات محليًا قبل إتاحتها | منصة | مسودة |

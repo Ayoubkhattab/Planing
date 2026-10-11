@@ -3,7 +3,7 @@ id: FEAT-ANL-SCENARIOS
 type: feature
 title: "السيناريوهات ومقارنة النتائج"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-04.01
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 03-domain/contexts/BC03/aggregates/AGG-ANALYSIS-CASE.md, 03-domain/contexts/BC03/events-slc07.md, 08-security/policies-slc07.md, 02-requirements/requirements.md, 18-analysis-design/21-ui-design.md, 18-analysis-design/05-user-stories/us-bc03.md, 18-analysis-design/05-user-stories/00-glossary.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ANL-SCENARIOS |
-| الإصدار | 0.2 |
+| الإصدار | 0.3 |
 | الحالة | مسودة |
 | القدرة | CAP-04 التحليل والتقييم |
 | القدرة الفرعية | CAP-04.01 حالات التحليل (R1) |
@@ -293,7 +293,7 @@ flowchart LR
 
 > **كـ** المحلل، **أريد** أن أرى استنتاجات كل سيناريو إلى جانب مصادرها من التشغيلات أو الأدلة، **حتى** أحكم على السيناريو بالاستناد إلى أساسه لا إلى نتيجته وحدها.
 
-**باختصار:** تعرض شاشة سيناريوهات الحالة التحليلية ومقارنتها (SCR-32) النتيجة التحليلية لكل سيناريو مع مصادرها، وتحجب المصادر التي لا يحق للمحلل رؤية تصنيفها. **[Derived]**: عرض الاستنتاجات داخل شاشة المقارنة لا يذكره مصدر صريح، واستُنتج من قائمة استعلامات SCR-32 (`21-ui-design.md` §4.4) وسلسلة العمل في `analysis-reproducibility-spec.md` §1 (نتيجة تحليلية ← مصادرها).
+**باختصار:** تعرض شاشة سيناريوهات الحالة التحليلية ومقارنتها (SCR-32) النتيجة التحليلية لكل سيناريو مع مصادرها، وتحجب المصادر التي لا يحق للمحلل رؤية تصنيفها. **[Derived]**: عرض الاستنتاجات داخل شاشة المقارنة لا يذكره مصدر صريح، واستُنتج من قائمة استعلامات SCR-32 (`21-ui-design.md` §12) وسلسلة العمل في `analysis-reproducibility-spec.md` §1 (نتيجة تحليلية ← مصادرها).
 
 #### القواعد
 
@@ -346,3 +346,4 @@ flowchart LR
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-03 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-11 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

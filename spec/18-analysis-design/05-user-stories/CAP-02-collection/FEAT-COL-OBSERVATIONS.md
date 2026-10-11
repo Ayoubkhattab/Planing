@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-OBSERVATIONS |
-| الإصدار | 0.2 |
+| الإصدار | 0.3 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.03 تسجيل الملاحظات (بما فيها دون اتصال) (R1) |
@@ -138,8 +138,8 @@ flowchart LR
 | `US-BC02-OBS-AMEND` | تعديل الملاحظة بإصدار جديد | أمر | مسودة |
 | `US-BC02-OBS-ATTACH-EVIDENCE` | إرفاق دليل بـالملاحظة | أمر | مسودة |
 | `US-BC02-OBS-RECORD` | تسجيل الملاحظة | أمر | مسودة |
-| `US-BC02-Q-OBS-GET` | جلب: Observation with measurements and attachment refs | جلب | مسودة |
-| `US-BC02-Q-OBS-LIST` | جلب: Observations by bbox, time window (mandatory, ≤ 31 days), source, state | جلب | مسودة |
+| `US-BC02-Q-OBS-GET` | جلب: الملاحظة بقياساتها ومراجع مرفقاتها | جلب | مسودة |
+| `US-BC02-Q-OBS-LIST` | جلب: الملاحظات حسب المربع الجغرافي ونافذة الزمن (إلزامية، ≤ 31 يومًا) والمصدر والحالة | جلب | مسودة |
 | `US-UI-SCR23-LOCATION-QUALITY` | عرض دقة الموقع وأعلام جودة الملاحظة | واجهة | مسودة |
 | `US-UI-SCR23-OBS-LIST` | تصفح الملاحظات بنافذة زمنية ومنطقة | واجهة | مسودة |
 | `US-UI-SCR23-QUICK-CAPTURE` | تسجيل ملاحظة بصورة بيد واحدة | واجهة | مسودة |

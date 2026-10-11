@@ -3,7 +3,7 @@ id: FEAT-ANL-CORRELATION-REVIEW
 type: feature
 title: "مراجعة مقترحات الربط"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-04.04
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc02.md, 03-domain/contexts/BC02/aggregates/AGG-CORRELATION-PROPOSAL.md, 03-domain/contexts/BC02/correlation-fusion-spec.md, 18-analysis-design/18-error-handling.md, 18-analysis-design/05-user-stories/00-glossary.md, 18-analysis-design/21-ui-design.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ANL-CORRELATION-REVIEW |
-| الإصدار | 0.2 |
+| الإصدار | 0.3 |
 | الحالة | مسودة |
 | القدرة | CAP-04 التحليل والتقييم |
 | القدرة الفرعية | CAP-04.04 الدمج والربط (R2) |
@@ -155,8 +155,8 @@ stateDiagram-v2
 | `US-BC02-CRP-PROPOSE` | اقتراح مقترح الربط | أمر | مسودة |
 | `US-BC02-CRP-REJECT` | رفض مقترح الربط | أمر | مسودة |
 | `US-BC02-CRP-START-REVIEW` | بدء مراجعة مقترح الربط | أمر | مسودة |
-| `US-BC02-Q-CRP-GET` | جلب: Proposal with inputs, sources, reliabilities, score breakdown | جلب | مسودة |
-| `US-BC02-Q-CRP-QUEUE` | جلب: Proposals by kind, state, area, score (inputs all visible to caller) | جلب | مسودة |
+| `US-BC02-Q-CRP-GET` | جلب تفصيل مقترح الربط | جلب | مسودة |
+| `US-BC02-Q-CRP-QUEUE` | جلب قائمة مقترحات الربط | جلب | مسودة |
 | `US-BC02-S-CORRELATION-PROPOSAL-01` | تلقائي: correlation rule score ≥ threshold (مقترح الربط) | نظام | مسودة |
 | `US-BC02-S-CORRELATION-PROPOSAL-02` | تلقائي: not reviewed within 30 days (مقترح الربط) | نظام | مسودة |
 | `US-UI-SCR06-CORRELATION-DETAIL` | تفصيل درجة الربط ومصادره وموثوقيتها | واجهة | مسودة |
@@ -202,6 +202,7 @@ stateDiagram-v2
     و <الحالة>
     عندما يحاول المحلل قبول المقترح
     اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
+    و لا يتغير شيء
 
     امثلة:
       | الحالة                                           | الرمز                                          | الرسالة                                                |
@@ -263,6 +264,7 @@ stateDiagram-v2
     و <الحالة>
     عندما يحاول المحلل اقتراح الربط
     اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
+    و لا يتغير شيء
 
     امثلة:
       | الحالة                                          | الرمز              | الرسالة                                                |
@@ -324,6 +326,7 @@ stateDiagram-v2
     و <الحالة>
     عندما يحاول المحلل رفض المقترح
     اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
+    و لا يتغير شيء
 
     امثلة:
       | الحالة                                  | الرمز                                          | الرسالة                                                |
@@ -385,6 +388,7 @@ stateDiagram-v2
     و <الحالة>
     عندما يحاول بدء المراجعة
     اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
+    و لا يتغير شيء
 
     امثلة:
       | الحالة                                      | الرمز                                          | الرسالة                                                      |
@@ -411,7 +415,7 @@ stateDiagram-v2
 
 </details>
 
-### 5.5 US-BC02-Q-CRP-GET — جلب: Proposal with inputs, sources, reliabilities, score breakdown
+### 5.5 US-BC02-Q-CRP-GET — جلب تفصيل مقترح الربط
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
@@ -462,7 +466,7 @@ stateDiagram-v2
 
 </details>
 
-### 5.6 US-BC02-Q-CRP-QUEUE — جلب: Proposals by kind, state, area, score (inputs all visible to caller)
+### 5.6 US-BC02-Q-CRP-QUEUE — جلب قائمة مقترحات الربط
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
@@ -763,3 +767,4 @@ stateDiagram-v2
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-03 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-11 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

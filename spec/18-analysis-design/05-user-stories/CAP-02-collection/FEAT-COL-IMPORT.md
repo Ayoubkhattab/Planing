@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-IMPORT |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.04 الاستيعاب والتكامل (R1) |
@@ -172,12 +172,12 @@ stateDiagram-v2
 | `US-BC02-IMP-CANCEL` | إلغاء دفعة الاستيراد | أمر | مسودة |
 | `US-BC02-IMP-REPROCESS-QUARANTINE` | إعادة معالجة العناصر المعزولة في دفعة الاستيراد | أمر | مسودة |
 | `US-BC02-IMP-SUBMIT` | تقديم دفعة الاستيراد | أمر | مسودة |
-| `US-BC02-Q-IMP-GET` | جلب: Batch status, counts, quarantine records (paged) | جلب | مسودة |
+| `US-BC02-Q-IMP-GET` | عرض دفعة الاستيراد وعداداتها وسجلات حجرها | جلب | مسودة |
 | `US-DOM-IMP-LIST` | عرض دفعات الاستيراد حسب المحوّل والحالة | جلب | مسودة |
-| `US-BC02-S-IMPORT-BATCH-01` | تلقائي: processing started (دفعة الاستيراد) | نظام | مسودة |
-| `US-BC02-S-IMPORT-BATCH-02` | تلقائي: all records applied (دفعة الاستيراد) | نظام | مسودة |
-| `US-BC02-S-IMPORT-BATCH-03` | تلقائي: finished with invalid records (دفعة الاستيراد) | نظام | مسودة |
-| `US-BC02-S-IMPORT-BATCH-04` | تلقائي: unrecoverable error (دفعة الاستيراد) | نظام | مسودة |
+| `US-BC02-S-IMPORT-BATCH-01` | بدء معالجة دفعة الاستيراد آليًا | نظام | مسودة |
+| `US-BC02-S-IMPORT-BATCH-02` | اكتمال دفعة الاستيراد دون حجر | نظام | مسودة |
+| `US-BC02-S-IMPORT-BATCH-03` | اكتمال دفعة الاستيراد مع حجر سجلات معيبة | نظام | مسودة |
+| `US-BC02-S-IMPORT-BATCH-04` | فشل دفعة الاستيراد بخطأ غير قابل للمعالجة | نظام | مسودة |
 | `US-UI-SCR64-QUARANTINE-REVIEW` | مراجعة سجلات الحجر وقبولها أو إعادة معالجتها | واجهة | مسودة |
 | `US-PLT-IMP-ASYNC-JOB` | تنفيذ الاستيراد مهمة غير متزامنة قابلة للاستئناف | منصة | مسودة |
 | `US-PLT-IMP-LIMITS` | حماية المنصة من الدفعات الضخمة والمعيبة | منصة | مسودة |

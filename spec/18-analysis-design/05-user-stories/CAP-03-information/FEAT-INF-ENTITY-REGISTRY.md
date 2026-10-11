@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-INF-ENTITY-REGISTRY |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-03 إدارة المعلومات |
 | القدرة الفرعية | CAP-03.01 الكيانات والعلاقات (R1) |
@@ -153,11 +153,11 @@ stateDiagram-v2
 |---|---|---|---|
 | `US-BC02-ENT-CHANGE-TYPE` | تغيير نوع الكيان | أمر | مسودة |
 | `US-BC02-ENT-RECLASSIFY` | إعادة تصنيف الكيان | أمر | مسودة |
-| `US-BC02-ENT-REGISTER` | تسجيل الكيان | أمر | مسودة |
+| `US-BC02-ENT-REGISTER` | تسجيل كيان جديد | أمر | مسودة |
 | `US-BC02-ENT-REINSTATE` | إعادة الكيان إلى السريان | أمر | مسودة |
 | `US-BC02-ENT-RETIRE` | إحالة الكيان إلى التقاعد | أمر | مسودة |
-| `US-BC02-Q-ENT-LIST` | جلب: Entities by type, bbox/polygon of current location, valid_at | جلب | مسودة |
-| `US-BC02-Q-ENT-RESOLVED` | جلب: Resolved view per predicate at valid_at/known_at (value, CORROBORATED/DISPUTED candidates, confidence); resolves through the identity cluster and returns canonical_urn + requested_urn (SLC-04) | جلب | مسودة |
+| `US-BC02-Q-ENT-LIST` | تصفح قائمة الكيانات | جلب | مسودة |
+| `US-BC02-Q-ENT-RESOLVED` | جلب الملف المحلول للكيان | جلب | مسودة |
 | `US-UI-SCR21-ENTITY-ACTIONS` | إظهار أفعال الكيان المتاحة حسب حالته | واجهة | مسودة |
 | `US-UI-SCR21-ENTITY-LIST` | تصفح الكيانات وتصفيتها بالنوع والمكان والزمن | واجهة | مسودة |
 | `US-UI-SCR21-RESOLVED-VIEW` | عرض ملف الكيان بقيمه المؤكدة والمتنازع عليها | واجهة | مسودة |

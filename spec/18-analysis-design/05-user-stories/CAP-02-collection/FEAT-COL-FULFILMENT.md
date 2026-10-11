@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-FULFILMENT |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.01 الحاجة المعلوماتية وتخطيط الجمع (R2) |
@@ -130,13 +130,13 @@ stateDiagram-v2
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC02-Q-CRQ-BOARD` | جلب: Requirements by area (bbox/polygon), state, priority, due | جلب | مسودة |
-| `US-BC02-Q-CRQ-EVIDENCE` | جلب: Fulfilment links per EEI (visible observations only) with lineage | جلب | مسودة |
-| `US-BC02-S-COLLECTION-REQUIREMENT-01` | تلقائي: validated observation matched (متطلب الجمع) | نظام | مسودة |
-| `US-BC02-S-COLLECTION-REQUIREMENT-02` | تلقائي: due passed (متطلب الجمع) | نظام | مسودة |
-| `US-UI-SCR13-BOARD-MAP` | لوحة مكانية للمتطلبات المفتوحة حسب الأولوية والموعد | واجهة | مسودة |
-| `US-UI-SCR13-FULFILMENT-EEI` | عرض استيفاء كل عنصر معلومات بملاحظاته | واجهة | مسودة |
-| `US-PLT-CRQ-MATCH-INDEX` | مطابقة الملاحظات المعتمدة مع مناطق المتطلبات بسرعة | منصة | مسودة |
+| `US-BC02-Q-CRQ-BOARD` | لوحة المتطلبات حسب المنطقة والحالة والأولوية والموعد | جلب | مسودة |
+| `US-BC02-Q-CRQ-EVIDENCE` | روابط الاستيفاء لكل عنصر معلومات بنسبها | جلب | مسودة |
+| `US-BC02-S-COLLECTION-REQUIREMENT-01` | ربط الملاحظة المعتمدة بعناصر المعلومات التي تجيب عنها | نظام | مسودة |
+| `US-BC02-S-COLLECTION-REQUIREMENT-02` | انتهاء المتطلب عند فوات موعده | نظام | مسودة |
+| `US-UI-SCR13-BOARD-MAP` | لوحة مكانية للمتطلبات المعتمدة حسب الأولوية والموعد | واجهة | مسودة |
+| `US-UI-SCR13-FULFILMENT-EEI` | استيفاء كل عنصر معلومات بملاحظاته | واجهة | مسودة |
+| `US-PLT-CRQ-MATCH-INDEX` | فهرس مكاني لمطابقة الملاحظات المعتمدة مع مناطق المتطلبات | منصة | مسودة |
 <!-- END GENERATED: story-index -->
 
 ## 5. القصص

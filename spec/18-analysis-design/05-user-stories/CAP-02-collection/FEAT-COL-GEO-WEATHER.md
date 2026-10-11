@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-GEO-WEATHER |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.04 الاستيعاب والتكامل (R1) |
@@ -198,7 +198,7 @@ stateDiagram-v2
 | `US-INT-GEO-OGC-EXCHANGE` | إتاحة البيانات الجغرافية لأنظمة GIS المؤسسية | تكامل | مسودة |
 | `US-INT-GEO-OGC-IMPORT` | جلب الطبقات من خدمات OGC وWMS/WFS | تكامل | مسودة |
 | `US-INT-GEO-RASTER-IMPORT` | استيراد الصور النقطية GeoTIFF وCOG | تكامل | مسودة |
-| `US-INT-WEATHER-FEED` | جلب بيانات الطقس من مزودها المعتمد | تكامل | مسودة |
+| `US-INT-WEATHER-FEED` | جلب بيانات الطقس من مزوّدها المعتمد | تكامل | مسودة |
 | `US-OPS-GEO-BASEMAP-UPDATE` | تحديث الخرائط الأساس دون إنترنت | تشغيل | مسودة |
 <!-- END GENERATED: story-index -->
 

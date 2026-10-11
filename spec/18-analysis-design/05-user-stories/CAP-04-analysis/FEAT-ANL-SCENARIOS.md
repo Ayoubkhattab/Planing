@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ANL-SCENARIOS |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-04 التحليل والتقييم |
 | القدرة الفرعية | CAP-04.01 حالات التحليل (R1) |
@@ -125,7 +125,7 @@ flowchart LR
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
 | `US-BC03-ACS-DEFINE-SCENARIO` | تعريف سيناريو ضمن حالة التحليل | أمر | مسودة |
-| `US-BC03-Q-SCN-COMPARE` | جلب: Side-by-side results of runs per scenario with differing inputs | جلب | مسودة |
+| `US-BC03-Q-SCN-COMPARE` | مقارنة نتائج السيناريوهات جنبًا إلى جنب | جلب | مسودة |
 | `US-UI-SCR32-COMPARE` | مقارنة سيناريوهين جنبًا إلى جنب | واجهة | مسودة |
 | `US-UI-SCR32-FINDINGS-SOURCES` | عرض الاستنتاجات مع مصادرها في السيناريو | واجهة | مسودة |
 <!-- END GENERATED: story-index -->

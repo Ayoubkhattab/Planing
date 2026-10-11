@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ORG-AUTHORITY-GRANTS |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-01 إدارة المؤسسة والوصول |
 | القدرة الفرعية | CAP-01.03 السلطة والتفويض (R1) |
@@ -165,13 +165,13 @@ stateDiagram-v2
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
 | `US-BC01-AUT-APPROVE-GRANT` | اعتماد منح السلطة | أمر | مسودة |
-| `US-BC01-AUT-GRANT` | إصدار منح السلطة | أمر | مسودة |
-| `US-BC01-AUT-REJECT-GRANT` | رفض منح السلطة | أمر | مسودة |
-| `US-BC01-AUT-RESUME` | استئناف منح السلطة | أمر | مسودة |
+| `US-BC01-AUT-GRANT` | طلب منح سلطة | أمر | مسودة |
+| `US-BC01-AUT-REJECT-GRANT` | رفض طلب منح السلطة | أمر | مسودة |
+| `US-BC01-AUT-RESUME` | استئناف منح السلطة المعلّق | أمر | مسودة |
 | `US-BC01-AUT-REVOKE` | سحب منح السلطة | أمر | مسودة |
 | `US-BC01-AUT-SUSPEND` | تعليق منح السلطة | أمر | مسودة |
-| `US-BC01-Q-AUT-LIST` | جلب: Grants by holder / scope / effective at t | جلب | مسودة |
-| `US-BC01-S-AUTHORITY-GRANT-01` | تلقائي: valid_to reached (منح السلطة) | نظام | مسودة |
+| `US-BC01-Q-AUT-LIST` | قائمة منح السلطة حسب صاحبها ونطاقها وزمن سريانها | جلب | مسودة |
+| `US-BC01-S-AUTHORITY-GRANT-01` | انتهاء منح السلطة عند نهاية مدته | نظام | مسودة |
 | `US-UI-SCR62-AUTHORITY-GRANTS` | عرض منح السلطة بنطاقها وحدودها ومدتها | واجهة | مسودة |
 | `US-PLT-AUT-READTIME-VALIDITY` | فرض انتهاء السلطة لحظة التحقق | منصة | مسودة |
 <!-- END GENERATED: story-index -->

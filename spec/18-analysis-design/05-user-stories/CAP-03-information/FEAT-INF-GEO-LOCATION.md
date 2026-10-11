@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-INF-GEO-LOCATION |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-03 إدارة المعلومات |
 | القدرة الفرعية | CAP-03.03 المعلومات الجغرافية (R1) |
@@ -134,7 +134,7 @@ flowchart TD
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC02-Q-ENT-POSITIONS` | جلب: Position history in [from,to) as known_at | جلب | مسودة |
+| `US-BC02-Q-ENT-POSITIONS` | سجل مواقع الكيان | جلب | مسودة |
 | `US-DOM-GEO-TRACK-SUMMARY` | تلخيص المواقع عالية التردد في ادعاء موقع | نظام | مسودة |
 | `US-UI-SCR11-COORD-FORMAT` | عرض الإحداثيات بالصيغة التي يختارها المستأجر | واجهة | مسودة |
 | `US-UI-SCR21-POSITION-TRACK` | عرض مسار الكيان على الخريطة عبر فترة | واجهة | مسودة |

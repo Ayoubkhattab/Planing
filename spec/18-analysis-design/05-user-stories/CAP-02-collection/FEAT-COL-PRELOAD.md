@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-PRELOAD |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.03 تسجيل الملاحظات (بما فيها دون اتصال) (R1) |
@@ -166,12 +166,12 @@ stateDiagram-v2
 | `US-BC07-PKG-REQUEST` | طلب حزمة التحميل المسبق | أمر | مسودة |
 | `US-BC07-PKG-REVOKE` | سحب حزمة التحميل المسبق | أمر | مسودة |
 | `US-DOM-PKG-TENANT-LIMITS` | ضبط حدود حزم التحميل للمستأجر | أمر | مسودة |
-| `US-BC07-Q-PKG-GET` | جلب: Package manifest and download target (signed, ≤ 5 min) | جلب | مسودة |
+| `US-BC07-Q-PKG-GET` | جلب بيان الحزمة وعنوان تنزيلها | جلب | مسودة |
 | `US-DOM-PKG-LIST` | عرض حزم مستخدم أو جهاز للمسؤول | جلب | مسودة |
-| `US-BC07-S-PRELOAD-PACKAGE-01` | تلقائي: build started (حزمة التحميل المسبق) | نظام | مسودة |
-| `US-BC07-S-PRELOAD-PACKAGE-02` | تلقائي: build finished (حزمة التحميل المسبق) | نظام | مسودة |
-| `US-BC07-S-PRELOAD-PACKAGE-03` | تلقائي: expires_at reached (حزمة التحميل المسبق) | نظام | مسودة |
-| `US-BC07-S-PRELOAD-PACKAGE-04` | تلقائي: user security_version changed or device not ACTIVE (حزمة التحميل المسبق) | نظام | مسودة |
+| `US-BC07-S-PRELOAD-PACKAGE-01` | تلقائي: بدء بناء حزمة التحميل المسبق | نظام | مسودة |
+| `US-BC07-S-PRELOAD-PACKAGE-02` | تلقائي: اكتمال بناء حزمة التحميل المسبق | نظام | مسودة |
+| `US-BC07-S-PRELOAD-PACKAGE-03` | تلقائي: انتهاء صلاحية حزمة التحميل المسبق | نظام | مسودة |
+| `US-BC07-S-PRELOAD-PACKAGE-04` | تلقائي: سحب حزم المستخدم عند تغيّر صلاحيته | نظام | مسودة |
 | `US-UI-SCR11-PRELOAD-AREA` | اختيار منطقة العمل وتنزيل حزمتها | واجهة | مسودة |
 | `US-UI-SCR63-DEVICE-PACKAGES` | عرض حزم الجهاز وسحبها | واجهة | مسودة |
 | `US-PLT-PKG-BUILD` | بناء الحزمة بصلاحية المستخدم وقت البناء | منصة | مسودة |

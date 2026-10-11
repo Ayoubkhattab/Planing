@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ANL-RUNS |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-04 التحليل والتقييم |
 | القدرة الفرعية | CAP-04.02 التنفيذ وإعادة الإنتاج (R1) |
@@ -163,11 +163,11 @@ stateDiagram-v2
 | `US-BC03-RUN-REPRODUCE` | إعادة إنتاج تشغيل التحليل | أمر | مسودة |
 | `US-BC03-RUN-SUBMIT` | تقديم تشغيل التحليل | أمر | مسودة |
 | `US-DOM-ANL-RUN-RETRY` | إعادة محاولة تشغيل تحليل فشل | أمر | مسودة |
-| `US-BC03-Q-RUN-ARTIFACT` | جلب: Short-lived download target for a result artifact | جلب | مسودة |
-| `US-BC03-Q-RUN-GET` | جلب: Run with pins, parameters, steps, status, artifacts, reproduction report | جلب | مسودة |
-| `US-BC03-S-ANALYSIS-RUN-01` | تلقائي: worker lease acquired (تشغيل التحليل) | نظام | مسودة |
-| `US-BC03-S-ANALYSIS-RUN-02` | تلقائي: completed (تشغيل التحليل) | نظام | مسودة |
-| `US-BC03-S-ANALYSIS-RUN-03` | تلقائي: error or timeout (تشغيل التحليل) | نظام | مسودة |
+| `US-BC03-Q-RUN-ARTIFACT` | رابط تنزيل قصير الأجل لنتيجة التشغيل | جلب | مسودة |
+| `US-BC03-Q-RUN-GET` | جلب تفاصيل تشغيل التحليل | جلب | مسودة |
+| `US-BC03-S-ANALYSIS-RUN-01` | بدء تنفيذ التشغيل عند توفر عامل حوسبة | نظام | مسودة |
+| `US-BC03-S-ANALYSIS-RUN-02` | اكتمال التشغيل بنجاح | نظام | مسودة |
+| `US-BC03-S-ANALYSIS-RUN-03` | فشل التشغيل بخطأ أو انتهاء المهلة | نظام | مسودة |
 | `US-UI-SCR30-REPRODUCE-REPORT` | عرض تقرير إعادة الإنتاج وما اختلف | واجهة | مسودة |
 | `US-UI-SCR30-RUN-PROGRESS` | عرض تقدم التشغيل وإلغاؤه وسبب فشله | واجهة | مسودة |
 | `US-PLT-ANL-REPRO-CHECK` | فحص دوري لقابلية إعادة إنتاج التشغيلات | منصة | مسودة |

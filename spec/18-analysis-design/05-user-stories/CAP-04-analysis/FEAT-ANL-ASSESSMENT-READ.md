@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ANL-ASSESSMENT-READ |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-04 التحليل والتقييم |
 | القدرة الفرعية | CAP-04.03 إنتاج التقييم (R1) |
@@ -98,8 +98,8 @@ flowchart TD
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC03-Q-ASM-GET` | جلب: Assessment version (default: current PUBLISHED; or version / known_at) | جلب | مسودة |
-| `US-BC03-Q-ASM-VERSIONS` | جلب: Version history with states and times | جلب | مسودة |
+| `US-BC03-Q-ASM-GET` | جلب نسخة من التقييم | جلب | مسودة |
+| `US-BC03-Q-ASM-VERSIONS` | جلب تاريخ إصدارات التقييم | جلب | مسودة |
 | `US-UI-SCR31-VERSIONS` | التنقل بين نسخ التقييم المنشورة | واجهة | مسودة |
 | `US-UI-SCR31-WITHHELD` | حجب الأدلة غير المصرح بها في التقييم | واجهة | مسودة |
 <!-- END GENERATED: story-index -->

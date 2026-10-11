@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-SYNC-CONFLICTS |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.03 تسجيل الملاحظات (بما فيها دون اتصال) (R1) |
@@ -150,9 +150,9 @@ stateDiagram-v2
 | `US-BC07-SCF-DISCARD` | حسم تعارض المزامنة بإسقاط الأمر الميداني | أمر | مسودة |
 | `US-BC07-SCF-REAPPLY` | إعادة تطبيق تعارض المزامنة | أمر | مسودة |
 | `US-BC07-SCF-RESOLVE-MANUALLY` | حل تعارض المزامنة يدويًا | أمر | مسودة |
-| `US-BC07-Q-SCF-GET` | جلب: Original envelope, current state snapshot, owner rejection reason | جلب | مسودة |
-| `US-BC07-Q-SCF-LIST` | جلب: Open sync conflicts by target type, assignee | جلب | مسودة |
-| `US-BC07-S-SYNC-CONFLICT-01` | تلقائي: stale state-changing command (تعارض المزامنة) | نظام | مسودة |
+| `US-BC07-Q-SCF-GET` | جلب تفاصيل تعارض مزامنة واحد | جلب | مسودة |
+| `US-BC07-Q-SCF-LIST` | جلب قائمة تعارضات المزامنة المفتوحة | جلب | مسودة |
+| `US-BC07-S-SYNC-CONFLICT-01` | فتح تعارض مزامنة لأمر ميداني مبني على حالة قديمة | نظام | مسودة |
 | `US-UI-SCR06-SYNC-CONFLICT` | مقارنة الأمر المتعارض بالحالة الحالية وحسمه | واجهة | مسودة |
 | `US-OPS-SCF-RATIO-ALERT` | التنبيه عند ارتفاع نسبة التعارضات | تشغيل | مسودة |
 <!-- END GENERATED: story-index -->

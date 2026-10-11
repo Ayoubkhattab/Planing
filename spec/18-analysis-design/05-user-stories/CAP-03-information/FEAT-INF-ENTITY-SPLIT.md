@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-INF-ENTITY-SPLIT |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-03 إدارة المعلومات |
 | القدرة الفرعية | CAP-03.05 مطابقة الكيانات (R1) |
@@ -138,7 +138,7 @@ flowchart TD
 |---|---|---|---|
 | `US-BC02-ER-REQUEST-SPLIT` | طلب فصل حالة مطابقة الكيانات | أمر | مسودة |
 | `US-BC02-ER-SPLIT` | فصل حالة مطابقة الكيانات | أمر | مسودة |
-| `US-BC02-Q-CLUSTER-GET` | جلب: Cluster members, canonical URN, links, as known_at | جلب | مسودة |
+| `US-BC02-Q-CLUSTER-GET` | أعضاء الهوية الموحدة لكيان | جلب | مسودة |
 | `US-UI-SCR26-CLUSTER-VIEW` | عرض أعضاء الهوية الموحدة وطلب فصلها | واجهة | مسودة |
 | `US-PLT-CLUSTER-RESOLVED-READ` | قراءة الكيان المدموج دون بطء ملحوظ | منصة | مسودة |
 | `US-OPS-CLUSTER-RECONCILE` | اكتشاف اختلاف جدول الهويات وإعادة بنائه | تشغيل | مسودة |

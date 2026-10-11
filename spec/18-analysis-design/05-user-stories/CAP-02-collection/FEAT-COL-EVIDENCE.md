@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-EVIDENCE |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.03 تسجيل الملاحظات (بما فيها دون اتصال) (R1) |
@@ -161,9 +161,9 @@ stateDiagram-v2
 | `US-BC02-EVD-REGISTER` | تسجيل الدليل | أمر | مسودة |
 | `US-BC02-EVD-SEAL` | ختم الدليل | أمر | مسودة |
 | `US-BC02-EVD-TRANSFER-CUSTODY` | نقل عهدة الدليل | أمر | مسودة |
-| `US-BC02-EVD-UPDATE-LOCATOR` | تحديث محدِّد موقع الدليل | أمر | مسودة |
+| `US-BC02-EVD-UPDATE-LOCATOR` | تحديث موضع الدليل داخل الملف | أمر | مسودة |
 | `US-BC02-EVD-WITHDRAW` | سحب الدليل | أمر | مسودة |
-| `US-BC02-Q-EVD-GET` | جلب: Evidence metadata and custody chain | جلب | مسودة |
+| `US-BC02-Q-EVD-GET` | تفاصيل الدليل وسلسلة عهدته | جلب | مسودة |
 | `US-UI-SCR22-CUSTODY-CHAIN` | عرض سلسلة عهدة الدليل وحالة ختمه | واجهة | مسودة |
 | `US-PLT-EVD-SEAL-VERIFY` | كشف أي تعديل على الدليل بعد ختمه | منصة | مسودة |
 | `US-OPS-EVD-FIXITY-CHECK` | فحص دوري لسلامة الأدلة المختومة | تشغيل | مسودة |

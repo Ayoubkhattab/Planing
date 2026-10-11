@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-FIELD-SYNC |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.03 تسجيل الملاحظات (بما فيها دون اتصال) (R1) |
@@ -177,10 +177,10 @@ stateDiagram-v2
 |---|---|---|---|
 | `US-BC07-SYN-OPEN` | فتح جلسة المزامنة | أمر | مسودة |
 | `US-BC07-SYN-UPLOAD-BATCH` | رفع دفعة إلى جلسة المزامنة | أمر | مسودة |
-| `US-BC07-Q-SYN-DELTA` | جلب: Server → device: my task changes, package updates, purge list, conflict notices, wipe/stop instruction | جلب | مسودة |
-| `US-BC07-S-SYNC-SESSION-02` | تلقائي: all uploaded commands processed without conflict (جلسة المزامنة) | نظام | مسودة |
-| `US-BC07-S-SYNC-SESSION-03` | تلقائي: all processed with ≥ 1 sync conflict (جلسة المزامنة) | نظام | مسودة |
-| `US-BC07-S-SYNC-SESSION-04` | تلقائي: idle timeout (5 min) or transport loss (جلسة المزامنة) | نظام | مسودة |
+| `US-BC07-Q-SYN-DELTA` | تنزيل تحديثات الجهاز بعد الرفع | جلب | مسودة |
+| `US-BC07-S-SYNC-SESSION-02` | اكتمال جلسة المزامنة دون تعارض | نظام | مسودة |
+| `US-BC07-S-SYNC-SESSION-03` | اكتمال جلسة المزامنة بتعارضات | نظام | مسودة |
+| `US-BC07-S-SYNC-SESSION-04` | فشل الجلسة عند الخمول أو انقطاع الاتصال | نظام | مسودة |
 | `US-UI-SCR01-SYNC-DETAILS` | شاشة المزامنة وتقدمها وما بقي معلقًا | واجهة | مسودة |
 | `US-PLT-SYNC-GATEWAY-SCALE` | استيعاب عودة آلاف الأجهزة معًا | منصة | مسودة |
 | `US-PLT-SYNC-IDEMPOTENCY-STORE` | عدم تكرار الأوامر مهما انقطعت المزامنة | منصة | مسودة |

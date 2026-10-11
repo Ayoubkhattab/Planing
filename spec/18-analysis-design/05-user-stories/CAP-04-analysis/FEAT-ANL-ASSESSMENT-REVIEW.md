@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ANL-ASSESSMENT-REVIEW |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-04 التحليل والتقييم |
 | القدرة الفرعية | CAP-04.03 إنتاج التقييم (R1) |
@@ -146,10 +146,10 @@ stateDiagram-v2
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
 | `US-BC03-ASM-PUBLISH` | نشر التقييم | أمر | مسودة |
-| `US-BC03-ASM-RETURN` | إعادة التقييم للمراجعة | أمر | مسودة |
+| `US-BC03-ASM-RETURN` | إعادة التقييم إلى المحلل للتحسين | أمر | مسودة |
 | `US-BC03-ASM-WITHDRAW` | سحب التقييم | أمر | مسودة |
 | `US-DOM-ANL-ASM-REVIEW-QUEUE` | تقييمات مقدَّمة تنتظر مراجعتي | جلب | مسودة |
-| `US-BC03-S-ASSESSMENT-01` | تلقائي: newer version published (التقييم) | نظام | مسودة |
+| `US-BC03-S-ASSESSMENT-01` | استبدال النسخة المنشورة تلقائيًا عند نشر نسخة أحدث | نظام | مسودة |
 | `US-UI-SCR06-ASSESSMENT-REVIEWS` | طابور مراجعة التقييمات في قوائم المراجعة | واجهة | مسودة |
 | `US-UI-SCR31-REVIEW-ACTIONS` | أفعال المراجعة حسب الحالة وفصل المهام | واجهة | مسودة |
 <!-- END GENERATED: story-index -->

@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-INF-TIME-HISTORY |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-03 إدارة المعلومات |
 | القدرة الفرعية | CAP-03.04 الزمن والتاريخ (R1) |
@@ -142,7 +142,7 @@ stateDiagram-v2
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
 | `US-BC02-CLM-RECORD-CHANGE` | تسجيل تغيير في الادعاء | أمر | مسودة |
-| `US-BC02-Q-ENT-CLAIMS` | جلب: Claim history (predicate, valid_at, known_at, include_closed) | جلب | مسودة |
+| `US-BC02-Q-ENT-CLAIMS` | جلب سجل ادعاءات الكيان | جلب | مسودة |
 | `US-UI-SCR21-AS-OF` | عرض الكيان كما كان في وقت سابق | واجهة | مسودة |
 | `US-UI-SCR22-CLAIM-TIMELINE` | خط زمني لصحة الادعاء وتسجيله وتصحيحاته | واجهة | مسودة |
 | `US-PLT-TIME-INTERVALS` | فترتا الصحة والتسجيل لكل ادعاء دون تداخل | منصة | مسودة |

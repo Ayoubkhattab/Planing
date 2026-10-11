@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-INF-TRUST-LINEAGE |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-03 إدارة المعلومات |
 | القدرة الفرعية | CAP-03.07 المنشأ والثقة (R1) |
@@ -132,7 +132,7 @@ flowchart LR
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
 | `US-BC02-CLM-ASSESS` | تقييم الادعاء | أمر | مسودة |
-| `US-BC02-Q-LIN-TRACE` | جلب: Upstream/downstream lineage, depth ≤ 10; hidden nodes cut per policy | جلب | مسودة |
+| `US-BC02-Q-LIN-TRACE` | تتبّع نسب الكائن | جلب | مسودة |
 | `US-UI-SCR22-CONFIDENCE-BADGE` | شارة ثقة تفتح على أبعادها السبعة | واجهة | مسودة |
 | `US-UI-SCR25-LINEAGE-GRAPH` | تتبع منشأ المعلومة صعودًا ونزولًا | واجهة | مسودة |
 | `US-PLT-CONFIDENCE-DIMENSIONS` | إرجاع أبعاد الثقة منفصلة دون درجة إلزامية | منصة | مسودة |

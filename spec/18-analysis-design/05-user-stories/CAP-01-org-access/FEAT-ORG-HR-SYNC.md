@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ORG-HR-SYNC |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-01 إدارة المؤسسة والوصول |
 | القدرة الفرعية | CAP-01.02 الهوية والمصادقة والاتحاد (R1) |
@@ -179,10 +179,10 @@ stateDiagram-v2
 |---|---|---|---|
 | `US-BC01-HRS-APPROVE` | اعتماد مقترح مزامنة الموارد البشرية | أمر | مسودة |
 | `US-BC01-HRS-REJECT` | رفض مقترح مزامنة الموارد البشرية | أمر | مسودة |
-| `US-BC01-Q-HRS-QUEUE` | جلب: Pending HR proposals by unit and change kind (leave first) | جلب | مسودة |
-| `US-BC01-S-HR-SYNC-PROPOSAL-01` | تلقائي: HRIS change received (مقترح مزامنة الموارد البشرية) | نظام | مسودة |
-| `US-BC01-S-HR-SYNC-PROPOSAL-02` | تلقائي: newer HR change for the same person (مقترح مزامنة الموارد البشرية) | نظام | مسودة |
-| `US-BC01-S-HR-SYNC-PROPOSAL-03` | تلقائي: 14 days without decision (مقترح مزامنة الموارد البشرية) | نظام | مسودة |
+| `US-BC01-Q-HRS-QUEUE` | طابور مقترحات الموارد البشرية والمغادرة أولًا | جلب | مسودة |
+| `US-BC01-S-HR-SYNC-PROPOSAL-01` | إنشاء مقترح من تغيير وارد من الموارد البشرية | نظام | مسودة |
+| `US-BC01-S-HR-SYNC-PROPOSAL-02` | استبدال المقترح بتغيير أحدث للشخص نفسه | نظام | مسودة |
+| `US-BC01-S-HR-SYNC-PROPOSAL-03` | انتهاء المقترح بعد 14 يومًا بلا قرار | نظام | مسودة |
 | `US-UI-SCR06-HR-PROPOSALS` | مراجعة مقترحات الموارد البشرية بالمقارنة | واجهة | مسودة |
 | `US-INT-HRIS-CHANGE-PROPOSALS` | تحويل تغييرات الموارد البشرية إلى مقترحات | تكامل | مسودة |
 | `US-INT-HRIS-LEAVER-ESCALATION` | تصعيد مغادرة الموظف إلى المسؤول | تكامل | مسودة |

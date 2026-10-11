@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-INF-RELATIONSHIPS |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-03 إدارة المعلومات |
 | القدرة الفرعية | CAP-03.01 الكيانات والعلاقات (R1) |
@@ -152,7 +152,7 @@ stateDiagram-v2
 | `US-BC02-REL-REGISTER` | تسجيل العلاقة | أمر | مسودة |
 | `US-BC02-REL-REINSTATE` | إعادة العلاقة إلى السريان | أمر | مسودة |
 | `US-BC02-REL-RETIRE` | إحالة العلاقة إلى التقاعد | أمر | مسودة |
-| `US-BC02-Q-REL-LIST` | جلب: Relationships valid_at/known_at, both directions | جلب | مسودة |
+| `US-BC02-Q-REL-LIST` | جلب علاقات الكيان في الاتجاهين | جلب | مسودة |
 | `US-UI-SCR21-RELATION-FORM` | ربط كيانين بعلاقة مؤرخة من صفحة الكيان | واجهة | مسودة |
 | `US-UI-SCR21-RELATIONS-PANEL` | عرض علاقات الكيان في الاتجاهين مجمعة بالنوع | واجهة | مسودة |
 | `US-PLT-REL-HIGHER-LABEL` | إخفاء العلاقة الأعلى تصنيفًا من طرفيها | منصة | مسودة |

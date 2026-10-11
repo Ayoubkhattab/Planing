@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-ADAPTERS |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.04 الاستيعاب والتكامل (R1) |
@@ -187,7 +187,7 @@ stateDiagram-v2
 | `US-BC07-ADP-RETIRE` | إحالة المحوّل إلى التقاعد | أمر | مسودة |
 | `US-BC07-ADP-SUSPEND` | تعليق المحوّل | أمر | مسودة |
 | `US-BC07-ADP-UPDATE-MAPPING` | تحديث ربط حقول المحوّل | أمر | مسودة |
-| `US-BC07-Q-ADP-GET` | جلب: Adapter with mapping versions | جلب | مسودة |
+| `US-BC07-Q-ADP-GET` | عرض المحوّل وإصدارات ربطه | جلب | مسودة |
 | `US-DOM-ADP-LIST` | عرض المحوّلات المسجلة وحالاتها | جلب | مسودة |
 | `US-UI-SCR65-ADAPTER-MAPPING` | مراجعة إصدارات الربط ونتائج اختبارها | واجهة | مسودة |
 | `US-PLT-ADAPTER-MAPPING-TESTS` | تشغيل اختبارات الربط قبل التفعيل | منصة | مسودة |

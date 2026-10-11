@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ORG-ROLE-ASSIGNMENT |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-01 إدارة المؤسسة والوصول |
 | القدرة الفرعية | CAP-01.04 سياسات الوصول (R1) |
@@ -145,9 +145,9 @@ stateDiagram-v2
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC01-RAS-ASSIGN` | تسجيل إسناد الدور | أمر | مسودة |
+| `US-BC01-RAS-ASSIGN` | إسناد الدور | أمر | مسودة |
 | `US-BC01-RAS-REVOKE` | سحب إسناد الدور | أمر | مسودة |
-| `US-BC01-S-ROLE-ASSIGNMENT-01` | تلقائي: valid_to reached (إسناد الدور) | نظام | مسودة |
+| `US-BC01-S-ROLE-ASSIGNMENT-01` | انتهاء إسناد الدور عند نهاية مدته | نظام | مسودة |
 | `US-UI-SCR62-ROLE-ASSIGNMENTS` | إسناد الأدوار بنطاق ومدة ومتابعة انتهائها | واجهة | مسودة |
 <!-- END GENERATED: story-index -->
 

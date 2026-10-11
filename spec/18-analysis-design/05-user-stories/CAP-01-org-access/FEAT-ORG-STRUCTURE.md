@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ORG-STRUCTURE |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-01 إدارة المؤسسة والوصول |
 | القدرة الفرعية | CAP-01.01 إدارة المستأجرين والمؤسسات (R1) |
@@ -192,7 +192,7 @@ stateDiagram-v2
 | `US-BC01-ORG-REACTIVATE` | إعادة تفعيل المؤسسة | أمر | مسودة |
 | `US-BC01-ORG-RENAME` | إعادة تسمية المؤسسة | أمر | مسودة |
 | `US-BC01-ORG-RENAME-UNIT` | إعادة تسمية وحدة تنظيمية في المؤسسة | أمر | مسودة |
-| `US-BC01-Q-ORG-TREE` | جلب: Unit tree (cursor pagination on flattened order) | جلب | مسودة |
+| `US-BC01-Q-ORG-TREE` | شجرة وحدات المؤسسة | جلب | مسودة |
 | `US-UI-SCR61-TREE-NAVIGATION` | تصفح شجرة المؤسسة متعددة المستويات | واجهة | مسودة |
 | `US-UI-SCR61-UNIT-ACTIONS` | نقل الوحدات وتعديلها من الشجرة | واجهة | مسودة |
 | `US-PLT-ORG-SCOPE-RESOLUTION` | حساب النطاق التنظيمي لصلاحيات الأدوار | منصة | مسودة |

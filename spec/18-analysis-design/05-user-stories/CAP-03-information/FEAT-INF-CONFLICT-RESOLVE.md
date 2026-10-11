@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-INF-CONFLICT-RESOLVE |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-03 إدارة المعلومات |
 | القدرة الفرعية | CAP-03.06 إدارة التعارض (R1) |
@@ -159,12 +159,12 @@ stateDiagram-v2
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC02-CNF-ACCEPT` | قبول التعارض | أمر | مسودة |
-| `US-BC02-CNF-ASSIGN` | إسناد التعارض | أمر | مسودة |
+| `US-BC02-CNF-ACCEPT` | قبول التعارض كما هو | أمر | مسودة |
+| `US-BC02-CNF-ASSIGN` | إسناد التعارض لمحلل | أمر | مسودة |
 | `US-BC02-CNF-REOPEN` | إعادة فتح التعارض | أمر | مسودة |
-| `US-BC02-CNF-RESOLVE` | حل التعارض | أمر | مسودة |
+| `US-BC02-CNF-RESOLVE` | حل التعارض بادعاء مفضَّل | أمر | مسودة |
 | `US-BC02-CNF-START-REVIEW` | بدء مراجعة التعارض | أمر | مسودة |
-| `US-BC02-Q-CNF-GET` | جلب: Conflict with visible members, evidence, resolution history (as known_at) | جلب | مسودة |
+| `US-BC02-Q-CNF-GET` | جلب تفاصيل التعارض | جلب | مسودة |
 | `US-UI-SCR26-CONFLICT-COMPARE` | مقارنة طرفي التعارض وحسمه أو قبوله | واجهة | مسودة |
 | `US-OPS-CONFLICT-BACKLOG-WATCH` | مراقبة تراكم التعارضات المفتوحة | تشغيل | مسودة |
 <!-- END GENERATED: story-index -->

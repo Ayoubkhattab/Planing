@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-SENSORS |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.04 الاستيعاب والتكامل (R1) |
@@ -157,8 +157,8 @@ stateDiagram-v2
 | `US-BC07-SNS-REGISTER` | تسجيل تدفق الحسّاس | أمر | مسودة |
 | `US-BC07-SNS-RETIRE` | إحالة تدفق الحسّاس إلى التقاعد | أمر | مسودة |
 | `US-BC07-SNS-SET-QUALITY-RULES` | تحديد قواعد جودة تدفق الحسّاس | أمر | مسودة |
-| `US-BC07-Q-SNS-LIST` | جلب: Streams with rate, staleness, quality violation counts | جلب | مسودة |
-| `US-BC07-S-SENSOR-STREAM-01` | تلقائي: no data beyond stale-after (تدفق الحسّاس) | نظام | مسودة |
+| `US-BC07-Q-SNS-LIST` | جلب قائمة تدفقات الحساسات وجودتها | جلب | مسودة |
+| `US-BC07-S-SENSOR-STREAM-01` | تعليم تدفق الحسّاس راكدًا عند انقطاع بياناته | نظام | مسودة |
 | `US-UI-SCR65-SENSOR-STREAMS` | متابعة تدفقات الحساسات وجودتها | واجهة | مسودة |
 | `US-PLT-SENSOR-QUALITY-EVAL` | تقييم جودة القراءات دون حذفها | منصة | مسودة |
 | `US-PLT-SENSOR-THROUGHPUT` | استيعاب خمسة آلاف قراءة في الثانية | منصة | مسودة |

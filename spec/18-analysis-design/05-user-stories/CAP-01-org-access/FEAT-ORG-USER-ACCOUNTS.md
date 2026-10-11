@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ORG-USER-ACCOUNTS |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-01 إدارة المؤسسة والوصول |
 | القدرة الفرعية | CAP-01.02 الهوية والمصادقة والاتحاد (R1) |
@@ -185,16 +185,16 @@ stateDiagram-v2
 | `US-BC01-USR-CLOSE` | إغلاق حساب المستخدم | أمر | مسودة |
 | `US-BC01-USR-DISABLE` | تعطيل حساب المستخدم | أمر | مسودة |
 | `US-BC01-USR-ENABLE` | تمكين حساب المستخدم | أمر | مسودة |
-| `US-BC01-USR-LINK-PERSON` | ربط شخص بـحساب المستخدم | أمر | مسودة |
+| `US-BC01-USR-LINK-PERSON` | ربط شخص بحساب المستخدم | أمر | مسودة |
 | `US-BC01-USR-LOCK` | قفل حساب المستخدم | أمر | مسودة |
 | `US-BC01-USR-PROVISION` | تهيئة حساب المستخدم | أمر | مسودة |
 | `US-BC01-USR-UNLOCK` | فتح قفل حساب المستخدم | أمر | مسودة |
-| `US-BC01-Q-USR-GET` | جلب: User with identities (no secrets) | جلب | مسودة |
-| `US-BC01-Q-USR-LIST` | جلب: Users filtered by state, unit, role | جلب | مسودة |
+| `US-BC01-Q-USR-GET` | تفاصيل حساب المستخدم وهوياته | جلب | مسودة |
+| `US-BC01-Q-USR-LIST` | قائمة حسابات المستخدمين | جلب | مسودة |
 | `US-UI-SCR62-USER-ACTIONS` | أفعال الحساب المتاحة حسب الحالة والدور | واجهة | مسودة |
 | `US-UI-SCR62-USER-LIST` | البحث في المستخدمين وتصفيتهم حسب الحالة | واجهة | مسودة |
-| `US-INT-SCIM-DEPROVISIONING` | تعطيل الحساب من مزود الهوية خلال خمس دقائق | تكامل | مسودة |
-| `US-INT-SCIM-PROVISIONING` | استقبال إنشاء الحسابات من مزود الهوية | تكامل | مسودة |
+| `US-INT-SCIM-DEPROVISIONING` | تعطيل الحساب من مزوّد الهوية خلال خمس دقائق | تكامل | مسودة |
+| `US-INT-SCIM-PROVISIONING` | استقبال إنشاء الحسابات من مزوّد الهوية | تكامل | مسودة |
 | `US-OPS-SCIM-SYNC-ALERT` | تنبيه عند تأخر مزامنة الحسابات | تشغيل | مسودة |
 <!-- END GENERATED: story-index -->
 

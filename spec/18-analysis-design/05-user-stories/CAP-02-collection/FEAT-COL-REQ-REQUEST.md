@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-REQ-REQUEST |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.01 الحاجة المعلوماتية وتخطيط الجمع (R2) |
@@ -160,10 +160,10 @@ stateDiagram-v2
 |---|---|---|---|
 | `US-BC02-CRQ-CANCEL` | إلغاء متطلب الجمع | أمر | مسودة |
 | `US-BC02-CRQ-DRAFT` | إعداد مسودة متطلب الجمع | أمر | مسودة |
-| `US-BC02-CRQ-EDIT` | تعديل متطلب الجمع | أمر | مسودة |
+| `US-BC02-CRQ-EDIT` | تعديل متطلب الجمع في مسودته | أمر | مسودة |
 | `US-BC02-CRQ-MARK-SATISFIED` | تعليم متطلب الجمع كمستوفى | أمر | مسودة |
 | `US-BC02-CRQ-SUBMIT` | تقديم متطلب الجمع | أمر | مسودة |
-| `US-BC02-Q-CRQ-GET` | جلب: Requirement with EEIs and fulfilment computed over observations visible to the caller | جلب | مسودة |
+| `US-BC02-Q-CRQ-GET` | جلب تفاصيل متطلب الجمع واستيفائه | جلب | مسودة |
 | `US-UI-SCR13-CRQ-FORM` | صياغة طلب الجمع برسم المنطقة وعناصر المعلومات | واجهة | مسودة |
 | `US-UI-SCR13-MY-REQUESTS` | متابعة مقدم الطلب لطلباته وحالة استيفائها | واجهة | مسودة |
 <!-- END GENERATED: story-index -->

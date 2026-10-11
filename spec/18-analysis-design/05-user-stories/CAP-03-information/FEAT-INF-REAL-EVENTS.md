@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-INF-REAL-EVENTS |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-03 إدارة المعلومات |
 | القدرة الفرعية | CAP-03.01 الكيانات والعلاقات (R1) |
@@ -147,7 +147,7 @@ stateDiagram-v2
 | `US-BC02-RWE-REGISTER` | تسجيل الحدث الواقعي | أمر | مسودة |
 | `US-BC02-RWE-REINSTATE` | إعادة الحدث الواقعي إلى السريان | أمر | مسودة |
 | `US-BC02-RWE-RETIRE` | إحالة الحدث الواقعي إلى التقاعد | أمر | مسودة |
-| `US-BC02-Q-RWE-GET` | جلب: Resolved real-world event | جلب | مسودة |
+| `US-BC02-Q-RWE-GET` | جلب الحدث الواقعي المحلول | جلب | مسودة |
 | `US-UI-SCR21-EVENT-FUZZY-TIME` | إدخال زمن الحدث التقريبي وعرضه بدقته | واجهة | مسودة |
 | `US-PLT-EVENTS-FUZZY-OVERLAP` | مطابقة الأزمنة التقريبية بثلاث نتائج | منصة | مسودة |
 <!-- END GENERATED: story-index -->

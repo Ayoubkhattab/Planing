@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-INF-UNIFIED-SEARCH |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-03 إدارة المعلومات |
 | القدرة الفرعية | CAP-03.01 الكيانات والعلاقات (R1) |
@@ -129,8 +129,8 @@ flowchart LR
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC07-Q-SRCH-QUERY` | جلب: Unified search: text + types + polygon/bbox + time window + filters + facets; cursor paging; results and facets over visible facts only | جلب | مسودة |
-| `US-BC07-Q-SRCH-SUGGEST` | جلب: Autocomplete from visible facts only | جلب | مسودة |
+| `US-BC07-Q-SRCH-QUERY` | البحث الموحَّد بالنص والمكان والزمن | جلب | مسودة |
+| `US-BC07-Q-SRCH-SUGGEST` | اقتراحات الإكمال التلقائي | جلب | مسودة |
 | `US-UI-SCR20-SEARCH-DEGRADED` | إبلاغ المستخدم حين يكون البحث جزئيًا أو متوقفًا | واجهة | مسودة |
 | `US-UI-SCR20-SEARCH-GEO-TIME` | تقييد البحث بمضلع على الخريطة ونافذة زمنية | واجهة | مسودة |
 | `US-UI-SCR20-SEARCH-RESULTS` | عرض نتائج البحث مجمعة بالنوع مع الأوجه | واجهة | مسودة |

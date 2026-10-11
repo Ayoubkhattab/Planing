@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-PLAN |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.01 الحاجة المعلوماتية وتخطيط الجمع (R2) |
@@ -159,8 +159,8 @@ stateDiagram-v2
 | `US-BC02-CPL-COMPLETE` | إكمال خطة الجمع | أمر | مسودة |
 | `US-BC02-CPL-CREATE` | إنشاء خطة الجمع | أمر | مسودة |
 | `US-BC02-CPL-REMOVE-ACTIVITY` | إزالة نشاط من خطة الجمع | أمر | مسودة |
-| `US-BC02-Q-CPL-GET` | جلب: Plan with activities and linked tasks | جلب | مسودة |
-| `US-BC02-S-COLLECTION-PLAN-01` | تلقائي: all activity tasks terminal (خطة الجمع) | نظام | مسودة |
+| `US-BC02-Q-CPL-GET` | جلب خطة الجمع بأنشطتها ومهامها | جلب | مسودة |
+| `US-BC02-S-COLLECTION-PLAN-01` | إكمال خطة الجمع تلقائيًا عند انتهاء كل مهامها | نظام | مسودة |
 | `US-UI-SCR13-PLAN-EDITOR` | إعداد خطة الجمع وأنشطتها على الخريطة | واجهة | مسودة |
 | `US-UI-SCR13-PLAN-PROGRESS` | متابعة مهام أنشطة الخطة حتى اكتمالها | واجهة | مسودة |
 | `US-PLT-CPL-TASK-SPAWN` | إنشاء مهام الأنشطة مرة واحدة دون تكرار | منصة | مسودة |

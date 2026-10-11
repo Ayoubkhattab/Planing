@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ORG-DELEGATION |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-01 إدارة المؤسسة والوصول |
 | القدرة الفرعية | CAP-01.03 السلطة والتفويض (R1) |
@@ -130,8 +130,8 @@ flowchart LR
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC01-AUT-DELEGATE` | تفويض منح السلطة | أمر | مسودة |
-| `US-BC01-Q-AUT-CHECK` | جلب: AuthorityCheck(actor, decision_type, scope, at, amount?) | جلب | مسودة |
+| `US-BC01-AUT-DELEGATE` | تفويض السلطة | أمر | مسودة |
+| `US-BC01-Q-AUT-CHECK` | التحقق من سلطة القرار في نطاق ولحظة | جلب | مسودة |
 | `US-UI-SCR05-ACTING-AUTHORITY` | إظهار سلطة المفوَّض إليه عند القرار | واجهة | مسودة |
 | `US-UI-SCR62-DELEGATION-FORM` | تفويض السلطة ضمن حدود المفوِّض الظاهرة | واجهة | مسودة |
 <!-- END GENERATED: story-index -->

@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-SOURCES |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.02 إدارة المصادر (R1) |
@@ -155,7 +155,7 @@ stateDiagram-v2
 | `US-BC02-SRC-RETIRE` | إحالة المصدر إلى التقاعد | أمر | مسودة |
 | `US-BC02-SRC-SUSPEND` | تعليق المصدر | أمر | مسودة |
 | `US-BC02-SRC-UPDATE-PROFILE` | تحديث ملف المصدر | أمر | مسودة |
-| `US-BC02-Q-SRC-GET` | جلب: Source; identity only with source-protection permission | جلب | مسودة |
+| `US-BC02-Q-SRC-GET` | جلب تفاصيل مصدر واحد | جلب | مسودة |
 | `US-DOM-SRC-LIST` | عرض سجل المصادر وتصفيته | جلب | مسودة |
 | `US-UI-SCR22-SOURCE-LIST` | تصفح المصادر حسب النوع والحالة والموثوقية | واجهة | مسودة |
 | `US-UI-SCR22-SOURCE-PROFILE` | ملف المصدر وتاريخ تقديرات موثوقيته | واجهة | مسودة |

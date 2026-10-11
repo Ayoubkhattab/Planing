@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ANL-CASE-SETUP |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-04 التحليل والتقييم |
 | القدرة الفرعية | CAP-04.01 حالات التحليل (R1) |
@@ -155,8 +155,8 @@ stateDiagram-v2
 | `US-BC03-ACS-OPEN` | فتح حالة التحليل | أمر | مسودة |
 | `US-BC03-ACS-RECLASSIFY` | إعادة تصنيف حالة التحليل | أمر | مسودة |
 | `US-BC03-ACS-REOPEN` | إعادة فتح حالة التحليل | أمر | مسودة |
-| `US-BC03-Q-ACS-GET` | جلب: Case with question, scope, hypotheses, assumptions, visible selections, scenarios | جلب | مسودة |
-| `US-BC03-Q-ACS-LIST` | جلب: Cases by owner, state, extent | جلب | مسودة |
+| `US-BC03-Q-ACS-GET` | جلب حالة التحليل بتفاصيلها | جلب | مسودة |
+| `US-BC03-Q-ACS-LIST` | جلب قائمة حالات التحليل | جلب | مسودة |
 | `US-UI-SCR30-CASE-ACTIONS` | أفعال الحالة المتاحة حسب وضعها | واجهة | مسودة |
 | `US-UI-SCR30-CASE-LIST` | قائمة حالات التحليل حسب الحالة والنطاق | واجهة | مسودة |
 | `US-UI-SCR30-SCOPE-MAP` | رسم النطاق المكاني والزمني للحالة على الخريطة | واجهة | مسودة |

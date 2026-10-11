@@ -3,9 +3,9 @@ id: FEAT-ANL-ASSESSMENT-READ
 type: feature
 title: "الاطلاع على التقييمات وإصداراتها"
 status: DRAFT
-version: "0.1"
+version: "0.2"
 capability: CAP-04.03
-sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv]
+sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc03.md, 03-domain/contexts/BC03/aggregates/AGG-ASSESSMENT.md, 03-domain/contexts/BC03/analysis-reproducibility-spec.md, 18-analysis-design/05-user-stories/00-glossary.md, 18-analysis-design/21-ui-design.md]
 generator: 17-system-study/_build/build_analysis_design.py
 ---
 

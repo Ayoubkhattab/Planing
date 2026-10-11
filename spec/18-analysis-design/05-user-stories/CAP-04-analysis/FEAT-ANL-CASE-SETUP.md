@@ -3,9 +3,9 @@ id: FEAT-ANL-CASE-SETUP
 type: feature
 title: "فتح حالة تحليل وإدارتها"
 status: DRAFT
-version: "0.1"
+version: "0.2"
 capability: CAP-04.01
-sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv]
+sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc03.md, 03-domain/contexts/BC03/aggregates/AGG-ANALYSIS-CASE.md, 08-security/policies-slc07.md, 03-domain/contexts/BC03/events-slc07.md, 21-ui-design.md §4.4, §6.3, §7, 02-requirements/requirements.md, 02-requirements/use-cases.md, 18-analysis-design/05-user-stories/00-glossary.md]
 generator: 17-system-study/_build/build_analysis_design.py
 ---
 
@@ -797,17 +797,33 @@ stateDiagram-v2
 |---|---|---|---|---|
 | واجهة | R1 | Must | لا | مسودة |
 
-> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+> **كـ** المحلل، **أريد** أن أرى النطاق المكاني لحالة التحليل مرسومًا على الخريطة مع نطاقها الزمني، **حتى** أتحقق بصريًا من أن نطاقها يطابق سؤالها التحليلي.
 
-**باختصار:** **[للكتابة]**
+**باختصار:** ترسم شاشة الحالة التحليلية مضلع النطاق المكاني لحالة التحليل على الخريطة إن وُجد، مع عرض نطاقها الزمني. **[Derived]**
 
 #### القواعد
 
-**[للكتابة]**
+- **البيانات:** مضلع النطاق المكاني (اختياري)، والنطاق الزمني.
+- **الأثر:** عرض فقط؛ تحرير النطاق بأمر تعريف حالة التحليل (القصة 5.4).
 
 #### معايير القبول
 
-**[للكتابة]**
+```gherkin
+# language: ar
+خاصية: رسم النطاق المكاني والزمني للحالة على الخريطة
+
+  سيناريو: رسم مضلع النطاق على الخريطة
+    بفرض السياق المشترك للميزة
+    و حالة تحليل معرَّف نطاقها المكاني بمضلع ونطاقها الزمني
+    عندما يفتح المحلل شاشتها
+    اذاً يُرسم المضلع على الخريطة، ويظهر النطاق الزمني
+
+  سيناريو: لا نطاق مكاني محدد
+    بفرض السياق المشترك للميزة
+    و حالة تحليل لم يحدد لها نطاق مكاني
+    عندما يفتح المحلل شاشتها
+    اذاً لا يُرسم مضلع، ويظهر النطاق الزمني فقط
+```
 
 <details><summary>المراجع التقنية والتتبع</summary>
 

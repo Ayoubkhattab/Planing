@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ORG-TENANT-LIFECYCLE |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-01 إدارة المؤسسة والوصول |
 | القدرة الفرعية | CAP-01.01 إدارة المستأجرين والمؤسسات (R1) |
@@ -194,13 +194,13 @@ stateDiagram-v2
 | `US-BC01-TEN-COMPLETE-DECOMMISSION` | إكمال إخراج المستأجر من الخدمة | أمر | مسودة |
 | `US-BC01-TEN-COMPLETE-PROVISIONING` | إكمال تهيئة المستأجر | أمر | مسودة |
 | `US-BC01-TEN-FAIL-PROVISIONING` | تسجيل فشل تهيئة المستأجر | أمر | مسودة |
-| `US-BC01-TEN-PROVISION` | تهيئة المستأجر | أمر | مسودة |
+| `US-BC01-TEN-PROVISION` | تهيئة مستأجر جديد | أمر | مسودة |
 | `US-BC01-TEN-REACTIVATE` | إعادة تفعيل المستأجر | أمر | مسودة |
 | `US-BC01-TEN-RETRY-PROVISIONING` | إعادة محاولة تهيئة المستأجر | أمر | مسودة |
 | `US-BC01-TEN-START-DECOMMISSION` | بدء إخراج المستأجر من الخدمة | أمر | مسودة |
 | `US-BC01-TEN-SUSPEND` | تعليق المستأجر | أمر | مسودة |
-| `US-BC01-Q-TEN-GET` | جلب: Tenant state, cell, quotas | جلب | مسودة |
-| `US-DOM-TEN-LIST` | عرض قائمة المستأجرين لمشغل المنصة | جلب | مسودة |
+| `US-BC01-Q-TEN-GET` | تفاصيل المستأجر: حالته وخليته وحصصه | جلب | مسودة |
+| `US-DOM-TEN-LIST` | قائمة المستأجرين لمشغّل المنصة | جلب | مسودة |
 | `US-UI-SCR60-PROVISIONING-PROGRESS` | متابعة خطوات تهيئة المستأجر وسبب فشلها | واجهة | مسودة |
 | `US-UI-SCR60-TENANT-ACTIONS` | أفعال المستأجر المتاحة حسب حالته | واجهة | مسودة |
 | `US-PLT-TENANT-CELL-BINDING` | رفض طلبات المستأجر من غير خليته | منصة | مسودة |

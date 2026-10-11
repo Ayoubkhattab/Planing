@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-DEVICES |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.03 تسجيل الملاحظات (بما فيها دون اتصال) (R1) |
@@ -192,7 +192,7 @@ stateDiagram-v2
 | `US-BC01-DEV-RETIRE` | إحالة الجهاز الميداني إلى التقاعد | أمر | مسودة |
 | `US-BC01-DEV-ROTATE-KEY` | تدوير مفتاح الجهاز الميداني | أمر | مسودة |
 | `US-BC01-DEV-SUSPEND` | تعليق الجهاز الميداني | أمر | مسودة |
-| `US-BC01-Q-DEV-LIST` | جلب: Devices of a user (self) or in scope (Administrator) | جلب | مسودة |
+| `US-BC01-Q-DEV-LIST` | عرض الأجهزة الميدانية | جلب | مسودة |
 | `US-UI-SCR63-DEVICE-LIST` | قائمة الأجهزة وحالتها وآخر مزامنة | واجهة | مسودة |
 | `US-UI-SCR63-ENROLL-CONFIRM` | تأكيد تسجيل جهاز جديد بعد التحقق منه | واجهة | مسودة |
 | `US-PLT-DEVICE-ATTESTATION` | مفتاح جهاز عتادي غير قابل للتصدير مع إثبات | منصة | مسودة |

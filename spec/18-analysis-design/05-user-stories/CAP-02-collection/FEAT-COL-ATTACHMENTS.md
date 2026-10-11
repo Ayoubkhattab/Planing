@@ -3,7 +3,7 @@ id: FEAT-COL-ATTACHMENTS
 type: feature
 title: "رفع المرفقات وتنزيلها"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-02.03
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc02.md, 03-domain/contexts/BC02/aggregates/AGG-ATTACHMENT.md, 03-domain/contexts/BC02/commands-slc02.md, 03-domain/contexts/BC02/queries-slc02.md, 03-domain/contexts/BC02/events-slc02.md, 08-security/policies-slc02.md, 08-security/threat-model-slc02.md, 05-contracts/openapi-information-slc02.md, 09-reliability/fmea-slc02.md, 09-reliability/degradation-slc02.md, 09-reliability/observability-slc02.md, 03-domain/contexts/BC07/field-sync-protocol.md, 00-governance/decisions/ADR-P08.md, 02-requirements/requirements.md, 02-requirements/use-cases.md, 13-verification/acceptance/SLC-02/invariants-slc02.md, 13-verification/fitness-functions.md, 12-solution/technology-decisions.md, 18-analysis-design/17-security-design.md, 18-analysis-design/18-error-handling.md, 18-analysis-design/21-ui-design.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COL-ATTACHMENTS |
-| الإصدار | 0.1 |
+| الإصدار | 0.3 |
 | الحالة | مسودة |
 | القدرة | CAP-02 جمع المعلومات |
 | القدرة الفرعية | CAP-02.03 تسجيل الملاحظات (بما فيها دون اتصال) (R1) |
@@ -167,10 +167,10 @@ stateDiagram-v2
 | `US-BC02-ATT-COMPLETE-UPLOAD` | إكمال رفع المرفق | أمر | مسودة |
 | `US-BC02-ATT-ERASE` | محو المرفق | أمر | مسودة |
 | `US-BC02-ATT-INITIATE-UPLOAD` | بدء رفع المرفق | أمر | مسودة |
-| `US-BC02-Q-ATT-DOWNLOAD` | جلب: Short-lived signed download target (≤ 5 min); audited | جلب | مسودة |
-| `US-BC02-S-ATTACHMENT-01` | تلقائي: scan passed (المرفق) | نظام | مسودة |
-| `US-BC02-S-ATTACHMENT-02` | تلقائي: scan failed (المرفق) | نظام | مسودة |
-| `US-BC02-S-ATTACHMENT-03` | تلقائي: upload window 24 h elapsed (المرفق) | نظام | مسودة |
+| `US-BC02-Q-ATT-DOWNLOAD` | جلب: رابط تنزيل موقّع قصير الأمد (≤ 5 دقائق) ومُدقَّق | جلب | مسودة |
+| `US-BC02-S-ATTACHMENT-01` | تلقائي: نجاح فحص المرفق | نظام | مسودة |
+| `US-BC02-S-ATTACHMENT-02` | تلقائي: فشل فحص المرفق | نظام | مسودة |
+| `US-BC02-S-ATTACHMENT-03` | تلقائي: انتهاء نافذة الرفع (24 ساعة) للمرفق | نظام | مسودة |
 | `US-UI-SCR22-SAFE-VIEWER` | معاينة المرفق في عارض معزول | واجهة | مسودة |
 | `US-UI-SCR23-UPLOAD-STATE` | متابعة رفع المرفق وفحصه حتى إتاحته | واجهة | مسودة |
 | `US-PLT-ATT-CONTENT-SCANNER` | فحص المرفقات محليًا قبل إتاحتها | منصة | مسودة |
@@ -181,6 +181,8 @@ stateDiagram-v2
 | `US-OPS-ATT-SCANNER-BACKLOG` | التنبيه عند تأخر فحص المرفقات | تشغيل | مسودة |
 | `US-OPS-ATT-SCANNER-SIGNATURES` | تحديث تواقيع الماسح في بيئة معزولة | تشغيل | مسودة |
 <!-- END GENERATED: story-index -->
+
+> **ملاحظة:** عناوين `US-BC02-Q-ATT-DOWNLOAD` و`US-BC02-S-ATTACHMENT-01/02/03` في الفهرس أعلاه ما زالت بالإنجليزية في `feature_map.csv` المصدر؛ عناوين القصص في القسم 5 أدناه مُعرَّبة. يلزم تحديث المصدر ثم إعادة توليد الفهرس **[Needs Review]**.
 
 ## 5. القصص
 
@@ -391,7 +393,7 @@ stateDiagram-v2
 
 </details>
 
-### 5.4 US-BC02-Q-ATT-DOWNLOAD — جلب: Short-lived signed download target (≤ 5 min); audited
+### 5.4 US-BC02-Q-ATT-DOWNLOAD — جلب: رابط تنزيل موقّع قصير الأمد (≤ 5 دقائق) ومُدقَّق
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
@@ -454,7 +456,7 @@ stateDiagram-v2
 
 </details>
 
-### 5.5 US-BC02-S-ATTACHMENT-01 — تلقائي: scan passed (المرفق)
+### 5.5 US-BC02-S-ATTACHMENT-01 — تلقائي: نجاح فحص المرفق
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
@@ -506,7 +508,7 @@ stateDiagram-v2
 
 </details>
 
-### 5.6 US-BC02-S-ATTACHMENT-02 — تلقائي: scan failed (المرفق)
+### 5.6 US-BC02-S-ATTACHMENT-02 — تلقائي: فشل فحص المرفق
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
@@ -558,7 +560,7 @@ stateDiagram-v2
 
 </details>
 
-### 5.7 US-BC02-S-ATTACHMENT-03 — تلقائي: upload window 24 h elapsed (المرفق)
+### 5.7 US-BC02-S-ATTACHMENT-03 — تلقائي: انتهاء نافذة الرفع (24 ساعة) للمرفق
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
@@ -1059,3 +1061,4 @@ stateDiagram-v2
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-03 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-11 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

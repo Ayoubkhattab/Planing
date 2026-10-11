@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-ORG-ACCESS-ENFORCE |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-01 إدارة المؤسسة والوصول |
 | القدرة الفرعية | CAP-01.04 سياسات الوصول (R1) |
@@ -113,8 +113,8 @@ flowchart LR
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC01-Q-SEC-CONTEXT` | جلب: Caller's resolved SecurityContext | جلب | مسودة |
-| `US-BC08-Q-PDP-DECIDE` | جلب: DecisionRequest → DecisionResponse (authorization-model §2) | جلب | مسودة |
+| `US-BC01-Q-SEC-CONTEXT` | سياقي الأمني: أدواري وتصريحي | جلب | مسودة |
+| `US-BC08-Q-PDP-DECIDE` | طلب قرار من محرك السياسات | جلب | مسودة |
 | `US-PLT-ACCESS-ALLOWED-ACTIONS` | إرجاع الأفعال المسموحة مع تفاصيل المورد | منصة | مسودة |
 | `US-PLT-ACCESS-DECISION-CACHE` | نفاذ سحب الصلاحية في الطلب التالي | منصة | مسودة |
 | `US-PLT-ACCESS-FAIL-CLOSED` | رفض الطلب عند تعذر فحص الصلاحية | منصة | مسودة |

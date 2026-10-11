@@ -3,7 +3,7 @@ id: FEAT-ORG-ROLE-ASSIGNMENT
 type: feature
 title: "إسناد الأدوار للمستخدمين"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-01.04
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc01.md, 03-domain/contexts/BC01/aggregates/AGG-ROLE-ASSIGNMENT.md, 03-domain/contexts/BC01/events-slc01.md, 08-security/policies-slc01.md, 06-data/logical-model/slc-01.md, 02-requirements/requirements.md, 02-requirements/use-cases.md, 18-analysis-design/21-ui-design.md, 18-analysis-design/18-error-handling.md, 00-governance/glossary.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -172,6 +172,8 @@ stateDiagram-v2
 
 > **ملاحظة:** جدول الانتقالات يعطي رمزًا واحدًا لكل شروط الإسناد (تعارض الأدوار). ورمز رفض الدور غير النشط أو الحساب المغلق أو الوحدة غير النشطة غير محدد **[Needs Review]**. ورسالة فصل المهام في المسرد لا تصف الإسناد إلى النفس بدقة **[Needs Review]**.
 
+> **ملاحظة:** المصدر (`us-bc01.md`) يربط هذا الأمر أيضًا بـ REQ-OPS-005 وREQ-OPS-009 (فصل المهام في اعتماد الخطة ومراجعة المهمة، §1.2)، إلى جانب REQ-FND-011؛ جدول المراجع والتتبع المولَّد أعلاه لا يذكر إلا REQ-FND-011 لأنه مولَّد من `feature_map.csv` الذي يحتاج تحديثًا مستقلًا.
+
 #### معايير القبول
 
 ```gherkin
@@ -234,6 +236,8 @@ stateDiagram-v2
 - **من يُسمح له:** مسؤول الإدارة الذي يشمل نطاقه وحدة الإسناد.
 - **البيانات:** السبب، إلزامي.
 - **الأثر:** يصبح الإسناد «مسحوبًا»، وهي حالة نهائية. ويُسجَّل حدث «سُحب إسناد الدور»، ويرتفع الإصدار الأمني للمستخدم فتُبطَل قرارات الصلاحية المحفوظة له.
+
+> **ملاحظة:** المصدر (`us-bc01.md`) يربط هذا الأمر أيضًا بـ REQ-OPS-005 وREQ-OPS-009 (فصل المهام في اعتماد الخطة ومراجعة المهمة، §1.2)، إلى جانب REQ-FND-011؛ جدول المراجع والتتبع المولَّد أعلاه لا يذكر إلا REQ-FND-011 لأنه مولَّد من `feature_map.csv` الذي يحتاج تحديثًا مستقلًا.
 
 #### معايير القبول
 
@@ -394,9 +398,12 @@ stateDiagram-v2
 | REQ-FND-011 | The system shall base authorization decisions on subject, action, resource, purpose, context, classification,… | كل قصص الميزة المأخوذة من المواصفة (3) | TST-POLICY-SET-SM، TST-ROLE-ASSIGNMENT-SM |
 <!-- END GENERATED: trace -->
 
+> **ملاحظة [Needs Review]:** حسب `us-bc01.md`، تُربط `US-BC01-RAS-ASSIGN` و`US-BC01-RAS-REVOKE` أيضًا بـ REQ-OPS-005 وREQ-OPS-009، إلى جانب REQ-FND-011 الظاهر أعلاه. الجدول أعلاه مولَّد من `feature_map.csv` ولا يتضمن هذا الربط؛ يلزم تحديث المصدر ليعكس REQ-OPS-005 وREQ-OPS-009.
+
 ## 7. سجل التغييرات
 
 | الإصدار | التاريخ | التغيير |
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-03 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-11 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

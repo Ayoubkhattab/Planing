@@ -3,7 +3,7 @@ id: FEAT-COL-ADAPTERS
 type: feature
 title: "إدارة محوّلات البيانات"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-02.04
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc07.md, 03-domain/contexts/BC07/aggregates/AGG-ADAPTER.md, 03-domain/contexts/BC07/events-slc02.md, 08-security/policies-slc02.md, 03-domain/contexts/BC02/aggregates/AGG-IMPORT-BATCH.md, 03-domain/contexts/BC01/aggregates/AGG-SERVICE-ACCOUNT.md, 03-domain/contexts/BC07/aggregates/AGG-INTEGRATION-CONNECTION.md, 08-security/threat-model-slc01.md, 18-analysis-design/17-security-design.md, 18-analysis-design/20-integration-design.md, 18-analysis-design/21-ui-design.md, 18-analysis-design/22-deployment-design.md, 12-solution/deployment-units.md, 12-solution/technology-decisions.md, 13-verification/fitness-functions.md, 02-requirements/requirements.md, 02-requirements/quality-scenarios.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -345,7 +345,7 @@ stateDiagram-v2
 - **من يُسمح له:** مسؤول إدارة في المستأجر نفسه، يرى المحوّل بتصريحه وله صلاحية الكتابة في نطاقه.
 - **الأثر:** يصبح المحوّل «نشطًا»، ويُسجَّل حدث «استُؤنف المحوّل». ويصل إلى عامل الاستيراد، فتُقبل دفعات المحوّل من جديد، ويُستأنف السحب من آخر نقطة مؤكدة (القصة 5.11) **[Derived]**.
 
-> **ملاحظة:** مخطط انتقال حالات `AGG-ADAPTER` لا يحمل حارسًا من نوع فصل المهام على هذا الانتقال، بخلاف ما قد يُفهم من سياسة `POL-ADP-REGISTER` بشأن "مسؤول إدارة ثانٍ"؛ تمت مطابقة القصة مع نظيرتها `US-BC07-CON-RESUME` في CONNECTIONS التي لا تفرض فصل مهام على الاستئناف **[Needs Review]**.
+> **ملاحظة:** مخطط انتقال حالات المحوّل لا يحمل حارسًا من نوع فصل المهام على هذا الانتقال، بخلاف ما قد يُفهم من سياسة تسجيل المحوّل بشأن "مسؤول إدارة ثانٍ"؛ تمت مطابقة القصة مع نظيرتها (استئناف اتصال التكامل) في ميزة الاتصالات، التي لا تفرض فصل مهام على الاستئناف **[Needs Review]**.
 
 #### معايير القبول
 
@@ -993,3 +993,4 @@ stateDiagram-v2
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-03 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-11 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

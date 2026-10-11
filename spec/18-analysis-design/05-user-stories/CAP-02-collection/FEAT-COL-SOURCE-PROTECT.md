@@ -3,7 +3,7 @@ id: FEAT-COL-SOURCE-PROTECT
 type: feature
 title: "حماية هوية المصادر"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-02.02
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc02.md, 03-domain/contexts/BC02/aggregates/AGG-SOURCE.md, 17-system-study/bc02-information-core.md, 18-analysis-design/21-ui-design.md, 18-analysis-design/17-security-design.md, 18-analysis-design/05-user-stories/00-glossary.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -252,7 +252,7 @@ flowchart LR
       | المصدر في حالة "متقاعد"                                    | SOURCE_INVALID_STATE_TRANSITION | الوضع الحالي للمصدر لا يسمح بهذا الإجراء  |
 ```
 
-> **ملاحظة:** لا يذكر عقد `CMD-SRC-SET-PROTECTION` ولا حارس `AGG-SOURCE` شرط مصادقة معززة (MFA step-up) لهذا الإجراء؛ صف `MFA_STEP_UP_REQUIRED` الذي كان هنا أُزيل لعدم استناده إلى مصدر، ويبقى سؤالًا مفتوحًا هل يلزم مثل هذا الشرط لتخفيض الحماية **[Needs Review]**.
+> **ملاحظة:** لا يذكر عقد الأمر ولا حارس حالة المصدر شرط مصادقة معززة (MFA step-up) لهذا الإجراء؛ صف `MFA_STEP_UP_REQUIRED` الذي كان هنا أُزيل لعدم استناده إلى مصدر، ويبقى سؤالًا مفتوحًا هل يلزم مثل هذا الشرط لتخفيض الحماية **[Needs Review]**.
 
 <details><summary>المراجع التقنية والتتبع</summary>
 
@@ -377,3 +377,4 @@ flowchart LR
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-03 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-11 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

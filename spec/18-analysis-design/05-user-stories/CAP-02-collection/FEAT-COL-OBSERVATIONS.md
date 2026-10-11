@@ -3,7 +3,7 @@ id: FEAT-COL-OBSERVATIONS
 type: feature
 title: "تسجيل الملاحظات"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-02.03
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc02.md, 03-domain/contexts/BC02/aggregates/AGG-OBSERVATION.md, 08-security/policies-slc02.md, 02-requirements/requirements.md, 02-requirements/use-cases.md, 02-requirements/quality-scenarios.md, 13-verification/fitness-functions.md, 18-analysis-design/18-error-handling.md, 18-analysis-design/21-ui-design.md, 12-solution/technology-decisions.md, 09-reliability/observability-slc02.md, 00-governance/glossary.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -148,6 +148,8 @@ flowchart LR
 | `US-OPS-OBS-SOURCE-SILENCE` | التنبيه عند صمت مصادر الملاحظات | تشغيل | مسودة |
 <!-- END GENERATED: story-index -->
 
+> **ملاحظة:** عناوين `US-BC02-Q-OBS-GET` و`US-BC02-Q-OBS-LIST` في الفهرس أعلاه ما زالت بالإنجليزية في `feature_map.csv` المصدر؛ عناوين القصص في القسم 5 أدناه مُعرَّبة. يلزم تحديث المصدر ثم إعادة توليد الفهرس **[Needs Review]**.
+
 ## 5. القصص
 
 ### 5.1 US-BC02-OBS-AMEND — تعديل الملاحظة بإصدار جديد
@@ -225,7 +227,7 @@ flowchart LR
 #### القواعد
 
 - **متى يُسمح:** الملاحظة «مسجّلة»، والدليل «مسجَّل» أو «مختوم».
-- **من يُسمح له:** المستخدم الميداني أو المشغّل أو المحلل، أو حساب خدمة محوّل، ضمن نطاقه من المؤسسة (لا يقصر حارس `AGG-OBSERVATION` الإذن على الراصد أو المحلل وحدهما).
+- **من يُسمح له:** المستخدم الميداني أو المشغّل أو المحلل، أو حساب خدمة محوّل، ضمن نطاقه من المؤسسة (لا يقصر حارس الملاحظة الإذن على الراصد أو المحلل وحدهما).
 - **البيانات:** مرجع الدليل (إلزامي).
 - **الأثر:** يُحفظ الرابط بإصدار جديد من الملاحظة، ويُسجَّل حدث «أُرفق دليل بالملاحظة» يصل إلى معالجة الادعاءات المشتقة والبحث.
 
@@ -338,7 +340,7 @@ flowchart LR
 
 </details>
 
-### 5.4 US-BC02-Q-OBS-GET — جلب: Observation with measurements and attachment refs
+### 5.4 US-BC02-Q-OBS-GET — جلب: الملاحظة بقياساتها ومراجع مرفقاتها
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
@@ -383,7 +385,7 @@ flowchart LR
 
 </details>
 
-### 5.5 US-BC02-Q-OBS-LIST — جلب: Observations by bbox, time window (mandatory, ≤ 31 days), source, state
+### 5.5 US-BC02-Q-OBS-LIST — جلب: الملاحظات حسب المربع الجغرافي ونافذة الزمن (إلزامية، ≤ 31 يومًا) والمصدر والحالة
 
 | النوع | الإصدار | الأولوية | دون اتصال | الحالة |
 |---|---|---|---|---|
@@ -707,3 +709,4 @@ flowchart LR
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-03 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-11 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

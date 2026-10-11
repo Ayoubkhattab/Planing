@@ -3,7 +3,7 @@ id: FEAT-INF-MATCH-REVIEW
 type: feature
 title: "مراجعة تطابق الكيانات"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-03.05
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc02.md, 03-domain/contexts/BC02/aggregates/AGG-ER-CASE.md, 03-domain/contexts/BC02/events-slc04.md, 08-security/policies-slc04.md, 18-analysis-design/21-ui-design.md, 09-reliability/observability-slc04.md, 09-reliability/fmea-slc04.md, 08-security/threat-model-slc04.md, 18-analysis-design/05-user-stories/00-glossary.md, 18-analysis-design/05-user-stories/CAP-03-information/FEAT-INF-ENTITY-SPLIT.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -257,7 +257,7 @@ stateDiagram-v2
 
 #### القواعد
 
-- **متى يُسمح:** الحالة الحالية «قيد المراجعة»، ونوعا الكيانين متوافقان، ولا كيان منهما في حالة نهائية «ملغى»، ولا يحوي العنقود الناتج زوجًا عليه رابط «غير مطابقة» (INV-ER-03، INV-ER-04).
+- **متى يُسمح:** الحالة الحالية «قيد المراجعة»، ونوعا الكيانين متوافقان، ولا كيان منهما «متقاعد»، ولا يحوي العنقود الناتج زوجًا عليه رابط «غير مطابقة» (INV-ER-03، INV-ER-04).
 - **من يُسمح له:** محلل غير المحلل الذي اقترح الحالة نفسها؛ وإن تجاوز العنقود الناتج 50 عضوًا فلا بد من ذكر شخص ثانٍ يراجع معه (INV-ER-05).
 - **البيانات:** مسوغ القرار، واسم الشخص الثاني عند الحاجة إليه.
 - **الأثر:** الحالة ← «مطابقة»؛ ينشأ رابط تطابق ويُعاد حساب العنقود في المعاملة نفسها؛ يُسجَّل حدث «تمت المطابقة» يصل إلى صيانة العنقود وكاشف التعارض وإسقاطي البحث والرسم البياني وعضوية الموقف.
@@ -1024,3 +1024,4 @@ stateDiagram-v2
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-03 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-11 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

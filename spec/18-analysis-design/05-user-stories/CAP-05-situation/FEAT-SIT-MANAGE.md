@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-SIT-MANAGE |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-05 الوعي بالموقف |
 | القدرة الفرعية | CAP-05.01 تعريف الموقف (R1) |
@@ -162,8 +162,8 @@ stateDiagram-v2
 | `US-BC03-SIT-PAUSE` | إيقاف الموقف مؤقتًا | أمر | مسودة |
 | `US-BC03-SIT-RECLASSIFY` | إعادة تصنيف الموقف | أمر | مسودة |
 | `US-BC03-SIT-RESUME` | استئناف الموقف | أمر | مسودة |
-| `US-BC03-Q-SIT-GET` | جلب: Definition (version at valid_at), counts of visible members by type | جلب | مسودة |
-| `US-BC03-Q-SIT-LIST` | جلب: Situations by state, owner, extent intersecting bbox | جلب | مسودة |
+| `US-BC03-Q-SIT-GET` | جلب: تعريف الموقف وعدد أعضائه المرئيين | جلب | مسودة |
+| `US-BC03-Q-SIT-LIST` | جلب: المواقف بحالتها ومالكها وامتدادها | جلب | مسودة |
 | `US-UI-SCR10-SITUATION-LIST` | تصفح المواقف بالحالة والمالك والمنطقة | واجهة | مسودة |
 | `US-UI-SCR12-DEFINITION-EDITOR` | رسم منطقة الموقف وتحديد فترته ومعاييره | واجهة | مسودة |
 | `US-UI-SCR12-SITUATION-ACTIONS` | إظهار أفعال الموقف المتاحة حسب حالته | واجهة | مسودة |

@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-RES-TRAINING-SCENARIOS |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-08 الموارد والجاهزية |
 | القدرة الفرعية | CAP-08.05 التدريب والتمارين (R3) |
@@ -145,9 +145,9 @@ stateDiagram-v2
 | `US-BC05-SCN-DEFINE` | تعريف سيناريو التدريب | أمر | مسودة |
 | `US-BC05-SCN-EDIT` | تعديل سيناريو التدريب | أمر | مسودة |
 | `US-BC05-SCN-RETIRE` | إحالة سيناريو التدريب إلى التقاعد | أمر | مسودة |
-| `US-BC05-Q-SCN-GET` | جلب: Scenario with injects and target competencies | جلب | مسودة |
-| `US-BC05-Q-SCN-LIST` | جلب: Scenarios filtered by exercise type, state | جلب | مسودة |
-| `US-UI-SCR48-SCENARIO-EDITOR` | تحرير السيناريو وأحداثه بترتيبها الزمني | واجهة | مسودة |
+| `US-BC05-Q-SCN-GET` | جلب تفاصيل سيناريو تدريب واحد | جلب | مسودة |
+| `US-BC05-Q-SCN-LIST` | جلب سيناريوهات التدريب مصفّاة بنوع التمرين والحالة | جلب | مسودة |
+| `US-UI-SCR48-SCENARIO-EDITOR` | تحرير السيناريو وحقنه بترتيبها الزمني | واجهة | مسودة |
 | `US-UI-SCR48-SCENARIO-VERSIONS` | نسخ السيناريو والتمارين المرتبطة بكل نسخة | واجهة | مسودة |
 <!-- END GENERATED: story-index -->
 

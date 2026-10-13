@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-RSK-RISK-TREATMENT |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-09 المخاطر والطوارئ |
 | القدرة الفرعية | CAP-09.01 إدارة المخاطر (R3) |

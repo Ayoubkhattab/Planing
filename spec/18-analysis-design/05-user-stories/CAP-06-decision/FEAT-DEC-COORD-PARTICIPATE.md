@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-DEC-COORD-PARTICIPATE |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-06 إدارة القرار |
 | القدرة الفرعية | CAP-06.03 التنسيق (R2) |

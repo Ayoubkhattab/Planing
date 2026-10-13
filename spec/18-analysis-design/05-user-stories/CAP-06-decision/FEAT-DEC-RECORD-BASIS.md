@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-DEC-RECORD-BASIS |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-06 إدارة القرار |
 | القدرة الفرعية | CAP-06.02 تسجيل القرار والتحقق من السلطة (R1) |
@@ -146,10 +146,10 @@ stateDiagram-v2
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
 | `US-BC04-DEC-ANNUL` | إبطال القرار | أمر | مسودة |
-| `US-BC04-Q-DEC-BASIS` | جلب: What was known at decision time: cited assessments (pinned versions) and their key claims resolved known_at = decision.recorded_at | جلب | مسودة |
-| `US-BC04-Q-DEC-GET` | جلب: Decision with authority snapshot, citations (pinned) and supersession chain | جلب | مسودة |
+| `US-BC04-Q-DEC-BASIS` | جلب أساس القرار كما كان معروفًا وقته | جلب | مسودة |
+| `US-BC04-Q-DEC-GET` | جلب القرار بلقطة سلطته وسلسلة استبداله | جلب | مسودة |
 | `US-DOM-DEC-LIST` | سجل القرارات للمدير والمدقق | جلب | مسودة |
-| `US-BC04-S-DECISION-01` | تلقائي: superseding decision recorded (القرار) | نظام | مسودة |
+| `US-BC04-S-DECISION-01` | انتقال القرار تلقائيًا إلى مستبدَل | نظام | مسودة |
 | `US-UI-SCR33-BASIS-COMPARE` | مقارنة ما عُرف وقت القرار بما يُعرف الآن | واجهة | مسودة |
 | `US-UI-SCR33-SUPERSESSION` | التنقل في سلسلة القرارات المستبدلة | واجهة | مسودة |
 | `US-PLT-DEC-BASIS-TEMPORAL` | استرجاع أساس القرار كما كان معروفًا | منصة | مسودة |

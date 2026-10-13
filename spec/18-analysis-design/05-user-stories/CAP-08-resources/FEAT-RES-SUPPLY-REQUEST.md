@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-RES-SUPPLY-REQUEST |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-08 الموارد والجاهزية |
 | القدرة الفرعية | CAP-08.03 الإمداد (R3) |
@@ -158,11 +158,11 @@ stateDiagram-v2
 | `US-BC05-LGR-REQUEST` | تقديم طلب الإمداد | أمر | مسودة |
 | `US-BC05-Q-LGR-GET` | جلب: Logistics request with linked allocation and shipment refs | جلب | مسودة |
 | `US-BC05-Q-LGR-LIST` | جلب: Logistics requests filtered by item, destination, state, priority | جلب | مسودة |
-| `US-BC05-S-LOGISTICS-REQUEST-01` | تلقائي: linked allocation committed (طلب الإمداد) | نظام | مسودة |
-| `US-BC05-S-LOGISTICS-REQUEST-02` | تلقائي: linked allocation requires approval (طلب الإمداد) | نظام | مسودة |
-| `US-BC05-S-LOGISTICS-REQUEST-03` | تلقائي: linked allocation rejected (طلب الإمداد) | نظام | مسودة |
-| `US-BC05-S-LOGISTICS-REQUEST-04` | تلقائي: linked allocation committed (طلب الإمداد) | نظام | مسودة |
-| `US-BC05-S-LOGISTICS-REQUEST-05` | تلقائي: linked allocation rejected (طلب الإمداد) | نظام | مسودة |
+| `US-BC05-S-LOGISTICS-REQUEST-01` | تلقائي: اعتماد طلب الإمداد عند التزام تخصيصه | نظام | مسودة |
+| `US-BC05-S-LOGISTICS-REQUEST-02` | تلقائي: تعليق طلب الإمداد بانتظار اعتماد تخصيصه | نظام | مسودة |
+| `US-BC05-S-LOGISTICS-REQUEST-03` | تلقائي: رفض طلب الإمداد عند رفض تخصيصه | نظام | مسودة |
+| `US-BC05-S-LOGISTICS-REQUEST-04` | تلقائي: اعتماد طلب الإمداد بعد انتظار الاعتماد | نظام | مسودة |
+| `US-BC05-S-LOGISTICS-REQUEST-05` | تلقائي: رفض طلب الإمداد بعد انتظار الاعتماد | نظام | مسودة |
 | `US-DOM-LGR-LABEL` | اشتقاق تصنيف طلب الإمداد والشحنة | نظام | مسودة |
 | `US-UI-SCR49-REQUEST-FORM` | طلب إمداد من فهرس الأصناف وحالة تخصيصه | واجهة | مسودة |
 | `US-UI-SCR49-REQUEST-LIST` | قائمة طلبات الإمداد بمرشحاتها وروابطها | واجهة | مسودة |

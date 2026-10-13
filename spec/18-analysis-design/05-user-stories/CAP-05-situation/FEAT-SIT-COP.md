@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-SIT-COP |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-05 الوعي بالموقف |
 | القدرة الفرعية | CAP-05.03 صورة العمليات المشتركة (الخرائط) (R1) |
@@ -126,9 +126,9 @@ flowchart TD
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC03-Q-BASE-TILE` | جلب: Base-map tile (layers marked unclassified only; shared cache) | جلب | مسودة |
-| `US-BC03-Q-SIT-COP` | جلب: Common operational picture: visible members (entities, events, observations, tasks, assessments, alerts) with resolved, possibly generalized geometry | جلب | مسودة |
-| `US-BC03-Q-SIT-TILE` | جلب: Vector tile of operational layer for the caller's security scope | جلب | مسودة |
+| `US-BC03-Q-BASE-TILE` | جلب: بلاطة خريطة أساس (طبقات غير مصنَّفة فقط؛ ذاكرة مشتركة) | جلب | مسودة |
+| `US-BC03-Q-SIT-COP` | جلب: الصورة العملياتية المشتركة للموقف | جلب | مسودة |
+| `US-BC03-Q-SIT-TILE` | جلب: بلاطة متجهة لطبقة تشغيلية في نطاق صلاحية الطالب | جلب | مسودة |
 | `US-UI-SCR11-FEATURE-CARD` | بطاقة العنصر بدقته وجودته وحالة تعميمه | واجهة | مسودة |
 | `US-UI-SCR11-LAYERS` | تشغيل طبقات الخريطة وتجميع العناصر عند التصغير | واجهة | مسودة |
 | `US-UI-SCR11-TABLE-VIEW` | بديل جدولي للخريطة لسهولة الوصول | واجهة | مسودة |

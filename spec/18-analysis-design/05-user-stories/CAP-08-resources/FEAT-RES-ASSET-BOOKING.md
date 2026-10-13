@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-RES-ASSET-BOOKING |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-08 الموارد والجاهزية |
 | القدرة الفرعية | CAP-08.01 إدارة الأصول (R2) |
@@ -153,9 +153,9 @@ stateDiagram-v2
 | `US-BC05-RSV-CONFIRM` | تأكيد حجز الأصل | أمر | مسودة |
 | `US-BC05-RSV-HOLD` | إنشاء حجز الأصل مبدئيًا | أمر | مسودة |
 | `US-BC05-RSV-RELEASE` | تحرير حجز الأصل | أمر | مسودة |
-| `US-BC05-Q-AST-AVAILABILITY` | جلب: Assets of type/capability available in a window (and optional bbox), with blocking reasons for others visible to caller | جلب | مسودة |
-| `US-BC05-S-ASSET-RESERVATION-01` | تلقائي: hold expiry (24 h) reached (حجز الأصل) | نظام | مسودة |
-| `US-BC05-S-ASSET-RESERVATION-02` | تلقائي: linked task or plan terminal (حجز الأصل) | نظام | مسودة |
+| `US-BC05-Q-AST-AVAILABILITY` | جلب توفر الأصول في نافذة زمنية | جلب | مسودة |
+| `US-BC05-S-ASSET-RESERVATION-01` | انتهاء صلاحية الحجز المبدئي بعد 24 ساعة | نظام | مسودة |
+| `US-BC05-S-ASSET-RESERVATION-02` | تحرير الحجز عند انتهاء المهمة أو الخطة المرتبطة | نظام | مسودة |
 | `US-UI-SCR40-AVAILABILITY` | عرض توفر الأصول في نافذة زمنية | واجهة | مسودة |
 | `US-UI-SCR40-RESERVE-HOLD` | الحجز المبدئي ومهلته ورسالة التعارض | واجهة | مسودة |
 | `US-PLT-AST-AVAILABILITY-PERF` | استعلام توفر ألف أصل خلال ثانية | منصة | مسودة |

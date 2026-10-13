@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-RES-EXERCISE-EVALUATION |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-08 الموارد والجاهزية |
 | القدرة الفرعية | CAP-08.05 التدريب والتمارين (R3) |

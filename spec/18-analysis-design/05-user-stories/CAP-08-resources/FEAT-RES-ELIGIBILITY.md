@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-RES-ELIGIBILITY |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-08 الموارد والجاهزية |
 | القدرة الفرعية | CAP-08.04 الكفاءة والأهلية (R1 (الأهلية فقط)) |
@@ -112,8 +112,8 @@ flowchart LR
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC05-Q-ELIG-CHECK` | جلب: EligibilityCheck(person, task_type version, at) → status + reasons | جلب | مسودة |
-| `US-BC05-Q-READINESS` | جلب: Readiness of a person or unit for a role at time t, with gaps | جلب | مسودة |
+| `US-BC05-Q-ELIG-CHECK` | فحص أهلية شخص لنوع مهمة في وقت معيّن | جلب | مسودة |
+| `US-BC05-Q-READINESS` | فحص جاهزية شخص أو وحدة لدور | جلب | مسودة |
 | `US-UI-SCR42-ELIGIBILITY-CHECK` | فحص أهلية شخص مع الأسباب | واجهة | مسودة |
 | `US-UI-SCR48-READINESS` | جاهزية الفرد أو الوحدة وفجواتها | واجهة | مسودة |
 | `US-PLT-ELIG-FAIL-CLOSED` | لا إسناد إذا تعذر فحص الأهلية | منصة | مسودة |

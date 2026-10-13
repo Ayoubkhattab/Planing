@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-RES-ASSET-REGISTRY |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-08 الموارد والجاهزية |
 | القدرة الفرعية | CAP-08.01 إدارة الأصول (R2) |
@@ -156,7 +156,7 @@ stateDiagram-v2
 | `US-BC05-AST-REGISTER` | تسجيل الأصل | أمر | مسودة |
 | `US-BC05-AST-SET-CERTIFICATION` | تحديد شهادة الأصل | أمر | مسودة |
 | `US-BC05-AST-UPDATE-CONDITION` | تحديث حالة الأصل الفنية | أمر | مسودة |
-| `US-BC05-Q-AST-GET` | جلب: Asset with status, condition, certifications, custody chain, linked entity | جلب | مسودة |
+| `US-BC05-Q-AST-GET` | تفاصيل الأصل | جلب | مسودة |
 | `US-DOM-AST-LIST` | البحث في سجل الأصول وتصفيته | جلب | مسودة |
 | `US-UI-SCR40-ASSET-DETAIL` | تفاصيل الأصل والأفعال المتاحة حسب حالته | واجهة | مسودة |
 | `US-UI-SCR40-ASSET-LIST` | قائمة الأصول بحالتها وشهاداتها | واجهة | مسودة |

@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-RES-ASSET-MAINTENANCE |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-08 الموارد والجاهزية |
 | القدرة الفرعية | CAP-08.01 إدارة الأصول (R2) |
@@ -152,7 +152,7 @@ stateDiagram-v2
 | `US-BC05-MNT-PLAN` | تخطيط أمر الصيانة | أمر | مسودة |
 | `US-BC05-MNT-RESCHEDULE` | إعادة جدولة أمر الصيانة | أمر | مسودة |
 | `US-BC05-MNT-START` | بدء أمر الصيانة | أمر | مسودة |
-| `US-BC05-Q-MNT-SCHEDULE` | جلب: Maintenance orders by asset, window, state | جلب | مسودة |
+| `US-BC05-Q-MNT-SCHEDULE` | جلب أوامر صيانة الأصل | جلب | مسودة |
 | `US-UI-SCR40-CMMS-ORIGIN` | تمييز أوامر الصيانة الواردة من نظام الصيانة | واجهة | مسودة |
 | `US-UI-SCR40-MAINTENANCE-CALENDAR` | تقويم صيانة الأصول وتعارضها مع الحجوزات | واجهة | مسودة |
 | `US-INT-CMMS-MAINTENANCE` | مزامنة أوامر الصيانة مع نظام الصيانة المؤسسي | تكامل | مسودة |

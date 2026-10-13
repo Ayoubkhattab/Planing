@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-RES-EXERCISE-CONDUCT |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-08 الموارد والجاهزية |
 | القدرة الفرعية | CAP-08.05 التدريب والتمارين (R3) |
@@ -158,11 +158,11 @@ stateDiagram-v2
 | `US-BC05-SIM-DELIVER-INJECT` | تسليم حقنة سيناريو ضمن تشغيل المحاكاة | أمر | مسودة |
 | `US-BC05-SIM-PAUSE` | إيقاف تشغيل المحاكاة مؤقتًا | أمر | مسودة |
 | `US-BC05-SIM-RESUME` | استئناف تشغيل المحاكاة | أمر | مسودة |
-| `US-BC05-SIM-START` | بدء تشغيل المحاكاة | أمر | مسودة |
-| `US-BC05-Q-SIM-GET` | جلب: Simulation with current state and evaluation summary | جلب | مسودة |
-| `US-BC05-Q-SIM-LIST` | جلب: Simulations filtered by exercise, state, window | جلب | مسودة |
-| `US-BC05-S-EXERCISE-01` | تلقائي: linked simulation completed (التمرين) | نظام | مسودة |
-| `US-BC05-S-EXERCISE-02` | تلقائي: linked simulation aborted (التمرين) | نظام | مسودة |
+| `US-BC05-SIM-START` | بدء تشغيل المحاكاة مع بدء التمرين | أمر | مسودة |
+| `US-BC05-Q-SIM-GET` | تشغيل المحاكاة بحالته وملخص تقييماته | جلب | مسودة |
+| `US-BC05-Q-SIM-LIST` | قائمة تشغيلات المحاكاة مصفَّاة | جلب | مسودة |
+| `US-BC05-S-EXERCISE-01` | إكمال التمرين تبعًا لإكمال محاكاته | نظام | مسودة |
+| `US-BC05-S-EXERCISE-02` | إيقاف التمرين نهائيًا تبعًا لإيقاف محاكاته | نظام | مسودة |
 | `US-UI-SCR48-COMPLETE-GUARD` | عرض المشاركين غير المقيَّمين قبل الإكمال | واجهة | مسودة |
 | `US-UI-SCR48-CONTROL-CONSOLE` | لوحة مراقب التمرين لإدارة الأحداث الحية | واجهة | مسودة |
 | `US-UI-SCR48-LIVE-TIMELINE` | خط زمني حي للأحداث والتقييمات | واجهة | مسودة |

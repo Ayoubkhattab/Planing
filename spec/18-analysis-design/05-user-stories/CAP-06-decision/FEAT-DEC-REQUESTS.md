@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-DEC-REQUESTS |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-06 إدارة القرار |
 | القدرة الفرعية | CAP-06.01 طلبات القرار والخيارات (R1) |
@@ -151,9 +151,9 @@ stateDiagram-v2
 | `US-BC04-DRQ-CREATE` | إنشاء طلب القرار | أمر | مسودة |
 | `US-BC04-DRQ-OPEN` | فتح طلب القرار | أمر | مسودة |
 | `US-BC04-DRQ-WITHDRAW` | سحب طلب القرار | أمر | مسودة |
-| `US-BC04-Q-DRQ-GET` | جلب: Request with options and pinned citations (withheld per policy) | جلب | مسودة |
+| `US-BC04-Q-DRQ-GET` | جلب طلب القرار بخياراته واستشهاداته | جلب | مسودة |
 | `US-DOM-DEC-MY-REQUESTS` | طلبات القرار التي أعددتها وحالتها | جلب | مسودة |
-| `US-BC04-S-DECISION-REQUEST-01` | تلقائي: deadline passed (طلب القرار) | نظام | مسودة |
+| `US-BC04-S-DECISION-REQUEST-01` | تصعيد طلب القرار عند فوات موعده النهائي | نظام | مسودة |
 | `US-UI-SCR05-REQUEST-FORM` | إعداد طلب القرار بخياراته واستشهاداته | واجهة | مسودة |
 <!-- END GENERATED: story-index -->
 

@@ -23,8 +23,8 @@ generated_by: _build/verify_study.py
 | V5 ذهاب وإياب أدوات المواصفة | 326 ملفًا مولَّدًا من 19 شريحة | 0 ملفًا يختلف عن مولِّده خارج SLC-19؛ SLC-19 مستثناة (11 ملفًا مكتوبًا خارج الأدوات)؛ 0 فشل تشغيل |
 | V6 صلاحية كتل YAML المضمَّنة | 1173 كتلة (front-matter + YAML) | 0 كتلة لا تُقرأ |
 | V7 سياسة لكل أمر (SL-02) | 477 أمرًا، 611 سياسة معرَّفة | 0 سياسة غير معرَّفة؛ 0 أمرًا بغير سياسة واحدة؛ 0 سياسة يتشاركها أكثر من أمر |
-| V8 دراسة التحليل والتصميم (`18-analysis-design/`) | 148 ملفًا، 739 قصة | 0 ملفًا مولَّدًا غير محدَّث؛ 0 عنصرًا غير مغطى؛ 0 قصة مكررة؛ 0 رابطًا مكسورًا |
-| V9 ملفات الميزات والقصص (`05-user-stories/`) | 151 ميزة، 1400 قصة؛ 107 ملف ميزة فيه 1003 قصة، منها 706 مكتوبة | 0 مخالفة للمعيار |
+| V8 دراسة التحليل والتصميم (`18-analysis-design/`) | 148 ملفًا، 739 قصة | 24 ملفًا مولَّدًا غير محدَّث؛ 0 عنصرًا غير مغطى؛ 0 قصة مكررة؛ 0 رابطًا مكسورًا |
+| V9 ملفات الميزات والقصص (`05-user-stories/`) | 151 ميزة، 1400 قصة؛ 107 ملف ميزة فيه 1003 قصة، منها 911 مكتوبة | 0 مخالفة للمعيار |
 
 ## 2. V1 — ملفات القبول مقابل مصفوفات الحالات
 
@@ -183,7 +183,7 @@ generated_by: _build/verify_study.py
 يعيد تشغيل `build_analysis_design.py` ويقارن ناتجه بالملفات (ثم يعيدها كما كانت)، ويتحقق من أن كل عنصر في المواصفات يظهر مرة واحدة في موضعه: قصة لكل أمر واستعلام وقاعدة `SYS:`، مخطط وقسم قواعد لكل Aggregate، كل ثابت في قواعد العمل، كل عملية OpenAPI في تصميم الواجهات، كل حدث في تصميم الأحداث، كل حالة استخدام ومتطلب وسيناريو جودة، فاعل لكل أمر واستعلام، وكل Aggregate في النموذج المفاهيمي؛ وأن كل رابط نسبي يُحلّ. رسم مخططات Mermaid يُفحص بأداة منفصلة (mermaid-cli) لأنه يحتاج متصفحًا.
 
 - التغطية: 477 أمرًا + 133 استعلامًا + 129 قاعدة `SYS:` (تغطي 175 انتقالًا) = 739 قصة؛ 89 Aggregate؛ 302 ثابتًا؛ 611 عملية؛ 585 رسالة.
-- ملفات مولَّدة غير محدَّثة: لا شيء
+- ملفات مولَّدة غير محدَّثة: `18-analysis-design/05-user-stories/00-index.md`, `18-analysis-design/05-user-stories/CAP-05-situation/FEAT-SIT-ALERT-RULES.md`, `18-analysis-design/05-user-stories/CAP-05-situation/FEAT-SIT-CHANGES.md`, `18-analysis-design/05-user-stories/CAP-05-situation/FEAT-SIT-COP.md`, `18-analysis-design/05-user-stories/CAP-05-situation/FEAT-SIT-MANAGE.md`, `18-analysis-design/05-user-stories/CAP-05-situation/FEAT-SIT-MY-ALERTS.md`, `18-analysis-design/05-user-stories/CAP-06-decision/FEAT-DEC-COORD-PARTICIPATE.md`, `18-analysis-design/05-user-stories/CAP-06-decision/FEAT-DEC-COORDINATION.md`, `18-analysis-design/05-user-stories/CAP-06-decision/FEAT-DEC-MY-PENDING.md`, `18-analysis-design/05-user-stories/CAP-06-decision/FEAT-DEC-RECORD-BASIS.md`, `18-analysis-design/05-user-stories/CAP-06-decision/FEAT-DEC-REQUESTS.md`, `18-analysis-design/05-user-stories/CAP-08-resources/FEAT-RES-ALLOCATION-APPROVAL.md`, `18-analysis-design/05-user-stories/CAP-08-resources/FEAT-RES-ALLOCATION-REQUEST.md`, `18-analysis-design/05-user-stories/CAP-08-resources/FEAT-RES-ASSET-BOOKING.md`, `18-analysis-design/05-user-stories/CAP-08-resources/FEAT-RES-ASSET-CUSTODY.md`, `18-analysis-design/05-user-stories/CAP-08-resources/FEAT-RES-ASSET-MAINTENANCE.md`, `18-analysis-design/05-user-stories/CAP-08-resources/FEAT-RES-ASSET-REGISTRY.md`, `18-analysis-design/05-user-stories/CAP-08-resources/FEAT-RES-ASSET-SERVICE.md`, `18-analysis-design/05-user-stories/CAP-08-resources/FEAT-RES-CONSUMPTION.md`, `18-analysis-design/05-user-stories/CAP-08-resources/FEAT-RES-ELIGIBILITY.md`, `18-analysis-design/05-user-stories/CAP-08-resources/FEAT-RES-EXERCISE-CONDUCT.md`, `18-analysis-design/05-user-stories/CAP-08-resources/FEAT-RES-EXERCISE-EVALUATION.md`, `18-analysis-design/05-user-stories/CAP-08-resources/FEAT-RES-EXERCISE-PLANNING.md`, `18-analysis-design/05-user-stories/CAP-08-resources/FEAT-RES-QUALIFICATIONS.md`
 - عناصر غير مغطاة: لا شيء
 - قصص مكررة: لا شيء
 - روابط مكسورة: لا شيء
@@ -192,6 +192,6 @@ generated_by: _build/verify_study.py
 
 يطبّق قواعد `05-user-stories/00-standard.md` §14 آليًا: كل قصة في `feature_map.csv` في ملف ميزتها مرة واحدة، وحجم الملف، وكل كتلة Gherkin تُقرأ بالعربية، وأجزاء القصة المكتوبة حسب نوعها، ولا رمز تقني في نصها، ورسالة كل رمز خطأ في السيناريوهات مطابقة للمسرد، وكل مصدر لقصة جديدة موجود. القصة التي ما زال فيها «[للكتابة]» تُعد هيكلًا ولا تُفحص أجزاؤها.
 
-- ملفات الميزات: 107 من 151؛ القصص فيها 1003، المكتوبة 706.
+- ملفات الميزات: 107 من 151؛ القصص فيها 1003، المكتوبة 911.
 
 لا مخالفات.

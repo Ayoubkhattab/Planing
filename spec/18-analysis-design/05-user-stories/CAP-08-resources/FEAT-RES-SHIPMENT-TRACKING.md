@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-RES-SHIPMENT-TRACKING |
-| الإصدار | 0.2 |
+| الإصدار | 0.3 |
 | الحالة | مسودة |
 | القدرة | CAP-08 الموارد والجاهزية |
 | القدرة الفرعية | CAP-08.03 الإمداد (R3) |

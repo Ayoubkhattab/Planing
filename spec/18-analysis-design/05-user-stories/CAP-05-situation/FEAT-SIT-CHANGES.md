@@ -132,8 +132,8 @@ flowchart TD
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC03-Q-SIT-CHANGES` | جلب: Membership change log (visible members only) since cursor/time | جلب | مسودة |
-| `US-DOM-SIT-BUFFER-FOLLOW` | تحريك منطقة الموقف مع الكيان المرجعي | نظام | مسودة |
+| `US-BC03-Q-SIT-CHANGES` | جلب: سجل تغيّرات العضوية (الأعضاء المرئيون فقط) منذ مؤشر أو وقت | جلب | مسودة |
+| `US-DOM-SIT-BUFFER-FOLLOW` | تحريك منطقة الموقف مع كيان المرساة | نظام | مسودة |
 | `US-DOM-SIT-MEMBERSHIP-RECOMPUTE` | إعادة حساب العضوية بعد تعديل التعريف أو الاستئناف | نظام | مسودة |
 | `US-DOM-SIT-MEMBERSHIP-UPDATE` | تحديث أعضاء الموقف تلقائيًا عند تغير الكائنات | نظام | مسودة |
 | `US-UI-SCR11-CHANGE-FEED` | متابعة ما دخل الموقف وما خرج منه مباشرة | واجهة | مسودة |

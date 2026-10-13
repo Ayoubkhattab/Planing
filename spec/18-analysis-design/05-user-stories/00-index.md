@@ -862,8 +862,8 @@ generator: 17-system-study/_build/build_analysis_design.py
   - `US-UI-SCR12-ALERT-RULE-EDITOR` — تعريف شرط التنبيه ومعاينة حجمه قبل التفعيل (واجهة، جديدة)
   - `US-OPS-ALERT-STORM-LIMIT` — حد معدل لكل قاعدة يمنع سيل التنبيهات (تشغيل، جديدة)
 - **متابعة تغيرات الموقف** `FEAT-SIT-CHANGES`
-  - `US-BC03-Q-SIT-CHANGES` — جلب: Membership change log (visible members only) since cursor/time (جلب)
-  - `US-DOM-SIT-BUFFER-FOLLOW` — تحريك منطقة الموقف مع الكيان المرجعي (نظام، جديدة)
+  - `US-BC03-Q-SIT-CHANGES` — جلب: سجل تغيّرات العضوية (الأعضاء المرئيون فقط) منذ مؤشر أو وقت (جلب)
+  - `US-DOM-SIT-BUFFER-FOLLOW` — تحريك منطقة الموقف مع كيان المرساة (نظام، جديدة)
   - `US-DOM-SIT-MEMBERSHIP-RECOMPUTE` — إعادة حساب العضوية بعد تعديل التعريف أو الاستئناف (نظام، جديدة)
   - `US-DOM-SIT-MEMBERSHIP-UPDATE` — تحديث أعضاء الموقف تلقائيًا عند تغير الكائنات (نظام، جديدة)
   - `US-UI-SCR11-CHANGE-FEED` — متابعة ما دخل الموقف وما خرج منه مباشرة (واجهة، جديدة)

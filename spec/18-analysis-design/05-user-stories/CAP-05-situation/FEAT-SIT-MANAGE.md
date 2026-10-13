@@ -271,7 +271,7 @@ stateDiagram-v2
 
     امثلة:
       | الحالة                         | الرمز                               | الرسالة                                     |
-      | السبب لم يُذكر                | VALIDATION_FAILED                   | السبب مطلوب                                 |
+      | السبب لم يُذكر                | REASON_REQUIRED                     | اذكر السبب                                  |
       | الموقف مغلق من قبل            | SITUATION_INVALID_STATE_TRANSITION  | الوضع الحالي للموقف لا يسمح بهذا الإجراء    |
 ```
 
@@ -457,7 +457,7 @@ stateDiagram-v2
 
     امثلة:
       | الحالة                         | الرمز                               | الرسالة                                     |
-      | السبب لم يُذكر                | VALIDATION_FAILED                   | السبب مطلوب                                 |
+      | السبب لم يُذكر                | REASON_REQUIRED                     | اذكر السبب                                  |
       | الموقف ليس في حالة "نشط"       | SITUATION_INVALID_STATE_TRANSITION  | الوضع الحالي للموقف لا يسمح بهذا الإجراء    |
 ```
 

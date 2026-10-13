@@ -3,9 +3,9 @@ id: FEAT-SIT-MY-ALERTS
 type: feature
 title: "تنبيهاتي"
 status: DRAFT
-version: "0.1"
+version: "0.2"
 capability: CAP-05.02
-sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv]
+sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc03.md, 03-domain/contexts/BC03/aggregates/AGG-ALERT.md, 03-domain/contexts/BC03/situation-alerting-spec.md, 03-domain/contexts/BC03/events-slc06.md, 08-security/policies-slc06.md, 08-security/threat-model-slc06.md, 09-reliability/observability-slc06.md, 09-reliability/fmea-slc06.md, 18-analysis-design/21-ui-design.md, 18-analysis-design/05-user-stories/00-glossary.md]
 generator: 17-system-study/_build/build_analysis_design.py
 ---
 
@@ -33,11 +33,52 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 ### 1.2 النطاق
 
-**[للكتابة]**
+| البند | القيمة |
+|---|---|
+| المستخدمون | مستلم التنبيه، النظام |
+| الشاشات | SCR-04 تنبيهاتي، SCR-03 صندوق الوارد |
+| حالات الاستخدام | الإقرار بالتنبيه وحله وصرف النظر عنه، وجلب تنبيهاتي، وإطلاق التنبيه وتكراره وتصعيده وحله تلقائيًا |
+| المتطلبات | إطلاق تنبيه وتبليغ المشتركين المخوَّلين عند تحقق شرط القاعدة (REQ-SIT-004)، وإدارة حالاته الأربع بسبب إلزامي للصرف (REQ-SIT-005)، وعدم كشف ما لا يحق للمستخدم رؤيته (REQ-SIT-006) |
+| خارج النطاق | تعريف قواعد التنبيه وتجربتها وتفعيلها (ميزة قواعد التنبيه)، وإعدادات الاشتراك وقنواته |
 
 ### 1.3 خريطة الميزة
 
-**[للكتابة]**
+**الشكل 1: من تحقق شرط القاعدة إلى حسم التنبيه**
+
+```mermaid
+flowchart TD
+  A["تحقق شرط قاعدة تنبيه"] --> B{"تنبيه غير نهائي مفتوح لنفس القاعدة والعنصر؟"}
+  B -->|"لا"| C["تنبيه جديد: مرفوع"]
+  B -->|"نعم ضمن نافذة منع التكرار"| D["تكرار الحدوث"]
+  C --> E["إشعار المستلمين المصرح لهم بتسميته"]
+  E --> F{"فعل المستلم"}
+  F -->|"إقرار"| G["مُقَرّ به"]
+  F -->|"حل"| H["محلول"]
+  F -->|"صرف نظر بسبب"| I["مصروف عنه"]
+  C --> J{"تجاوز وقت التصعيد دون إقرار"}
+  J -->|"نعم"| K["تصعيد لمستلمي التصعيد"]
+  C --> L{"انتفى الشرط والحل التلقائي مفعّل"}
+  G --> L
+  L -->|"نعم"| H
+```
+
+**الشكل 2: حالات التنبيه**
+
+```mermaid
+stateDiagram-v2
+  state "مرفوع" as RAISED
+  state "مُقَرّ به" as ACKNOWLEDGED
+  state "محلول" as RESOLVED
+  state "مصروف عنه" as DISMISSED
+  [*] --> RAISED
+  RAISED --> ACKNOWLEDGED: إقرار
+  RAISED --> RESOLVED: حل أو انتفاء الشرط تلقائيًا
+  ACKNOWLEDGED --> RESOLVED: حل أو انتفاء الشرط تلقائيًا
+  RAISED --> DISMISSED: صرف نظر بسبب
+  ACKNOWLEDGED --> DISMISSED: صرف نظر بسبب
+  RESOLVED --> [*]
+  DISMISSED --> [*]
+```
 
 ## 2. القواعد المشتركة
 

@@ -3,7 +3,7 @@ id: FEAT-RES-EXERCISE-PLANNING
 type: feature
 title: "تخطيط التمارين وجدولتها"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-08.05
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc05.md, 02-requirements/requirements.md, 02-requirements/use-cases.md, 18-analysis-design/17-security-design.md, 18-analysis-design/21-ui-design.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -381,8 +381,9 @@ stateDiagram-v2
     اذاً يُرفض برمز <الرمز> ويرى <الرسالة>
 
     امثلة:
-      | الحالة                   | الرمز                          | الرسالة                                    |
-      | التمرين ليس "مجدوَلًا"    | EXERCISE_INVALID_STATE_TRANSITION | الوضع الحالي للتمرين لا يسمح بهذا الإجراء |
+      | الحالة                                     | الرمز                          | الرسالة                                    |
+      | النافذة الزمنية لم تحن ولا تجاوز معتمد     | EXERCISE_INVALID                  | بيانات التمرين غير مكتملة                 |
+      | التمرين ليس "مجدوَلًا"                     | EXERCISE_INVALID_STATE_TRANSITION | الوضع الحالي للتمرين لا يسمح بهذا الإجراء |
 ```
 
 <details><summary>المراجع التقنية والتتبع</summary>
@@ -662,3 +663,4 @@ stateDiagram-v2
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-13 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-13 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

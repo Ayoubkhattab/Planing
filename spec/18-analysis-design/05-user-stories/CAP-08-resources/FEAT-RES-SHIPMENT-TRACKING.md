@@ -3,7 +3,7 @@ id: FEAT-RES-SHIPMENT-TRACKING
 type: feature
 title: "إرسال الشحنات وتتبعها"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-08.03
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc05.md, 03-domain/contexts/BC05/aggregates/AGG-LOGISTICS-REQUEST.md, 03-domain/contexts/BC05/aggregates/AGG-SHIPMENT.md, 02-requirements/requirements.md, 18-analysis-design/21-ui-design.md, 18-analysis-design/20-integration-design.md, 18-analysis-design/00-glossary.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -392,6 +392,9 @@ stateDiagram-v2
       | طلب الإمداد المرتبط ليس "معتمَدًا"، أو الكمية المخطَّطة أكبر من التخصيص الملتزم | SHIPMENT_INVALID | بيانات الشحنة غير صحيحة       |
       | طلب الإمداد غير إلزامي                                             | VALIDATION_FAILED | طلب الإمداد مطلوب             |
       | مجمع المصدر غير إلزامي                                             | VALIDATION_FAILED | مجمع المصدر مطلوب             |
+      | الوجهة غير إلزامية                                                 | VALIDATION_FAILED | الوجهة مطلوبة                 |
+      | الناقل غير إلزامي                                                  | VALIDATION_FAILED | الناقل مطلوب                  |
+      | الكمية المخطَّطة غير إلزامية                                        | VALIDATION_FAILED | الكمية المخطَّطة مطلوبة        |
 ```
 
 <details><summary>المراجع التقنية والتتبع</summary>
@@ -819,9 +822,12 @@ stateDiagram-v2
 | REQ-LOG-014 | Contention among logistics requests for the same pool shall be resolved exactly as SLC-09 resolves allocation… | `US-BC05-LGR-DISPATCH` | TST-LOGISTICS-REQUEST-SM |
 <!-- END GENERATED: trace -->
 
+> **ملاحظة [Needs Review]:** يربط الجدول أعلاه REQ-LOG-004 (الذي نصّه خاص بـ `CMD-LGR-DISPATCH`/حالة الرفض `ALLOCATION_NOT_COMMITTED`) بكل قصص أوامر الشحنة (السطور 225، 286، 347، 409، 471، 656، 745 وجدول §6 أعلاه)، وذلك بسبب حقل `traces.satisfies` الواسع في ترويسة `AGG-SHIPMENT.md` الذي ينسخه المولِّد حرفيًا. هذا خلل في بيانات المصدر (ترويسة `AGG-SHIPMENT.md`) لا في نص القصص المؤلَّف، ويلزم تصحيحه في المصدر خارج نطاق هذا الملف.
+
 ## 7. سجل التغييرات
 
 | الإصدار | التاريخ | التغيير |
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-13 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-13 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

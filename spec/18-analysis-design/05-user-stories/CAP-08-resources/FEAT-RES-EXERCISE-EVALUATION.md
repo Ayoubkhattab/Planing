@@ -3,7 +3,7 @@ id: FEAT-RES-EXERCISE-EVALUATION
 type: feature
 title: "تقييم المشاركين ونتائج التمرين"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-08.05
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc05.md, 02-requirements/requirements.md, 02-requirements/use-cases.md, 18-analysis-design/17-security-design.md, 18-analysis-design/21-ui-design.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -175,7 +175,7 @@ flowchart LR
     امثلة:
       | الحالة                                   | الرمز                             | الرسالة                                           |
       | المقيّم هو المشارك نفسه                  | SEGREGATION_OF_DUTIES             | لا يجوز أن يعتمد الشخص نفسه ما قدّمه أو طلبه      |
-      | تشغيل المحاكاة "مكتمل" أو "ملغى"          | SIMULATION_INVALID_STATE_TRANSITION | الوضع الحالي لتشغيل المحاكاة لا يسمح بهذا الإجراء |
+      | تشغيل المحاكاة "مكتمل" أو "متوقف نهائيًا" | SIMULATION_INVALID_STATE_TRANSITION | الوضع الحالي لتشغيل المحاكاة لا يسمح بهذا الإجراء |
 ```
 
 <details><summary>المراجع التقنية والتتبع</summary>

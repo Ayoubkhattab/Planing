@@ -3,9 +3,9 @@ id: FEAT-RES-SHIPMENT-RECEIPT
 type: feature
 title: "استلام الشحنات والخسائر"
 status: DRAFT
-version: "0.1"
+version: "0.2"
 capability: CAP-08.03
-sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv]
+sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc05.md, 03-domain/contexts/BC05/aggregates/AGG-SHIPMENT.md, 03-domain/contexts/BC05/aggregates/AGG-LOGISTICS-REQUEST.md, 18-analysis-design/17-security-design.md, 18-analysis-design/21-ui-design.md, 18-analysis-design/05-user-stories/00-glossary.md]
 generator: 17-system-study/_build/build_analysis_design.py
 ---
 

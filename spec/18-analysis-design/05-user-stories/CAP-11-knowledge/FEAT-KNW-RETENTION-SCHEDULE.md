@@ -1,0 +1,421 @@
+---
+id: FEAT-KNW-RETENTION-SCHEDULE
+type: feature
+title: "جداول الاحتفاظ بالسجلات"
+status: DRAFT
+version: "0.1"
+capability: CAP-11.02
+sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv]
+generator: 17-system-study/_build/build_analysis_design.py
+---
+
+# جداول الاحتفاظ بالسجلات
+
+<!-- BEGIN GENERATED: doc -->
+| البند | القيمة |
+|---|---|
+| المعرّف | FEAT-KNW-RETENTION-SCHEDULE |
+| الإصدار | 0.1 |
+| الحالة | مسودة |
+| القدرة | CAP-11 المعرفة والذاكرة المؤسسية |
+| القدرة الفرعية | CAP-11.02 السجلات والاحتفاظ (R1 (الاحتفاظ والتجميد)) |
+| الأدوار | أمين الأرشيف؛ السلطة القانونية والامتثال؛ المدقِّق؛ النظام |
+| الشاشات | SCR-70 الاحتفاظ والحجز القانوني والإتلاف والمحو |
+| حالات الاستخدام | UC-103 |
+| القصص | 8: 6 من المواصفة، و2 جديدة |
+<!-- END GENERATED: doc -->
+
+## 1. نظرة عامة
+
+### 1.1 القيمة
+
+يحدد بوضوح كم تُحفظ كل فئة من السجلات وماذا يحدث لها بعد انتهاء المدة، بموافقة الجهة القانونية.
+
+### 1.2 النطاق
+
+**[للكتابة]**
+
+### 1.3 خريطة الميزة
+
+**[للكتابة]**
+
+## 2. القواعد المشتركة
+
+تنطبق على كل قصص الميزة، فلا تتكرر داخل القصص. وكل قصة تذكر ما يخصها فقط.
+
+### 2.1 السياق المشترك
+
+كل قصة تبدأ من ثلاثة شروط: مستأجر نشط، وحزمة السياسات الأساسية مفعّلة، ومستخدم مسجّل الدخول ومخوَّل. وتشير إليها القصص بخطوة واحدة: «بفرض السياق المشترك للميزة».
+
+### 2.2 الصلاحية وعدم الإفصاح
+
+- من لا يحق له رؤية العنصر يتلقى ردًا بشكل «غير متاح» تمامًا، فلا يعرف أنه موجود.
+- من يرى العنصر ولا يحق له الإجراء يتلقى «لا تملك صلاحية هذا الإجراء».
+
+### 2.3 أوامر تغيير الحالة
+
+- **منع التكرار:** يُرسل كل أمر بمفتاح فريد، فإعادة الطلب نفسه لا تُنفَّذ مرتين.
+- **حماية التعديل المتزامن:** يُرسل كل أمر بإصدار البيانات الذي يراه المستخدم. فإن عدّلها غيره في الأثناء، يُرفض الأمر.
+- **السجل:** إن نجح الأمر، يُكتب حدثه وسجل التدقيق في المعاملة نفسها.
+
+### 2.4 الرفض المشترك
+
+```gherkin
+# language: ar
+خاصية: الرفض المشترك لأوامر الميزة
+
+  سيناريو مخطط: رفض مشترك لكل أمر في الميزة
+    بفرض السياق المشترك للميزة
+    و <الحالة>
+    عندما يُرسل المستخدم أي أمر من أوامر الميزة
+    اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
+    و لا يتغير شيء
+
+    امثلة:
+      | الحالة                                  | الرمز                  | الرسالة                                                 |
+      | العنصر خارج صلاحياته                    | NOT_FOUND              | غير متاح                                                |
+      | العنصر مرئي له ولا يحق له الإجراء       | AUTHZ_DENIED           | لا تملك صلاحية هذا الإجراء                              |
+      | غيره عدّل العنصر بعد أن فتحه            | VERSION_CONFLICT       | تغيّرت البيانات منذ فتحتها. راجع التغييرات ثم أعد المحاولة |
+      | أعاد مفتاح منع التكرار بمحتوى مختلف     | IDEMPOTENCY_KEY_REUSED | طلب مكرر بمحتوى مختلف                                   |
+      | البيانات ناقصة أو غير صحيحة             | VALIDATION_FAILED      | بعض البيانات ناقصة أو غير صحيحة. راجع الحقول المعلَّمة      |
+
+  سيناريو: إعادة الطلب نفسه لا تُنفَّذ مرتين
+    بفرض السياق المشترك للميزة
+    و أمر نجح بمفتاح منع تكرار
+    عندما يُعاد الطلب نفسه بالمفتاح نفسه
+    اذاً تُعاد النتيجة الأولى ولا يُكتب حدث ثانٍ
+```
+
+## 3. الجودة وتعريف الاكتمال
+
+### 3.1 متطلبات الجودة
+
+<!-- BEGIN GENERATED: quality -->
+لا متطلبات جودة مرتبطة بمتطلبات هذه الميزة مباشرة. تنطبق متطلبات المنصة العامة (`FEAT-PLT-*`).
+<!-- END GENERATED: quality -->
+
+### 3.2 تعريف الاكتمال
+
+القصة مكتملة حين تتحقق الشروط الخمسة:
+
+1. سيناريوهاتها والقواعد المشتركة تمر في الاختبار الآلي.
+2. فحوص البنية المعمارية تمر.
+3. نصوص الواجهة والرسائل موجودة بالعربية والإنجليزية.
+4. مراجعة الكود مكتملة.
+5. ما تضيفه القصة نفسها في قسم «القواعد» تحقق.
+
+## 4. فهرس القصص
+
+<!-- BEGIN GENERATED: story-index -->
+| المعرّف | القصة | النوع | الحالة |
+|---|---|---|---|
+| `US-BC08-RTS-ACTIVATE` | تفعيل جدول الاحتفاظ | أمر | مسودة |
+| `US-BC08-RTS-DISCARD` | تجاهل مسودة جدول الاحتفاظ | أمر | مسودة |
+| `US-BC08-RTS-DRAFT` | إعداد مسودة جدول الاحتفاظ | أمر | مسودة |
+| `US-BC08-RTS-EDIT` | تعديل جدول الاحتفاظ | أمر | مسودة |
+| `US-BC08-Q-RTS-ACTIVE` | جلب: Active schedule version with rules | جلب | مسودة |
+| `US-BC08-S-RETENTION-SCHEDULE-01` | تلقائي: successor activated (جدول الاحتفاظ) | نظام | مسودة |
+| `US-UI-SCR70-RETENTION-RULES` | مراجعة قواعد الاحتفاظ لكل فئة سجلات | واجهة | مسودة |
+| `US-OPS-RETENTION-CLASS-GAP` | التنبيه إلى فئة سجلات بلا قاعدة احتفاظ | تشغيل | مسودة |
+<!-- END GENERATED: story-index -->
+
+## 5. القصص
+
+### 5.1 US-BC08-RTS-ACTIVATE — تفعيل جدول الاحتفاظ
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| أمر | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-BC08-RTS-ACTIVATE -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الواجهة البرمجية | `POST /api/v1/governance/retention-schedules/{id}/actions/activate` | — |
+| الأمر | `CMD-RTS-ACTIVATE` | تفعيل جدول الاحتفاظ |
+| السياسة | `POL-RTS-ACTIVATE` | Archivist (draft, edit, discard) · Legal/Compliance authority (activate)؛ tenant match |
+| الحدث | `EVT-RTS-ACTIVATED` | يصل إلى: Disposition planner; Key-bucket policy (class period sizing) |
+| الكيان | `AGG-RETENTION-SCHEDULE` | جدول الاحتفاظ |
+| الجدول | `governance.retention_schedules` | الجدول الرئيسي لجدول الاحتفاظ |
+| وحدة النشر | DU-03 | — |
+| المتطلب | REQ-GOV-006 | The system shall apply a retention schedule to every record class. |
+| حالة الاستخدام | UC-103 | Apply Retention & Legal Hold |
+| الاختبار | TST-RETENTION-SCHEDULE-SM | دورة حالات جدول الاحتفاظ، وثوابت الشريحة SLC-12a |
+<!-- END GENERATED: refs US-BC08-RTS-ACTIVATE -->
+
+</details>
+
+### 5.2 US-BC08-RTS-DISCARD — تجاهل مسودة جدول الاحتفاظ
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| أمر | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-BC08-RTS-DISCARD -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الواجهة البرمجية | `POST /api/v1/governance/retention-schedules/{id}/actions/discard` | — |
+| الأمر | `CMD-RTS-DISCARD` | تجاهل مسودة جدول الاحتفاظ |
+| السياسة | `POL-RTS-DISCARD` | Archivist (draft, edit, discard) · Legal/Compliance authority (activate)؛ tenant match |
+| الحدث | `EVT-RTS-DISCARDED` | يصل إلى: Disposition planner; Key-bucket policy (class period sizing) |
+| الكيان | `AGG-RETENTION-SCHEDULE` | جدول الاحتفاظ |
+| الجدول | `governance.retention_schedules` | الجدول الرئيسي لجدول الاحتفاظ |
+| وحدة النشر | DU-03 | — |
+| المتطلب | REQ-GOV-006 | The system shall apply a retention schedule to every record class. |
+| حالة الاستخدام | UC-103 | Apply Retention & Legal Hold |
+| الاختبار | TST-RETENTION-SCHEDULE-SM | دورة حالات جدول الاحتفاظ، وثوابت الشريحة SLC-12a |
+<!-- END GENERATED: refs US-BC08-RTS-DISCARD -->
+
+</details>
+
+### 5.3 US-BC08-RTS-DRAFT — إعداد مسودة جدول الاحتفاظ
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| أمر | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-BC08-RTS-DRAFT -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الواجهة البرمجية | `POST /api/v1/governance/retention-schedules` | — |
+| الأمر | `CMD-RTS-DRAFT` | إعداد مسودة جدول الاحتفاظ |
+| السياسة | `POL-RTS-DRAFT` | Archivist (draft, edit, discard) · Legal/Compliance authority (activate)؛ tenant match |
+| الحدث | `EVT-RTS-DRAFTED` | يصل إلى: Disposition planner; Key-bucket policy (class period sizing) |
+| الكيان | `AGG-RETENTION-SCHEDULE` | جدول الاحتفاظ |
+| الجدول | `governance.retention_schedules` | الجدول الرئيسي لجدول الاحتفاظ |
+| وحدة النشر | DU-03 | — |
+| المتطلب | REQ-GOV-006 | The system shall apply a retention schedule to every record class. |
+| حالة الاستخدام | UC-103 | Apply Retention & Legal Hold |
+| الاختبار | TST-RETENTION-SCHEDULE-SM | دورة حالات جدول الاحتفاظ، وثوابت الشريحة SLC-12a |
+<!-- END GENERATED: refs US-BC08-RTS-DRAFT -->
+
+</details>
+
+### 5.4 US-BC08-RTS-EDIT — تعديل جدول الاحتفاظ
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| أمر | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-BC08-RTS-EDIT -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الواجهة البرمجية | `POST /api/v1/governance/retention-schedules/{id}/actions/edit` | — |
+| الأمر | `CMD-RTS-EDIT` | تعديل جدول الاحتفاظ |
+| السياسة | `POL-RTS-EDIT` | Archivist (draft, edit, discard) · Legal/Compliance authority (activate)؛ tenant match |
+| الحدث | `EVT-RTS-EDITED` | يصل إلى: Disposition planner; Key-bucket policy (class period sizing) |
+| الكيان | `AGG-RETENTION-SCHEDULE` | جدول الاحتفاظ |
+| الجدول | `governance.retention_schedules` | الجدول الرئيسي لجدول الاحتفاظ |
+| وحدة النشر | DU-03 | — |
+| المتطلب | REQ-GOV-006 | The system shall apply a retention schedule to every record class. |
+| حالة الاستخدام | UC-103 | Apply Retention & Legal Hold |
+| الاختبار | TST-RETENTION-SCHEDULE-SM | دورة حالات جدول الاحتفاظ، وثوابت الشريحة SLC-12a |
+<!-- END GENERATED: refs US-BC08-RTS-EDIT -->
+
+</details>
+
+### 5.5 US-BC08-Q-RTS-ACTIVE — جلب: Active schedule version with rules
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| جلب | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-BC08-Q-RTS-ACTIVE -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| الواجهة البرمجية | `GET /api/v1/governance/retention-schedule` | — |
+| الاستعلام | `QRY-RTS-ACTIVE` | Active schedule version with rules |
+| السياسة | `POL-RTS-ACTIVE` | Archivist, Legal, Auditor |
+| الكيان | `AGG-RETENTION-SCHEDULE` | جدول الاحتفاظ |
+| الجدول | `governance.retention_schedules` | الجدول الرئيسي لجدول الاحتفاظ |
+| وحدة النشر | DU-03 | — |
+| المتطلب | REQ-GOV-006 | The system shall apply a retention schedule to every record class. |
+| حالة الاستخدام | UC-103 | Apply Retention & Legal Hold |
+| الاختبار | TST-RETENTION-SCHEDULE-SM | دورة حالات جدول الاحتفاظ، وثوابت الشريحة SLC-12a |
+<!-- END GENERATED: refs US-BC08-Q-RTS-ACTIVE -->
+
+</details>
+
+### 5.6 US-BC08-S-RETENTION-SCHEDULE-01 — تلقائي: successor activated (جدول الاحتفاظ)
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| نظام | R1 | Must | لا ينطبق | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-BC08-S-RETENTION-SCHEDULE-01 -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| المحفِّز | `SYS:successor activated` | system |
+| الانتقال | ACTIVE ← SUPERSEDED | — |
+| الحدث | `EVT-RTS-SUPERSEDED` | يصل إلى: Disposition planner; Key-bucket policy (class period sizing) |
+| الكيان | `AGG-RETENTION-SCHEDULE` | جدول الاحتفاظ |
+| الجدول | `governance.retention_schedules` | الجدول الرئيسي لجدول الاحتفاظ |
+| وحدة النشر | DU-03 | — |
+| المتطلب | REQ-GOV-006 | The system shall apply a retention schedule to every record class. |
+| حالة الاستخدام | UC-103 | Apply Retention & Legal Hold |
+| الاختبار | TST-RETENTION-SCHEDULE-SM | دورة حالات جدول الاحتفاظ، وثوابت الشريحة SLC-12a |
+<!-- END GENERATED: refs US-BC08-S-RETENTION-SCHEDULE-01 -->
+
+</details>
+
+### 5.7 US-UI-SCR70-RETENTION-RULES — مراجعة قواعد الاحتفاظ لكل فئة سجلات
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| واجهة | R1 | Must | لا | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-UI-SCR70-RETENTION-RULES -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| حالة الاستخدام | UC-103 | Apply Retention & Legal Hold |
+| الشاشة | SCR-70 | شاشة الاحتفاظ والحجز القانوني والإتلاف والمحو |
+| المصدر | `THR-S12-05` | — |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-GOV-006 | The system shall apply a retention schedule to every record class. |
+| حالة الاستخدام | UC-103 | Apply Retention & Legal Hold |
+<!-- END GENERATED: refs US-UI-SCR70-RETENTION-RULES -->
+
+</details>
+
+### 5.8 US-OPS-RETENTION-CLASS-GAP — التنبيه إلى فئة سجلات بلا قاعدة احتفاظ
+
+| النوع | الإصدار | الأولوية | دون اتصال | الحالة |
+|---|---|---|---|---|
+| تشغيل | R1 | Must | لا ينطبق | مسودة |
+
+> **كـ** **[للكتابة]**، **أريد** **[للكتابة]**، **حتى** **[للكتابة]**.
+
+**باختصار:** **[للكتابة]**
+
+#### القواعد
+
+**[للكتابة]**
+
+#### معايير القبول
+
+**[للكتابة]**
+
+<details><summary>المراجع التقنية والتتبع</summary>
+
+<!-- BEGIN GENERATED: refs US-OPS-RETENTION-CLASS-GAP -->
+| البند | المعرّف | المعنى |
+|---|---|---|
+| القرار المعماري | ADR-P14 | Reference Data Governance |
+| المصدر | `US-BC08-RTS-ACTIVATE` | — |
+| المصدر | `[Derived]` | — |
+| المتطلب | REQ-GOV-006 | The system shall apply a retention schedule to every record class. |
+| حالة الاستخدام | UC-103 | Apply Retention & Legal Hold |
+<!-- END GENERATED: refs US-OPS-RETENTION-CLASS-GAP -->
+
+</details>
+
+## 6. التتبع
+
+<!-- BEGIN GENERATED: trace -->
+| المتطلب | المعنى | القصص | الاختبار |
+|---|---|---|---|
+| REQ-GOV-006 | The system shall apply a retention schedule to every record class. | `US-BC08-Q-RTS-ACTIVE`، `US-BC08-RTS-ACTIVATE`، `US-BC08-RTS-DISCARD`، `US-BC08-RTS-DRAFT`، `US-BC08-RTS-EDIT`، `US-BC08-S-RETENTION-SCHEDULE-01`، `US-OPS-RETENTION-CLASS-GAP`، `US-UI-SCR70-RETENTION-RULES` | TST-DISPOSITION-RUN-SM، TST-RETENTION-SCHEDULE-SM، TST-SLC12A-INVARIANTS |
+<!-- END GENERATED: trace -->
+
+## 7. سجل التغييرات
+
+| الإصدار | التاريخ | التغيير |
+|---|---|---|
+| 0.1 | — | هيكل مولَّد من خريطة الميزات |

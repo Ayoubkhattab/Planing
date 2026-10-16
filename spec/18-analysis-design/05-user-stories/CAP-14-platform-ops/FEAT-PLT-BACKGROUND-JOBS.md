@@ -3,9 +3,9 @@ id: FEAT-PLT-BACKGROUND-JOBS
 type: feature
 title: "متابعة العمليات الطويلة"
 status: DRAFT
-version: "0.1"
+version: "0.2"
 capability: CAP-14.02
-sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv]
+sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 02-requirements/requirements.md, 02-requirements/quality-scenarios.md, 12-solution/technology-decisions.md, 18-analysis-design/23-crosscutting.md]
 generator: 17-system-study/_build/build_analysis_design.py
 ---
 

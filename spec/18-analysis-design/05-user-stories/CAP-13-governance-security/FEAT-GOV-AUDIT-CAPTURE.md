@@ -3,9 +3,9 @@ id: FEAT-GOV-AUDIT-CAPTURE
 type: feature
 title: "التسجيل التلقائي للعمليات"
 status: DRAFT
-version: "0.1"
+version: "0.2"
 capability: CAP-13.02
-sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv]
+sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/17-security-design.md, 09-reliability/degradation-slc01.md, 09-reliability/observability-slc01.md, 02-requirements/requirements.md]
 generator: 17-system-study/_build/build_analysis_design.py
 ---
 

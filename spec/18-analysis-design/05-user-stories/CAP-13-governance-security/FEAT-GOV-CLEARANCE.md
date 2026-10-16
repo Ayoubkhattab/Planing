@@ -3,9 +3,9 @@ id: FEAT-GOV-CLEARANCE
 type: feature
 title: "التصاريح الأمنية للمستخدمين"
 status: DRAFT
-version: "0.1"
+version: "0.2"
 capability: CAP-13.01
-sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv]
+sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc01.md, 03-domain/contexts/BC01/aggregates/AGG-CLEARANCE.md, 02-requirements/requirements.md, 18-analysis-design/17-security-design.md, 18-analysis-design/21-ui-design.md, 09-reliability/observability-slc01.md, 18-analysis-design/05-user-stories/00-glossary.md]
 generator: 17-system-study/_build/build_analysis_design.py
 ---
 

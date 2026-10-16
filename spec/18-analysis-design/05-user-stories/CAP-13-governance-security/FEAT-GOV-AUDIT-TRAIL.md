@@ -3,9 +3,9 @@ id: FEAT-GOV-AUDIT-TRAIL
 type: feature
 title: "مراجعة سجل التدقيق"
 status: DRAFT
-version: "0.1"
+version: "0.2"
 capability: CAP-13.02
-sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv]
+sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc08.md, 18-analysis-design/17-security-design.md, 09-reliability/observability-slc01.md, 02-requirements/requirements.md, 18-analysis-design/21-ui-design.md, 18-analysis-design/23-crosscutting.md]
 generator: 17-system-study/_build/build_analysis_design.py
 ---
 
@@ -33,11 +33,30 @@ generator: 17-system-study/_build/build_analysis_design.py
 
 ### 1.2 النطاق
 
-**[للكتابة]**
+| البند | القيمة |
+|---|---|
+| المستخدمون | المدقِّق؛ مسؤول الأمن |
+| الشاشات | SCR-69 التدقيق |
+| حالات الاستخدام | مراجعة سجل التدقيق (UC-087): البحث في من فعل ماذا ومتى ولماذا، والتحقق من أن السجل لم يُعبث به |
+| المتطلبات | كتابة سجل تدقيق لكل أمر وكل قراءة حساسة (REQ-FND-015)؛ سجل لا يقبل التعديل ويكشف العبث (REQ-FND-016)؛ تتبع الطلب بمعرف ارتباط واحد عبر كل مكوناته (REQ-PLT-003) |
+| خارج النطاق | كتابة سجل التدقيق نفسها عند كل أمر (ميزة «التسجيل التلقائي للعمليات»، `FEAT-GOV-AUDIT-CAPTURE`)؛ عرض سياق طلبات الذكاء الاصطناعي (استعلام منفصل في ميزة أخرى) |
 
 ### 1.3 خريطة الميزة
 
-**[للكتابة]**
+**الشكل 1: مراجعة سجل التدقيق**
+
+```mermaid
+flowchart LR
+  A["المدقِّق أو مسؤول الأمن"] --> S["بحث في سجل التدقيق"]
+  S --> R["سجلات ضمن نطاقه فقط"]
+  A --> V["بدء تحقق من السلامة"]
+  V --> J["مهمة تحقق"]
+  J --> OK["السلسلة سليمة"]
+  J --> FAIL["فشل التحقق"]
+  FAIL --> INC["حادثة حرجة فورية"]
+  S --> SA["هذا الاطلاع نفسه يُدقَّق"]
+  R --> TL["يرتبط بمعرف تتبع الطلب"]
+```
 
 ## 2. القواعد المشتركة
 

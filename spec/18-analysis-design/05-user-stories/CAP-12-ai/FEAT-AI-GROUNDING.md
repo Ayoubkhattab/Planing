@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-AI-GROUNDING |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-12 المساعدة بالذكاء الاصطناعي |
 | القدرة الفرعية | CAP-12.01 الاسترجاع والإجابة المؤرّضة (R2) |
@@ -163,11 +163,11 @@ stateDiagram-v2
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC07-Q-AIR-CONTEXT` | جلب: Context package items (URN, version, label) — for audit and review | جلب | مسودة |
-| `US-BC07-S-AI-REQUEST-02` | تلقائي: retrieval started (طلب الذكاء الاصطناعي) | نظام | مسودة |
-| `US-BC07-S-AI-REQUEST-03` | تلقائي: context package sealed (طلب الذكاء الاصطناعي) | نظام | مسودة |
-| `US-BC07-S-AI-REQUEST-05` | تلقائي: output grounded (طلب الذكاء الاصطناعي) | نظام | مسودة |
-| `US-BC07-S-AI-REQUEST-06` | تلقائي: output not grounded (طلب الذكاء الاصطناعي) | نظام | مسودة |
+| `US-BC07-Q-AIR-CONTEXT` | جلب عناصر حزمة سياق طلب الذكاء الاصطناعي | جلب | مسودة |
+| `US-BC07-S-AI-REQUEST-02` | بدء الاسترجاع المصرَّح لطلب الذكاء الاصطناعي | نظام | مسودة |
+| `US-BC07-S-AI-REQUEST-03` | ختم حزمة سياق طلب الذكاء الاصطناعي | نظام | مسودة |
+| `US-BC07-S-AI-REQUEST-05` | اكتمال الطلب بإجابة مؤرَّضة | نظام | مسودة |
+| `US-BC07-S-AI-REQUEST-06` | عدم كفاية الأدلة بعد حذف العبارات غير المسندة | نظام | مسودة |
 | `US-UI-SCR69-AI-LINEAGE` | تتبع العبارة إلى حزمة السياق والنموذج | واجهة | مسودة |
 | `US-PLT-AI-AUTONOMY-MATRIX` | فرض حدود استقلالية الذكاء الاصطناعي | منصة | مسودة |
 | `US-PLT-AI-GROUNDING-VERIFIER` | التحقق من إسناد كل عبارة قبل عرضها | منصة | مسودة |

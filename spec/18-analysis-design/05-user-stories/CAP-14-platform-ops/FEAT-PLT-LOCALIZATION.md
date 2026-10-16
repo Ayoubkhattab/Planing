@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-PLT-LOCALIZATION |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-14 تشغيل المنصة |
 | القدرة الفرعية | CAP-14.01 المراقبة (R1) |

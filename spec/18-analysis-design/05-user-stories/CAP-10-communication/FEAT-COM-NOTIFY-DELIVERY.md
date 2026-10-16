@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COM-NOTIFY-DELIVERY |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-10 الاتصال والمنتجات |
 | القدرة الفرعية | CAP-10.01 الإشعارات والتوزيع (R1 (إشعارات)) |
@@ -171,10 +171,10 @@ stateDiagram-v2
 <!-- BEGIN GENERATED: story-index -->
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
-| `US-BC04-S-NOTIFICATION-01` | تلقائي: notifiable event for recipient (الإشعار) | نظام | مسودة |
-| `US-BC04-S-NOTIFICATION-02` | تلقائي: delivered to channel (الإشعار) | نظام | مسودة |
-| `US-BC04-S-NOTIFICATION-03` | تلقائي: recipient no longer authorized at delivery (الإشعار) | نظام | مسودة |
-| `US-BC04-S-NOTIFICATION-04` | تلقائي: delivery failed after retries (الإشعار) | نظام | مسودة |
+| `US-BC04-S-NOTIFICATION-01` | تلقائي: إنشاء الإشعار عند حدث قابل للإشعار | نظام | مسودة |
+| `US-BC04-S-NOTIFICATION-02` | تلقائي: تسليم الإشعار إلى القناة | نظام | مسودة |
+| `US-BC04-S-NOTIFICATION-03` | تلقائي: منع تسليم الإشعار لفقد الصلاحية | نظام | مسودة |
+| `US-BC04-S-NOTIFICATION-04` | تلقائي: فشل تسليم الإشعار بعد الإعادة | نظام | مسودة |
 | `US-DOM-NTF-QUIET-HOURS` | تأجيل الدفع في ساعات الهدوء عدا الحرج | نظام | مسودة |
 | `US-PLT-NOTIFY-FANOUT` | وصول إشعار التنبيه الحرج خلال خمس ثوانٍ | منصة | مسودة |
 | `US-PLT-NOTIFY-SAFE-PAYLOAD` | رسالة الجوال مرجع وعنوان آمن فقط | منصة | مسودة |

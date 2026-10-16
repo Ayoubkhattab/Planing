@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-KNW-RECONSTRUCTION |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-11 المعرفة والذاكرة المؤسسية |
 | القدرة الفرعية | CAP-11.03 الأرشيف وإعادة البناء التاريخي (R2) |
@@ -155,10 +155,10 @@ stateDiagram-v2
 |---|---|---|---|
 | `US-BC06-REC-CANCEL` | إلغاء إعادة البناء التاريخي | أمر | مسودة |
 | `US-BC06-REC-REQUEST` | طلب إعادة البناء التاريخي | أمر | مسودة |
-| `US-BC06-Q-REC-REPORT` | جلب: Labelled reconstruction report | جلب | مسودة |
-| `US-BC06-S-RECONSTRUCTION-01` | تلقائي: worker started (إعادة البناء التاريخي) | نظام | مسودة |
-| `US-BC06-S-RECONSTRUCTION-02` | تلقائي: completed (إعادة البناء التاريخي) | نظام | مسودة |
-| `US-BC06-S-RECONSTRUCTION-03` | تلقائي: failed (إعادة البناء التاريخي) | نظام | مسودة |
+| `US-BC06-Q-REC-REPORT` | جلب تقرير إعادة البناء المميَّز | جلب | مسودة |
+| `US-BC06-S-RECONSTRUCTION-01` | تلقائي: بدء تنفيذ إعادة البناء | نظام | مسودة |
+| `US-BC06-S-RECONSTRUCTION-02` | تلقائي: اكتمال إعادة البناء | نظام | مسودة |
+| `US-BC06-S-RECONSTRUCTION-03` | تلقائي: فشل إعادة البناء | نظام | مسودة |
 | `US-UI-SCR50-LABELLED-REPORT` | تمييز المسجل عن المعاد بناؤه في التقرير | واجهة | مسودة |
 | `US-UI-SCR50-REQUEST-FORM` | تحديد لحظة الموقف ولحظة المعرفة للطلب | واجهة | مسودة |
 | `US-PLT-RECONSTRUCTION-ARCHIVE-READ` | إدخال السجلات المؤرشفة في إعادة البناء | منصة | مسودة |

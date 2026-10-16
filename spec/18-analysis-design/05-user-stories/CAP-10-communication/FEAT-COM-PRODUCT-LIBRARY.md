@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COM-PRODUCT-LIBRARY |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-10 الاتصال والمنتجات |
 | القدرة الفرعية | CAP-10.02 التقارير والإحاطات ومنتجات الخرائط (R2) |
@@ -128,9 +128,9 @@ flowchart TD
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
 | `US-DOM-PRD-EXPORT` | تصدير نسخة شخصية بعلامة مائية | أمر | مسودة |
-| `US-BC06-Q-PRD-GET` | جلب: Product version with rendered artifacts (download grants) and pinned citations | جلب | مسودة |
-| `US-BC06-Q-PRD-LIST` | جلب: Products by kind, state, situation/case, date | جلب | مسودة |
-| `US-BC06-S-PRODUCT-03` | تلقائي: newer version approved (المنتج) | نظام | مسودة |
+| `US-BC06-Q-PRD-GET` | فتح نسخة المنتج | جلب | مسودة |
+| `US-BC06-Q-PRD-LIST` | قائمة المنتجات | جلب | مسودة |
+| `US-BC06-S-PRODUCT-03` | استبدال النسخة المعتمدة بنسخة أحدث | نظام | مسودة |
 | `US-UI-SCR43-DOWNLOAD` | تنزيل المنتج بالصيغة المسموحة مع تنبيه العلامة | واجهة | مسودة |
 | `US-UI-SCR43-LIBRARY` | مكتبة المنتجات المعتمدة بأحدث نسخها | واجهة | مسودة |
 | `US-PLT-PRD-WATERMARK` | علامة مائية مرئية وخفية لكل نسخة | منصة | مسودة |

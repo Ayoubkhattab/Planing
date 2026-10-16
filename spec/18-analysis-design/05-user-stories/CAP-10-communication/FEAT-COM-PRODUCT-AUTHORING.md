@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COM-PRODUCT-AUTHORING |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-10 الاتصال والمنتجات |
 | القدرة الفرعية | CAP-10.02 التقارير والإحاطات ومنتجات الخرائط (R2) |
@@ -161,8 +161,8 @@ stateDiagram-v2
 | `US-BC06-PRD-EDIT-NARRATIVE` | تعديل سرد المنتج | أمر | مسودة |
 | `US-BC06-PRD-GENERATE` | توليد المنتج | أمر | مسودة |
 | `US-BC06-PRD-SUBMIT` | تقديم المنتج | أمر | مسودة |
-| `US-BC06-S-PRODUCT-01` | تلقائي: generation succeeded (المنتج) | نظام | مسودة |
-| `US-BC06-S-PRODUCT-02` | تلقائي: generation failed (المنتج) | نظام | مسودة |
+| `US-BC06-S-PRODUCT-01` | نجاح توليد المنتج | نظام | مسودة |
+| `US-BC06-S-PRODUCT-02` | فشل توليد المنتج | نظام | مسودة |
 | `US-UI-SCR43-CITATIONS` | كل عنصر في المنتج يقود إلى مصدره | واجهة | مسودة |
 | `US-UI-SCR43-GENERATION-STATUS` | تقدم توليد المنتج وسبب فشله | واجهة | مسودة |
 | `US-UI-SCR43-NARRATIVE-EDIT` | تحرير السرد فقط ووسم مسودة الذكاء الاصطناعي | واجهة | مسودة |

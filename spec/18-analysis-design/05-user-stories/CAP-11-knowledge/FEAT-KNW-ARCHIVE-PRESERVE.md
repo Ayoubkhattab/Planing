@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-KNW-ARCHIVE-PRESERVE |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-11 المعرفة والذاكرة المؤسسية |
 | القدرة الفرعية | CAP-11.03 الأرشيف وإعادة البناء التاريخي (R2) |
@@ -165,11 +165,11 @@ stateDiagram-v2
 | `US-BC06-ARC-REPAIR` | إصلاح الحزمة الأرشيفية | أمر | مسودة |
 | `US-BC06-ARC-RETRY-INGEST` | إعادة محاولة استيعاب الحزمة الأرشيفية | أمر | مسودة |
 | `US-BC06-ARC-TRANSFER` | نقل الحزمة الأرشيفية | أمر | مسودة |
-| `US-BC06-S-ARCHIVE-PACKAGE-01` | تلقائي: disposition action ARCHIVE for a bucket or record set (الحزمة الأرشيفية) | نظام | مسودة |
-| `US-BC06-S-ARCHIVE-PACKAGE-02` | تلقائي: package validated (الحزمة الأرشيفية) | نظام | مسودة |
-| `US-BC06-S-ARCHIVE-PACKAGE-03` | تلقائي: validation failed (الحزمة الأرشيفية) | نظام | مسودة |
-| `US-BC06-S-ARCHIVE-PACKAGE-04` | تلقائي: integrity check failed (الحزمة الأرشيفية) | نظام | مسودة |
-| `US-BC06-S-ARCHIVE-PACKAGE-05` | تلقائي: disposition DESTROY executed for the package bucket (الحزمة الأرشيفية) | نظام | مسودة |
+| `US-BC06-S-ARCHIVE-PACKAGE-01` | تلقائي: بدء استيعاب الحزمة عند قرار الأرشفة | نظام | مسودة |
+| `US-BC06-S-ARCHIVE-PACKAGE-02` | تلقائي: حفظ الحزمة بعد نجاح التحقق | نظام | مسودة |
+| `US-BC06-S-ARCHIVE-PACKAGE-03` | تلقائي: فشل استيعاب الحزمة | نظام | مسودة |
+| `US-BC06-S-ARCHIVE-PACKAGE-04` | تلقائي: فشل الفحص الدوري لسلامة حزمة محفوظة | نظام | مسودة |
+| `US-BC06-S-ARCHIVE-PACKAGE-05` | تلقائي: إتلاف الحزمة بعد تنفيذ قرار الإتلاف | نظام | مسودة |
 | `US-UI-SCR44-ARCHIVE-PACKAGE` | متابعة حالة الحزمة الأرشيفية وأحداث حفظها | واجهة | مسودة |
 | `US-PLT-ARCHIVE-FIXITY-SCHEDULE` | التحقق الدوري من سلامة كل الحزم | منصة | مسودة |
 | `US-PLT-ARCHIVE-PACKAGE-BUILD` | بناء الحزمة الأرشيفية بصيغ الحفظ الدائمة | منصة | مسودة |

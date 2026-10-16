@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-AI-MODEL-APPROVAL |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-12 المساعدة بالذكاء الاصطناعي |
 | القدرة الفرعية | CAP-12.04 تقييم AI وحوكمته (R2) |
@@ -149,7 +149,7 @@ stateDiagram-v2
 | `US-BC07-MDL-REGISTER` | تسجيل إصدار النموذج | أمر | مسودة |
 | `US-BC07-MDL-STAGE` | تجهيز إصدار النموذج للإنتاج | أمر | مسودة |
 | `US-BC07-MDL-START-EVALUATION` | بدء تقييم إصدار النموذج | أمر | مسودة |
-| `US-BC07-Q-MDL-LIST` | جلب: Model versions with state, evaluation summary, hosting | جلب | مسودة |
+| `US-BC07-Q-MDL-LIST` | قائمة إصدارات النماذج | جلب | مسودة |
 | `US-UI-SCR51-MODEL-LIFECYCLE` | متابعة إصدارات النماذج وتقييمها | واجهة | مسودة |
 | `US-PLT-AI-CANARY-SPLIT` | توجيه حصة تجريبية إلى النموذج المجهز | منصة | مسودة |
 | `US-OPS-AI-MODEL-BUNDLE` | تثبيت أوزان النموذج موقعة في حزمة الإصدار | تشغيل | مسودة |

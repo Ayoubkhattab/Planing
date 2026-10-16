@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COM-DISTRIBUTION |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-10 الاتصال والمنتجات |
 | القدرة الفرعية | CAP-10.02 التقارير والإحاطات ومنتجات الخرائط (R2) |
@@ -144,9 +144,9 @@ stateDiagram-v2
 |---|---|---|---|
 | `US-BC06-DST-CANCEL` | إلغاء التوزيع | أمر | مسودة |
 | `US-BC06-DST-DISTRIBUTE` | تنفيذ التوزيع | أمر | مسودة |
-| `US-BC06-Q-DST-LOG` | جلب: Distribution and delivery log with watermark ids | جلب | مسودة |
-| `US-BC06-S-DISTRIBUTION-01` | تلقائي: all recipients authorized and delivered (التوزيع) | نظام | مسودة |
-| `US-BC06-S-DISTRIBUTION-02` | تلقائي: some recipients not authorized (التوزيع) | نظام | مسودة |
+| `US-BC06-Q-DST-LOG` | سجل التوزيع والتسليم | جلب | مسودة |
+| `US-BC06-S-DISTRIBUTION-01` | إكمال التوزيع عند تسليم كل المستلمين | نظام | مسودة |
+| `US-BC06-S-DISTRIBUTION-02` | إكمال التوزيع مع استبعاد مستلمين | نظام | مسودة |
 | `US-UI-SCR43-DISTRIBUTE` | اختيار المستلمين ورؤية المستبعدين بعد التوزيع | واجهة | مسودة |
 | `US-UI-SCR43-RECIPIENT-VIEW` | المستلم يفتح المنتج الموزَّع إليه | واجهة | مسودة |
 <!-- END GENERATED: story-index -->

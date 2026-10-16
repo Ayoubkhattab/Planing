@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-KNW-KNOWLEDGE-REUSE |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-11 المعرفة والذاكرة المؤسسية |
 | القدرة الفرعية | CAP-11.01 الدروس والمعرفة (R2) |
@@ -131,8 +131,8 @@ flowchart TD
 | المعرّف | القصة | النوع | الحالة |
 |---|---|---|---|
 | `US-BC06-KNO-RECORD-REUSE` | تسجيل إعادة استخدام كائن المعرفة | أمر | مسودة |
-| `US-BC06-Q-KNO-SEARCH` | جلب: Published knowledge by type, text, relationships | جلب | مسودة |
-| `US-BC06-Q-KNO-SUGGEST` | جلب: Published knowledge relevant to a task type / plan / area (by relationships) | جلب | مسودة |
+| `US-BC06-Q-KNO-SEARCH` | البحث في المعرفة المنشورة | جلب | مسودة |
+| `US-BC06-Q-KNO-SUGGEST` | اقتراح المعرفة ذات الصلة بالخطة | جلب | مسودة |
 | `US-UI-SCR34-KNOWLEDGE-SUGGEST` | اقتراح الدروس للمخطط أثناء إعداد الخطة | واجهة | مسودة |
 | `US-UI-SCR44-KNOWLEDGE-SEARCH` | البحث في المعرفة المنشورة وتصفيتها | واجهة | مسودة |
 | `US-PLT-KNOWLEDGE-SEARCH-DOC` | ظهور المعرفة المنشورة في البحث الموحد | منصة | مسودة |

@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-KNW-RETENTION-SCHEDULE |
-| الإصدار | 0.1 |
+| الإصدار | 0.2 |
 | الحالة | مسودة |
 | القدرة | CAP-11 المعرفة والذاكرة المؤسسية |
 | القدرة الفرعية | CAP-11.02 السجلات والاحتفاظ (R1 (الاحتفاظ والتجميد)) |
@@ -171,8 +171,8 @@ stateDiagram-v2
 | `US-BC08-RTS-DISCARD` | تجاهل مسودة جدول الاحتفاظ | أمر | مسودة |
 | `US-BC08-RTS-DRAFT` | إعداد مسودة جدول الاحتفاظ | أمر | مسودة |
 | `US-BC08-RTS-EDIT` | تعديل جدول الاحتفاظ | أمر | مسودة |
-| `US-BC08-Q-RTS-ACTIVE` | جلب: Active schedule version with rules | جلب | مسودة |
-| `US-BC08-S-RETENTION-SCHEDULE-01` | تلقائي: successor activated (جدول الاحتفاظ) | نظام | مسودة |
+| `US-BC08-Q-RTS-ACTIVE` | جلب الجدول النشط بقواعده | جلب | مسودة |
+| `US-BC08-S-RETENTION-SCHEDULE-01` | تلقائي: استبدال الجدول النشط السابق | نظام | مسودة |
 | `US-UI-SCR70-RETENTION-RULES` | مراجعة قواعد الاحتفاظ لكل فئة سجلات | واجهة | مسودة |
 | `US-OPS-RETENTION-CLASS-GAP` | التنبيه إلى فئة سجلات بلا قاعدة احتفاظ | تشغيل | مسودة |
 <!-- END GENERATED: story-index -->

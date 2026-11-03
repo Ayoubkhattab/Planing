@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COM-PUBLIC-ALERTS |
-| الإصدار | 0.2 |
+| الإصدار | 0.3 |
 | الحالة | مسودة |
 | القدرة | CAP-10 الاتصال والمنتجات |
 | القدرة الفرعية | CAP-10.01 الإشعارات والتوزيع (R1 (إشعارات)) |
@@ -155,8 +155,8 @@ stateDiagram-v2
 | `US-BC03-CAP-PREPARE` | إعداد رسالة CAP الصادرة | أمر | مسودة |
 | `US-BC03-CAP-RELEASE` | تحرير رسالة CAP الصادرة | أمر | مسودة |
 | `US-BC03-CAP-RETRY` | إعادة محاولة رسالة CAP الصادرة | أمر | مسودة |
-| `US-BC03-Q-CAP-LIST` | جلب: Outbound CAP messages by state | جلب | مسودة |
-| `US-BC03-S-CAP-MESSAGE-01` | تلقائي: delivery failed after retries (رسالة CAP الصادرة) | نظام | مسودة |
+| `US-BC03-Q-CAP-LIST` | جلب: رسائل CAP الصادرة بحسب حالتها | جلب | مسودة |
+| `US-BC03-S-CAP-MESSAGE-01` | تلقائي: فشل التسليم بعد استنفاد المحاولات (رسالة CAP الصادرة) | نظام | مسودة |
 | `US-UI-SCR14-RELEASE-REVIEW` | معاينة رسالة الإنذار قبل إطلاقها وتتبع وصولها | واجهة | مسودة |
 | `US-INT-CAP-INBOUND` | استقبال رسائل الإنذار من الجهات الأخرى | تكامل | مسودة |
 | `US-INT-CAP-OUTBOUND` | إرسال رسالة الإنذار العام وتسجيل إقرارها | تكامل | مسودة |

@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-COM-SUBSCRIPTIONS |
-| الإصدار | 0.2 |
+| الإصدار | 0.3 |
 | الحالة | مسودة |
 | القدرة | CAP-10 الاتصال والمنتجات |
 | القدرة الفرعية | CAP-10.01 الإشعارات والتوزيع (R1 (إشعارات)) |
@@ -158,7 +158,7 @@ stateDiagram-v2
 | `US-BC04-SUB-UNSUBSCRIBE` | إلغاء الاشتراك | أمر | مسودة |
 | `US-BC04-SUB-UPDATE-CHANNELS` | تحديث قنوات الاشتراك | أمر | مسودة |
 | `US-DOM-SUB-LIST` | عرض قائمة اشتراكاتي | جلب | مسودة |
-| `US-BC04-S-SUBSCRIPTION-01` | تلقائي: subscriber lost visibility of target (الاشتراك) | نظام | مسودة |
+| `US-BC04-S-SUBSCRIPTION-01` | تلقائي: فقد المشترك صلاحية رؤية الهدف (الاشتراك) | نظام | مسودة |
 | `US-UI-SCR03-SUBSCRIPTIONS` | إدارة اشتراكاتي وقنواتها وساعات الهدوء | واجهة | مسودة |
 | `US-UI-SCR12-FOLLOW` | زر متابعة الموقف أو قاعدة التنبيه | واجهة | مسودة |
 <!-- END GENERATED: story-index -->

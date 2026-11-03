@@ -190,7 +190,7 @@ stateDiagram-v2
     بفرض السياق المشترك للميزة
     و <الحالة>
     عندما يحاول تجاهل الكائن
-    اذاً يُرفض برمز <الرمز> ويرى <الرسالة>
+    اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
     و لا يتغير شيء
 
     امثلة:
@@ -253,7 +253,7 @@ stateDiagram-v2
     بفرض السياق المشترك للميزة
     و <الحالة>
     عندما يحاول إعداد مسودة
-    اذاً يُرفض برمز <الرمز> ويرى <الرسالة>
+    اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
     و لا يتغير شيء
 
     امثلة:
@@ -316,7 +316,7 @@ stateDiagram-v2
     بفرض السياق المشترك للميزة
     و <الحالة>
     عندما يحاول تعديل المسودة
-    اذاً يُرفض برمز <الرمز> ويرى <الرسالة>
+    اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
     و لا يتغير شيء
 
     امثلة:
@@ -379,7 +379,7 @@ stateDiagram-v2
     بفرض السياق المشترك للميزة
     و <الحالة>
     عندما يحاول تقديم المسودة
-    اذاً يُرفض برمز <الرمز> ويرى <الرسالة>
+    اذاً يُرفض برمز <الرمز> ويرى "<الرسالة>"
     و لا يتغير شيء
 
     امثلة:
@@ -517,6 +517,8 @@ stateDiagram-v2
 | REQ-KNW-002 | When a task, plan, incident, or exercise simulation is closed or completed, the system shall allow capturing… | `US-BC06-KNO-DISCARD`، `US-BC06-KNO-DRAFT`، `US-BC06-KNO-EDIT`، `US-BC06-KNO-SUBMIT`، `US-UI-SCR02-LESSON-CAPTURE`، `US-UI-SCR44-LESSON-EDITOR` | TST-KNOWLEDGE-OBJECT-SM، TST-SLC12-INVARIANTS |
 | REQ-KNW-003 | When a published knowledge object is relevant to a new plan or task type, the system shall suggest it to the… | كل قصص الميزة المأخوذة من المواصفة (4) | TST-KNOWLEDGE-OBJECT-SM، TST-SLC12-INVARIANTS |
 <!-- END GENERATED: trace -->
+
+> **ملاحظة:** صف REQ-KNW-003 أعلاه مولَّد وعام الصياغة («كل قصص الميزة المأخوذة من المواصفة (4)»). القصص الأربع المقصودة فعليًا، على نسق بقية الصفوف، هي: `US-BC06-KNO-DISCARD`، `US-BC06-KNO-DRAFT`، `US-BC06-KNO-EDIT`، `US-BC06-KNO-SUBMIT`. التصحيح في مصدر التوليد (feature_map.csv أو ما يماثله) خارج نطاق هذا التعديل.
 
 ## 7. سجل التغييرات
 

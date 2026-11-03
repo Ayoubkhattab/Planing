@@ -3,7 +3,7 @@ id: FEAT-AI-TOOLS
 type: feature
 title: "سجل أدوات الذكاء الاصطناعي"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-12.01
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc07.md, 03-domain/contexts/BC07/aggregates/AGG-AI-TOOL.md, 03-domain/contexts/BC07/grounded-ai-spec.md, 02-requirements/requirements.md, 08-security/policies-slc10.md, 08-security/threat-model-slc10.md, 18-analysis-design/21-ui-design.md, 13-verification/acceptance/SLC-10/invariants-slc10.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -652,13 +652,9 @@ stateDiagram-v2
     عندما يُفحص سجل التدقيق
     اذاً يُوجد مرجع المراجعة ونتائجها مرتبطًا بحدث التفعيل
     و لا يمكن تعديل هذا السجل
-
-  سيناريو: لا تفعيل بلا مرجع مراجعة محفوظ
-    بفرض محاولة تفعيل أداة بلا مرجع مراجعة أمنية
-    عندما يُرسل أمر التفعيل
-    اذاً لا يُسجَّل أي حدث تفعيل
-    و يبقى السجل كما كان
 ```
+
+> رفض محاولة التفعيل بلا مرجع مراجعة أمنية محفوظ تغطيه قصة 5.1 (`SECURITY_REVIEW_REQUIRED`)؛ لا يُكرَّر هنا.
 
 <details><summary>المراجع التقنية والتتبع</summary>
 
@@ -689,3 +685,4 @@ stateDiagram-v2
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-13 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-13 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

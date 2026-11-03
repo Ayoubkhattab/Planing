@@ -3,7 +3,7 @@ id: FEAT-KNW-LEGAL-HOLD
 type: feature
 title: "التجميد القانوني"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-11.02
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc08.md, 03-domain/contexts/BC08/aggregates/AGG-LEGAL-HOLD.md, 03-domain/contexts/BC08/events-slc12a.md, 09-reliability/fmea-slc12a.md, 08-security/threat-model-slc12a.md, 03-domain/contexts/BC01/aggregates/AGG-PERSON.md, 03-domain/contexts/BC01/aggregates/AGG-TENANT.md, 03-domain/contexts/BC02/aggregates/AGG-ATTACHMENT.md, 18-analysis-design/17-security-design.md, 18-analysis-design/05-user-stories/00-glossary.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-KNW-LEGAL-HOLD |
-| الإصدار | 0.2 |
+| الإصدار | 0.3 |
 | الحالة | مسودة |
 | القدرة | CAP-11 المعرفة والذاكرة المؤسسية |
 | القدرة الفرعية | CAP-11.02 السجلات والاحتفاظ (R1 (الاحتفاظ والتجميد)) |
@@ -798,3 +798,4 @@ stateDiagram-v2
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-13 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-13 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |

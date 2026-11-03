@@ -3,7 +3,7 @@ id: FEAT-KNW-ARCHIVE-PRESERVE
 type: feature
 title: "حفظ الأرشيف وسلامته"
 status: DRAFT
-version: "0.2"
+version: "0.3"
 capability: CAP-11.03
 sources: [17-system-study/_build/features.csv, 17-system-study/_build/feature_map.csv, 18-analysis-design/05-user-stories/us-bc06.md, 03-domain/contexts/BC06/aggregates/AGG-ARCHIVE-PACKAGE.md, 18-analysis-design/05-user-stories/00-glossary.md, 18-analysis-design/21-ui-design.md, 18-analysis-design/20-integration-design.md, 09-reliability/observability-slc12.md]
 generator: 17-system-study/_build/build_analysis_design.py
@@ -15,7 +15,7 @@ generator: 17-system-study/_build/build_analysis_design.py
 | البند | القيمة |
 |---|---|
 | المعرّف | FEAT-KNW-ARCHIVE-PRESERVE |
-| الإصدار | 0.2 |
+| الإصدار | 0.3 |
 | الحالة | مسودة |
 | القدرة | CAP-11 المعرفة والذاكرة المؤسسية |
 | القدرة الفرعية | CAP-11.03 الأرشيف وإعادة البناء التاريخي (R2) |
@@ -980,3 +980,4 @@ stateDiagram-v2
 |---|---|---|
 | 0.1 | — | هيكل مولَّد من خريطة الميزات |
 | 0.2 | 2026-10-13 | كتابة القصص كاملة بمعيار القصص |
+| 0.3 | 2026-10-13 | تصحيحات المراجعة المستقلة (الدفعة الأولى) |
